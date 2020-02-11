@@ -8,6 +8,8 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import purple from "@material-ui/core/colors/purple";
 import green from "@material-ui/core/colors/green";
 
+import './App.css';
+
 const theme = createMuiTheme({
   palette: {
     primary: purple,
@@ -23,17 +25,19 @@ function App() {
     <ThemeProvider theme={theme}>
       <Router>
         <div className="App">
-          <header className="App-header">
+          <header className="header">
             <Navigation />
           </header>
-          <Switch>
-            <Route path="/about">
-              <About />
-            </Route>
-            <Route path="/">
-              <Home />
-            </Route>
-          </Switch>
+          <div className="content">
+            <Switch>
+              <Route path="/about">
+                <About />
+              </Route>
+              <Route path="/">
+                <Home />
+              </Route>
+            </Switch>
+          </div>
         </div>
       </Router>
     </ThemeProvider>
