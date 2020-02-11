@@ -3,25 +3,40 @@ import Home from "./components/Home";
 import About from "./components/About";
 import Navigation from "./components/Navigation";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import "./App.css";
+
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import purple from "@material-ui/core/colors/purple";
+import green from "@material-ui/core/colors/green";
+
+const theme = createMuiTheme({
+  palette: {
+    primary: purple,
+    secondary: green
+  },
+  status: {
+    danger: "orange"
+  }
+});
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <header className="App-header">
-          <Navigation />
-        </header>
-        <Switch>
-          <Route path="/about">
-            <About />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <div className="App">
+          <header className="App-header">
+            <Navigation />
+          </header>
+          <Switch>
+            <Route path="/about">
+              <About />
+            </Route>
+            <Route path="/">
+              <Home />
+            </Route>
+          </Switch>
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 
