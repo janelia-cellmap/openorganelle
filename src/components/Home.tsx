@@ -36,7 +36,7 @@ export default function Home() {
   const [dataSets, setDataSets] = useState([]);
 
   useEffect(() => {
-    const dataSets = [1, 2, 3, 4, 5];
+    const dataSets = [1, 2, 3, 4, 5, 6];
     // this is where the code that fetches the dataset should go.
     // once fetched the information should be stored in the state with the
     // following function
