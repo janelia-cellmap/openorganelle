@@ -5,14 +5,14 @@ import Navigation from "./components/Navigation";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import purple from "@material-ui/core/colors/purple";
+import teal from "@material-ui/core/colors/teal";
 import green from "@material-ui/core/colors/green";
 
 import "./App.css";
 
 const theme = createMuiTheme({
   palette: {
-    primary: purple,
+    primary: teal,
     secondary: green
   },
   status: {
