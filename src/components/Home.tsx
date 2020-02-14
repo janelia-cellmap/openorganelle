@@ -5,6 +5,9 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 
 import thumbnail from "./cosem3d.png";
+import {Dataset, makeDatasets} from "../api/datasets";
+
+const neuroglancerAddress = "http://neuroglancer-demo.appspot.com/#!";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -33,23 +36,24 @@ const useStyles = makeStyles(theme => ({
 
 export default function Home() {
   const classes = useStyles();
-  const [dataSets, setDataSets] = useState([]);
+  const [datasets, setDatasets] = useState([]);
 
-  useEffect(() => {
-    const dataSets = [1, 2, 3, 4, 5];
-    // this is where the code that fetches the dataset should go.
-    // once fetched the information should be stored in the state with the
-    // following function
-    setDataSets(dataSets);
+  useEffect(() => {    
+    /*
+    const dataSets = Promise.resolve([1, 2, 3]);
+    dataSets.then(setDataSets);
+    */
+    let datasets = makeDatasets('janelia-cosem-dev');
+    datasets.then(setDatasets);
   }, []);
 
   // this loop will be where you modify the meta information and generate
   // the urls.
-  const displayedDataSets = dataSets.map(dataset => {
+  const displayedDataSets = datasets.map(dataset => {
     // do your url generation here.
     return (
-      <Paper key={dataset} className={classes.paper}>
-        DataSet <a href="/">{dataset}</a>
+      <Paper key={dataset.path} className={classes.paper}>
+  {dataset.path} <a href={`${neuroglancerAddress}${dataset.neuroglancerURLFragment}`} target="_blank" rel="noopener noreferrer">View with neuroglancer</a>
       </Paper>
     );
   });
