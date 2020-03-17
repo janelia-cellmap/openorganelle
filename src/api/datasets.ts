@@ -1,5 +1,6 @@
 import { urlSafeStringify, encodeFragment, Transform, ViewerState, LayerDataSource, Space, Layer, skeletonRendering } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON } from "./datasources"
+import { resolve, promises } from "dns";
 
 // Check whether a path points to an n5 container
 function isN5Container(arg: string) { return arg.split(".").pop() === "n5/" }
@@ -8,6 +9,15 @@ const nm: [number, string] = [1e-9, 'm']
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: Space = { 'x': nm, 'y': nm, 'z': nm };
 
+// define some useful shaders
+const shaders = {'grayscale': `#uicontrol float upper slider(min=0, max=1, step=0.001, default=1)\n
+                               #uicontrol float lower slider(min=0, max=1, step=0.001, default=0)\n
+                               void main() {emitGrayscale((clamp(toNormalized(getDataValue()), lower, upper) - lower) / (upper - lower));}`, 
+                 'prediction': `#uicontrol vec3 color color(default="red")\n
+                                #uicontrol float brightness slider(min=-1, max=1)\n
+                                #uicontrol float contrast slider(min=-3, max=3, step=0.01, default=1.1)\n
+                                void main() {
+                                emitRGB(color * (toNormalized(getDataValue()) + brightness) * exp(contrast));}`};
 
 // a collection of volumes, i.e. a collection of ndimensional arrays 
 export class Dataset {
@@ -28,18 +38,19 @@ export class Dataset {
 
     makeNeuroglancerViewerState(): ViewerState {
         // take an array of dataset objects and generate the correct viewer state
-
+        /*
         const viewerPosition = calculateViewerPosition(
             this.volumes.map(a => a.dimensions),
             this.volumes.map(a => a.origin)
         );
-
+        */
+       const viewerPosition = undefined;
         const layers = this.volumes.map(a => a.toLayer());
 
         const projectionOrientation = undefined;
         const crossSectionOrientation = undefined;
         const projectionScale = undefined;
-        const crossSectionScale = 3.0;
+        const crossSectionScale = 15.0;
         const selectedLayer = undefined;
 
         const vState = new ViewerState(
@@ -71,6 +82,8 @@ export class Volume {
     ) { }
 
     // Convert n5 attributes to an internal representation of the volume
+    // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer 
+    // viewer state construction
     static fromN5Attrs(attrs: any): Volume {
         return new Volume(attrs.path,
             attrs.name,
@@ -98,12 +111,15 @@ export class Volume {
             inputDimensions)
 
         const source = new LayerDataSource(srcURL, transform);
-        const defaultShader = "void main() {\\n  emitGrayscale(toNormalized(getDataValue()));\\n}\\n";
+        const defaultShader = shaders.grayscale;
+        const predictionShader = shaders.prediction;
+
         const defaultSkeletonRendering: skeletonRendering = { mode2d: "lines_and_points", mode3d: "lines" };
         let layer: Layer | null;
         if (this.dtype === 'uint8') {
             layer = new Layer("image", source,
                 undefined, this.name, undefined, undefined, defaultShader)
+            if (this.name === 'predictions'){layer.shader = predictionShader;layer.blend='additive'}
         } else if (this.dtype === "uint64") {
             layer = new Layer("segmentation", source,
                 undefined, this.name, undefined, defaultSkeletonRendering, undefined)
@@ -122,16 +138,20 @@ async function makeVolumes(rootAttrs: any) {
     let rAttrs = await rootAttrs;
     let rootPath = rAttrs.root;
     let volumeNames = rAttrs[targetVolumesKey];
+    // In lieu of proper metadata validation, return null if the `multiscale_data` key is missing
+    if (volumeNames === undefined) {return Promise.resolve(null)}
 
-    let volumes: Promise<Volume>[] = volumeNames.map(async (name: any) => {
+    let volumes: Promise<Volume>[] = volumeNames.map(async (name: string) => {
         let path = `${rootPath}${name}${sep}`;
         // get the attributes of the individual volumes
         let attr = await getObjectFromJSON(
             `${path}${baseResolutionName}${sep}attributes.json`
         );
         // add the full path as a property
-        attr.path = path;
-        let volume = Volume.fromN5Attrs(attr);
+        if (attr !== undefined)
+            attr.path = path;
+            let volume = Volume.fromN5Attrs(attr);
+        
         return volume;
     });
     return Promise.all(volumes);
@@ -145,14 +165,14 @@ function calculateViewerPosition(dimensions: number[][], origins: number[][]): n
     let max_volume = Math.max.apply(null, volumes);
     let index = volumes.indexOf(max_volume);
     position = origins[index].map(
-        (val, idx) => val + dimensions[index][idx] / 2
+        (val, idx) => val + dimensions[index][idx] 
     );
     return position;
-};
+}
 
 export async function makeDatasets(bucket: string): Promise<Dataset[]> {
     let lsresult = await s3ls(bucket, '', '/', '', true);
-
+    console.log(lsresult)
     let n5Containers = lsresult.folders.filter(isN5Container);
 
     // for each n5 container, get the root attributes
@@ -162,13 +182,18 @@ export async function makeDatasets(bucket: string): Promise<Dataset[]> {
         return rootAttrs;
     }));
 
-    // for each volume described in the root attributes, instantiate an object for the metadata of that volume
-    let volumes = await Promise.all(rootAttrs.map(makeVolumes));
-    let datasets = volumes.map((v, idx) => new Dataset(n5Containers[idx], 'DatasetName', outputDimensions, v))
-    // turn the dataset objects into a viewer state
-    //let viewerStates = datasets.map(volumesToViewerState);
-    //let urls = viewerStates.map(state => `${neuroglancerAddress}${encodeFragment(urlSafeStringify(state))}`);
+    if (rootAttrs.length === 0){alert(`No n5 containers found in ${bucket}`)}
 
+    // for each volume described in the root attributes, instantiate an object for the metadata of that volume
+    let volumes = await Promise.all(rootAttrs.map(makeVolumes));    
+    let datasets = volumes.map((v, idx) => {
+        if (v !== null) {
+            return new Dataset(n5Containers[idx], n5Containers[idx].split('/').slice(-2,-1).pop()?.split('.')[0], outputDimensions, v)}
+        else return null
+        }
+    )
+    // filter out the null datasets
+    datasets = datasets.filter(a => a !== null)
     return datasets
 
 }

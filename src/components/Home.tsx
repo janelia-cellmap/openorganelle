@@ -5,7 +5,7 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 
 import thumbnail from "./cosem3d.png";
-import {Dataset, makeDatasets} from "../api/datasets";
+import {makeDatasets} from "../api/datasets";
 
 const neuroglancerAddress = "http://neuroglancer-demo.appspot.com/#!";
 
@@ -53,7 +53,7 @@ export default function Home() {
     // do your url generation here.
     return (
       <Paper key={dataset.path} className={classes.paper}>
-  {dataset.path} <a href={`${neuroglancerAddress}${dataset.neuroglancerURLFragment}`} target="_blank" rel="noopener noreferrer">View with neuroglancer</a>
+  <b>{dataset.name}</b> <a href={`${neuroglancerAddress}${dataset.neuroglancerURLFragment}`} target="_blank" rel="noopener noreferrer">View with neuroglancer</a>
       </Paper>
     );
   });
