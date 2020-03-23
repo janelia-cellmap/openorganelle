@@ -34,7 +34,7 @@ export default function Navigation() {
         </Link>
         <Link className={classes.link} to="/">
           <Typography variant="h6" color="inherit" noWrap>
-            COSEM
+            Data portal
           </Typography>
         </Link>
         <div className={classes.spacer} />

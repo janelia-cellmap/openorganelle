@@ -136,7 +136,8 @@ async function makeVolumes(rootAttrs: any) {
     let baseResolutionName = 's0'
 
     let rAttrs = await rootAttrs;
-    let rootPath = rAttrs.root;
+    if (rootAttrs === undefined){return null};
+    let rootPath = rAttrs['root'];
     let volumeNames = rAttrs[targetVolumesKey];
     // In lieu of proper metadata validation, return null if the `multiscale_data` key is missing
     if (volumeNames === undefined) {return Promise.resolve(null)}
@@ -157,19 +158,6 @@ async function makeVolumes(rootAttrs: any) {
     return Promise.all(volumes);
 }
 
-
-function calculateViewerPosition(dimensions: number[][], origins: number[][]): number[] {
-    // get the largest volume, then return the middle coordinate of that volume shifted by the origin
-    let position = [];
-    let volumes = dimensions.map(d => d.reduce((a, b) => a * b));
-    let max_volume = Math.max.apply(null, volumes);
-    let index = volumes.indexOf(max_volume);
-    position = origins[index].map(
-        (val, idx) => val + dimensions[index][idx] 
-    );
-    return position;
-}
-
 export async function makeDatasets(bucket: string): Promise<Dataset[]> {
     let lsresult = await s3ls(bucket, '', '/', '', true);
     console.log(lsresult)
@@ -178,7 +166,8 @@ export async function makeDatasets(bucket: string): Promise<Dataset[]> {
     // for each n5 container, get the root attributes
     let rootAttrs = await Promise.all(n5Containers.map(async container => {
         let rootAttrs = await getObjectFromJSON(`${container}attributes.json`);
-        rootAttrs.root = container;
+        if (rootAttrs !== undefined){rootAttrs.root = container;}
+        
         return rootAttrs;
     }));
 
