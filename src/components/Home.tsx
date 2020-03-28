@@ -55,7 +55,6 @@ export default function Home() {
     // Temporary for testing markdown rendering 
     const mdText = fetch('https://raw.githubusercontent.com/janelia-cosem/dataset_descriptions/master/HeLa_Cell2_4x4x4nm/data-portal-description.md', {cache: "reload"}).then((response) => response.text());
     mdText.then(setMdText);
-    mdText.then(console.log)
                   }, []);
 
   // this loop will be where you modify the meta information and generate
