@@ -1,9 +1,17 @@
 import { urlSafeStringify, encodeFragment, Transform, ViewerState, LayerDataSource, Space, Layer, skeletonRendering } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON } from "./datasources"
-import { resolve, promises } from "dns";
 
 // Check whether a path points to an n5 container
 function isN5Container(arg: string) { return arg.split(".").pop() === "n5/" }
+
+// Check whether a path represents a prediction volume. This is a hack and should be done with a proper
+// path parsing library
+
+function isPrediction(path: string, sep: string='/') {
+    let parts = path.split(sep);
+    console.log(parts[parts.length - 3]);
+    return (parts[parts.length - 3] === 'prediction')? true : false;
+}
 
 const nm: [number, string] = [1e-9, 'm']
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
@@ -69,7 +77,7 @@ export class Dataset {
 }
 
 
-// A single ndimensional array
+// A single n-dimensional array
 export class Volume {
     constructor(
         public path: string,
@@ -85,16 +93,19 @@ export class Volume {
     // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer 
     // viewer state construction
     static fromN5Attrs(attrs: any): Volume {
+        // warning: this is a stupid hack
+        let offset = (attrs.offset? attrs.offset : [0,0,0]);
         return new Volume(attrs.path,
             attrs.name,
             attrs.dataType,
             attrs.dimensions,
-            attrs.offset,
+            offset,
             attrs.pixelResolution["dimensions"],
             attrs.pixelResolution["unit"])
     }
 
     toLayer(): Layer {
+        console.log(this)
         const srcURL = `n5://${this.path}`;
         const inputDimensions: Space = {
             x: [1e-9 * this.gridSpacing[0], "m"],
@@ -118,8 +129,9 @@ export class Volume {
         let layer: Layer | null;
         if (this.dtype === 'uint8') {
             layer = new Layer("image", source,
-                undefined, this.name, undefined, undefined, defaultShader)
-            if (this.name === 'predictions'){layer.shader = predictionShader;layer.blend='additive'}
+                undefined, this.name, undefined, undefined, defaultShader);
+                layer.blend='additive';
+            if (isPrediction(this.path) === true){layer.shader = predictionShader;}
         } else if (this.dtype === "uint64") {
             layer = new Layer("segmentation", source,
                 undefined, this.name, undefined, defaultSkeletonRendering, undefined)
@@ -167,7 +179,7 @@ export async function makeDatasets(bucket: string): Promise<Dataset[]> {
     let rootAttrs = await Promise.all(n5Containers.map(async container => {
         let rootAttrs = await getObjectFromJSON(`${container}attributes.json`);
         if (rootAttrs !== undefined){rootAttrs.root = container;}
-        
+        console.log(rootAttrs);
         return rootAttrs;
     }));
 
