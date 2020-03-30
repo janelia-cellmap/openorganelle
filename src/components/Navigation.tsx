@@ -11,7 +11,8 @@ import logo from '../logo.png';
 const useStyles = makeStyles(theme => ({
   link: {
     color: theme.palette.primary.contrastText,
-    textDecoration: 'none'
+    textDecoration: 'none',
+    marginLeft: '1em'
   },
   spacer: {
     flexGrow: 1
@@ -41,6 +42,11 @@ export default function Navigation() {
         <Link className={classes.link} to="/about">
           <Typography variant="h6" color="inherit" noWrap>
             About
+          </Typography>
+        </Link>
+        <Link className={classes.link} to="/settings">
+          <Typography variant="h6" color="inherit" noWrap>
+            Settings
           </Typography>
         </Link>
       </Toolbar>
