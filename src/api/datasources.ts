@@ -15,7 +15,7 @@ export async function getObjectFromJSON(url: string): Promise<any> {
     return fetch(url)
         .then(response => {
             return response.json();
-        }).catch(error => console.log(`Failed because: ${error}`));
+        }).catch(error => console.log(`Failed to parse ${url} as JSON because: ${error}`));
 }
 
 // List files and folders on s3

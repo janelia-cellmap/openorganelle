@@ -1,19 +1,15 @@
 import { urlSafeStringify, encodeFragment, Transform, ViewerState, LayerDataSource, Space, Layer, skeletonRendering } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON, bucketNameToURL} from "./datasources"
-import { findByPlaceholderText } from "@testing-library/react";
-
-// Check whether a path points to an n5 container
-function isN5Container(arg: string) { return arg.split(".").pop() === "n5/" }
+import * as path from "path"
 
 // Check whether a path represents a prediction volume. This is a hack and should be done with a proper
 // path parsing library
 
 function isPrediction(path: string, sep: string='/') {
-    let parts = path.split(sep);
-    console.log(parts[parts.length - 3]);
-    return (parts[parts.length - 3] === 'prediction')? true : false;
+    let parts = path.split(sep);    
+    return (parts[parts.length - 3] === 'prediction');
 }
-
+const readmeFileName: string = 'README.md';
 const nm: [number, string] = [1e-9, 'm']
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: Space = { 'x': nm, 'y': nm, 'z': nm };
@@ -36,13 +32,14 @@ export class Dataset {
     public volumes: Volume[];
     public neuroglancerURLFragment?: string;
     public readmeURL?: string;
-    constructor(path: string, name: string, space: Space, volumes: Volume[]
+    constructor(path: string, name: string, space: Space, volumes: Volume[], readmeURL: string
     ) {
         this.path = path;
         this.name = name;
         this.space = space;
         this.volumes = volumes;
         this.neuroglancerURLFragment = encodeFragment(urlSafeStringify(this.makeNeuroglancerViewerState())); //yuck 
+        this.readmeURL = readmeURL;
     }
 
     makeNeuroglancerViewerState(): ViewerState {
@@ -106,7 +103,6 @@ export class Volume {
     }
 
     toLayer(): Layer {
-        console.log(this)
         const srcURL = `n5://${this.path}`;
         const inputDimensions: Space = {
             x: [1e-9 * this.gridSpacing[0], "m"],
@@ -175,12 +171,11 @@ export async function makeDatasets(bucket: string): Promise<Dataset[]> {
     // get all the folders in the bucket
     let prefixes = (await s3ls(bucket, '', '/', '', false)).folders; 
     // datasets will be stored as follows: <bucket name>/<dataset name>/<dataset name.n5>/*
-    let n5Containers = prefixes.map(f => `${bucketNameToURL(bucket)}/${f}${f.split('/')[0]}.n5/`);
+    let n5Containers = prefixes.map(f => `${bucketNameToURL(bucket)}/${f}${path.basename(f)}.n5/`);    
     // for each n5 container, get the root attributes
     let rootAttrs = await Promise.all(n5Containers.map(async container => {
         let rootAttrs = await getObjectFromJSON(`${container}attributes.json`);
         if (rootAttrs !== undefined){rootAttrs.root = container;}
-        console.log(rootAttrs);
         return rootAttrs;
     }));
 
@@ -188,9 +183,14 @@ export async function makeDatasets(bucket: string): Promise<Dataset[]> {
 
     // for each volume described in the root attributes, instantiate an object for the metadata of that volume
     let volumes = await Promise.all(rootAttrs.map(makeVolumes));    
-    let datasets = volumes.map((v, idx) => {
-        if (v !== null) {
-            return new Dataset(n5Containers[idx], n5Containers[idx].split('/').slice(-2,-1).pop()?.split('.')[0], outputDimensions, v)}
+    let datasets = volumes.map((vol, idx) => {        
+        if (vol !== null) {
+            let dset = new Dataset(n5Containers[idx],
+                                   n5Containers[idx].split('/').slice(-2,-1).pop()?.split('.')[0],
+                                   outputDimensions,
+                                   vol,
+                                   path.join(path.dirname(n5Containers[idx]), readmeFileName))
+            return dset;}
         else return null
         }
     )
