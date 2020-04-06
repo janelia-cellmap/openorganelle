@@ -45,10 +45,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+async function getText(d: string){
+  return fetch(d, {cache: "reload"}).then(response => response.text());
+};
+
 export default function Home() {
   const classes = useStyles();
   const [datasets, setDatasets] = useState([]);
-  const [mdText, setMdText] = useState('');
+  const [mdText, setMdText] = useState([]);
   const [appState, setAppState] = useContext(AppContext);
   const [currentPage, setCurrentPage] = useState(1);
   const datasetsPerPage = 10;
@@ -56,10 +60,12 @@ export default function Home() {
   useEffect(() => {
     const datasets = makeDatasets(appState.dataBucket);
     datasets.then(setDatasets);
-
+    datasets.then(console.log)
     // Temporary for testing markdown rendering
-    const mdText = fetch('https://raw.githubusercontent.com/janelia-cosem/dataset_descriptions/master/HeLa_Cell2_4x4x4nm/data-portal-description.md', {cache: "reload"}).then((response) => response.text());
+    //const readmes = datasets.then(ds => fetch(ds., {cache: "reload"}).then((response) => response.text());
+    const mdText = datasets.then(ds => Promise.all(ds.map(async d => await getText(d.readmeURL))));
     mdText.then(setMdText);
+    mdText.then(console.log)
   }, []);
 
   // this loop will be where you modify the meta information and generate
@@ -76,7 +82,7 @@ export default function Home() {
       <Paper key={key} className={classes.paper}>
         <Grid container className={classes.grid} spacing={10}>
           <Grid item xs zeroMinWidth>
-            <Markdown source={mdText} escapeHtml={false} className={classes.markdown}/>
+            <Markdown source={mdText[i]} escapeHtml={false} className={classes.markdown}/>
           </Grid>
           <Divider orientation="vertical"/>
           <Grid item> <a href={`${appState.neuroglancerAddress}${dataset.neuroglancerURLFragment}`} target="_blank" rel="noopener noreferrer">View with neuroglancer</a> </Grid>
