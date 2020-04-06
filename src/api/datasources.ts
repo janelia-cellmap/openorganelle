@@ -8,7 +8,7 @@ interface lsResult {
 }
 
 // Make a URL from a bucket name
-function bucketNameToURL(bucket: string): string { return `https://${bucket}.s3.amazonaws.com` }
+export function bucketNameToURL(bucket: string): string { return `https://${bucket}.s3.amazonaws.com` }
 
 // Generate an object from a web-hosted file 
 export async function getObjectFromJSON(url: string): Promise<any> {
@@ -33,8 +33,8 @@ export async function s3ls(bucket: string, prefix: string, delimiter: string, ma
         try {
             const response = await s3.makeUnauthenticatedRequest('listObjectsV2', params).promise();
 
-            Array.prototype.push.apply(result.files, response.Contents.map((element: S3.Object) => `${url}${delimiter}${element.Key}`))
-            Array.prototype.push.apply(result.folders, response.CommonPrefixes.map((element: S3.CommonPrefix) => `${url}${delimiter}${element.Prefix}`))
+            Array.prototype.push.apply(result.files, response.Contents.map((element: S3.Object) => returnURL? `${url}${delimiter}${element.Key}`: element.Key))
+            Array.prototype.push.apply(result.folders, response.CommonPrefixes.map((element: S3.CommonPrefix) => returnURL? `${url}${delimiter}${element.Prefix}`: element.Prefix))
             isTruncated = response.IsTruncated;
             if (isTruncated) {
                 params.Marker = response.Contents.slice(-1)[0].Key;

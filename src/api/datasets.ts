@@ -1,5 +1,6 @@
 import { urlSafeStringify, encodeFragment, Transform, ViewerState, LayerDataSource, Space, Layer, skeletonRendering } from "@janelia-cosem/neuroglancer-url-tools";
-import { s3ls, getObjectFromJSON } from "./datasources"
+import { s3ls, getObjectFromJSON, bucketNameToURL} from "./datasources"
+import { findByPlaceholderText } from "@testing-library/react";
 
 // Check whether a path points to an n5 container
 function isN5Container(arg: string) { return arg.split(".").pop() === "n5/" }
@@ -170,11 +171,11 @@ async function makeVolumes(rootAttrs: any) {
     return Promise.all(volumes);
 }
 
-export async function makeDatasets(bucket: string): Promise<Dataset[]> {
-    let lsresult = await s3ls(bucket, '', '/', '', true);
-    console.log(lsresult)
-    let n5Containers = lsresult.folders.filter(isN5Container);
-
+export async function makeDatasets(bucket: string): Promise<Dataset[]> {   
+    // get all the folders in the bucket
+    let prefixes = (await s3ls(bucket, '', '/', '', false)).folders; 
+    // datasets will be stored as follows: <bucket name>/<dataset name>/<dataset name.n5>/*
+    let n5Containers = prefixes.map(f => `${bucketNameToURL(bucket)}/${f}${f.split('/')[0]}.n5/`);
     // for each n5 container, get the root attributes
     let rootAttrs = await Promise.all(n5Containers.map(async container => {
         let rootAttrs = await getObjectFromJSON(`${container}attributes.json`);
