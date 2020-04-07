@@ -14,15 +14,13 @@ const nm: [number, string] = [1e-9, 'm']
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: Space = { 'x': nm, 'y': nm, 'z': nm };
 
-// define some useful shaders
-const shaders = {'grayscale': `#uicontrol float upper slider(min=0, max=1, step=0.001, default=1)\n
-                               #uicontrol float lower slider(min=0, max=1, step=0.001, default=0)\n
-                               void main() {emitGrayscale((clamp(toNormalized(getDataValue()), lower, upper) - lower) / (upper - lower));}`, 
-                 'prediction': `#uicontrol vec3 color color(default="red")\n
-                                #uicontrol float brightness slider(min=-1, max=1)\n
-                                #uicontrol float contrast slider(min=-3, max=3, step=0.01, default=1.1)\n
-                                void main() {
-                                emitRGB(color * (toNormalized(getDataValue()) + brightness) * exp(contrast));}`};
+function makeShader(contrastLimits: [Number, Number], gamma: Number, color: string){
+    return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${contrastLimits[0]})
+            #uicontrol float max slider(min=0, max=1, step=0.001, default=${contrastLimits[1]})
+            #uicontrol float gamma slider(min=0, max=3, step=0.001, default=${gamma})
+            #uicontrol vec3 color color(default="${color}")
+            void main() {emitRGB(color * (clamp(pow(toNormalized(getDataValue()), gamma), min, max) - min) / (max - min));}`
+}
 
 // a collection of volumes, i.e. a collection of ndimensional arrays 
 export class Dataset {
@@ -38,7 +36,7 @@ export class Dataset {
         this.name = name;
         this.space = space;
         this.volumes = volumes;
-        this.neuroglancerURLFragment = encodeFragment(urlSafeStringify(this.makeNeuroglancerViewerState())); //yuck 
+        this.neuroglancerURLFragment = encodeFragment(urlSafeStringify(this.makeNeuroglancerViewerState())); 
         this.readmeURL = readmeURL;
     }
 
@@ -119,16 +117,17 @@ export class Volume {
             inputDimensions)
 
         const source = new LayerDataSource(srcURL, transform);
-        const defaultShader = shaders.grayscale;
-        const predictionShader = shaders.prediction;
+        const defaultShader = makeShader([0,1], 1, "white");
+        const predictionShader = makeShader([0,1], 1,"red");
 
         const defaultSkeletonRendering: skeletonRendering = { mode2d: "lines_and_points", mode3d: "lines" };
         let layer: Layer | null;
         if (this.dtype === 'uint8') {
             layer = new Layer("image", source,
                 undefined, this.name, undefined, undefined, defaultShader);
-                layer.blend='additive';
-            if (isPrediction(this.path) === true){layer.shader = predictionShader;}
+                layer.blend = 'additive'
+                layer.opacity = 1;
+            if (isPrediction(this.path)){layer.shader = predictionShader;}
         } else if (this.dtype === "uint64") {
             layer = new Layer("segmentation", source,
                 undefined, this.name, undefined, defaultSkeletonRendering, undefined)
@@ -136,7 +135,6 @@ export class Volume {
 
         return layer;
     }
-
 }
 
 async function makeVolumes(rootAttrs: any) {

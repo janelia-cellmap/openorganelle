@@ -6,10 +6,10 @@ import Typography from "@material-ui/core/Typography";
 import Pagination from '@material-ui/lab/Pagination';
 import Markdown from "react-markdown/with-html"
 import thumbnail from "./cosem3d.png";
-import {makeDatasets} from "../api/datasets";
+import { makeDatasets } from "../api/datasets";
 import { Grid, Divider } from "@material-ui/core";
 import { AppContext } from "../context/AppContext";
-
+import LaunchIcon from '@material-ui/icons/Launch'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -19,12 +19,11 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(2)
   },
   grid: {
-   direction: "row",
-   alignItems: "center",
-   justify:"center"
+    direction: "row",
+    alignItems: "center",
+    justify: "center"
   },
-  markdown : {
-    escapeHtml: false,
+  markdown: {
     textAlign: "left",
   },
   masthead: {
@@ -45,8 +44,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-async function getText(d: string){
-  return fetch(d, {cache: "reload"}).then(response => response.text());
+async function getText(url: string, fallback: string) {
+  return fetch(url, { cache: "reload" }).then(response => response.ok ? response.text() : fallback, () => fallback);
 };
 
 export default function Home() {
@@ -56,14 +55,14 @@ export default function Home() {
   const [appState, setAppState] = useContext(AppContext);
   const [currentPage, setCurrentPage] = useState(1);
   const datasetsPerPage = 10;
-  
+
   useEffect(() => {
     const datasets = makeDatasets(appState.dataBucket);
     datasets.then(setDatasets);
     datasets.then(console.log)
     // Temporary for testing markdown rendering
     //const readmes = datasets.then(ds => fetch(ds., {cache: "reload"}).then((response) => response.text());
-    const mdText = datasets.then(ds => Promise.all(ds.map(async d => await getText(d.readmeURL))));
+    const mdText = datasets.then(ds => Promise.all(ds.map(async d => await getText(d.readmeURL, "No description provided"))));
     mdText.then(setMdText);
     mdText.then(console.log)
   }, []);
@@ -76,16 +75,24 @@ export default function Home() {
   const totalPages = Math.ceil(datasets.length / datasetsPerPage);
 
   const displayedDataSets = datasets.slice(rangeStart, rangeEnd).map((dataset, i) => {
-    const key=`${dataset.path}_${rangeStart}_${i}`;
+    const key = `${dataset.path}_${rangeStart}_${i}`;
     return (
 
       <Paper key={key} className={classes.paper}>
-        <Grid container className={classes.grid} spacing={10}>
-          <Grid item xs zeroMinWidth>
-            <Markdown source={mdText[i]} escapeHtml={false} className={classes.markdown}/>
+        <Grid container className={classes.grid} spacing={2}>
+          <Grid item xs={12} sm={8} zeroMinWidth>
+            <Grid container direction="column" spacing={2}>
+              <Grid item>
+                <Markdown source={mdText[i]} escapeHtml={false} className={classes.markdown} />
+              </Grid>
+              <Grid item>
+                <Typography variant="caption">Source: {dataset.path}</Typography>
+              </Grid>
+            </Grid>
           </Grid>
-          <Divider orientation="vertical"/>
-          <Grid item> <a href={`${appState.neuroglancerAddress}${dataset.neuroglancerURLFragment}`} target="_blank" rel="noopener noreferrer">View with neuroglancer</a> </Grid>
+          <Grid item xs={12} sm={4}>
+            <a href={`${appState.neuroglancerAddress}${dataset.neuroglancerURLFragment}`} target="_blank" rel="noopener noreferrer">View with neuroglancer</a><LaunchIcon />
+          </Grid>
         </Grid>
       </Paper>
     );
@@ -106,9 +113,9 @@ export default function Home() {
       <div className="content">
         <Container maxWidth="md">
           <p>{rangeStart + 1} to {Math.min(rangeEnd, datasets.length)} of {datasets.length}</p>
-          { datasets.length > datasetsPerPage && <Pagination count={totalPages} page={currentPage} onChange={(e, value) => setCurrentPage(value)} />}
+          {datasets.length > datasetsPerPage && <Pagination count={totalPages} page={currentPage} onChange={(e, value) => setCurrentPage(value)} />}
           {displayedDataSets}
-          { datasets.length > datasetsPerPage && <Pagination count={totalPages} page={currentPage} onChange={(e, value) => setCurrentPage(value)} />}
+          {datasets.length > datasetsPerPage && <Pagination count={totalPages} page={currentPage} onChange={(e, value) => setCurrentPage(value)} />}
         </Container>
       </div>
     </>
