@@ -38,21 +38,27 @@ export default function Navigation() {
   return (
     <AppBar position="static" className={classes.appbar}>
       <Toolbar variant="dense">
-        <a href="https://janelia.org" className={classes.link}>
+        <a href="https://www.janelia.org" className={classes.link}>
           <img
             src={janelia}
             alt="Janelia Research Campus"
             className={classes.janeliaLogo}
           />
         </a>
-        <Link className={classes.link} to="/">
-          <img
-            src={logo}
-            alt="COSEM"
-            className={classes.logo}
-          />
-        </Link>
+        <a href="https://www.janelia.org/project-team/cosem">
+          <img src={logo} alt="COSEM" className={classes.logo} />
+        </a>
+        <a href="https://www.janelia.org/lab/hess-lab" className={classes.link}>
+          <Typography variant="h6" color="inherit" noWrap>
+            Hess Lab
+          </Typography>
+        </a>
         <div className={classes.spacer} />
+        <Link className={classes.link} to="/">
+          <Typography variant="h6" color="inherit" noWrap>
+            Home
+          </Typography>
+        </Link>
         <Link className={classes.link} to="/about">
           <Typography variant="h6" color="inherit" noWrap>
             About
