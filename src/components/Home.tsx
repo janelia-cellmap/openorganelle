@@ -8,8 +8,11 @@ import Pagination from "@material-ui/lab/Pagination";
 import { Grid, Divider } from "@material-ui/core";
 import Hidden from "@material-ui/core/Hidden";
 import LaunchIcon from "@material-ui/icons/Launch"
-import { makeDatasets } from "../api/datasets";
+import { makeDatasets, Dataset, Volume } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox';
 
 import thumbnail from "./COSEM_background.png";
 
@@ -65,60 +68,76 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-async function getText(url: string, fallback: string) {
-  return fetch(url, { cache: "reload" }).then(response => response.ok ? response.text() : fallback, () => fallback);
-};
-
 export default function Home() {
   const classes = useStyles();
-  const [datasets, setDatasets] = useState([]);
-  const [mdText, setMdText] = useState([]);
+  const datasetsInit: Dataset[] = [];
+  const checkStateInit: Map<string, boolean> = new Map;
+  const [datasets, setDatasets] = useState(datasetsInit);
   const [appState, setAppState] = useContext(AppContext);
   const [currentPage, setCurrentPage] = useState(1);
+  
   const datasetsPerPage = 10;
+
+  function makeCheckbox(name: string, checkState: Map<string, boolean>, setCheckState: any, key: string) {   
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setCheckState(checkState.set(event.target.name, event.target.checked) );
+    };
+  
+    return (
+      <FormGroup row key={key}>
+        <FormControlLabel
+          control={<Checkbox checked={checkState.get(name)} onChange={handleChange} name={name} />}
+          label={name}
+        />
+      </FormGroup>
+    );
+  }
+
+  function makeNeuroglancerURL(address: string, dataset: Dataset, volumeNames: string[]){
+  const displayVolumes: Volume[] = volumeNames.map(k => dataset.volumes.get(k));
+  const key = `${dataset.path}_${volumeNames.join('_')}` 
+  return (
+  <Grid item xs={12} sm={4} key={key}>
+    <a href={`${address}${dataset.makeNeuroglancerViewerState(displayVolumes)}`}
+  target="_blank" rel="noopener noreferrer">View with neuroglancer</a>
+  <LaunchIcon />
+  </Grid>)}
+ 
+  function RenderDataset({dataset,appState}){
+    const [checkState, setCheckState] = useState(checkStateInit);    
+    const volumeNames: string[] = [...dataset.volumes.keys()];
+      
+      return (
+        <Paper className={classes.paper}>
+          <Grid container className={classes.grid} spacing={2}>
+            <Grid item xs={12} sm={8} zeroMinWidth>
+              <Grid container direction="column" spacing={2}>
+                <Grid item>
+                  <Markdown source={dataset.readme.content} escapeHtml={false} className={classes.markdown} />
+                </Grid>
+                <Grid item>
+                  <Typography variant="caption">Source URL: {dataset.path}</Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+            {makeNeuroglancerURL(appState.neuroglancerAddress, dataset, volumeNames)}          
+            {volumeNames.map(k => makeCheckbox(k, checkState, setCheckState, `${dataset.name}/${k}`))}
+          </Grid>
+        </Paper>
+      );
+    }
 
   useEffect(() => {
     const datasets = makeDatasets(appState.dataBucket);
     datasets.then(setDatasets);
     datasets.then(console.log);
-    // Temporary for testing markdown rendering
-    //const readmes = datasets.then(ds => fetch(ds., {cache: "reload"}).then((response) => response.text());
-    const mdText = datasets.then(ds => Promise.all(ds.map(async d => await getText(d.readmeURL, "No description provided"))));
-    mdText.then(setMdText);
-    mdText.then(console.log);
   }, []);
-
-  // this loop will be where you modify the meta information and generate
-  // the urls.
 
   const rangeStart = (currentPage - 1) * datasetsPerPage;
   const rangeEnd = rangeStart + datasetsPerPage;
   const totalPages = Math.ceil(datasets.length / datasetsPerPage);
 
-  const displayedDataSets = datasets.slice(rangeStart, rangeEnd).map((dataset, i) => {
-    const key = `${dataset.path}_${rangeStart}_${i}`;
-    return (
-
-      <Paper key={key} className={classes.paper}>
-        <Grid container className={classes.grid} spacing={2}>
-          <Grid item xs={12} sm={8} zeroMinWidth>
-            <Grid container direction="column" spacing={2}>
-              <Grid item>
-                <Markdown source={mdText[i]} escapeHtml={false} className={classes.markdown} />
-              </Grid>
-              <Grid item>
-                <Typography variant="caption">Source: {dataset.path}</Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <a href={`${appState.neuroglancerAddress}${dataset.neuroglancerURLFragment}`} target="_blank" rel="noopener noreferrer">View with neuroglancer</a><LaunchIcon />
-          </Grid>
-        </Grid>
-      </Paper>
-    );
-  });
-
+const displayedDataSets = datasets.slice(rangeStart, rangeEnd).map((ds, i) => <RenderDataset dataset={ds} appState={appState} key = {`${ds.path}_${rangeStart}_${i}`}/>);
   return (
     <>
       <div className={classes.masthead}>

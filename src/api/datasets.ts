@@ -1,6 +1,14 @@
 import { urlSafeStringify, encodeFragment, Transform, ViewerState, LayerDataSource, Space, Layer, skeletonRendering } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON, bucketNameToURL} from "./datasources"
-import * as path from "path"
+import * as Path from "path"
+
+const readmeFileName: string = 'README.md';
+const nm: [number, string] = [1e-9, 'm']
+// this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
+const outputDimensions: Space = { 'x': nm, 'y': nm, 'z': nm };
+const sep = "/";
+const targetVolumesKey = "multiscale_data"
+const baseResolutionName = 's0'
 
 // Check whether a path represents a prediction volume. This is a hack and should be done with a proper
 // path parsing library
@@ -9,10 +17,6 @@ function isPrediction(path: string, sep: string='/') {
     let parts = path.split(sep);    
     return (parts[parts.length - 3] === 'prediction');
 }
-const readmeFileName: string = 'README.md';
-const nm: [number, string] = [1e-9, 'm']
-// this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
-const outputDimensions: Space = { 'x': nm, 'y': nm, 'z': nm };
 
 function makeShader(contrastLimits: [Number, Number], gamma: Number, color: string){
     return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${contrastLimits[0]})
@@ -22,56 +26,31 @@ function makeShader(contrastLimits: [Number, Number], gamma: Number, color: stri
             void main() {emitRGB(color * (clamp(pow(toNormalized(getDataValue()), gamma), min, max) - min) / (max - min));}`
 }
 
-// a collection of volumes, i.e. a collection of ndimensional arrays 
-export class Dataset {
-    public path: string;
-    public name: string;
-    public space: Space;
-    public volumes: Volume[];
-    public neuroglancerURLFragment?: string;
-    public readmeURL?: string;
-    constructor(path: string, name: string, space: Space, volumes: Volume[], readmeURL: string
-    ) {
-        this.path = path;
-        this.name = name;
-        this.space = space;
-        this.volumes = volumes;
-        this.neuroglancerURLFragment = encodeFragment(urlSafeStringify(this.makeNeuroglancerViewerState())); 
-        this.readmeURL = readmeURL;
-    }
-
-    makeNeuroglancerViewerState(): ViewerState {
-        // take an array of dataset objects and generate the correct viewer state
-        /*
-        const viewerPosition = calculateViewerPosition(
-            this.volumes.map(a => a.dimensions),
-            this.volumes.map(a => a.origin)
-        );
-        */
-       const viewerPosition = undefined;
-        const layers = this.volumes.map(a => a.toLayer());
-
-        const projectionOrientation = undefined;
-        const crossSectionOrientation = undefined;
-        const projectionScale = undefined;
-        const crossSectionScale = 15.0;
-        const selectedLayer = undefined;
-
-        const vState = new ViewerState(
-            outputDimensions,
-            viewerPosition,
-            crossSectionOrientation,
-            crossSectionScale,
-            projectionOrientation,
-            projectionScale,
-            layers,
-            selectedLayer
-        );
-
-        return vState;
-    }
+async function getText(url: string): Promise<string> {
+    const response = await fetch(url);
+    let text: string = '';
+    try{text = await response.text();}
+    catch (ex) {}
+    if (!response.ok) {text = `Nothing found at ${url}`}
+    return text
 }
 
+class readme{public path: string;
+             public format: string         
+             public content: string;
+         
+             constructor(path: string, format: string, content: string){
+                this.path = path;
+                this.format = format;
+                this.content = content;
+             }
+}
+
+async function readmeFactory(path: string){
+    const [format] = path.split('.').slice(-1);
+    const content = await getText(path);
+    return new readme(path, format, content)
+}
 
 // A single n-dimensional array
 export class Volume {
@@ -137,11 +116,46 @@ export class Volume {
     }
 }
 
-async function makeVolumes(rootAttrs: any) {
-    let sep = "/";
-    let targetVolumesKey = "multiscale_data"
-    let baseResolutionName = 's0'
+// a collection of volumes, i.e. a collection of ndimensional arrays 
+export class Dataset {
+    public path: string;
+    public name: string;
+    public space: Space;
+    public volumes: Map<string, Volume>;   
+    public readme?: readme;
+    constructor(path: string, name: string, space: Space, volumes: Volume[], readme: readme
+    ) {
+        this.path = path;
+        this.name = name;
+        this.space = space;
+        this.volumes = new Map(volumes.map(v => [v.name, v]));
+        this.readme = readme;
+    }
 
+    makeNeuroglancerViewerState(volumes: Volume[]): string {
+        const viewerPosition = undefined;
+        const layers = volumes.map(a => a.toLayer());
+        const projectionOrientation = undefined;
+        const crossSectionOrientation = undefined;
+        const projectionScale = undefined;
+        const crossSectionScale = 15.0;
+        const selectedLayer = undefined;
+
+        const vState = new ViewerState(
+            outputDimensions,
+            viewerPosition,
+            crossSectionOrientation,
+            crossSectionScale,
+            projectionOrientation,
+            projectionScale,
+            layers,
+            selectedLayer
+        );
+        return encodeFragment(urlSafeStringify(vState));
+    }
+}
+
+async function makeVolumes(rootAttrs: any) {
     let rAttrs = await rootAttrs;
     if (rootAttrs === undefined){return null};
     let rootPath = rAttrs['root'];
@@ -169,7 +183,7 @@ export async function makeDatasets(bucket: string): Promise<Dataset[]> {
     // get all the folders in the bucket
     let prefixes = (await s3ls(bucket, '', '/', '', false)).folders; 
     // datasets will be stored as follows: <bucket name>/<dataset name>/<dataset name.n5>/*
-    let n5Containers = prefixes.map(f => `${bucketNameToURL(bucket)}/${f}${path.basename(f)}.n5/`);    
+    let n5Containers = prefixes.map(f => `${bucketNameToURL(bucket)}/${f}${Path.basename(f)}.n5/`);    
     // for each n5 container, get the root attributes
     let rootAttrs = await Promise.all(n5Containers.map(async container => {
         let rootAttrs = await getObjectFromJSON(`${container}attributes.json`);
@@ -181,19 +195,20 @@ export async function makeDatasets(bucket: string): Promise<Dataset[]> {
 
     // for each volume described in the root attributes, instantiate an object for the metadata of that volume
     let volumes = await Promise.all(rootAttrs.map(makeVolumes));    
-    let datasets = volumes.map((vol, idx) => {        
+    let datasets = Promise.all(volumes.map(async (vol, idx) => {        
         if (vol !== null) {
+            let readme = await readmeFactory(Path.join(Path.dirname(n5Containers[idx]), readmeFileName));
             let dset = new Dataset(n5Containers[idx],
                                    n5Containers[idx].split('/').slice(-2,-1).pop()?.split('.')[0],
                                    outputDimensions,
                                    vol,
-                                   path.join(path.dirname(n5Containers[idx]), readmeFileName))
+                                   readme)
             return dset;}
         else return null
         }
-    )
+    ))
     // filter out the null datasets
-    datasets = datasets.filter(a => a !== null)
+    //datasets = datasets.filter(a => a !== null)
     return datasets
 
 }
