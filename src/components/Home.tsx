@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, FunctionComponent} from "react";
 import Markdown from "react-markdown/with-html";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -15,6 +15,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox';
 
 import thumbnail from "./COSEM_background.png";
+import { checkServerIdentity } from "tls";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -68,32 +69,36 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Home() {
-  const classes = useStyles();
-  const datasetsInit: Dataset[] = [];
-  const checkStateInit: Map<string, boolean> = new Map;
-  const [datasets, setDatasets] = useState(datasetsInit);
-  const [appState, setAppState] = useContext(AppContext);
-  const [currentPage, setCurrentPage] = useState(1);
-  
-  const datasetsPerPage = 10;
+type CheckboxProps = {
+  name: string, 
+  checked: boolean,
+  handleChange: any
+}
 
-  function makeCheckbox(name: string, checkState: Map<string, boolean>, setCheckState: any, key: string) {   
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setCheckState(checkState.set(event.target.name, event.target.checked) );
-    };
-  
-    return (
-      <FormGroup row key={key}>
-        <FormControlLabel
-          control={<Checkbox checked={checkState.get(name)} onChange={handleChange} name={name} />}
-          label={name}
-        />
-      </FormGroup>
-    );
-  }
+type NeuroglancerLinkProps = {
+  address: string, 
+  dataset: Dataset, 
+  volumeNames: string[]
+}
 
-  function makeNeuroglancerURL(address: string, dataset: Dataset, volumeNames: string[]){
+type DatasetPaperProps = {
+  dataset: Dataset
+  appState: any
+}
+
+const LayerCheckbox: FunctionComponent<CheckboxProps> = ({name, checked, handleChange}) => {   
+  return (
+    <FormGroup row>
+      <FormControlLabel
+        control={<Checkbox checked={checked} onChange={handleChange} name={name} />}
+        label={name}
+      />
+    </FormGroup>
+  );
+}
+
+
+const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = ({address, dataset, volumeNames}) => {
   const displayVolumes: Volume[] = volumeNames.map(k => dataset.volumes.get(k));
   const key = `${dataset.path}_${volumeNames.join('_')}` 
   return (
@@ -102,30 +107,48 @@ export default function Home() {
   target="_blank" rel="noopener noreferrer">View with neuroglancer</a>
   <LaunchIcon />
   </Grid>)}
- 
-  function RenderDataset({dataset,appState}){
-    const [checkState, setCheckState] = useState(checkStateInit);    
-    const volumeNames: string[] = [...dataset.volumes.keys()];
-      
-      return (
-        <Paper className={classes.paper}>
-          <Grid container className={classes.grid} spacing={2}>
-            <Grid item xs={12} sm={8} zeroMinWidth>
-              <Grid container direction="column" spacing={2}>
-                <Grid item>
-                  <Markdown source={dataset.readme.content} escapeHtml={false} className={classes.markdown} />
-                </Grid>
-                <Grid item>
-                  <Typography variant="caption">Source URL: {dataset.path}</Typography>
-                </Grid>
+
+
+const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState}) => {
+  const volumeNames: string[] = Array.from(dataset.volumes.keys());    
+  const checkStateInit = new Map<string, boolean>();
+  volumeNames.forEach(v => checkStateInit.set(v, true));
+  const [checkState, setCheckState] = useState(checkStateInit);
+  
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCheckState(new Map(checkState.set(event.target.name, event.target.checked).entries()));
+    console.log(checkState)
+  };
+  
+  const classes = useStyles();
+    return (
+      <Paper className={classes.paper}>
+        <Grid container className={classes.grid} spacing={2}>
+          <Grid item xs={12} sm={8} zeroMinWidth>
+            <Grid container direction="column" spacing={2}>
+              <Grid item>
+                <Markdown source={dataset.readme.content} escapeHtml={false} className={classes.markdown} />
+              </Grid>
+              <Grid item>
+                <Typography variant="caption">Source URL: {dataset.path}</Typography>
               </Grid>
             </Grid>
-            {makeNeuroglancerURL(appState.neuroglancerAddress, dataset, volumeNames)}          
-            {volumeNames.map(k => makeCheckbox(k, checkState, setCheckState, `${dataset.name}/${k}`))}
           </Grid>
-        </Paper>
-      );
-    }
+          <NeuroglancerLink address={appState.neuroglancerAddress} dataset={dataset} volumeNames={volumeNames.filter(v => checkState.get(v))}/>          
+          {volumeNames.map(k => <LayerCheckbox name={k} checked={checkState.get(k)} handleChange={handleChange} key = {`${dataset.name}/${k}`}/>)}
+        </Grid>
+      </Paper>
+    );
+  }
+
+export default function Home() {
+  const classes = useStyles();
+  const datasetsInit: Dataset[] = [];
+  const [datasets, setDatasets] = useState(datasetsInit);
+  const [appState, setAppState] = useContext(AppContext);
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  const datasetsPerPage = 10;
 
   useEffect(() => {
     const datasets = makeDatasets(appState.dataBucket);
@@ -137,7 +160,7 @@ export default function Home() {
   const rangeEnd = rangeStart + datasetsPerPage;
   const totalPages = Math.ceil(datasets.length / datasetsPerPage);
 
-const displayedDataSets = datasets.slice(rangeStart, rangeEnd).map((ds, i) => <RenderDataset dataset={ds} appState={appState} key = {`${ds.path}_${rangeStart}_${i}`}/>);
+  const displayedDataSets = datasets.slice(rangeStart, rangeEnd).map((ds, i) => <DatasetPaper dataset={ds} appState={appState} key={`${ds.path}_${rangeStart}_${i}`}/>);
   return (
     <>
       <div className={classes.masthead}>
