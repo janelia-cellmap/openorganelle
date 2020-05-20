@@ -6,7 +6,7 @@ const AppContext = React.createContext([{}, () => {}]);
 const AppProvider = (props) => {
   const [state, setState] = useState({
     neuroglancerAddress: "http://neuroglancer-demo.appspot.com/#!",
-    dataBucket: 'janelia-cosem-dev'
+    dataBucket: 'janelia-cosem-datasets-dev'
   });
   const { children } = props;
   return (
