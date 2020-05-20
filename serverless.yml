@@ -1,0 +1,18 @@
+org: bennettd
+app: sle-openorganelle-client-app
+service: sle-openorganelle-client
+
+plugins:
+  - serverless-finch
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  region : ${opt:region, self:provider.region}
+  client:
+    bucketName: janelia-openorganelle-web-${self:custom.stage}
+    distributionFolder: build
+
+provider:
+  name: aws
+  region: us-east-1
+  stage: dev
