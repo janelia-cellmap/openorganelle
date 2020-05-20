@@ -101,7 +101,7 @@ export class Volume {
 
         const defaultSkeletonRendering: skeletonRendering = { mode2d: "lines_and_points", mode3d: "lines" };
         let layer: Layer | null;
-        if (this.dtype === 'uint8') {
+        if (this.dtype === 'uint8' || this.dtype === 'int8') {
             layer = new Layer("image", source,
                 undefined, this.name, undefined, undefined, defaultShader);
                 layer.blend = 'additive'
