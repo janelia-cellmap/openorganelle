@@ -97,6 +97,26 @@ const LayerCheckbox: FunctionComponent<CheckboxProps> = ({name, checked, handleC
   );
 }
 
+class ErrorBoundary extends React.Component {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  componentDidCatch(error: any, info: any) {    
+    // Display fallback UI    
+    this.setState({ hasError: true });    
+    // You can also log the error to an error reporting service    
+    console.log(error, info);  }
+  
+    render() {
+    if (this.state.hasError) {      
+      // You can render any custom fallback UI      
+      return <h1>Something went wrong.</h1>;    
+    }    
+      return this.props.children;
+  } 
+}
 
 const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = ({address, dataset, volumeNames}) => {
   const displayVolumes: Volume[] = volumeNames.map(k => dataset.volumes.get(k));
@@ -121,7 +141,7 @@ const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState})
   };
   
   const classes = useStyles();
-    return (
+    return (     
       <Paper className={classes.paper}>
         <Grid container className={classes.grid} spacing={2}>
           <Grid item xs={12} sm={8} zeroMinWidth>
@@ -153,7 +173,7 @@ export default function Home() {
   useEffect(() => {
     const datasets = makeDatasets(appState.dataBucket);
     datasets.then(setDatasets);
-    datasets.then(console.log);
+    datasets.then(a => console.log(`Found datesets: ${String(a)}`));
   }, []);
 
   const rangeStart = (currentPage - 1) * datasetsPerPage;
@@ -178,21 +198,11 @@ export default function Home() {
           <Grid item sm={10} md={6} className={classes.mastheadText}>
             <Typography variant="h3">FIB-SEM datasets</Typography>
             <Typography variant="body1" gutterBottom>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eu
-              purus ante. Sed a euismod turpis. Nulla tempus lorem odio, vitae
-              laoreet mauris malesuada vitae. Fusce urna est, vestibulum in
-              sodales nec, ullamcorper ut quam. Morbi dapibus a elit sit amet
-              consectetur. Aenean in justo id massa ullamcorper bibendum eget
-              eget arcu. Suspendisse vitae massa elit.
-            </Typography>
-
-            <Typography variant="body1">
-              Donec lacus tellus, ullamcorper lobortis maximus in, sagittis et
-              augue. Vivamus accumsan, odio gravida sodales dignissim, nisi est
-              ornare libero, ac vulputate nibh mi a eros. Integer ut ante massa.
-              Aliquam erat volutpat. Aliquam erat volutpat. Proin a nulla nisi.
-              Pellentesque semper urna purus, lobortis dapibus massa suscipit
-              in. Suspendisse porttitor quis neque id porta.
+            Welcome to the Hess Lab and COSEM Project Team FIBSEM Data Portal. 
+            Here we present large volume, high resolution 3D-Electron Microscopy (EM) data, acquired with a 
+            focused ion beam milling scanning electron microscope (FIBSEM) via the Hess lab. Accompanying these EM volumes 
+            are automated segmentations of intracellular sub-structures made possible by COSEM. All datasets, training data, 
+            and predictions are available for online viewing and download.
             </Typography>
           </Grid>
         </Grid>
