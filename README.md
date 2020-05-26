@@ -1,3 +1,50 @@
+COSEM Data portal (Open Organelle)
+
+This app provides a gateway for visualization of large cloud-hosted FIB-SEM datasets via [neuroglancer](www.github.com/google/neuroglancer).
+
+### Bucket configuration
+
+The bucket hosting the datasets must have the proper configuration in order for this app to parse the contents of the bucket, and in order for neuroglancer to display arrays stored in the bucket.
+Specifically, the following bucket policy (or a more permissive one) must be used, where $BUCKET is the name of the bucket hosting the data, e.g. `janelia-cosem-datasets-dev`: 
+
+```json
+{
+    "Version": "2008-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:List*",
+                "s3:Get*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::$BUCKET/*",
+                "arn:aws:s3:::$BUCKET"
+            ]
+        }
+    ]
+}
+```
+
+Additionally, the bucket must be configured for cross-origin requests (CORS), e.g. via the following bucket CORS configuration: 
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+<CORSRule>
+    <AllowedOrigin>*</AllowedOrigin>
+    <AllowedMethod>GET</AllowedMethod>
+    <AllowedMethod>HEAD</AllowedMethod>
+    <MaxAgeSeconds>3000</MaxAgeSeconds>
+    <AllowedHeader>*</AllowedHeader>
+</CORSRule>
+</CORSConfiguration>
+
+```
+
+# React App Stuff
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
