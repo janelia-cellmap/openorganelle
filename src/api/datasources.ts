@@ -44,4 +44,5 @@ export async function s3ls(bucket: string, prefix: string, delimiter: string, ma
 
         return result
     }
+    return result
 }

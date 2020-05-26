@@ -2,25 +2,36 @@ import { urlSafeStringify, encodeFragment, Transform, ViewerState, LayerDataSour
 import { s3ls, getObjectFromJSON, bucketNameToURL} from "./datasources"
 import * as Path from "path"
 
+interface DisplaySettings {
+    contrastMin: number
+    contrastMax: number
+    gamma: number
+    color: string
+}
+
+const displayDefaults: DisplaySettings = {contrastMin: 0, contrastMax: 1, gamma: 1, color: "white"};
 const readmeFileName: string = 'README.md';
 const nm: [number, string] = [1e-9, 'm']
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: Space = { 'x': nm, 'y': nm, 'z': nm };
 const sep = "/";
-const targetVolumesKey = "multiscale_data"
+// the field in the top-level metadata of an n5 container that lists all the datasets for display
+const targetVolumesKey = "export"
+// the name of the base resolution; technically this can now be inferred from the multiscale metadata...
 const baseResolutionName = 's0'
 
 // Check whether a path represents a prediction volume. This is a hack and should be done with a proper
 // path parsing library
 
-function isPrediction(path: string, sep: string='/') {
+function isPrediction(path: string, sep: string='/'): boolean {
     let parts = path.split(sep);    
     return (parts[parts.length - 3] === 'prediction');
 }
 
-function makeShader(contrastLimits: [Number, Number], gamma: Number, color: string){
-    return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${contrastLimits[0]})
-            #uicontrol float max slider(min=0, max=1, step=0.001, default=${contrastLimits[1]})
+
+function makeShader(contrastMin = 0, contrastMax = 1, gamma = 1, color="white"): string{    
+    return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${contrastMin})
+            #uicontrol float max slider(min=0, max=1, step=0.001, default=${contrastMax})
             #uicontrol float gamma slider(min=0, max=3, step=0.001, default=${gamma})
             #uicontrol vec3 color color(default="${color}")
             void main() {emitRGB(color * (clamp(pow(toNormalized(getDataValue()), gamma), min, max) - min) / (max - min));}`
@@ -62,6 +73,7 @@ export class Volume {
         public origin: number[],
         public gridSpacing: number[],
         public unit: string,
+        public displaySettings: DisplaySettings,
     ) { }
 
     // Convert n5 attributes to an internal representation of the volume
@@ -69,14 +81,16 @@ export class Volume {
     // viewer state construction
     static fromN5Attrs(attrs: any): Volume {
         // warning: this is a stupid hack
-        let offset = (attrs.offset? attrs.offset : [0,0,0]);
+        let offset = (attrs.offset? attrs.offset : [0,0,0]);       
+        let displaySettings = (attrs.displaySettings? attrs.displaySettings: displayDefaults); 
         return new Volume(attrs.path,
             attrs.name,
             attrs.dataType,
             attrs.dimensions,
             offset,
             attrs.pixelResolution["dimensions"],
-            attrs.pixelResolution["unit"])
+            attrs.pixelResolution["unit"],
+            displaySettings)
     }
 
     toLayer(): Layer {
@@ -96,17 +110,19 @@ export class Volume {
             inputDimensions)
 
         const source = new LayerDataSource(srcURL, transform);
-        const defaultShader = makeShader([0,1], 1, "white");
-        const predictionShader = makeShader([0,1], 1,"red");
+        const shader: string = makeShader(this.displaySettings.contrastMin, 
+                                          this.displaySettings.contrastMax, 
+                                          this.displaySettings.gamma, 
+                                          this.displaySettings.color);
 
         const defaultSkeletonRendering: skeletonRendering = { mode2d: "lines_and_points", mode3d: "lines" };
         let layer: Layer | null;
         if (this.dtype === 'uint8' || this.dtype === 'int8') {
             layer = new Layer("image", source,
-                undefined, this.name, undefined, undefined, defaultShader);
+                undefined, this.name, undefined, undefined, shader);
                 layer.blend = 'additive'
                 layer.opacity = 1;
-            if (isPrediction(this.path)){layer.shader = predictionShader;}
+            if (isPrediction(this.path)){layer.shader = shader;}
         } else if (this.dtype === "uint64") {
             layer = new Layer("segmentation", source,
                 undefined, this.name, undefined, defaultSkeletonRendering, undefined)
@@ -138,8 +154,9 @@ export class Dataset {
         const projectionOrientation = undefined;
         const crossSectionOrientation = undefined;
         const projectionScale = undefined;
-        const crossSectionScale = 15.0;
-        const selectedLayer = undefined;
+        const crossSectionScale = 30.0;
+        // the first layer is the selected layer; consider making this a kwarg
+        const selectedLayer = {'layer': layers[0].name, 'visible': true};
 
         const vState = new ViewerState(
             outputDimensions,
@@ -186,13 +203,13 @@ export async function makeDatasets(bucket: string): Promise<Dataset[]> {
     let n5Containers = prefixes.map(f => `${bucketNameToURL(bucket)}/${f}${Path.basename(f)}.n5/`);    
     // for each n5 container, get the root attributes
     let rootAttrs = await Promise.all(n5Containers.map(async container => {
-        let rootAttrs = await getObjectFromJSON(`${container}attributes.json`);
+        let rootAttrs = await getObjectFromJSON(`${container}attributes.json`);        
         if (rootAttrs !== undefined){rootAttrs.root = container;}
         return rootAttrs;
     }));
 
     if (rootAttrs.length === 0){alert(`No n5 containers found in ${bucket}`)}
-
+    console.log(rootAttrs)
     // for each volume described in the root attributes, instantiate an object for the metadata of that volume
     let volumes = await Promise.all(rootAttrs.map(makeVolumes));    
     let datasets = Promise.all(volumes.map(async (vol, idx) => {        
@@ -204,11 +221,14 @@ export async function makeDatasets(bucket: string): Promise<Dataset[]> {
                                    vol,
                                    readme)
             return dset;}
-        else return null
+        else {           
+            return null
+        }
         }
     ))
     // filter out the null datasets
-    //datasets = datasets.filter(a => a !== null)
+    datasets = datasets.then(d => d.filter(a => a !== null))
+    
     return datasets
 
 }
