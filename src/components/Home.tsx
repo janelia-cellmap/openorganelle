@@ -136,7 +136,12 @@ const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState})
   const [checkState, setCheckState] = useState(checkStateInit);
   
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCheckState(new Map(checkState.set(event.target.name, event.target.checked).entries()));
+    const newCheckState = new Map(checkState.set(event.target.name, event.target.checked).entries());
+    const vals = Array.from(newCheckState.values());
+    // Prevent all checkboxes from being deselected
+    if (!vals.every((v) => !v)){
+      setCheckState(newCheckState);
+    }
     console.log(checkState)
   };
   
@@ -148,9 +153,6 @@ const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState})
             <Grid container direction="column" spacing={2}>
               <Grid item>
                 <Markdown source={dataset.readme.content} escapeHtml={false} className={classes.markdown} />
-              </Grid>
-              <Grid item>
-                <Typography variant="caption">Source URL: {dataset.path}</Typography>
               </Grid>
             </Grid>
           </Grid>
@@ -173,7 +175,7 @@ export default function Home() {
   useEffect(() => {
     const datasets = makeDatasets(appState.dataBucket);
     datasets.then(setDatasets);
-    datasets.then(a => console.log(`Found datesets: ${String(a)}`));
+    datasets.then(a => console.log(`Found datasets: ${String(a)}`));
   }, []);
 
   const rangeStart = (currentPage - 1) * datasetsPerPage;
