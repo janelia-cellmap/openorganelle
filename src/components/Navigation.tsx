@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   },
   appbar: {
     /* Chrome 10-25, Safari 5.1-6 */
-    background: "#303030"
+    background: "#303030",    
   }
 }));
 
@@ -36,7 +36,8 @@ export default function Navigation() {
   const classes = useStyles();
 
   return (
-    <AppBar position="static" className={classes.appbar}>
+    <React.Fragment>
+    <AppBar position="fixed" className={classes.appbar}>
       <Toolbar variant="dense">
         <a href="https://www.janelia.org" className={classes.link}>
           <img
@@ -71,5 +72,7 @@ export default function Navigation() {
         </Link>
       </Toolbar>
     </AppBar>
+    <Toolbar/>
+    </React.Fragment>
   );
 }
