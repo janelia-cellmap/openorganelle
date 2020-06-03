@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, FunctionComponent} from "react";
 import Markdown from "react-markdown/with-html";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
@@ -8,17 +8,19 @@ import Pagination from "@material-ui/lab/Pagination";
 import { Grid, Divider } from "@material-ui/core";
 import Hidden from "@material-ui/core/Hidden";
 import LaunchIcon from "@material-ui/icons/Launch"
+import ErrorIcon from "@material-ui/icons/Error"
 import { makeDatasets, Dataset, Volume } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox';
+import { Alert, AlertTitle } from '@material-ui/lab';
 
 import thumbnail from "./COSEM_background.png";
 import { checkServerIdentity } from "tls";
 
-const useStyles = makeStyles(theme => ({
-  root: {
+const useStyles: any = makeStyles((theme: Theme) => (
+  createStyles({root: {
     flexGrow: 1
   },
   thumbnail: {
@@ -32,12 +34,10 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(2)
   },
   grid: {
-    direction: "row",
     alignItems: "center",
     justify: "center"
   },
-  markdown: {
-    escapeHtml: false,
+  markdown: {    
     textAlign: "left"
   },
   mastheadText: {
@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
     background: "#5084AC",
     minHeight: "411px",
     marginBottom: 0,
-    color: "#fff"
+    color: "#fff",
   },
   secondaryNav: {
     background: "#27507C",
@@ -67,18 +67,13 @@ const useStyles = makeStyles(theme => ({
     textAlign:"center",
     minWidth: "5em"
   }
-}));
+})));
 
-type CheckboxProps = {
-  name: string, 
-  checked: boolean,
-  handleChange: any
-}
-
-type NeuroglancerLinkProps = {
+type NeuroglancerLinkProps = {  
   address: string, 
   dataset: Dataset, 
   volumeNames: string[]
+  webgl2State: boolean
 }
 
 type DatasetPaperProps = {
@@ -95,6 +90,23 @@ const LayerCheckbox: FunctionComponent<CheckboxProps> = ({name, checked, handleC
       />
     </FormGroup>
   );
+}
+
+const checkWebGL2 = () => {
+  const gl = document.createElement('canvas').getContext('webgl2');
+  if (!gl) {return false} 
+  else {return true}
+}
+
+type Webgl2WarningProps = {
+  webgl2State: boolean
+}
+
+const WebGl2WarningAlert: FunctionComponent<Webgl2WarningProps> = (props) => {
+  return <Alert severity="warning">
+    <AlertTitle>Warning</AlertTitle>
+    This is a warning alert — <strong>check it out!</strong>
+  </Alert>
 }
 
 class ErrorBoundary extends React.Component {
@@ -118,14 +130,24 @@ class ErrorBoundary extends React.Component {
   } 
 }
 
-const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = ({address, dataset, volumeNames}) => {
+const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = ({address, dataset, volumeNames, webgl2State}) => {  
   const displayVolumes: Volume[] = volumeNames.map(k => dataset.volumes.get(k));
-  const key = `${dataset.path}_${volumeNames.join('_')}` 
+  const key = `${dataset.path}_${volumeNames.join('_')}`   
+  const webgl2MissingMessage = <Grid container direction='row' alignItems='center' item>
+                              <Grid item>
+                                <ErrorIcon/>
+                              </Grid>
+                              <Grid item>
+                              <Typography color='error'>Your browser is not compatible with Neuroglancer. Try a compatible browser, such as Firefox or Chrome.</Typography>
+                              </Grid>
+                              </Grid>;
+
   return (
-  <Grid item xs={12} sm={4} key={key}>
+  <Grid item xs={12} sm={4} key={key}>    
     <a href={`${address}${dataset.makeNeuroglancerViewerState(displayVolumes)}`}
-  target="_blank" rel="noopener noreferrer">View with neuroglancer</a>
+  target="_blank" rel="noopener noreferrer">View with Neuroglancer</a>
   <LaunchIcon />
+  {!webgl2State && <ErrorIcon/>}  
   </Grid>)}
 
 
@@ -142,7 +164,6 @@ const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState})
     if (!vals.every((v) => !v)){
       setCheckState(newCheckState);
     }
-    console.log(checkState)
   };
   
   const classes = useStyles();
@@ -152,11 +173,11 @@ const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState})
           <Grid item xs={12} sm={8} zeroMinWidth>
             <Grid container direction="column" spacing={2}>
               <Grid item>
-                <Markdown source={dataset.readme.content} escapeHtml={false} className={classes.markdown} />
+                <Markdown className={classes.markdown} source={dataset.readme.content} escapeHtml={false}/>
               </Grid>
             </Grid>
           </Grid>
-          <NeuroglancerLink address={appState.neuroglancerAddress} dataset={dataset} volumeNames={volumeNames.filter(v => checkState.get(v))}/>          
+          <NeuroglancerLink address={appState.neuroglancerAddress} dataset={dataset} volumeNames={volumeNames.filter(v => checkState.get(v))} webgl2State={checkWebGL2()}/>          
           {volumeNames.map(k => <LayerCheckbox name={k} checked={checkState.get(k)} handleChange={handleChange} key = {`${dataset.name}/${k}`}/>)}
         </Grid>
       </Paper>
@@ -166,6 +187,7 @@ const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState})
 export default function Home() {
   const classes = useStyles();
   const datasetsInit: Dataset[] = [];
+  const [webgl2State, setWebgl2State] = useState(checkWebGL2());
   const [datasets, setDatasets] = useState(datasetsInit);
   const [appState, setAppState] = useContext(AppContext);
   const [currentPage, setCurrentPage] = useState(1);
@@ -202,7 +224,7 @@ export default function Home() {
             <Typography variant="body1" gutterBottom>
             Welcome to the Hess Lab and COSEM Project Team FIBSEM Data Portal. 
             Here we present large volume, high resolution 3D-Electron Microscopy (EM) data, acquired with a 
-            focused ion beam milling scanning electron microscope (FIBSEM) via the Hess lab. Accompanying these EM volumes 
+            focused ion beam milling scanning electron microscope (FIB-SEM) via the Hess lab. Accompanying these EM volumes 
             are automated segmentations of intracellular sub-structures made possible by COSEM. All datasets, training data, 
             and predictions are available for online viewing and download.
             </Typography>

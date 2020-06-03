@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 const AppContext = React.createContext([{}, () => {}]);
 
-const AppProvider = (props) => {
+const AppProvider = (props: any) => {
   const [state, setState] = useState({
     neuroglancerAddress: "http://neuroglancer-demo.appspot.com/#!",
     dataBucket: 'janelia-cosem-datasets-dev'
