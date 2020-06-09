@@ -5,7 +5,7 @@ export default function About() {
   return (
     <div className="about">
       <Typography variant="h3" gutterBottom>
-        About these datasets
+      TBD
       </Typography>
     </div>
   );
