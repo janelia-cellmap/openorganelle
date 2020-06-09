@@ -8,15 +8,14 @@ import Pagination from "@material-ui/lab/Pagination";
 import { Grid, Divider } from "@material-ui/core";
 import Hidden from "@material-ui/core/Hidden";
 import LaunchIcon from "@material-ui/icons/Launch"
-import ErrorIcon from "@material-ui/icons/Error"
+import WarningIcon from "@material-ui/icons/Warning"
 import { makeDatasets, Dataset, Volume } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox';
-import { Alert, AlertTitle } from '@material-ui/lab';
 
-import thumbnail from "./COSEM_background.png";
+import thumbnail from "./cosem_segmentation_gradient.png";
 import { checkServerIdentity } from "tls";
 
 const useStyles: any = makeStyles((theme: Theme) => (
@@ -70,10 +69,9 @@ const useStyles: any = makeStyles((theme: Theme) => (
 })));
 
 type NeuroglancerLinkProps = {  
-  address: string, 
+  appState: any, 
   dataset: Dataset, 
-  volumeNames: string[]
-  webgl2State: boolean
+  volumeNames: string[]  
 }
 
 type DatasetPaperProps = {
@@ -90,23 +88,6 @@ const LayerCheckbox: FunctionComponent<CheckboxProps> = ({name, checked, handleC
       />
     </FormGroup>
   );
-}
-
-const checkWebGL2 = () => {
-  const gl = document.createElement('canvas').getContext('webgl2');
-  if (!gl) {return false} 
-  else {return true}
-}
-
-type Webgl2WarningProps = {
-  webgl2State: boolean
-}
-
-const WebGl2WarningAlert: FunctionComponent<Webgl2WarningProps> = (props) => {
-  return <Alert severity="warning">
-    <AlertTitle>Warning</AlertTitle>
-    This is a warning alert — <strong>check it out!</strong>
-  </Alert>
 }
 
 class ErrorBoundary extends React.Component {
@@ -130,24 +111,15 @@ class ErrorBoundary extends React.Component {
   } 
 }
 
-const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = ({address, dataset, volumeNames, webgl2State}) => {  
+const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = ({appState, dataset, volumeNames}) => {  
   const displayVolumes: Volume[] = volumeNames.map(k => dataset.volumes.get(k));
   const key = `${dataset.path}_${volumeNames.join('_')}`   
-  const webgl2MissingMessage = <Grid container direction='row' alignItems='center' item>
-                              <Grid item>
-                                <ErrorIcon/>
-                              </Grid>
-                              <Grid item>
-                              <Typography color='error'>Your browser is not compatible with Neuroglancer. Try a compatible browser, such as Firefox or Chrome.</Typography>
-                              </Grid>
-                              </Grid>;
-
   return (
   <Grid item xs={12} sm={4} key={key}>    
-    <a href={`${address}${dataset.makeNeuroglancerViewerState(displayVolumes)}`}
+    <a href={`${appState.neuroglancerAddress}${dataset.makeNeuroglancerViewerState(displayVolumes)}`}
   target="_blank" rel="noopener noreferrer">View with Neuroglancer</a>
   <LaunchIcon />
-  {!webgl2State && <ErrorIcon/>}  
+  {!appState.webGL2Enabled && <WarningIcon/>}  
   </Grid>)}
 
 
@@ -177,7 +149,7 @@ const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState})
               </Grid>
             </Grid>
           </Grid>
-          <NeuroglancerLink address={appState.neuroglancerAddress} dataset={dataset} volumeNames={volumeNames.filter(v => checkState.get(v))} webgl2State={checkWebGL2()}/>          
+          <NeuroglancerLink appState={appState} dataset={dataset} volumeNames={volumeNames.filter(v => checkState.get(v))} webgl2State={appState.webGL2Enabled}/>          
           {volumeNames.map(k => <LayerCheckbox name={k} checked={checkState.get(k)} handleChange={handleChange} key = {`${dataset.name}/${k}`}/>)}
         </Grid>
       </Paper>
@@ -187,7 +159,6 @@ const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState})
 export default function Home() {
   const classes = useStyles();
   const datasetsInit: Dataset[] = [];
-  const [webgl2State, setWebgl2State] = useState(checkWebGL2());
   const [datasets, setDatasets] = useState(datasetsInit);
   const [appState, setAppState] = useContext(AppContext);
   const [currentPage, setCurrentPage] = useState(1);
@@ -220,9 +191,9 @@ export default function Home() {
             <Grid item sm={1} />
           </Hidden>
           <Grid item sm={10} md={6} className={classes.mastheadText}>
-            <Typography variant="h3">FIB-SEM datasets</Typography>
+            <Typography variant="h3">Open Organelle</Typography>
             <Typography variant="body1" gutterBottom>
-            Welcome to the Hess Lab and COSEM Project Team FIBSEM Data Portal. 
+            Welcome to the Hess Lab and COSEM Project Team FIB-SEM data portal: Open Organelle. 
             Here we present large volume, high resolution 3D-Electron Microscopy (EM) data, acquired with a 
             focused ion beam milling scanning electron microscope (FIB-SEM) via the Hess lab. Accompanying these EM volumes 
             are automated segmentations of intracellular sub-structures made possible by COSEM. All datasets, training data, 
