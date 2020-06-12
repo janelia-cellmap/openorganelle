@@ -55,7 +55,7 @@ const WebGL2CompatibilityWarning: FunctionComponent<any> = (props) => {
 const WebGL2CompatibilityWarning2: FunctionComponent<any> = (props) => {
   const classes = useStyles();
   
-  return <Grid container justify="left" alignItems="center" spacing={2}>
+  return <Grid container alignItems="center" spacing={2}>
     <Grid item>
       <WarningIcon/> 
     </Grid>
