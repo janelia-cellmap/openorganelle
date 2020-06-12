@@ -124,6 +124,7 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = ({appState, d
 
 
 const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState}) => {
+  const classes = useStyles();
   const volumeNames: string[] = Array.from(dataset.volumes.keys());    
   const checkStateInit = new Map<string, boolean>();
   volumeNames.forEach(v => checkStateInit.set(v, true));
@@ -138,19 +139,20 @@ const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState})
     }
   };
   
-  const classes = useStyles();
     return (     
       <Paper className={classes.paper}>
-        <Grid container className={classes.grid} spacing={2}>
-          <Grid item xs={12} sm={8} zeroMinWidth>
-            <Grid container direction="column" spacing={2}>
+        <Grid container className={classes.grid} spacing={2}>          
+            <Grid container direction="column" spacing={2} item xs={12} sm={8} zeroMinWidth>>
               <Grid item>
                 <Markdown className={classes.markdown} source={dataset.readme.content} escapeHtml={false}/>
               </Grid>
-            </Grid>
           </Grid>
-          <NeuroglancerLink appState={appState} dataset={dataset} volumeNames={volumeNames.filter(v => checkState.get(v))} webgl2State={appState.webGL2Enabled}/>          
-          {volumeNames.map(k => <LayerCheckbox name={k} checked={checkState.get(k)} handleChange={handleChange} key = {`${dataset.name}/${k}`}/>)}
+          <Grid item>
+            <NeuroglancerLink appState={appState} dataset={dataset} volumeNames={volumeNames.filter(v => checkState.get(v))} webgl2State={appState.webGL2Enabled}/>          
+          </Grid>
+          <Grid item>
+            {volumeNames.map(k => <LayerCheckbox name={k} checked={checkState.get(k)} handleChange={handleChange} key = {`${dataset.name}/${k}`}/>)}
+          </Grid>
         </Grid>
       </Paper>
     );

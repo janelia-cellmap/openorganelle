@@ -29,4 +29,4 @@ AppProvider.propTypes = {
   children: PropTypes.object.isRequired
 }
 
-export { AppContext, AppProvider };
+export {AppContext, AppProvider };
