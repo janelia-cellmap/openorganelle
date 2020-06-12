@@ -1,15 +1,18 @@
 import { urlSafeStringify, encodeFragment, Transform, ViewerState, LayerDataSource, Space, Layer, skeletonRendering } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON, bucketNameToURL} from "./datasources"
 import * as Path from "path"
+import { bool } from "aws-sdk/clients/signer";
 
 interface DisplaySettings {
     contrastMin: number
     contrastMax: number
     gamma: number
+    invertColormap: bool
     color: string
 }
 
-const displayDefaults: DisplaySettings = {contrastMin: 0, contrastMax: 1, gamma: 1, color: "white"};
+const displayDefaults: DisplaySettings = {contrastMin: 0, contrastMax: 1, gamma: 1, invertColormap: false, color: "white"};
+
 const readmeFileName: string = 'README.md';
 const nm: [number, string] = [1e-9, 'm']
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
@@ -29,12 +32,15 @@ function isPrediction(path: string, sep: string='/'): boolean {
 }
 
 
-function makeShader(contrastMin = 0, contrastMax = 1, gamma = 1, color="white"): string{    
-    return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${contrastMin})
-            #uicontrol float max slider(min=0, max=1, step=0.001, default=${contrastMax})
-            #uicontrol float gamma slider(min=0, max=3, step=0.001, default=${gamma})
-            #uicontrol vec3 color color(default="${color}")
-            void main() {emitRGB(color * (clamp(pow(toNormalized(getDataValue()), gamma), min, max) - min) / (max - min));}`
+function makeShader(shaderArgs: DisplaySettings): string{    
+    return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMin})
+            #uicontrol float max slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMax})
+            #uicontrol float gamma slider(min=0, max=3, step=0.001, default=${shaderArgs.gamma})
+            #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertColormap? 1: 0})
+            #uicontrol vec3 color color(default="${shaderArgs.color}")
+            float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
+            float normer(float val) {return (clamp(val, min, max) - min) / (max-min);}
+            void main() {emitRGB(color * pow(inverter(normer(toNormalized(getDataValue())), invertColormap), gamma));}`
 }
 
 async function getText(url: string): Promise<string> {
@@ -81,8 +87,8 @@ export class Volume {
     // viewer state construction
     static fromN5Attrs(attrs: any): Volume {
         // warning: this is a stupid hack
-        let offset = (attrs.offset? attrs.offset : [0,0,0]);       
-        let displaySettings = (attrs.displaySettings? attrs.displaySettings: displayDefaults); 
+        const offset = (attrs.offset? attrs.offset : [0,0,0]);       
+        const displaySettings: DisplaySettings = (attrs.displaySettings? attrs.displaySettings: displayDefaults); 
         return new Volume(attrs.path,
             attrs.name,
             attrs.dataType,
@@ -110,10 +116,7 @@ export class Volume {
             inputDimensions)
 
         const source = new LayerDataSource(srcURL, transform);
-        const shader: string = makeShader(this.displaySettings.contrastMin, 
-                                          this.displaySettings.contrastMax, 
-                                          this.displaySettings.gamma, 
-                                          this.displaySettings.color);
+        const shader: string = makeShader(this.displaySettings);
 
         const defaultSkeletonRendering: skeletonRendering = { mode2d: "lines_and_points", mode3d: "lines" };
         let layer: Layer | null;
