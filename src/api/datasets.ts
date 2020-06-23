@@ -3,6 +3,8 @@ import { s3ls, getObjectFromJSON, bucketNameToURL} from "./datasources"
 import * as Path from "path"
 import { bool } from "aws-sdk/clients/signer";
 
+const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
+
 interface DisplaySettings {
     contrastMin: number
     contrastMax: number
@@ -120,7 +122,7 @@ export class Volume {
 
         const defaultSkeletonRendering: skeletonRendering = { mode2d: "lines_and_points", mode3d: "lines" };
         let layer: Layer | null;
-        if (this.dtype === 'uint8' || this.dtype === 'int8') {
+        if (IMAGE_DTYPES.includes(this.dtype)) {
             layer = new Layer("image", source,
                 undefined, this.name, undefined, undefined, shader);
                 layer.blend = 'additive'
