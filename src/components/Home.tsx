@@ -12,6 +12,8 @@ import WarningIcon from "@material-ui/icons/Warning"
 import { makeDatasets, Dataset, Volume } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import FormGroup from '@material-ui/core/FormGroup';
+import FormControl from '@material-ui/core/FormControl'
+import FormLabel from '@material-ui/core/FormLabel'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox';
 
@@ -38,6 +40,9 @@ const useStyles: any = makeStyles((theme: Theme) => (
   },
   markdown: {    
     textAlign: "left"
+  },
+  formControl: {
+    margin: theme.spacing(3)
   },
   mastheadText: {
     marginTop: "3em",
@@ -79,14 +84,18 @@ type DatasetPaperProps = {
   appState: any
 }
 
-const LayerCheckbox: FunctionComponent<CheckboxProps> = ({name, checked, handleChange}) => {   
+const LayerCheckbox: FunctionComponent<CheckboxProps> = ({name, checked, handleChange}) => {
+  const classes = useStyles();   
   return (
-    <FormGroup row>
+    <FormControl component="fieldset" className={classes.formControl}>
+    <FormLabel component="legend">Select layers</FormLabel>
+    <FormGroup>
       <FormControlLabel
         control={<Checkbox checked={checked} onChange={handleChange} name={name} />}
         label={name}
       />
     </FormGroup>
+    </FormControl>
   );
 }
 
@@ -115,12 +124,12 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = ({appState, d
   const displayVolumes: Volume[] = volumeNames.map(k => dataset.volumes.get(k));
   const key = `${dataset.path}_${volumeNames.join('_')}`   
   return (
-  <Grid item xs={12} sm={4} key={key}>    
+  <div key={key}>    
     <a href={`${appState.neuroglancerAddress}${dataset.makeNeuroglancerViewerState(displayVolumes)}`}
   target="_blank" rel="noopener noreferrer">View with Neuroglancer</a>
   <LaunchIcon />
   {!appState.webGL2Enabled && <WarningIcon/>}  
-  </Grid>)}
+  </div>)}
 
 
 const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState}) => {
@@ -141,18 +150,18 @@ const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState})
   
     return (     
       <Paper className={classes.paper}>
-        <Grid container className={classes.grid} spacing={2}>          
-            <Grid container direction="column" spacing={2} item xs={12} sm={8} zeroMinWidth>>
-              <Grid item>
+        <Grid container className={classes.grid} spacing={2} direction="row">          
+            <Grid item xs={6}>              
                 <Markdown className={classes.markdown} source={dataset.readme.content} escapeHtml={false}/>
-              </Grid>
           </Grid>
-          <Grid item>
-            <NeuroglancerLink appState={appState} dataset={dataset} volumeNames={volumeNames.filter(v => checkState.get(v))} webgl2State={appState.webGL2Enabled}/>          
-          </Grid>
+          <Grid item container direction="column" xs={6} spacing={2} alignItems="flex-start" justify="flex-end">
           <Grid item>
             {volumeNames.map(k => <LayerCheckbox name={k} checked={checkState.get(k)} handleChange={handleChange} key = {`${dataset.name}/${k}`}/>)}
           </Grid>
+          <Grid item>
+            <NeuroglancerLink appState={appState} dataset={dataset} volumeNames={volumeNames.filter(v => checkState.get(v))} webgl2State={appState.webGL2Enabled}/>          
+          </Grid>          
+        </Grid>
         </Grid>
       </Paper>
     );
