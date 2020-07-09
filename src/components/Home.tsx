@@ -30,7 +30,7 @@ const useStyles: any = makeStyles((theme: Theme) => (
   },
   paper: {
     padding: theme.spacing(2),
-    textAlign: "center",
+    textAlign: "left",
     color: theme.palette.text.secondary,
     margin: theme.spacing(2)
   },
@@ -150,11 +150,11 @@ const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState})
   };
     return (     
       <Paper className={classes.paper}>
-        <Grid container className={classes.grid} spacing={2} direction="row" justify="space-evenly" alignItems="flex-start">          
+        <Grid container className={classes.grid} spacing={2} direction="row" justify="space-evenly" alignItems="stretch">          
             <Grid item xs={6}>              
                 <Markdown className={classes.markdown} source={dataset.readme.content} escapeHtml={false}/>
           </Grid>
-          <Grid item container direction="column" xs={5} spacing={2} justify="space-between">
+          <Grid item container direction="column" xs={5} spacing={2} justify="flex-end">
           <Grid item>
           <LayerCheckboxList volumeNames={volumeNames} dataset={dataset} checkstate={checkState} handleChange={handleChange}/>
           </Grid>
