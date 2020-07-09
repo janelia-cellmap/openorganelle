@@ -17,6 +17,6 @@ provider:
   region: us-east-1
   stage: dev
   tags: 
-    PROJECT: OpenOrganelle
+    PROJECT: cosem
     DEVELOPER: ${env:USER}
     VERSION: 0.1.0
