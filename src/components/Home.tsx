@@ -35,14 +35,15 @@ const useStyles: any = makeStyles((theme: Theme) => (
     margin: theme.spacing(2)
   },
   grid: {
-    alignItems: "center",
-    justify: "center"
   },
   markdown: {    
     textAlign: "left"
   },
   formControl: {
-    margin: theme.spacing(3)
+    margin: theme.spacing(1)
+  },
+  formGroup: {
+
   },
   mastheadText: {
     marginTop: "3em",
@@ -84,16 +85,16 @@ type DatasetPaperProps = {
   appState: any
 }
 
-const LayerCheckbox: FunctionComponent<CheckboxProps> = ({name, checked, handleChange}) => {
+const LayerCheckboxList: FunctionComponent<any> = ({volumeNames, dataset, checkstate, handleChange}) => {
   const classes = useStyles();   
+  const checkboxes = volumeNames.map((k) => <FormControlLabel
+        control={<Checkbox checked={checkstate.get(k)} onChange={handleChange} name={k} size="small"/>}
+        label={k} key={`${dataset.name}/${k}`}/>);        
   return (
     <FormControl component="fieldset" className={classes.formControl}>
     <FormLabel component="legend">Select layers</FormLabel>
-    <FormGroup>
-      <FormControlLabel
-        control={<Checkbox checked={checked} onChange={handleChange} name={name} />}
-        label={name}
-      />
+    <FormGroup className={classes.formGroup}>
+      {checkboxes}
     </FormGroup>
     </FormControl>
   );
@@ -147,16 +148,15 @@ const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({dataset, appState})
       setCheckState(newCheckState);
     }
   };
-  
     return (     
       <Paper className={classes.paper}>
-        <Grid container className={classes.grid} spacing={2} direction="row">          
+        <Grid container className={classes.grid} spacing={2} direction="row" justify="space-evenly" alignItems="flex-start">          
             <Grid item xs={6}>              
                 <Markdown className={classes.markdown} source={dataset.readme.content} escapeHtml={false}/>
           </Grid>
-          <Grid item container direction="column" xs={6} spacing={2} alignItems="flex-start" justify="flex-end">
+          <Grid item container direction="column" xs={5} spacing={2} justify="space-between">
           <Grid item>
-            {volumeNames.map(k => <LayerCheckbox name={k} checked={checkState.get(k)} handleChange={handleChange} key = {`${dataset.name}/${k}`}/>)}
+          <LayerCheckboxList volumeNames={volumeNames} dataset={dataset} checkstate={checkState} handleChange={handleChange}/>
           </Grid>
           <Grid item>
             <NeuroglancerLink appState={appState} dataset={dataset} volumeNames={volumeNames.filter(v => checkState.get(v))} webgl2State={appState.webGL2Enabled}/>          
