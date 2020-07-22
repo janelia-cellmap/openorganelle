@@ -214,12 +214,11 @@ export async function makeDatasets(bucket: string): Promise<Dataset[]> {
     }));
 
     if (rootAttrs.length === 0){alert(`No n5 containers found in ${bucket}`)}
-    console.log(rootAttrs)
     // for each volume described in the root attributes, instantiate an object for the metadata of that volume
     let volumes = await Promise.all(rootAttrs.map(makeVolumes));    
     let datasets = Promise.all(volumes.map(async (vol, idx) => {        
         if (vol !== null) {
-            let readme = await readmeFactory(Path.join(Path.dirname(n5Containers[idx]), readmeFileName));
+            let readme = await readmeFactory(Path.dirname(n5Containers[idx]) + '/' + readmeFileName);
             let dset = new Dataset(n5Containers[idx],
                                    n5Containers[idx].split('/').slice(-2,-1).pop()?.split('.')[0],
                                    outputDimensions,
