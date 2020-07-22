@@ -218,7 +218,8 @@ export async function makeDatasets(bucket: string): Promise<Dataset[]> {
     let volumes = await Promise.all(rootAttrs.map(makeVolumes));    
     let datasets = Promise.all(volumes.map(async (vol, idx) => {        
         if (vol !== null) {
-            let readme = await readmeFactory(Path.dirname(n5Containers[idx]) + '/' + readmeFileName);
+            let readmeURL = new URL(readmeFileName, Path.dirname(n5Containers[idx])+'/').href;
+            let readme = await readmeFactory(readmeURL);
             let dset = new Dataset(n5Containers[idx],
                                    n5Containers[idx].split('/').slice(-2,-1).pop()?.split('.')[0],
                                    outputDimensions,
