@@ -40,7 +40,7 @@ function App() {
               <Route path="/about">
                 <About />
               </Route>
-              <Route path="/">
+              <Route path="">
                 <Home />
               </Route>
             </Switch>
