@@ -18,7 +18,7 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox, { CheckboxProps } from "@material-ui/core/Checkbox";
-
+import thumbnail from "./cosem_logo.png";
 import { AppContext } from "../context/AppContext";
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -169,10 +169,10 @@ export default function DataSetList() {
           className={classes.grid}
           spacing={2}
           direction="row"
-          justify="space-evenly"
+          justify="space-around"
           alignItems="stretch"
         >
-          <Grid item xs={6}>
+          <Grid item>
             <Markdown
               className={classes.markdown}
               source={dataset.readme.content}
@@ -183,7 +183,7 @@ export default function DataSetList() {
             item
             container
             direction="column"
-            xs={5}
+            xs={4}
             spacing={2}
             justify="flex-end"
           >
@@ -203,6 +203,9 @@ export default function DataSetList() {
                 webgl2State={appState.webGL2Enabled}
               />
             </Grid>
+          </Grid>
+          <Grid item>
+            <img src={thumbnail}/>
           </Grid>
         </Grid>
       </Paper>

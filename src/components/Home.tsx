@@ -109,7 +109,7 @@ export default function Home() {
         </ul>
       </div>
       <div className="content">
-        <Container maxWidth="md">
+        <Container maxWidth="lg">
           <Switch>
             <Route path="/software" component={Software} />
             <Route path="/tutorials" component={Tutorials} />
