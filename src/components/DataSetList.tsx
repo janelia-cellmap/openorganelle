@@ -83,7 +83,7 @@ export default function DataSetList() {
           />
         }
         label={k}
-        key={`${dataset.name}/${k}`}
+        key={`${dataset.key}/${k}`}
       />
     ));
     return (
@@ -124,7 +124,7 @@ export default function DataSetList() {
     const displayVolumes: Volume[] = volumeNames.map(k =>
       dataset.volumes.get(k)
     );
-    const key = `${dataset.path}_${volumeNames.join("_")}`;
+    const key = `${dataset.key}_${volumeNames.join("_")}`;
     return (
       <div key={key}>
         <a
@@ -146,6 +146,7 @@ export default function DataSetList() {
     dataset,
     appState
   }) => {
+    console.log(dataset.volumes);
     const classes = useStyles();
     const volumeNames: string[] = Array.from(dataset.volumes.keys());
     const checkStateInit = new Map<string, boolean>();
@@ -205,7 +206,7 @@ export default function DataSetList() {
             </Grid>
           </Grid>
           <Grid item>
-            <img src={thumbnail}/>
+            <img src={dataset.thumbnailPath}/>
           </Grid>
         </Grid>
       </Paper>
@@ -221,7 +222,7 @@ export default function DataSetList() {
       <DatasetPaper
         dataset={ds}
         appState={appState}
-        key={`${ds.path}_${rangeStart}_${i}`}
+        key={`${ds.key}_${rangeStart}_${i}`}
       />
     ));
 
