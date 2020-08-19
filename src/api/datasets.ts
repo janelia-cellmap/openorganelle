@@ -1,9 +1,13 @@
 import { urlSafeStringify, encodeFragment, Transform, ViewerState, LayerDataSource, Space, Layer, skeletonRendering } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON, bucketNameToURL} from "./datasources"
-import * as Path from "path"
+import * as Path from "path";
 import { bool } from "aws-sdk/clients/signer";
+import { kMaxLength } from "buffer";
 
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
+const SEGMENTATION_DTYPES = ['uint64'];
+type VolumeStores = 'n5' | 'precomputed' | 'zarr';
+type ContentType = 'em' | 'segmentation';
 
 interface DisplaySettings {
     contrastMin: number
@@ -13,21 +17,85 @@ interface DisplaySettings {
     color: string
 }
 
+interface DatasetIndex {
+    name: string
+    volumes: {[key: string]: VolumeMeta}
+}
+
+interface SpatialTransform {
+    axes: string[]
+    units: string[]
+    translate: number[]
+    scale: number[]
+}
+
+interface VolumeMeta {
+    name: string
+    dataType: string
+    dimensions: number[]
+    transform: SpatialTransform
+    contentType: ContentType
+    description: string
+    alignment: string
+    roi: Array<any>
+    tags: Array<any>
+    displaySettings: DisplaySettings
+    store: VolumeStores
+}
+
+interface N5PixelResolution {
+    dimensions: number[]
+    unit: string
+}
+
+interface N5ArrayAttrs {
+    name: string
+    dimensions: number[]
+    dataType: string
+    pixelResolution: N5PixelResolution 
+    offset?: number[] 
+}
+
+interface NeuroglancerPrecomputedScaleAttrs {
+    chunk_sizes: number[]
+    encoding: string
+    key: string
+    resolution: number[]
+    size: number[]
+    voxel_offset: number[]
+    jpeg_quality?: number
+}
+
+interface NeuroglancerPrecomputedAttrs {
+    at_type: string
+    data_type: string
+    type: string
+    scales: NeuroglancerPrecomputedScaleAttrs[]
+    num_channels: number
+}
+
 const displayDefaults: DisplaySettings = {contrastMin: 0, contrastMax: 1, gamma: 1, invertColormap: false, color: "white"};
 
+// the filename of the readme document
 const readmeFileName: string = 'README.md';
+
+// one nanometer, expressed as a scaled meter
 const nm: [number, string] = [1e-9, 'm']
+
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: Space = { 'x': nm, 'y': nm, 'z': nm };
+
+// the key delimiter for paths
 const sep = "/";
-// the field in the top-level metadata of an n5 container that lists all the datasets for display
-const targetVolumesKey = "export"
+
+// the field in the top-level metadata that lists all the datasets for display
+const targetVolumesKey = "volumes"
+
 // the name of the base resolution; technically this can now be inferred from the multiscale metadata...
 const baseResolutionName = 's0'
 
 // Check whether a path represents a prediction volume. This is a hack and should be done with a proper
 // path parsing library
-
 function isPrediction(path: string, sep: string='/'): boolean {
     let parts = path.split(sep);    
     return (parts[parts.length - 3] === 'prediction');
@@ -54,18 +122,15 @@ async function getText(url: string): Promise<string> {
     return text
 }
 
-class readme{public path: string;
-             public format: string         
-             public content: string;
-         
-             constructor(path: string, format: string, content: string){
-                this.path = path;
-                this.format = format;
-                this.content = content;
-             }
+class readme{
+        constructor(
+        public path: string, 
+        public format: string, 
+        public content: string){
+        }
 }
 
-async function readmeFactory(path: string){
+async function readmeFactory(path: string): Promise<readme> {
     const [format] = path.split('.').slice(-1);
     const content = await getText(path);
     return new readme(path, format, content)
@@ -82,27 +147,48 @@ export class Volume {
         public gridSpacing: number[],
         public unit: string,
         public displaySettings: DisplaySettings,
+        public store: VolumeStores,
     ) { }
 
     // Convert n5 attributes to an internal representation of the volume
     // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer 
     // viewer state construction
-    static fromN5Attrs(attrs: any): Volume {
+    static fromN5Attrs(path: string, 
+                      displaySettings: DisplaySettings,
+                       attrs: N5ArrayAttrs): Volume {
         // warning: this is a stupid hack
         const offset = (attrs.offset? attrs.offset : [0,0,0]);       
-        const displaySettings: DisplaySettings = (attrs.displaySettings? attrs.displaySettings: displayDefaults); 
-        return new Volume(attrs.path,
+        return new Volume(
+            path,
             attrs.name,
             attrs.dataType,
             attrs.dimensions,
             offset,
             attrs.pixelResolution["dimensions"],
             attrs.pixelResolution["unit"],
-            displaySettings)
+            displaySettings,
+            'n5')
+    }
+
+    static fromPrecomputedAttrs(path: string, 
+                                name: string,
+                                displaySettings: DisplaySettings,
+                                attrs: NeuroglancerPrecomputedAttrs): Volume {
+
+        return new Volume(path,
+                          name,
+                          attrs.data_type, 
+                          attrs.scales[0].size,
+                          attrs.scales[0].voxel_offset,
+                          attrs.scales[0].resolution,
+                          'nm',
+                          displaySettings,
+                          'precomputed')
     }
 
     toLayer(): Layer {
-        const srcURL = `n5://${this.path}`;
+        const srcURL = `${this.store}://${this.path}`;
+        console.log(srcURL);
         const inputDimensions: Space = {
             x: [1e-9 * this.gridSpacing[0], "m"],
             y: [1e-9 * this.gridSpacing[1], "m"],
@@ -139,18 +225,18 @@ export class Volume {
 
 // a collection of volumes, i.e. a collection of ndimensional arrays 
 export class Dataset {
-    public path: string;
-    public name: string;
+    public key: string;
     public space: Space;
     public volumes: Map<string, Volume>;   
-    public readme?: readme;
-    constructor(path: string, name: string, space: Space, volumes: Volume[], readme: readme
-    ) {
-        this.path = path;
-        this.name = name;
+    public readme: readme;
+    public thumbnailPath: string 
+    constructor(key: string, space: Space, volumes: Volume[], readme: readme,
+    thumbnailPath: string) {        
+        this.key = key;
         this.space = space;
         this.volumes = new Map(volumes.map(v => [v.name, v]));
         this.readme = readme;
+        this.thumbnailPath = thumbnailPath;
     }
 
     makeNeuroglancerViewerState(volumes: Volume[]): string {
@@ -182,7 +268,7 @@ async function makeVolumes(rootAttrs: any) {
     if (rootAttrs === undefined){return null};
     let rootPath = rAttrs['root'];
     let volumeNames = rAttrs[targetVolumesKey];
-    // In lieu of proper metadata validation, return null if the `multiscale_data` key is missing
+    // In lieu of proper metadata validation, return null if the `volumes` key is missing
     if (volumeNames === undefined) {return Promise.resolve(null)}
 
     let volumes: Promise<Volume>[] = volumeNames.map(async (name: string) => {
@@ -201,39 +287,58 @@ async function makeVolumes(rootAttrs: any) {
     return Promise.all(volumes);
 }
 
-export async function makeDatasets(bucket: string): Promise<Dataset[]> {   
+async function getDatasetKeys(bucket: string): Promise<string[]> {   
     // get all the folders in the bucket
-    let prefixes = (await s3ls(bucket, '', '/', '', false)).folders; 
-    // datasets will be stored as follows: <bucket name>/<dataset name>/<dataset name.n5>/*
-    let n5Containers = prefixes.map(f => `${bucketNameToURL(bucket)}/${f}${Path.basename(f)}.n5/`);    
-    // for each n5 container, get the root attributes
-    let rootAttrs = await Promise.all(n5Containers.map(async container => {
-        let rootAttrs = await getObjectFromJSON(`${container}attributes.json`);        
-        if (rootAttrs !== undefined){rootAttrs.root = container;}
-        return rootAttrs;
-    }));
+    const datasetKeys = (await s3ls(bucket, '', '/', '', false)).folders; 
+    return datasetKeys
+}
 
-    if (rootAttrs.length === 0){alert(`No n5 containers found in ${bucket}`)}
-    // for each volume described in the root attributes, instantiate an object for the metadata of that volume
-    let volumes = await Promise.all(rootAttrs.map(makeVolumes));    
-    let datasets = Promise.all(volumes.map(async (vol, idx) => {        
-        if (vol !== null) {
-            let readmeURL = new URL(readmeFileName, Path.dirname(n5Containers[idx])+'/').href;
-            let readme = await readmeFactory(readmeURL);
-            let dset = new Dataset(n5Containers[idx],
-                                   n5Containers[idx].split('/').slice(-2,-1).pop()?.split('.')[0],
-                                   outputDimensions,
-                                   vol,
-                                   readme)
-            return dset;}
-        else {           
-            return null
+async function getDatasetIndex(bucket: string, datasetKey: string): Promise<DatasetIndex> {
+    const bucketURL = bucketNameToURL(bucket);
+    const indexFile = `${bucketURL}/${datasetKey}index.json`
+    return getObjectFromJSON(indexFile)
+}
+
+async function getReadmeText(bucket: string, key: string){
+    const bucketURL = bucketNameToURL(bucket);
+    const readmeURL = `${bucketURL}/${key}README.md`;
+    return readmeFactory(readmeURL);
+}
+
+function VolumeMetaToVolume(outerPath:string, innerPath: string, volumeMeta: VolumeMeta): Volume {
+    // convert relative path to absolute path
+    //const absPath = Path.resolve(outerPath, innerPath);
+    const absPath = new URL(outerPath);
+    absPath.pathname = Path.resolve(absPath.pathname, innerPath);
+
+    return new Volume(absPath.toString(),
+                     volumeMeta.description, 
+                     volumeMeta.dataType,
+                     volumeMeta.dimensions,
+                     volumeMeta.transform.translate,
+                     volumeMeta.transform.scale,
+                     volumeMeta.transform.units[0],
+                     volumeMeta.displaySettings,
+                     volumeMeta.store)
+}
+
+export async function makeDatasets(bucket: string): Promise<Dataset[]> {   
+    // get the keys to the datasets
+    const datasetKeys: string[] = await getDatasetKeys(bucket);
+    // Get a list of volume metadata specifications, represented instances of Map<string, VolumeMeta>
+    const datasets: Dataset[] = [];
+    for (const key of datasetKeys) {
+        const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
+        const readme = await getReadmeText(bucket, key);
+        const thumbnailPath: string =  `${outerPath}thumbnail.jpg`
+        const index = await getDatasetIndex(bucket, key);
+        if (index !== undefined){
+            const volumeMeta = new Map(Object.entries(index.volumes));
+            const volumes: Volume[] = [];
+            volumeMeta.forEach((v,k) => volumes.push(VolumeMetaToVolume(outerPath, k, v)));
+            datasets.push(new Dataset(key, outputDimensions, volumes, readme, thumbnailPath));
         }
-        }
-    ))
-    // filter out the null datasets
-    datasets = datasets.then(d => d.filter(a => a !== null))
-    
+        else {console.log(`Could not load index.json from ${outerPath}`)}
+    }
     return datasets
-
 }
