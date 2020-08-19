@@ -1,23 +1,15 @@
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  FunctionComponent
-} from "react";
+import React from "react";
 import { Route, NavLink, Switch } from "react-router-dom";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
-import { Grid, Divider } from "@material-ui/core";
+import { Grid} from "@material-ui/core";
 import Hidden from "@material-ui/core/Hidden";
 import Software from "./Software";
 import Tutorials from "./Tutorials";
 import Publications from "./Publications";
 import DataSetList from "./DataSetList";
-
 import thumbnail from "./cosem_segmentation_gradient.png";
-import { checkServerIdentity } from "tls";
-
 import "./Home.css";
 
 const useStyles: any = makeStyles((theme: Theme) =>
