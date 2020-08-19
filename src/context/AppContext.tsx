@@ -13,7 +13,7 @@ const AppContext = React.createContext([{}, () => {}]);
 const AppProvider = (props: any) => {
   const [state, setState] = useState<IAppState>({
     neuroglancerAddress: "http://neuroglancer-demo.appspot.com/#!",
-    dataBucket: 'janelia-cosem-datasets-dev',
+    dataBucket: 'janelia-cosem-datasets',
     webGL2Enabled: checkWebGL2()
   });
   console.log(state)
