@@ -3,6 +3,7 @@ import { s3ls, getObjectFromJSON, bucketNameToURL} from "./datasources"
 import * as Path from "path";
 import { bool } from "aws-sdk/clients/signer";
 import { kMaxLength } from "buffer";
+import { contextType } from "react-markdown";
 
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
@@ -82,6 +83,9 @@ const readmeFileName: string = 'README.md';
 // one nanometer, expressed as a scaled meter
 const nm: [number, string] = [1e-9, 'm']
 
+// the axis order for neuroglancer is x y z
+const axisOrder = new Map([['x',0],['y',1],['z',2]]);
+
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: Space = { 'x': nm, 'y': nm, 'z': nm };
 
@@ -102,17 +106,30 @@ function isPrediction(path: string, sep: string='/'): boolean {
 }
 
 
-function makeShader(shaderArgs: DisplaySettings): string{    
-    return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMin})
-            #uicontrol float max slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMax})
-            #uicontrol float gamma slider(min=0, max=3, step=0.001, default=${shaderArgs.gamma})
-            #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertColormap? 1: 0})
-            #uicontrol vec3 color color(default="${shaderArgs.color}")
-            float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
-            float normer(float val) {return (clamp(val, min, max) - min) / (max-min);}
-            void main() {emitRGB(color * pow(inverter(normer(toNormalized(getDataValue())), invertColormap), gamma));}`
+function makeShader(shaderArgs: DisplaySettings, contentType: ContentType): string{
+    switch (contentType) {
+    case 'em':    
+        return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMin})
+                #uicontrol float max slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMax})
+                #uicontrol float gamma slider(min=0, max=3, step=0.001, default=${shaderArgs.gamma})
+                #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertColormap? 1: 0})
+                #uicontrol vec3 color color(default="${shaderArgs.color}")
+                float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
+                float normer(float val) {return (clamp(val, min, max) - min) / (max-min);}
+                void main() {emitRGB(color * pow(inverter(normer(toNormalized(getDataValue())), invertColormap), gamma));}`
+    break
+    case 'segmentation':
+        return `#uicontrol vec3 color color(default="${shaderArgs.color}")
+                void main() {emitRGB(color * ceil(float(getDataValue().value[0]) / 4294967295.0));}`
+    }
+    return '';
 }
 
+/* //shader for uint64 data
+void main() {
+  emitGrayscale(float(getDataValue().value[0]) / 255.0);
+}
+*/
 async function getText(url: string): Promise<string> {
     const response = await fetch(url);
     let text: string = '';
@@ -185,6 +202,24 @@ export class Volume {
                           displaySettings,
                           'precomputed')
     }
+    static fromVolumeMeta(outerPath:string, innerPath: string, volumeMeta: VolumeMeta): Volume {
+        // convert relative path to absolute path
+        //const absPath = Path.resolve(outerPath, innerPath);
+        const absPath = new URL(outerPath);
+        absPath.pathname = Path.resolve(absPath.pathname, innerPath); 
+        // reorder the transform parameters as needed
+        const axisIndices: Array<any> = volumeMeta.transform.axes.map(v => axisOrder.get(v));
+        const reorder = (arg: Array<any>) => axisIndices.map(v => arg[v])
+        return new Volume(absPath.toString(),
+                         volumeMeta.description, 
+                         volumeMeta.dataType,
+                         reorder(volumeMeta.dimensions),
+                         reorder(volumeMeta.transform.translate),
+                         reorder(volumeMeta.transform.scale),
+                         reorder(volumeMeta.transform.units[0]),
+                         volumeMeta.displaySettings,
+                         volumeMeta.store)
+    }
 
     toLayer(): Layer {
         const srcURL = `${this.store}://${this.path}`;
@@ -204,21 +239,24 @@ export class Volume {
             inputDimensions)
 
         const source = new LayerDataSource(srcURL, transform);
-        const shader: string = makeShader(this.displaySettings);
+        let shader = '';
+        if (SEGMENTATION_DTYPES.includes(this.dtype)){
+            shader = makeShader(this.displaySettings, 'segmentation');
+        }
+        else if (IMAGE_DTYPES.includes(this.dtype)) {
+            shader = makeShader(this.displaySettings, 'em');
+        }
+        else {
+            console.log(`Datatype ${this.dtype} not recognized`)
+        }
 
         const defaultSkeletonRendering: skeletonRendering = { mode2d: "lines_and_points", mode3d: "lines" };
         let layer: Layer | null;
-        if (IMAGE_DTYPES.includes(this.dtype)) {
-            layer = new Layer("image", source,
-                undefined, this.name, undefined, undefined, shader);
-                layer.blend = 'additive'
-                layer.opacity = 1;
-            if (isPrediction(this.path)){layer.shader = shader;}
-        } else if (this.dtype === "uint64") {
-            layer = new Layer("segmentation", source,
-                undefined, this.name, undefined, defaultSkeletonRendering, undefined)
-        } else { throw `Something went wrong constructing layers from ${this}!` }
-
+        
+        layer = new Layer("image", source,
+            undefined, this.name, undefined, undefined, shader);
+            layer.blend = 'additive'
+            layer.opacity = .75;
         return layer;
     }
 }
@@ -234,7 +272,9 @@ export class Dataset {
     thumbnailPath: string) {        
         this.key = key;
         this.space = space;
-        this.volumes = new Map(volumes.map(v => [v.name, v]));
+        if (volumes.length > 0)
+        {this.volumes = new Map(volumes.map(v => [v.name, v]));}
+        else {throw 'Volumes must have length > 0'}
         this.readme = readme;
         this.thumbnailPath = thumbnailPath;
     }
@@ -263,30 +303,6 @@ export class Dataset {
     }
 }
 
-async function makeVolumes(rootAttrs: any) {
-    let rAttrs = await rootAttrs;
-    if (rootAttrs === undefined){return null};
-    let rootPath = rAttrs['root'];
-    let volumeNames = rAttrs[targetVolumesKey];
-    // In lieu of proper metadata validation, return null if the `volumes` key is missing
-    if (volumeNames === undefined) {return Promise.resolve(null)}
-
-    let volumes: Promise<Volume>[] = volumeNames.map(async (name: string) => {
-        let path = `${rootPath}${name}${sep}`;
-        // get the attributes of the individual volumes
-        let attr = await getObjectFromJSON(
-            `${path}${baseResolutionName}${sep}attributes.json`
-        );
-        // add the full path as a property
-        if (attr !== undefined)
-            attr.path = path;
-            let volume = Volume.fromN5Attrs(attr);
-        
-        return volume;
-    });
-    return Promise.all(volumes);
-}
-
 async function getDatasetKeys(bucket: string): Promise<string[]> {   
     // get all the folders in the bucket
     const datasetKeys = (await s3ls(bucket, '', '/', '', false)).folders; 
@@ -305,23 +321,6 @@ async function getReadmeText(bucket: string, key: string){
     return readmeFactory(readmeURL);
 }
 
-function VolumeMetaToVolume(outerPath:string, innerPath: string, volumeMeta: VolumeMeta): Volume {
-    // convert relative path to absolute path
-    //const absPath = Path.resolve(outerPath, innerPath);
-    const absPath = new URL(outerPath);
-    absPath.pathname = Path.resolve(absPath.pathname, innerPath);
-
-    return new Volume(absPath.toString(),
-                     volumeMeta.description, 
-                     volumeMeta.dataType,
-                     volumeMeta.dimensions,
-                     volumeMeta.transform.translate,
-                     volumeMeta.transform.scale,
-                     volumeMeta.transform.units[0],
-                     volumeMeta.displaySettings,
-                     volumeMeta.store)
-}
-
 export async function makeDatasets(bucket: string): Promise<Dataset[]> {   
     // get the keys to the datasets
     const datasetKeys: string[] = await getDatasetKeys(bucket);
@@ -333,10 +332,13 @@ export async function makeDatasets(bucket: string): Promise<Dataset[]> {
         const thumbnailPath: string =  `${outerPath}thumbnail.jpg`
         const index = await getDatasetIndex(bucket, key);
         if (index !== undefined){
+            try {
             const volumeMeta = new Map(Object.entries(index.volumes));
             const volumes: Volume[] = [];
-            volumeMeta.forEach((v,k) => volumes.push(VolumeMetaToVolume(outerPath, k, v)));
+            volumeMeta.forEach((v,k) => volumes.push(Volume.fromVolumeMeta(outerPath, k, v)));
             datasets.push(new Dataset(key, outputDimensions, volumes, readme, thumbnailPath));
+        }
+        catch (error) {console.log(error)}
         }
         else {console.log(`Could not load index.json from ${outerPath}`)}
     }
