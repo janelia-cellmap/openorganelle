@@ -9,7 +9,7 @@ import Pagination from "@material-ui/lab/Pagination";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import { Grid, Divider } from "@material-ui/core";
+import { Grid, Divider, CardMedia } from "@material-ui/core";
 import { makeDatasets, Dataset, Volume } from "../api/datasets";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
@@ -20,7 +20,8 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox, { CheckboxProps } from "@material-ui/core/Checkbox";
 import thumbnail from "./cosem_logo.png";
 import { AppContext } from "../context/AppContext";
-
+import { borders } from '@material-ui/system';
+import {Box} from "@material-ui/core";
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
     paper: {
@@ -36,7 +37,9 @@ const useStyles: any = makeStyles((theme: Theme) =>
     formControl: {
       margin: theme.spacing(1)
     },
-    formGroup: {}
+    formGroup: {},
+    datasetThumbnail:{
+    }
   })
 );
 
@@ -206,7 +209,10 @@ export default function DataSetList() {
             </Grid>
           </Grid>
           <Grid item>
-            <img src={dataset.thumbnailPath}/>
+            <CardMedia 
+            style={{height: 256, width: 256, borderRadius: "10%"}}
+            image={dataset.thumbnailPath}
+            />
           </Grid>
         </Grid>
       </Paper>
