@@ -1,22 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {checkWebGL2} from "../api/util"
+import {makeDatasets, Dataset} from "../api/datasets";
 
-interface IAppState {
+export interface ContextProps {
   neuroglancerAddress: string,
   dataBucket: string,
-  webGL2Enabled: boolean
+  webGL2Enabled: boolean,
+  datasets: Map<string, Dataset>
 }
 
-const AppContext = React.createContext([{}, () => {}]);
+interface IAppContext {
+  appState: ContextProps
+  setAppstate: () => null
+} 
 
-const AppProvider = (props: any) => {
-  const [state, setState] = useState<IAppState>({
-    neuroglancerAddress: "http://neuroglancer-demo.appspot.com/#!",
-    dataBucket: 'janelia-cosem-datasets',
-    webGL2Enabled: checkWebGL2()
-  });
-  console.log(state)
+const contextDefault: ContextProps = {
+  neuroglancerAddress: "http://neuroglancer-demo.appspot.com/#!",
+  dataBucket: 'janelia-cosem-datasets',
+  webGL2Enabled: checkWebGL2(),
+  datasets: new Map()
+}
+
+export const AppContext = React.createContext<IAppContext>({
+  appState: contextDefault, 
+  setAppstate: () => null
+});
+
+export const AppProvider = (props: any) => {
+  
+  const [state, setState] = useState<ContextProps>(contextDefault);
   const { children } = props;
   return (
     <AppContext.Provider value={[state, setState]}>
@@ -28,5 +41,3 @@ const AppProvider = (props: any) => {
 AppProvider.propTypes = {
   children: PropTypes.object.isRequired
 }
-
-export {AppContext, AppProvider };

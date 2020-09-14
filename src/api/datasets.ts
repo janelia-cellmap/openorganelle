@@ -98,14 +98,6 @@ const targetVolumesKey = "volumes"
 // the name of the base resolution; technically this can now be inferred from the multiscale metadata...
 const baseResolutionName = 's0'
 
-// Check whether a path represents a prediction volume. This is a hack and should be done with a proper
-// path parsing library
-function isPrediction(path: string, sep: string='/'): boolean {
-    let parts = path.split(sep);    
-    return (parts[parts.length - 3] === 'prediction');
-}
-
-
 function makeShader(shaderArgs: DisplaySettings, contentType: ContentType): string{
     switch (contentType) {
     case 'em':    
@@ -223,7 +215,6 @@ export class Volume {
 
     toLayer(): Layer {
         const srcURL = `${this.store}://${this.path}`;
-        console.log(srcURL);
         const inputDimensions: Space = {
             x: [1e-9 * this.gridSpacing[0], "m"],
             y: [1e-9 * this.gridSpacing[1], "m"],
@@ -305,40 +296,44 @@ export class Dataset {
 
 async function getDatasetKeys(bucket: string): Promise<string[]> {   
     // get all the folders in the bucket
-    const datasetKeys = (await s3ls(bucket, '', '/', '', false)).folders; 
+    let datasetKeys = (await s3ls(bucket, '', '/', '', false)).folders; 
+    //remove trailing "/" character
+    datasetKeys = datasetKeys.map((k) => k.replace(/\/$/, ""));
     return datasetKeys
 }
 
 async function getDatasetIndex(bucket: string, datasetKey: string): Promise<DatasetIndex> {
     const bucketURL = bucketNameToURL(bucket);
-    const indexFile = `${bucketURL}/${datasetKey}index.json`
+    const indexFile = `${bucketURL}/${datasetKey}/index.json`
     return getObjectFromJSON(indexFile)
 }
 
 async function getReadmeText(bucket: string, key: string){
     const bucketURL = bucketNameToURL(bucket);
-    const readmeURL = `${bucketURL}/${key}README.md`;
+    const readmeURL = `${bucketURL}/${key}/README.md`;
     return readmeFactory(readmeURL);
 }
 
-export async function makeDatasets(bucket: string): Promise<Dataset[]> {   
+export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {   
     // get the keys to the datasets
     const datasetKeys: string[] = await getDatasetKeys(bucket);
     // Get a list of volume metadata specifications, represented instances of Map<string, VolumeMeta>
-    const datasets: Dataset[] = [];
+    const datasets: Map<string, Dataset> = new Map();
     for (const key of datasetKeys) {
         const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
         const readme = await getReadmeText(bucket, key);
-        const thumbnailPath: string =  `${outerPath}thumbnail.jpg`
+        const thumbnailPath: string =  `${outerPath}/thumbnail.jpg`
         const index = await getDatasetIndex(bucket, key);
         if (index !== undefined){
             try {
             const volumeMeta = new Map(Object.entries(index.volumes));
             const volumes: Volume[] = [];
             volumeMeta.forEach((v,k) => volumes.push(Volume.fromVolumeMeta(outerPath, k, v)));
-            datasets.push(new Dataset(key, outputDimensions, volumes, readme, thumbnailPath));
+            datasets.set(key, new Dataset(key, outputDimensions, volumes, readme, thumbnailPath));
         }
-        catch (error) {console.log(error)}
+        catch (error) {
+            console.log(error)
+        }
         }
         else {console.log(`Could not load index.json from ${outerPath}`)}
     }

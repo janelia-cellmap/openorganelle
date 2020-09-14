@@ -9,8 +9,7 @@ import { AppContext } from "../context/AppContext";
 import WarningIcon from "@material-ui/icons/Warning"
 import logo from "../COSEM_logo_invert_transparent.png";
 import janelia from "../janelia_logo.png";
-import { Grid } from "@material-ui/core";
-import Divider from '@material-ui/core/Divider';
+import {WebGL2CompatibilityWarning} from "./WebGL2Compatibility";
 
 const useStyles = makeStyles(theme => ({
   link: {
@@ -38,35 +37,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const WebGL2CompatibilityWarning: FunctionComponent<any> = (props) => {
-  const classes = useStyles();
-  return <Grid container justify="center" alignItems="center" spacing={2}>
-    <Grid item>
-      <WarningIcon/> 
-    </Grid>
-    <Grid item zeroMinWidth>
-    <Typography className={classes.warning}> 
-    Warning: your browser does not support neuroglancer.<br/> To view data with neuroglancer, please visit this site with Firefox or Chrome. 
-    </Typography>
-    </Grid>
-    </Grid>
-}
 
-const WebGL2CompatibilityWarning2: FunctionComponent<any> = (props) => {
-  const classes = useStyles();
-  
-  return <Grid container alignItems="center" spacing={2}>
-    <Grid item>
-      <WarningIcon/> 
-    </Grid>
-    <Grid item zeroMinWidth>
-    <Typography variant="body1" className={classes.warning}> 
-    Warning: your browser does not support neuroglancer. To view data with neuroglancer, please visit this site with Firefox or Chrome. 
-    </Typography>
-    </Grid>
-    </Grid>
-   
-}
 
 export default function Navigation() {
   const classes = useStyles();
@@ -108,7 +79,7 @@ export default function Navigation() {
           </Typography>
         </Link>        
       </Toolbar>
-      {!appState.webGL2Enabled && <WebGL2CompatibilityWarning2/>}            
+      {!appState.webGL2Enabled && <WebGL2CompatibilityWarning/>}            
     </AppBar>
     <Toolbar/>        
     </React.Fragment>
