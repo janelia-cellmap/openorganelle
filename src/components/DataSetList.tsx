@@ -10,7 +10,7 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import { Grid, Divider, CardMedia } from "@material-ui/core";
-import { makeDatasets, Dataset, Volume } from "../api/datasets";
+import {Dataset, Volume, ContentType} from "../api/datasets";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
 import FormGroup from "@material-ui/core/FormGroup";
@@ -44,7 +44,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 
 type NeuroglancerLinkProps = {
   dataset: Dataset;
-  volumeNames: string[];
+  checkState: Map<string, boolean>;
 };
 
 type DatasetPaperProps = {
@@ -52,33 +52,55 @@ type DatasetPaperProps = {
 };
 
 type LayerCheckBoxListProps = {
-  volumeNames: string[];
   dataset: Dataset;
   checkState: Map<string, boolean>;
   handleChange: any;
 }
 
+/* placeholder for when I start parsing the description from json 
+type DatasetDescriptionProps = {
+  
+}
+
+const DatasetDescription: FunctionComponent<DatasetDescriptionProps> = (props: DatasetDescriptionProps) => 
+{
+
+}
+*/
+
 const LayerCheckboxList: FunctionComponent<LayerCheckBoxListProps> = (props: LayerCheckBoxListProps) => {
   const classes = useStyles();
-  console.log(props)
-  const checkboxes = props.volumeNames.map(k => (
-    <FormControlLabel
-      control={
-        <Checkbox
-          checked={props.checkState.get(k)}
-          onChange={props.handleChange}
-          name={k}
-          size="small"
-        />
-      }
-      label={k}
-      key={`${props.dataset.key}/${k}`}
-    />
-  ));
+  const checkboxGroups: Map<ContentType, JSX.Element[]> = new Map();
+  
+  props.dataset.volumes.forEach((volume: Volume, key: string)  => {
+    
+    let cb = <FormControlLabel
+    control={
+      <Checkbox
+        checked={props.checkState.get(key)}
+        onChange={props.handleChange}
+        name={key}
+        size="small"
+      />
+    }
+    label={volume.name}
+    key={`${props.dataset.key}/${key}`}
+  />;
+    
+    if (checkboxGroups.get(volume.contentType) === undefined) {checkboxGroups.set(volume.contentType, [])}
+    checkboxGroups.get(volume.contentType).push(cb);
+    });
+    
   return (
     <FormControl component="fieldset" className={classes.formControl}>
-      <FormLabel component="legend">Select layers</FormLabel>
-      <FormGroup className={classes.formGroup}>{checkboxes}</FormGroup>
+    <FormLabel component="legend">Select layers</FormLabel>
+    
+    <FormLabel component="legend">EM</FormLabel>
+    <Divider/>
+    <FormGroup className={classes.formGroup}>{checkboxGroups.get('em')}</FormGroup>
+    <FormLabel component="legend">Segmentation</FormLabel>
+    <Divider/>
+    <FormGroup className={classes.formGroup}>{checkboxGroups.get('segmentation')}</FormGroup>
     </FormControl>
   );
 };
@@ -89,10 +111,11 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: Neuro
   const [appState, setAppState] = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const webGL2Enabled = appState.webGL2Enabled;
-  const key = `${props.dataset.key}_${props.volumeNames.join("_")}`;
-  const displayVolumes: Volume[] = props.volumeNames.map(k =>
-    props.dataset.volumes.get(k));
-
+  const key = `${props.dataset.key}_NeuroglancerLink`;
+  const displayVolumes: Volume[] = [];
+  props.dataset.volumes.forEach((value: Volume, key: string)  => {
+    if (props.checkState.get(key)) {displayVolumes.push(value)}});
+  
   if (displayVolumes.length == 0) {return <div> No layers selected </div>}
   else {
   return (
@@ -115,6 +138,10 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: Neuro
 export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey}) => {
   const classes = useStyles();
   const [appState, setAppState] = useContext(AppContext);
+  const dataset: Dataset = appState.datasets.get(datasetKey);  
+  const checkStateInit = new Map<string, boolean>();
+  for (let key of dataset.volumes.keys()) {checkStateInit.set(key, true)}
+  const [checkState, setCheckState] = useState(checkStateInit);
   
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newCheckState = new Map(
@@ -125,13 +152,8 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey})
       setCheckState(newCheckState);
     }
   };
-  const dataset: Dataset = appState.datasets.get(datasetKey);
-  const volumeNames: string[] = [... dataset.volumes.keys()];
- 
-  const checkStateInit = new Map<string, boolean>();
-  volumeNames.forEach(v => checkStateInit.set(v, true));
-  const [checkState, setCheckState] = useState(checkStateInit);
-       
+
+
   return (
     <Paper className={classes.paper}>
       <Grid
@@ -159,7 +181,6 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey})
         >
           <Grid item>
             <LayerCheckboxList
-              volumeNames={volumeNames}
               dataset={dataset}
               checkState={checkState}
               handleChange={handleChange}
@@ -168,7 +189,7 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey})
           <Grid item>
           <NeuroglancerLink
               dataset={dataset}
-              volumeNames={volumeNames.filter(v => checkState.get(v))}
+              checkState={checkState}
             />
           </Grid>
         </Grid>
