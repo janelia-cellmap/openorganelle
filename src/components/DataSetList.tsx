@@ -140,7 +140,9 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey})
   const [appState, setAppState] = useContext(AppContext);
   const dataset: Dataset = appState.datasets.get(datasetKey);  
   const checkStateInit = new Map<string, boolean>();
-  for (let key of dataset.volumes.keys()) {checkStateInit.set(key, true)}
+  for (let [key, value] of dataset.volumes.entries()) {
+     checkStateInit.set(key, true)
+  }
   const [checkState, setCheckState] = useState(checkStateInit);
   
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,13 +166,14 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey})
         justify="space-around"
         alignItems="stretch"
       >
-        <Grid item>
+        <Grid item xs={4}>
           <Markdown
             className={classes.markdown}
             source={dataset.readme.content}
             escapeHtml={false}
           />
         </Grid>
+        <Divider orientation="vertical" flexItem={true}></Divider>
         <Grid
           item
           container
@@ -185,7 +188,7 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey})
               checkState={checkState}
               handleChange={handleChange}
             />
-          </Grid>
+          </Grid> 
           <Grid item>
           <NeuroglancerLink
               dataset={dataset}
@@ -193,6 +196,7 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey})
             />
           </Grid>
         </Grid>
+        <Divider orientation="vertical" flexItem={true}></Divider>
         <Grid item>
           <CardMedia
             style={{ height: 256, width: 256, borderRadius: "10%" }}
