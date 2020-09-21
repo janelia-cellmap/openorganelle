@@ -157,43 +157,24 @@ export class Volume {
         public unit: string,
         public displaySettings: DisplaySettings,
         public store: VolumeStores,
-    ) { }
+        public contentType: ContentType,
+    ) {
+        this.path = path;
+        this.name = name;
+        this.dtype = dtype;
+        this.dimensions = dimensions;
+        this.origin = origin;
+        this.gridSpacing = gridSpacing;
+        this.unit = unit;
+        this.displaySettings = displaySettings;
+        this.store = store;
+        this.contentType = contentType;
+     }
 
     // Convert n5 attributes to an internal representation of the volume
     // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer 
     // viewer state construction
-    static fromN5Attrs(path: string, 
-                      displaySettings: DisplaySettings,
-                       attrs: N5ArrayAttrs): Volume {
-        // warning: this is a stupid hack
-        const offset = (attrs.offset? attrs.offset : [0,0,0]);       
-        return new Volume(
-            path,
-            attrs.name,
-            attrs.dataType,
-            attrs.dimensions,
-            offset,
-            attrs.pixelResolution["dimensions"],
-            attrs.pixelResolution["unit"],
-            displaySettings,
-            'n5')
-    }
 
-    static fromPrecomputedAttrs(path: string, 
-                                name: string,
-                                displaySettings: DisplaySettings,
-                                attrs: NeuroglancerPrecomputedAttrs): Volume {
-
-        return new Volume(path,
-                          name,
-                          attrs.data_type, 
-                          attrs.scales[0].size,
-                          attrs.scales[0].voxel_offset,
-                          attrs.scales[0].resolution,
-                          'nm',
-                          displaySettings,
-                          'precomputed')
-    }
     static fromVolumeMeta(outerPath:string, innerPath: string, volumeMeta: VolumeMeta): Volume {
         // convert relative path to absolute path
         //const absPath = Path.resolve(outerPath, innerPath);
@@ -208,9 +189,10 @@ export class Volume {
                          reorder(volumeMeta.dimensions),
                          reorder(volumeMeta.transform.translate),
                          reorder(volumeMeta.transform.scale),
-                         reorder(volumeMeta.transform.units[0]),
+                         reorder(volumeMeta.transform.units)[0],
                          volumeMeta.displaySettings,
-                         volumeMeta.store)
+                         volumeMeta.store,
+                         volumeMeta.contentType)
     }
 
     toLayer(): Layer {
@@ -259,13 +241,11 @@ export class Dataset {
     public volumes: Map<string, Volume>;   
     public readme: readme;
     public thumbnailPath: string 
-    constructor(key: string, space: Space, volumes: Volume[], readme: readme,
+    constructor(key: string, space: Space, volumes: Map<string, Volume>, readme: readme,
     thumbnailPath: string) {        
         this.key = key;
         this.space = space;
-        if (volumes.length > 0)
-        {this.volumes = new Map(volumes.map(v => [v.name, v]));}
-        else {throw 'Volumes must have length > 0'}
+        this.volumes = volumes;
         this.readme = readme;
         this.thumbnailPath = thumbnailPath;
     }
@@ -314,6 +294,12 @@ async function getReadmeText(bucket: string, key: string){
     return readmeFactory(readmeURL);
 }
 
+async function getDescription(bucket: string, key: string): Promise<DatasetDescription> {
+    const bucketURL = bucketNameToURL(bucket);
+    const descriptionURL = `${bucketURL}/${key}/README.json`;
+    return getObjectFromJSON(descriptionURL);
+}
+
 export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {   
     // get the keys to the datasets
     const datasetKeys: string[] = await getDatasetKeys(bucket);
@@ -327,8 +313,8 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
         if (index !== undefined){
             try {
             const volumeMeta = new Map(Object.entries(index.volumes));
-            const volumes: Volume[] = [];
-            volumeMeta.forEach((v,k) => volumes.push(Volume.fromVolumeMeta(outerPath, k, v)));
+            const volumes: Map<string, Volume> = new Map;
+            volumeMeta.forEach((v,k) => volumes.set(k, Volume.fromVolumeMeta(outerPath, k, v)));
             datasets.set(key, new Dataset(key, outputDimensions, volumes, readme, thumbnailPath));
         }
         catch (error) {
