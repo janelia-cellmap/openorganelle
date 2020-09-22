@@ -4,7 +4,8 @@ import * as Path from "path";
 import { bool } from "aws-sdk/clients/signer";
 import { kMaxLength } from "buffer";
 import { contextType } from "react-markdown";
-
+import {DatasetDescription} from "./dataset_description"
+import { Description } from "@material-ui/icons";
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
 type VolumeStores = 'n5' | 'precomputed' | 'zarr';
@@ -122,28 +123,7 @@ void main() {
   emitGrayscale(float(getDataValue().value[0]) / 255.0);
 }
 */
-async function getText(url: string): Promise<string> {
-    const response = await fetch(url);
-    let text: string = '';
-    try{text = await response.text();}
-    catch (ex) {}
-    if (!response.ok) {text = `Nothing found at ${url}`}
-    return text
-}
 
-class readme{
-        constructor(
-        public path: string, 
-        public format: string, 
-        public content: string){
-        }
-}
-
-async function readmeFactory(path: string): Promise<readme> {
-    const [format] = path.split('.').slice(-1);
-    const content = await getText(path);
-    return new readme(path, format, content)
-}
 
 // A single n-dimensional array
 export class Volume {
@@ -239,14 +219,14 @@ export class Dataset {
     public key: string;
     public space: Space;
     public volumes: Map<string, Volume>;   
-    public readme: readme;
+    public description: DatasetDescription
     public thumbnailPath: string 
-    constructor(key: string, space: Space, volumes: Map<string, Volume>, readme: readme,
+    constructor(key: string, space: Space, volumes: Map<string, Volume>, description: DatasetDescription,
     thumbnailPath: string) {        
         this.key = key;
         this.space = space;
         this.volumes = volumes;
-        this.readme = readme;
+        this.description = description;
         this.thumbnailPath = thumbnailPath;
     }
 
@@ -307,7 +287,8 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
     const datasets: Map<string, Dataset> = new Map();
     for (const key of datasetKeys) {
         const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
-        const readme = await getReadmeText(bucket, key);
+        const description = await getDescription(bucket, key);
+        console.log(description)
         const thumbnailPath: string =  `${outerPath}/thumbnail.jpg`
         const index = await getDatasetIndex(bucket, key);
         if (index !== undefined){
@@ -315,7 +296,7 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
             const volumeMeta = new Map(Object.entries(index.volumes));
             const volumes: Map<string, Volume> = new Map;
             volumeMeta.forEach((v,k) => volumes.set(k, Volume.fromVolumeMeta(outerPath, k, v)));
-            datasets.set(key, new Dataset(key, outputDimensions, volumes, readme, thumbnailPath));
+            datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailPath));
         }
         catch (error) {
             console.log(error)
