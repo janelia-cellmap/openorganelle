@@ -32,11 +32,11 @@ const useStyles: any = makeStyles((theme: Theme) =>
     markdown: {
       textAlign: "left"
     },
-    formControl: {
+    formcontrol: {
       margin: theme.spacing(1)
     },
-    formGroup: {},
-    datasetThumbnail: {
+    formgroup: {},
+    datasetthumbnail: {
     },
     hyperlink: {
       color: theme.palette.info.main
@@ -70,7 +70,7 @@ const DescriptionText: FunctionComponent<DescriptionTextProps> = (props: Descrip
   const description = props.datasetDescription;
 
   return <Box>
-    <Link href={props.titleLink} className={classes.hyperlink} variant="h6">{ReactHtmlParser(description.Title)}</Link>
+    <h3><RouterLink to={props.titleLink}>{ReactHtmlParser(description.Title)}</RouterLink></h3>
     {[...Object.keys(description.Summary)].map(p => <p key={p}><strong>{ReactHtmlParser(p)}</strong>: {ReactHtmlParser(description.Summary[p])}</p>)}
   </Box>
 

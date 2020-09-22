@@ -1,5 +1,5 @@
 import React, {useEffect, useContext} from "react";
-import { Route, NavLink, Switch, useParams } from "react-router-dom";
+import { Route, NavLink, Switch } from "react-router-dom";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
@@ -8,7 +8,8 @@ import Hidden from "@material-ui/core/Hidden";
 import Software from "./Software";
 import Tutorials from "./Tutorials";
 import Publications from "./Publications";
-import DataSetPaperList, {DatasetPaper} from "./DataSetList";
+import DataSetPaperList from "./DataSetList";
+import DatasetDetails from "./DatasetDetails";
 import thumbnail from "./cosem_segmentation_gradient.png";
 import "./Home.css";
 import { AppContext } from "../context/AppContext";
@@ -56,24 +57,18 @@ const useStyles: any = makeStyles((theme: Theme) =>
   })
 );
 
-function UseSlug(props: any) {
-  let {slug} = useParams();
-  const [appState,] = useContext(AppContext);
-  if (appState.datasets.get(slug) === undefined) {
-    return <div> Error 404: Could not find a dataset with the key {slug}</div>;
-  }
-  else {
-    return <DatasetPaper datasetKey={slug} key={props.url}/>
-  }
-}
-
 export default function Home() {
 
   const classes = useStyles();
   const [appState, setAppState] = useContext(AppContext);
 
   // Update the global datasets var when Home renders for the first time
-  useEffect(() => {makeDatasets(appState.dataBucket).then((ds) => setAppState({...appState, datasets: ds}));}, []);
+  useEffect(() => {
+    setAppState({...appState, datasetsLoading: true})
+    makeDatasets(appState.dataBucket)
+      .then((ds) => setAppState({...appState, datasets: ds, datasetsLoading: false}));
+  }, []);
+
   return (
     <>
       <div className={classes.masthead}>
@@ -126,7 +121,7 @@ export default function Home() {
             <Route path="/tutorials" component={Tutorials} />
             <Route path="/publications" component={Publications} />
             <Route path="/" exact component={DataSetPaperList}/>
-            <Route path="/datasets/:slug" component={UseSlug}/>
+            <Route path="/datasets/:slug" component={DatasetDetails}/>
           </Switch>
         </Container>
       </div>

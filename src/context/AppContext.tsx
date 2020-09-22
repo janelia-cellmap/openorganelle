@@ -7,13 +7,14 @@ export interface ContextProps {
   neuroglancerAddress: string,
   dataBucket: string,
   webGL2Enabled: boolean,
+  datasetsLoading: false,
   datasets: Map<string, Dataset>
 }
 
 interface IAppContext {
   appState: ContextProps
   setAppstate: () => null
-} 
+}
 
 const contextDefault: ContextProps = {
   neuroglancerAddress: "http://neuroglancer-demo.appspot.com/#!",
@@ -23,12 +24,12 @@ const contextDefault: ContextProps = {
 }
 
 export const AppContext = React.createContext<IAppContext>({
-  appState: contextDefault, 
+  appState: contextDefault,
   setAppstate: () => null
 });
 
 export const AppProvider = (props: any) => {
-  
+
   const [state, setState] = useState<ContextProps>(contextDefault);
   const { children } = props;
   return (
