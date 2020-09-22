@@ -1,5 +1,4 @@
 import React, {
-  useEffect,
   useState,
   useContext,
   FunctionComponent
@@ -18,7 +17,6 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import thumbnail from "./cosem_logo.png";
 import { AppContext} from "../context/AppContext";
 import {DatasetDescription} from "../api/dataset_description";
 import ReactHtmlParser from 'react-html-parser';
@@ -120,7 +118,7 @@ const LayerCheckboxList: FunctionComponent<LayerCheckBoxListProps> = (props: Lay
 
 const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: NeuroglancerLinkProps) => {
   const classes = useStyles();
-  const [appState, setAppState] = useContext(AppContext);
+  const [appState, ] = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const webGL2Enabled = appState.webGL2Enabled;
   const key = `${props.dataset.key}_NeuroglancerLink`;
@@ -128,7 +126,7 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: Neuro
   props.dataset.volumes.forEach((value: Volume, key: string)  => {
     if (props.checkState.get(key)) {displayVolumes.push(value)}});
 
-  if (displayVolumes.length == 0) {return <div> No layers selected </div>}
+  if (displayVolumes.length === 0) {return <div> No layers selected </div>}
   else {
   return (
     <Box key={key}>
@@ -150,11 +148,11 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: Neuro
 
 export const DatasetPaper: FunctionComponent<DatasetPaperProps> = (props: DatasetPaperProps) => {
   const classes = useStyles();
-  const [appState, setAppState] = useContext(AppContext);
+  const [appState,] = useContext(AppContext);
   const datasetKey = props.datasetKey;
   const dataset: Dataset = appState.datasets.get(datasetKey);
   const checkStateInit = new Map<string, boolean>();
-  [... dataset.volumes.keys()].forEach((key) => {
+  [...dataset.volumes.keys()].forEach((key) => {
      checkStateInit.set(key, true)
   });
   const [checkState, setCheckState] = useState(checkStateInit);
@@ -164,7 +162,7 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = (props: Datase
       checkState.set(event.target.name, event.target.checked).entries()
     );
     // Prevent all checkboxes from being deselected
-    if (![... newCheckState.values()].every(v => !v)) {
+    if (![...newCheckState.values()].every(v => !v)) {
       setCheckState(newCheckState);
     }
   };
@@ -222,7 +220,7 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = (props: Datase
 };
 
 export default function DataSetPaperList() {
-  const [appState, setAppState] = useContext(AppContext);
+  const [appState,] = useContext(AppContext);
   const [currentPage, setCurrentPage] = useState(1);
   const datasetsPerPage = 10;
 

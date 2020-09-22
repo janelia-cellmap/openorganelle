@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from "react";
+import React, {useEffect, useContext} from "react";
 import { Route, NavLink, Switch, useParams } from "react-router-dom";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -11,8 +11,8 @@ import Publications from "./Publications";
 import DataSetPaperList, {DatasetPaper} from "./DataSetList";
 import thumbnail from "./cosem_segmentation_gradient.png";
 import "./Home.css";
-import { AppContext, AppProvider } from "../context/AppContext";
-import {makeDatasets, Dataset} from "../api/datasets";
+import { AppContext } from "../context/AppContext";
+import { makeDatasets } from "../api/datasets";
 
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -58,7 +58,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 
 function UseSlug(props: any) {
   let {slug} = useParams();
-  const [appState, setAppState] = useContext(AppContext);
+  const [appState,] = useContext(AppContext);
   if (appState.datasets.get(slug) === undefined) {
     return <div> Error 404: Could not find a dataset with the key {slug}</div>;
   }

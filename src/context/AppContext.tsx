@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {checkWebGL2} from "../api/util"
-import {makeDatasets, Dataset} from "../api/datasets";
+import { Dataset} from "../api/datasets";
 
 export interface ContextProps {
   neuroglancerAddress: string,

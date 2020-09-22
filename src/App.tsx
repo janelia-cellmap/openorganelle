@@ -7,8 +7,6 @@ import { AppProvider } from "./context/AppContext";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import teal from "@material-ui/core/colors/teal";
-import green from "@material-ui/core/colors/green";
 
 import "./App.css";
 

@@ -3,7 +3,6 @@ import { s3ls, getObjectFromJSON, bucketNameToURL} from "./datasources"
 import * as Path from "path";
 import { bool } from "aws-sdk/clients/signer";
 import {DatasetDescription} from "./dataset_description"
-
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
 type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
@@ -54,8 +53,8 @@ interface N5ArrayAttrs {
     name: string
     dimensions: number[]
     dataType: string
-    pixelResolution: N5PixelResolution 
-    offset?: number[] 
+    pixelResolution: N5PixelResolution
+    offset?: number[]
 }
 
 interface NeuroglancerPrecomputedScaleAttrs {
@@ -81,7 +80,7 @@ interface DatasetView {
     description: string
     position: number[]
     scale: number
-    volumeNames: string[] 
+    volumeNames: string[]
 }
 
 const displayDefaults: DisplaySettings = {contrastMin: 0, contrastMax: 1, gamma: 1, invertColormap: false, color: "white"};
@@ -109,7 +108,7 @@ const baseResolutionName = 's0'
 
 function makeShader(shaderArgs: DisplaySettings, contentType: ContentType): string{
     switch (contentType) {
-    case 'em':    
+    case 'em':
         return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMin})
                 #uicontrol float max slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMax})
                 #uicontrol float gamma slider(min=0, max=3, step=0.001, default=${shaderArgs.gamma})
@@ -154,19 +153,19 @@ export class Volume {
      }
 
     // Convert n5 attributes to an internal representation of the volume
-    // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer 
+    // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer
     // viewer state construction
 
     static fromVolumeMeta(outerPath:string, innerPath: string, volumeMeta: VolumeMeta): Volume {
         // convert relative path to absolute path
         //const absPath = Path.resolve(outerPath, innerPath);
         const absPath = new URL(outerPath);
-        absPath.pathname = Path.resolve(absPath.pathname, innerPath); 
+        absPath.pathname = Path.resolve(absPath.pathname, innerPath);
         // reorder the transform parameters as needed
         const axisIndices: Array<any> = volumeMeta.transform.axes.map(v => axisOrder.get(v));
         const reorder = (arg: Array<any>) => axisIndices.map(v => arg[v])
         return new Volume(absPath.toString(),
-                         volumeMeta.description, 
+                         volumeMeta.description,
                          volumeMeta.dataType,
                          reorder(volumeMeta.dimensions),
                          reorder(volumeMeta.transform.translate),
@@ -184,7 +183,7 @@ export class Volume {
             y: [1e-9 * this.gridSpacing[1], "m"],
             z: [1e-9 * this.gridSpacing[2], "m"]
         };
-        const transform: CoordinateSpaceTransform = {matrix: 
+        const transform: CoordinateSpaceTransform = {matrix:
             [
                 [1, 0, 0, this.origin[0]],
                 [0, 1, 0, this.origin[1]],
@@ -193,7 +192,7 @@ export class Volume {
             outputDimensions: outputDimensions,
             inputDimensions: inputDimensions}
 
-        const source: LayerDataSource = {url: srcURL, 
+        const source: LayerDataSource = {url: srcURL,
                                         CoordinateSpaceTransform: transform};
         let shader = '';
         if (SEGMENTATION_DTYPES.includes(this.dtype)){
@@ -205,30 +204,29 @@ export class Volume {
         else {
             console.log(`Datatype ${this.dtype} not recognized`)
         }
-               
         const layer = new ImageLayer('rendering',
                                undefined,
-                               undefined, 
+                               undefined,
                                source,
                                0.75,
                                'additive',
                                shader,
-                               undefined, 
+                               undefined,
                                undefined);
         layer.name = this.name;
         return layer;
     }
 }
 
-// a collection of volumes, i.e. a collection of ndimensional arrays 
+// a collection of volumes, i.e. a collection of ndimensional arrays
 export class Dataset {
     public key: string;
     public space: CoordinateSpace;
-    public volumes: Map<string, Volume>;   
+    public volumes: Map<string, Volume>;
     public description: DatasetDescription
-    public thumbnailPath: string 
+    public thumbnailPath: string
     constructor(key: string, space: CoordinateSpace, volumes: Map<string, Volume>, description: DatasetDescription,
-    thumbnailPath: string) {        
+    thumbnailPath: string) {
         this.key = key;
         this.space = space;
         this.volumes = volumes;
@@ -266,7 +264,7 @@ export class Dataset {
             undefined,
             undefined,
             'black',
-            'black',            
+            'black',
             selectedLayer,
             undefined
         );
@@ -274,9 +272,9 @@ export class Dataset {
     }
 }
 
-async function getDatasetKeys(bucket: string): Promise<string[]> {   
+async function getDatasetKeys(bucket: string): Promise<string[]> {
     // get all the folders in the bucket
-    let datasetKeys = (await s3ls(bucket, '', '/', '', false)).folders; 
+    let datasetKeys = (await s3ls(bucket, '', '/', '', false)).folders;
     //remove trailing "/" character
     datasetKeys = datasetKeys.map((k) => k.replace(/\/$/, ""));
     return datasetKeys
@@ -294,7 +292,7 @@ async function getDescription(bucket: string, key: string): Promise<DatasetDescr
     return getObjectFromJSON(descriptionURL);
 }
 
-export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {   
+export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {
     // get the keys to the datasets
     const datasetKeys: string[] = await getDatasetKeys(bucket);
     // Get a list of volume metadata specifications, represented instances of Map<string, VolumeMeta>

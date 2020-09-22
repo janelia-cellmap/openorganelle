@@ -1,4 +1,4 @@
-import React, {useContext, FunctionComponent} from "react";
+import React, {useContext} from "react";
 import { Link } from "react-router-dom";
 
 import AppBar from "@material-ui/core/AppBar";
@@ -6,7 +6,6 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../context/AppContext";
-import WarningIcon from "@material-ui/icons/Warning"
 import logo from "../COSEM_logo_invert_transparent.png";
 import janelia from "../janelia_logo.png";
 import {WebGL2CompatibilityWarning} from "./WebGL2Compatibility";
@@ -33,7 +32,7 @@ const useStyles = makeStyles(theme => ({
   },
   appbar: {
     /* Chrome 10-25, Safari 5.1-6 */
-    background: "#303030",    
+    background: "#303030",
   }
 }));
 
@@ -41,7 +40,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Navigation() {
   const classes = useStyles();
-  const [appState, setAppState] = useContext(AppContext);
+  const [appState, ] = useContext(AppContext);
 
   return (
     <React.Fragment>
@@ -61,7 +60,7 @@ export default function Navigation() {
           <Typography variant="h6" color="inherit" noWrap>
             Hess Lab
           </Typography>
-        </a>        
+        </a>
         <div className={classes.spacer} />
         <Link className={classes.link} to="/">
           <Typography variant="h6" color="inherit" noWrap>
@@ -77,11 +76,11 @@ export default function Navigation() {
           <Typography variant="h6" color="inherit" noWrap>
             Settings
           </Typography>
-        </Link>        
+        </Link>
       </Toolbar>
-      {!appState.webGL2Enabled && <WebGL2CompatibilityWarning/>}            
+      {!appState.webGL2Enabled && <WebGL2CompatibilityWarning/>}
     </AppBar>
-    <Toolbar/>        
+    <Toolbar/>
     </React.Fragment>
   );
 }
