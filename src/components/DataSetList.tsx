@@ -8,7 +8,7 @@ import Pagination from "@material-ui/lab/Pagination";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import { Grid, Divider, CardMedia, Link } from "@material-ui/core";
+import { Grid, Divider, CardMedia, Link, Box } from "@material-ui/core";
 import {Dataset, Volume, ContentType} from "../api/datasets";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
@@ -70,10 +70,10 @@ const DescriptionText: FunctionComponent<DescriptionTextProps> = (props: Descrip
   const classes = useStyles();
   const description = props.datasetDescription;
   
-  return <div>
-    <Link href={props.titleLink} className={classes.hyperlink}><h3>{ReactHtmlParser(description.Title)}</h3></Link>
+  return <Box>
+    <Link href={props.titleLink} className={classes.hyperlink} variant="h6">{ReactHtmlParser(description.Title)}</Link>
     {[...Object.keys(description.Summary)].map(p => <p key={p}><strong>{ReactHtmlParser(p)}</strong>: {ReactHtmlParser(description.Summary[p])}</p>)}
-  </div>
+  </Box>
 
 }
 
@@ -129,7 +129,7 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: Neuro
   if (displayVolumes.length == 0) {return <div> No layers selected </div>}
   else {
   return (
-    <div key={key}>
+    <Box key={key}>
       <Link
         className={classes.hyperlink}
         href={`${
@@ -140,9 +140,9 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: Neuro
       >
         View with Neuroglancer
       </Link>
-      <LaunchIcon />
+      <LaunchIcon fontSize="small"/>
       {!webGL2Enabled && <WarningIcon />}
-    </div>
+    </Box>
   );
 }};
 
@@ -203,7 +203,7 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = (props: Datase
           </Grid>
         </Grid>
         <Divider orientation="vertical" flexItem={true}></Divider>
-        <Grid item>
+        <Grid item xs={4}>
           <CardMedia
             style={{ height: 256, width: 256, borderRadius: "10%" }}
             image={dataset.thumbnailPath}
