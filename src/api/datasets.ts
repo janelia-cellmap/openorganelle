@@ -268,12 +268,6 @@ async function getDatasetIndex(bucket: string, datasetKey: string): Promise<Data
     return getObjectFromJSON(indexFile)
 }
 
-async function getReadmeText(bucket: string, key: string){
-    const bucketURL = bucketNameToURL(bucket);
-    const readmeURL = `${bucketURL}/${key}/README.md`;
-    return readmeFactory(readmeURL);
-}
-
 async function getDescription(bucket: string, key: string): Promise<DatasetDescription> {
     const bucketURL = bucketNameToURL(bucket);
     const descriptionURL = `${bucketURL}/${key}/README.json`;
@@ -288,7 +282,6 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
     for (const key of datasetKeys) {
         const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
         const description = await getDescription(bucket, key);
-        console.log(description)
         const thumbnailPath: string =  `${outerPath}/thumbnail.jpg`
         const index = await getDatasetIndex(bucket, key);
         if (index !== undefined){

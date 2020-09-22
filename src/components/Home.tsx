@@ -74,7 +74,6 @@ export default function Home() {
 
   // Update the global datasets var when Home renders for the first time
   useEffect(() => {makeDatasets(appState.dataBucket).then((ds) => setAppState({...appState, datasets: ds}));}, []);
-  console.log('Rendering Home!')
   return (
     <>
       <div className={classes.masthead}>
