@@ -15,9 +15,11 @@ import "./App.css";
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#00a44f',
+      main: '#5084AC',
     },
-    secondary: green
+    secondary: {
+      main: '#27507C',
+    },
   },
   status: {
     danger: "orange"
