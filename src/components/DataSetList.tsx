@@ -4,12 +4,11 @@ import React, {
   useContext,
   FunctionComponent
 } from "react";
-import Markdown from "react-markdown/with-html";
 import Pagination from "@material-ui/lab/Pagination";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import { Grid, Divider, CardMedia } from "@material-ui/core";
+import { Grid, Divider, CardMedia, Link } from "@material-ui/core";
 import {Dataset, Volume, ContentType} from "../api/datasets";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
@@ -20,7 +19,8 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import thumbnail from "./cosem_logo.png";
 import { AppContext} from "../context/AppContext";
-
+import {DatasetDescription} from "../api/dataset_description";
+import ReactHtmlParser from 'react-html-parser';
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
     paper: {
@@ -38,6 +38,9 @@ const useStyles: any = makeStyles((theme: Theme) =>
     },
     formGroup: {},
     datasetThumbnail: {
+    },
+    hyperlink: {
+      color: theme.palette.info.main
     }
   })
 );
@@ -57,16 +60,22 @@ type LayerCheckBoxListProps = {
   handleChange: any;
 }
 
-/* placeholder for when I start parsing the description from json 
-type DatasetDescriptionProps = {
+
+type DescriptionTextProps = {
+  titleLink: string
+  datasetDescription: DatasetDescription
+}
+
+const DescriptionText: FunctionComponent<DescriptionTextProps> = (props: DescriptionTextProps) => {
+  const classes = useStyles();
+  const description = props.datasetDescription;
   
-}
+  return <div>
+    <Link href={props.titleLink} className={classes.hyperlink}><h3>{ReactHtmlParser(description.Title)}</h3></Link>
+    {[...Object.keys(description.Summary)].map(p => <p key={p}><strong>{ReactHtmlParser(p)}</strong>: {ReactHtmlParser(description.Summary[p])}</p>)}
+  </div>
 
-const DatasetDescription: FunctionComponent<DatasetDescriptionProps> = (props: DatasetDescriptionProps) => 
-{
-
 }
-*/
 
 const LayerCheckboxList: FunctionComponent<LayerCheckBoxListProps> = (props: LayerCheckBoxListProps) => {
   const classes = useStyles();
@@ -108,7 +117,7 @@ const LayerCheckboxList: FunctionComponent<LayerCheckBoxListProps> = (props: Lay
 
 
 const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: NeuroglancerLinkProps) => {
-
+  const classes = useStyles();
   const [appState, setAppState] = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const webGL2Enabled = appState.webGL2Enabled;
@@ -121,7 +130,8 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: Neuro
   else {
   return (
     <div key={key}>
-      <a
+      <Link
+        className={classes.hyperlink}
         href={`${
           neuroglancerAddress
           }${props.dataset.makeNeuroglancerViewerState(displayVolumes)}`}
@@ -129,21 +139,22 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: Neuro
         rel="noopener noreferrer"
       >
         View with Neuroglancer
-      </a>
+      </Link>
       <LaunchIcon />
       {!webGL2Enabled && <WarningIcon />}
     </div>
   );
 }};
 
-export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey}) => {
+export const DatasetPaper: FunctionComponent<DatasetPaperProps> = (props: DatasetPaperProps) => {
   const classes = useStyles();
   const [appState, setAppState] = useContext(AppContext);
+  const datasetKey = props.datasetKey;
   const dataset: Dataset = appState.datasets.get(datasetKey);  
   const checkStateInit = new Map<string, boolean>();
-  for (let [key, value] of dataset.volumes.entries()) {
+  [... dataset.volumes.keys()].forEach((key) => {
      checkStateInit.set(key, true)
-  }
+  });
   const [checkState, setCheckState] = useState(checkStateInit);
   
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,8 +166,6 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey})
       setCheckState(newCheckState);
     }
   };
-
-
   return (
     <Paper className={classes.paper}>
       <Grid
@@ -168,11 +177,7 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey})
         alignItems="stretch"
       >
         <Grid item xs={4}>
-          <Markdown
-            className={classes.markdown}
-            source={dataset.readme.content}
-            escapeHtml={false}
-          />
+        <DescriptionText datasetDescription={dataset.description} titleLink={`/datasets/${dataset.key}`}/>
         </Grid>
         <Divider orientation="vertical" flexItem={true}></Divider>
         <Grid
