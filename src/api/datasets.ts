@@ -1,9 +1,14 @@
 import { urlSafeStringify, encodeFragment, Transform, ViewerState, LayerDataSource, Space, Layer, skeletonRendering } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON, bucketNameToURL} from "./datasources"
-import * as Path from "path"
+import * as Path from "path";
 import { bool } from "aws-sdk/clients/signer";
+import { kMaxLength } from "buffer";
+import { contextType } from "react-markdown";
 
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
+const SEGMENTATION_DTYPES = ['uint64'];
+type VolumeStores = 'n5' | 'precomputed' | 'zarr';
+export type ContentType = 'em' | 'segmentation';
 
 interface DisplaySettings {
     contrastMin: number
@@ -13,38 +18,110 @@ interface DisplaySettings {
     color: string
 }
 
+interface DatasetIndex {
+    name: string
+    volumes: {[key: string]: VolumeMeta}
+}
+
+interface SpatialTransform {
+    axes: string[]
+    units: string[]
+    translate: number[]
+    scale: number[]
+}
+
+interface VolumeMeta {
+    name: string
+    dataType: string
+    dimensions: number[]
+    transform: SpatialTransform
+    contentType: ContentType
+    description: string
+    alignment: string
+    roi: Array<any>
+    tags: Array<any>
+    displaySettings: DisplaySettings
+    store: VolumeStores
+}
+
+interface N5PixelResolution {
+    dimensions: number[]
+    unit: string
+}
+
+interface N5ArrayAttrs {
+    name: string
+    dimensions: number[]
+    dataType: string
+    pixelResolution: N5PixelResolution 
+    offset?: number[] 
+}
+
+interface NeuroglancerPrecomputedScaleAttrs {
+    chunk_sizes: number[]
+    encoding: string
+    key: string
+    resolution: number[]
+    size: number[]
+    voxel_offset: number[]
+    jpeg_quality?: number
+}
+
+interface NeuroglancerPrecomputedAttrs {
+    at_type: string
+    data_type: string
+    type: string
+    scales: NeuroglancerPrecomputedScaleAttrs[]
+    num_channels: number
+}
+
 const displayDefaults: DisplaySettings = {contrastMin: 0, contrastMax: 1, gamma: 1, invertColormap: false, color: "white"};
 
+// the filename of the readme document
 const readmeFileName: string = 'README.md';
+
+// one nanometer, expressed as a scaled meter
 const nm: [number, string] = [1e-9, 'm']
+
+// the axis order for neuroglancer is x y z
+const axisOrder = new Map([['x',0],['y',1],['z',2]]);
+
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: Space = { 'x': nm, 'y': nm, 'z': nm };
+
+// the key delimiter for paths
 const sep = "/";
-// the field in the top-level metadata of an n5 container that lists all the datasets for display
-const targetVolumesKey = "export"
+
+// the field in the top-level metadata that lists all the datasets for display
+const targetVolumesKey = "volumes"
+
 // the name of the base resolution; technically this can now be inferred from the multiscale metadata...
 const baseResolutionName = 's0'
 
-// Check whether a path represents a prediction volume. This is a hack and should be done with a proper
-// path parsing library
-
-function isPrediction(path: string, sep: string='/'): boolean {
-    let parts = path.split(sep);    
-    return (parts[parts.length - 3] === 'prediction');
+function makeShader(shaderArgs: DisplaySettings, contentType: ContentType): string{
+    switch (contentType) {
+    case 'em':    
+        return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMin})
+                #uicontrol float max slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMax})
+                #uicontrol float gamma slider(min=0, max=3, step=0.001, default=${shaderArgs.gamma})
+                #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertColormap? 1: 0})
+                #uicontrol vec3 color color(default="${shaderArgs.color}")
+                float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
+                float normer(float val) {return (clamp(val, min, max) - min) / (max-min);}
+                void main() {emitRGB(color * pow(inverter(normer(toNormalized(getDataValue())), invertColormap), gamma));}`
+    break
+    case 'segmentation':
+        return `#uicontrol vec3 color color(default="${shaderArgs.color}")
+                void main() {emitRGB(color * ceil(float(getDataValue().value[0]) / 4294967295.0));}`
+    }
+    return '';
 }
 
-
-function makeShader(shaderArgs: DisplaySettings): string{    
-    return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMin})
-            #uicontrol float max slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMax})
-            #uicontrol float gamma slider(min=0, max=3, step=0.001, default=${shaderArgs.gamma})
-            #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertColormap? 1: 0})
-            #uicontrol vec3 color color(default="${shaderArgs.color}")
-            float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
-            float normer(float val) {return (clamp(val, min, max) - min) / (max-min);}
-            void main() {emitRGB(color * pow(inverter(normer(toNormalized(getDataValue())), invertColormap), gamma));}`
+/* //shader for uint64 data
+void main() {
+  emitGrayscale(float(getDataValue().value[0]) / 255.0);
 }
-
+*/
 async function getText(url: string): Promise<string> {
     const response = await fetch(url);
     let text: string = '';
@@ -54,18 +131,15 @@ async function getText(url: string): Promise<string> {
     return text
 }
 
-class readme{public path: string;
-             public format: string         
-             public content: string;
-         
-             constructor(path: string, format: string, content: string){
-                this.path = path;
-                this.format = format;
-                this.content = content;
-             }
+class readme{
+        constructor(
+        public path: string, 
+        public format: string, 
+        public content: string){
+        }
 }
 
-async function readmeFactory(path: string){
+async function readmeFactory(path: string): Promise<readme> {
     const [format] = path.split('.').slice(-1);
     const content = await getText(path);
     return new readme(path, format, content)
@@ -82,27 +156,47 @@ export class Volume {
         public gridSpacing: number[],
         public unit: string,
         public displaySettings: DisplaySettings,
-    ) { }
+        public store: VolumeStores,
+        public contentType: ContentType,
+    ) {
+        this.path = path;
+        this.name = name;
+        this.dtype = dtype;
+        this.dimensions = dimensions;
+        this.origin = origin;
+        this.gridSpacing = gridSpacing;
+        this.unit = unit;
+        this.displaySettings = displaySettings;
+        this.store = store;
+        this.contentType = contentType;
+     }
 
     // Convert n5 attributes to an internal representation of the volume
     // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer 
     // viewer state construction
-    static fromN5Attrs(attrs: any): Volume {
-        // warning: this is a stupid hack
-        const offset = (attrs.offset? attrs.offset : [0,0,0]);       
-        const displaySettings: DisplaySettings = (attrs.displaySettings? attrs.displaySettings: displayDefaults); 
-        return new Volume(attrs.path,
-            attrs.name,
-            attrs.dataType,
-            attrs.dimensions,
-            offset,
-            attrs.pixelResolution["dimensions"],
-            attrs.pixelResolution["unit"],
-            displaySettings)
+
+    static fromVolumeMeta(outerPath:string, innerPath: string, volumeMeta: VolumeMeta): Volume {
+        // convert relative path to absolute path
+        //const absPath = Path.resolve(outerPath, innerPath);
+        const absPath = new URL(outerPath);
+        absPath.pathname = Path.resolve(absPath.pathname, innerPath); 
+        // reorder the transform parameters as needed
+        const axisIndices: Array<any> = volumeMeta.transform.axes.map(v => axisOrder.get(v));
+        const reorder = (arg: Array<any>) => axisIndices.map(v => arg[v])
+        return new Volume(absPath.toString(),
+                         volumeMeta.description, 
+                         volumeMeta.dataType,
+                         reorder(volumeMeta.dimensions),
+                         reorder(volumeMeta.transform.translate),
+                         reorder(volumeMeta.transform.scale),
+                         reorder(volumeMeta.transform.units)[0],
+                         volumeMeta.displaySettings,
+                         volumeMeta.store,
+                         volumeMeta.contentType)
     }
 
     toLayer(): Layer {
-        const srcURL = `n5://${this.path}`;
+        const srcURL = `${this.store}://${this.path}`;
         const inputDimensions: Space = {
             x: [1e-9 * this.gridSpacing[0], "m"],
             y: [1e-9 * this.gridSpacing[1], "m"],
@@ -118,39 +212,42 @@ export class Volume {
             inputDimensions)
 
         const source = new LayerDataSource(srcURL, transform);
-        const shader: string = makeShader(this.displaySettings);
+        let shader = '';
+        if (SEGMENTATION_DTYPES.includes(this.dtype)){
+            shader = makeShader(this.displaySettings, 'segmentation');
+        }
+        else if (IMAGE_DTYPES.includes(this.dtype)) {
+            shader = makeShader(this.displaySettings, 'em');
+        }
+        else {
+            console.log(`Datatype ${this.dtype} not recognized`)
+        }
 
         const defaultSkeletonRendering: skeletonRendering = { mode2d: "lines_and_points", mode3d: "lines" };
         let layer: Layer | null;
-        if (IMAGE_DTYPES.includes(this.dtype)) {
-            layer = new Layer("image", source,
-                undefined, this.name, undefined, undefined, shader);
-                layer.blend = 'additive'
-                layer.opacity = 1;
-            if (isPrediction(this.path)){layer.shader = shader;}
-        } else if (this.dtype === "uint64") {
-            layer = new Layer("segmentation", source,
-                undefined, this.name, undefined, defaultSkeletonRendering, undefined)
-        } else { throw `Something went wrong constructing layers from ${this}!` }
-
+        
+        layer = new Layer("image", source,
+            undefined, this.name, undefined, undefined, shader);
+            layer.blend = 'additive'
+            layer.opacity = .75;
         return layer;
     }
 }
 
 // a collection of volumes, i.e. a collection of ndimensional arrays 
 export class Dataset {
-    public path: string;
-    public name: string;
+    public key: string;
     public space: Space;
     public volumes: Map<string, Volume>;   
-    public readme?: readme;
-    constructor(path: string, name: string, space: Space, volumes: Volume[], readme: readme
-    ) {
-        this.path = path;
-        this.name = name;
+    public readme: readme;
+    public thumbnailPath: string 
+    constructor(key: string, space: Space, volumes: Map<string, Volume>, readme: readme,
+    thumbnailPath: string) {        
+        this.key = key;
         this.space = space;
-        this.volumes = new Map(volumes.map(v => [v.name, v]));
+        this.volumes = volumes;
         this.readme = readme;
+        this.thumbnailPath = thumbnailPath;
     }
 
     makeNeuroglancerViewerState(volumes: Volume[]): string {
@@ -177,63 +274,54 @@ export class Dataset {
     }
 }
 
-async function makeVolumes(rootAttrs: any) {
-    let rAttrs = await rootAttrs;
-    if (rootAttrs === undefined){return null};
-    let rootPath = rAttrs['root'];
-    let volumeNames = rAttrs[targetVolumesKey];
-    // In lieu of proper metadata validation, return null if the `multiscale_data` key is missing
-    if (volumeNames === undefined) {return Promise.resolve(null)}
-
-    let volumes: Promise<Volume>[] = volumeNames.map(async (name: string) => {
-        let path = `${rootPath}${name}${sep}`;
-        // get the attributes of the individual volumes
-        let attr = await getObjectFromJSON(
-            `${path}${baseResolutionName}${sep}attributes.json`
-        );
-        // add the full path as a property
-        if (attr !== undefined)
-            attr.path = path;
-            let volume = Volume.fromN5Attrs(attr);
-        
-        return volume;
-    });
-    return Promise.all(volumes);
+async function getDatasetKeys(bucket: string): Promise<string[]> {   
+    // get all the folders in the bucket
+    let datasetKeys = (await s3ls(bucket, '', '/', '', false)).folders; 
+    //remove trailing "/" character
+    datasetKeys = datasetKeys.map((k) => k.replace(/\/$/, ""));
+    return datasetKeys
 }
 
-export async function makeDatasets(bucket: string): Promise<Dataset[]> {   
-    // get all the folders in the bucket
-    let prefixes = (await s3ls(bucket, '', '/', '', false)).folders; 
-    // datasets will be stored as follows: <bucket name>/<dataset name>/<dataset name.n5>/*
-    let n5Containers = prefixes.map(f => `${bucketNameToURL(bucket)}/${f}${Path.basename(f)}.n5/`);    
-    // for each n5 container, get the root attributes
-    let rootAttrs = await Promise.all(n5Containers.map(async container => {
-        let rootAttrs = await getObjectFromJSON(`${container}attributes.json`);        
-        if (rootAttrs !== undefined){rootAttrs.root = container;}
-        return rootAttrs;
-    }));
+async function getDatasetIndex(bucket: string, datasetKey: string): Promise<DatasetIndex> {
+    const bucketURL = bucketNameToURL(bucket);
+    const indexFile = `${bucketURL}/${datasetKey}/index.json`
+    return getObjectFromJSON(indexFile)
+}
 
-    if (rootAttrs.length === 0){alert(`No n5 containers found in ${bucket}`)}
-    // for each volume described in the root attributes, instantiate an object for the metadata of that volume
-    let volumes = await Promise.all(rootAttrs.map(makeVolumes));    
-    let datasets = Promise.all(volumes.map(async (vol, idx) => {        
-        if (vol !== null) {
-            let readmeURL = new URL(readmeFileName, Path.dirname(n5Containers[idx])+'/').href;
-            let readme = await readmeFactory(readmeURL);
-            let dset = new Dataset(n5Containers[idx],
-                                   n5Containers[idx].split('/').slice(-2,-1).pop()?.split('.')[0],
-                                   outputDimensions,
-                                   vol,
-                                   readme)
-            return dset;}
-        else {           
-            return null
+async function getReadmeText(bucket: string, key: string){
+    const bucketURL = bucketNameToURL(bucket);
+    const readmeURL = `${bucketURL}/${key}/README.md`;
+    return readmeFactory(readmeURL);
+}
+
+async function getDescription(bucket: string, key: string): Promise<DatasetDescription> {
+    const bucketURL = bucketNameToURL(bucket);
+    const descriptionURL = `${bucketURL}/${key}/README.json`;
+    return getObjectFromJSON(descriptionURL);
+}
+
+export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {   
+    // get the keys to the datasets
+    const datasetKeys: string[] = await getDatasetKeys(bucket);
+    // Get a list of volume metadata specifications, represented instances of Map<string, VolumeMeta>
+    const datasets: Map<string, Dataset> = new Map();
+    for (const key of datasetKeys) {
+        const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
+        const readme = await getReadmeText(bucket, key);
+        const thumbnailPath: string =  `${outerPath}/thumbnail.jpg`
+        const index = await getDatasetIndex(bucket, key);
+        if (index !== undefined){
+            try {
+            const volumeMeta = new Map(Object.entries(index.volumes));
+            const volumes: Map<string, Volume> = new Map;
+            volumeMeta.forEach((v,k) => volumes.set(k, Volume.fromVolumeMeta(outerPath, k, v)));
+            datasets.set(key, new Dataset(key, outputDimensions, volumes, readme, thumbnailPath));
+        }
+        catch (error) {
+            console.log(error)
         }
         }
-    ))
-    // filter out the null datasets
-    datasets = datasets.then(d => d.filter(a => a !== null))
-    
+        else {console.log(`Could not load index.json from ${outerPath}`)}
+    }
     return datasets
-
 }

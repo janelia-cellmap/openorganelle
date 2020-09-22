@@ -9,17 +9,17 @@ import Pagination from "@material-ui/lab/Pagination";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import { Grid, Divider } from "@material-ui/core";
-import { makeDatasets, Dataset, Volume } from "../api/datasets";
+import { Grid, Divider, CardMedia } from "@material-ui/core";
+import {Dataset, Volume, ContentType} from "../api/datasets";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox, { CheckboxProps } from "@material-ui/core/Checkbox";
-
-import { AppContext } from "../context/AppContext";
+import Checkbox from "@material-ui/core/Checkbox";
+import thumbnail from "./cosem_logo.png";
+import { AppContext} from "../context/AppContext";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,199 +36,206 @@ const useStyles: any = makeStyles((theme: Theme) =>
     formControl: {
       margin: theme.spacing(1)
     },
-    formGroup: {}
+    formGroup: {},
+    datasetThumbnail: {
+    }
   })
 );
 
-export default function DataSetList() {
-  const datasetsInit: Dataset[] = [];
-  const [datasets, setDatasets] = useState(datasetsInit);
-  const [appState, setAppState] = useContext(AppContext);
-  const [currentPage, setCurrentPage] = useState(1);
+type NeuroglancerLinkProps = {
+  dataset: Dataset;
+  checkState: Map<string, boolean>;
+};
 
-  const datasetsPerPage = 10;
+type DatasetPaperProps = {
+  datasetKey: string;
+};
 
-  useEffect(() => {
-    const datasets = makeDatasets(appState.dataBucket);
-    datasets.then(setDatasets);
-    datasets.then(a => console.log(`Found datasets: ${String(a)}`));
-  }, []);
+type LayerCheckBoxListProps = {
+  dataset: Dataset;
+  checkState: Map<string, boolean>;
+  handleChange: any;
+}
 
-  type NeuroglancerLinkProps = {
-    appState: any;
-    dataset: Dataset;
-    volumeNames: string[];
-  };
+/* placeholder for when I start parsing the description from json 
+type DatasetDescriptionProps = {
+  
+}
 
-  type DatasetPaperProps = {
-    dataset: Dataset;
-    appState: any;
-  };
+const DatasetDescription: FunctionComponent<DatasetDescriptionProps> = (props: DatasetDescriptionProps) => 
+{
 
-  const LayerCheckboxList: FunctionComponent<any> = ({
-    volumeNames,
-    dataset,
-    checkstate,
-    handleChange
-  }) => {
-    const classes = useStyles();
-    const checkboxes = volumeNames.map(k => (
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={checkstate.get(k)}
-            onChange={handleChange}
-            name={k}
-            size="small"
-          />
-        }
-        label={k}
-        key={`${dataset.name}/${k}`}
+}
+*/
+
+const LayerCheckboxList: FunctionComponent<LayerCheckBoxListProps> = (props: LayerCheckBoxListProps) => {
+  const classes = useStyles();
+  const checkboxGroups: Map<ContentType, JSX.Element[]> = new Map();
+  
+  props.dataset.volumes.forEach((volume: Volume, key: string)  => {
+    
+    let cb = <FormControlLabel
+    control={
+      <Checkbox
+        checked={props.checkState.get(key)}
+        onChange={props.handleChange}
+        name={key}
+        size="small"
       />
-    ));
-    return (
-      <FormControl component="fieldset" className={classes.formControl}>
-        <FormLabel component="legend">Select layers</FormLabel>
-        <FormGroup className={classes.formGroup}>{checkboxes}</FormGroup>
-      </FormControl>
-    );
-  };
-
-  class ErrorBoundary extends React.Component {
-    constructor(props: any) {
-      super(props);
-      this.state = { hasError: false };
     }
+    label={volume.name}
+    key={`${props.dataset.key}/${key}`}
+  />;
+    
+    if (checkboxGroups.get(volume.contentType) === undefined) {checkboxGroups.set(volume.contentType, [])}
+    checkboxGroups.get(volume.contentType).push(cb);
+    });
+    
+  return (
+    <Grid item>
+    <Typography variant="h6">Select layers</Typography>
+    <FormControl component="fieldset" className={classes.formControl}>
+    <FormLabel component="legend">EM</FormLabel>
+    <Divider/>
+    <FormGroup className={classes.formGroup}>{checkboxGroups.get('em')}</FormGroup>
+    <FormLabel component="legend">Segmentation</FormLabel>
+    <Divider/>
+    <FormGroup className={classes.formGroup}>{checkboxGroups.get('segmentation')}</FormGroup>
+    </FormControl>
+    </Grid>
+  );
+};
 
-    componentDidCatch(error: any, info: any) {
-      // Display fallback UI
-      this.setState({ hasError: true });
-      // You can also log the error to an error reporting service
-      console.log(error, info);
-    }
 
-    render() {
-      if (this.state.hasError) {
-        // You can render any custom fallback UI
-        return <h1>Something went wrong.</h1>;
-      }
-      return this.props.children;
-    }
+const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: NeuroglancerLinkProps) => {
+
+  const [appState, setAppState] = useContext(AppContext);
+  const neuroglancerAddress = appState.neuroglancerAddress;
+  const webGL2Enabled = appState.webGL2Enabled;
+  const key = `${props.dataset.key}_NeuroglancerLink`;
+  const displayVolumes: Volume[] = [];
+  props.dataset.volumes.forEach((value: Volume, key: string)  => {
+    if (props.checkState.get(key)) {displayVolumes.push(value)}});
+  
+  if (displayVolumes.length == 0) {return <div> No layers selected </div>}
+  else {
+  return (
+    <div key={key}>
+      <a
+        href={`${
+          neuroglancerAddress
+          }${props.dataset.makeNeuroglancerViewerState(displayVolumes)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        View with Neuroglancer
+      </a>
+      <LaunchIcon />
+      {!webGL2Enabled && <WarningIcon />}
+    </div>
+  );
+}};
+
+export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey}) => {
+  const classes = useStyles();
+  const [appState, setAppState] = useContext(AppContext);
+  const dataset: Dataset = appState.datasets.get(datasetKey);  
+  const checkStateInit = new Map<string, boolean>();
+  for (let [key, value] of dataset.volumes.entries()) {
+     checkStateInit.set(key, true)
   }
-
-  const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = ({
-    appState,
-    dataset,
-    volumeNames
-  }) => {
-    const displayVolumes: Volume[] = volumeNames.map(k =>
-      dataset.volumes.get(k)
+  const [checkState, setCheckState] = useState(checkStateInit);
+  
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newCheckState = new Map(
+      checkState.set(event.target.name, event.target.checked).entries()
     );
-    const key = `${dataset.path}_${volumeNames.join("_")}`;
-    return (
-      <div key={key}>
-        <a
-          href={`${
-            appState.neuroglancerAddress
-          }${dataset.makeNeuroglancerViewerState(displayVolumes)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View with Neuroglancer
-        </a>
-        <LaunchIcon />
-        {!appState.webGL2Enabled && <WarningIcon />}
-      </div>
-    );
+    // Prevent all checkboxes from being deselected
+    if (![... newCheckState.values()].every(v => !v)) {
+      setCheckState(newCheckState);
+    }
   };
 
-  const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({
-    dataset,
-    appState
-  }) => {
-    const classes = useStyles();
-    const volumeNames: string[] = Array.from(dataset.volumes.keys());
-    const checkStateInit = new Map<string, boolean>();
-    volumeNames.forEach(v => checkStateInit.set(v, true));
-    const [checkState, setCheckState] = useState(checkStateInit);
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newCheckState = new Map(
-        checkState.set(event.target.name, event.target.checked).entries()
-      );
-      const vals = Array.from(newCheckState.values());
-      // Prevent all checkboxes from being deselected
-      if (!vals.every(v => !v)) {
-        setCheckState(newCheckState);
-      }
-    };
-    return (
-      <Paper className={classes.paper}>
+  return (
+    <Paper className={classes.paper}>
+      <Grid
+        container
+        className={classes.grid}
+        spacing={2}
+        direction="row"
+        justify="space-around"
+        alignItems="stretch"
+      >
+        <Grid item xs={4}>
+          <Markdown
+            className={classes.markdown}
+            source={dataset.readme.content}
+            escapeHtml={false}
+          />
+        </Grid>
+        <Divider orientation="vertical" flexItem={true}></Divider>
         <Grid
+          item
           container
-          className={classes.grid}
+          direction="column"
+          xs={4}
           spacing={2}
-          direction="row"
-          justify="space-evenly"
-          alignItems="stretch"
+          justify="flex-end"
         >
-          <Grid item xs={6}>
-            <Markdown
-              className={classes.markdown}
-              source={dataset.readme.content}
-              escapeHtml={false}
+          <Grid item>
+            <LayerCheckboxList
+              dataset={dataset}
+              checkState={checkState}
+              handleChange={handleChange}
+            />
+          </Grid> 
+          <Grid item>
+          <NeuroglancerLink
+              dataset={dataset}
+              checkState={checkState}
             />
           </Grid>
-          <Grid
-            item
-            container
-            direction="column"
-            xs={5}
-            spacing={2}
-            justify="flex-end"
-          >
-            <Grid item>
-              <LayerCheckboxList
-                volumeNames={volumeNames}
-                dataset={dataset}
-                checkstate={checkState}
-                handleChange={handleChange}
-              />
-            </Grid>
-            <Grid item>
-              <NeuroglancerLink
-                appState={appState}
-                dataset={dataset}
-                volumeNames={volumeNames.filter(v => checkState.get(v))}
-                webgl2State={appState.webGL2Enabled}
-              />
-            </Grid>
-          </Grid>
         </Grid>
-      </Paper>
-    );
-  };
+        <Divider orientation="vertical" flexItem={true}></Divider>
+        <Grid item>
+          <CardMedia
+            style={{ height: 256, width: 256, borderRadius: "10%" }}
+            image={dataset.thumbnailPath}
+          />
+        </Grid>
+      </Grid>
+    </Paper>
+  );
+};
+
+export default function DataSetPaperList() {
+  const [appState, setAppState] = useContext(AppContext);
+  const [currentPage, setCurrentPage] = useState(1);
+  const datasetsPerPage = 10;
+
+  const datasets: Map<string, Dataset> = appState.datasets;
+
   const rangeStart = (currentPage - 1) * datasetsPerPage;
   const rangeEnd = rangeStart + datasetsPerPage;
-  const totalPages = Math.ceil(datasets.length / datasetsPerPage);
+  const totalPages = Math.ceil(datasets.size / datasetsPerPage);
 
-  const displayedDataSets = datasets
+  const displayedDataSets = Array.from(datasets.keys())
     .slice(rangeStart, rangeEnd)
-    .map((ds, i) => (
+    .map((k, i) => (
       <DatasetPaper
-        dataset={ds}
-        appState={appState}
-        key={`${ds.path}_${rangeStart}_${i}`}
+        datasetKey={k}
+        key={`${k}_${rangeStart}_${i}`}
       />
     ));
 
   return (
     <div>
       <Typography variant="h5">
-        Datasets {rangeStart + 1} to {Math.min(rangeEnd, datasets.length)} of{" "}
-        {datasets.length}
+        Datasets {rangeStart + 1} to {Math.min(rangeEnd, datasets.size)} of{" "}
+        {datasets.size}
       </Typography>
-      {datasets.length > datasetsPerPage && (
+      {datasets.size > datasetsPerPage && (
         <Pagination
           count={totalPages}
           page={currentPage}
@@ -236,7 +243,7 @@ export default function DataSetList() {
         />
       )}
       {displayedDataSets}
-      {datasets.length > datasetsPerPage && (
+      {datasets.size > datasetsPerPage && (
         <Pagination
           count={totalPages}
           page={currentPage}

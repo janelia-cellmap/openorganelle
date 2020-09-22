@@ -1,24 +1,19 @@
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  FunctionComponent
-} from "react";
-import { Route, NavLink, Switch } from "react-router-dom";
+import React, {useState, useEffect, useContext} from "react";
+import { Route, NavLink, Switch, useParams } from "react-router-dom";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
-import { Grid, Divider } from "@material-ui/core";
+import { Grid} from "@material-ui/core";
 import Hidden from "@material-ui/core/Hidden";
 import Software from "./Software";
 import Tutorials from "./Tutorials";
 import Publications from "./Publications";
-import DataSetList from "./DataSetList";
-
+import DataSetPaperList, {DatasetPaper} from "./DataSetList";
 import thumbnail from "./cosem_segmentation_gradient.png";
-import { checkServerIdentity } from "tls";
-
 import "./Home.css";
+import { AppContext, AppProvider } from "../context/AppContext";
+import {makeDatasets, Dataset} from "../api/datasets";
+
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,7 +31,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
     },
     masthead: {
       background: "#5084AC",
-      minHeight: "411px",
+      minHeight: "335px",
       marginBottom: 0,
       color: "#fff"
     },
@@ -61,8 +56,25 @@ const useStyles: any = makeStyles((theme: Theme) =>
   })
 );
 
+function UseSlug(props: any) {
+  let {slug} = useParams();
+  const [appState, setAppState] = useContext(AppContext);
+  if (appState.datasets.get(slug) === undefined) {
+    return <div> Error 404: Could not find a dataset with the key {slug}</div>;
+  }
+  else {
+    return <DatasetPaper datasetKey={slug} key={props.url}/>
+  }
+}
+
 export default function Home() {
+
   const classes = useStyles();
+  const [appState, setAppState] = useContext(AppContext);
+
+  // Update the global datasets var when Home renders for the first time
+  useEffect(() => {makeDatasets(appState.dataBucket).then((ds) => setAppState({...appState, datasets: ds}));}, []);
+  console.log('Rendering Home!')
   return (
     <>
       <div className={classes.masthead}>
@@ -72,7 +84,7 @@ export default function Home() {
               <img
                 className={classes.thumbnail}
                 src={thumbnail}
-                alt="3D cosem image render"
+                alt="COSEM_demo_image"
               />
             </Grid>
             <Grid item sm={1} />
@@ -84,7 +96,7 @@ export default function Home() {
               portal: Open Organelle. Here we present large volume, high
               resolution 3D-Electron Microscopy (EM) data, acquired with a
               focused ion beam milling scanning electron microscope (FIB-SEM)
-              via the Hess lab. Accompanying these EM volumes are automated
+              via the Hess lab. Accompanying several of these EM volumes are automated
               segmentations of intracellular sub-structures made possible by
               COSEM. All datasets, training data, and predictions are available
               for online viewing and download.
@@ -109,12 +121,13 @@ export default function Home() {
         </ul>
       </div>
       <div className="content">
-        <Container maxWidth="md">
+        <Container maxWidth="lg">
           <Switch>
             <Route path="/software" component={Software} />
             <Route path="/tutorials" component={Tutorials} />
             <Route path="/publications" component={Publications} />
-            <Route path="/" exact component={DataSetList} />
+            <Route path="/" exact component={DataSetPaperList}/>
+            <Route path="/datasets/:slug" component={UseSlug}/>
           </Switch>
         </Container>
       </div>
