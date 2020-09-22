@@ -4,11 +4,12 @@ import React, {
   useContext,
   FunctionComponent
 } from "react";
+import { Link as RouterLink } from 'react-router-dom';
 import Pagination from "@material-ui/lab/Pagination";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import { Grid, Divider, CardMedia, Link, Box } from "@material-ui/core";
+import { Grid, Divider, CardMedia, CardActionArea, Link, Box } from "@material-ui/core";
 import {Dataset, Volume, ContentType} from "../api/datasets";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
@@ -69,7 +70,7 @@ type DescriptionTextProps = {
 const DescriptionText: FunctionComponent<DescriptionTextProps> = (props: DescriptionTextProps) => {
   const classes = useStyles();
   const description = props.datasetDescription;
-  
+
   return <Box>
     <Link href={props.titleLink} className={classes.hyperlink} variant="h6">{ReactHtmlParser(description.Title)}</Link>
     {[...Object.keys(description.Summary)].map(p => <p key={p}><strong>{ReactHtmlParser(p)}</strong>: {ReactHtmlParser(description.Summary[p])}</p>)}
@@ -80,14 +81,15 @@ const DescriptionText: FunctionComponent<DescriptionTextProps> = (props: Descrip
 const LayerCheckboxList: FunctionComponent<LayerCheckBoxListProps> = (props: LayerCheckBoxListProps) => {
   const classes = useStyles();
   const checkboxGroups: Map<ContentType, JSX.Element[]> = new Map();
-  
+
   props.dataset.volumes.forEach((volume: Volume, key: string)  => {
-    
+
     let cb = <FormControlLabel
     control={
       <Checkbox
         checked={props.checkState.get(key)}
         onChange={props.handleChange}
+        color="primary"
         name={key}
         size="small"
       />
@@ -95,11 +97,11 @@ const LayerCheckboxList: FunctionComponent<LayerCheckBoxListProps> = (props: Lay
     label={volume.name}
     key={`${props.dataset.key}/${key}`}
   />;
-    
+
     if (checkboxGroups.get(volume.contentType) === undefined) {checkboxGroups.set(volume.contentType, [])}
     checkboxGroups.get(volume.contentType).push(cb);
     });
-    
+
   return (
     <Grid item>
     <Typography variant="h6">Select layers</Typography>
@@ -125,7 +127,7 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: Neuro
   const displayVolumes: Volume[] = [];
   props.dataset.volumes.forEach((value: Volume, key: string)  => {
     if (props.checkState.get(key)) {displayVolumes.push(value)}});
-  
+
   if (displayVolumes.length == 0) {return <div> No layers selected </div>}
   else {
   return (
@@ -150,13 +152,13 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = (props: Datase
   const classes = useStyles();
   const [appState, setAppState] = useContext(AppContext);
   const datasetKey = props.datasetKey;
-  const dataset: Dataset = appState.datasets.get(datasetKey);  
+  const dataset: Dataset = appState.datasets.get(datasetKey);
   const checkStateInit = new Map<string, boolean>();
   [... dataset.volumes.keys()].forEach((key) => {
      checkStateInit.set(key, true)
   });
   const [checkState, setCheckState] = useState(checkStateInit);
-  
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newCheckState = new Map(
       checkState.set(event.target.name, event.target.checked).entries()
@@ -166,6 +168,9 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = (props: Datase
       setCheckState(newCheckState);
     }
   };
+
+  const datasetLink = `/datasets/${dataset.key}`;
+
   return (
     <Paper className={classes.paper}>
       <Grid
@@ -177,7 +182,7 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = (props: Datase
         alignItems="stretch"
       >
         <Grid item xs={4}>
-        <DescriptionText datasetDescription={dataset.description} titleLink={`/datasets/${dataset.key}`}/>
+        <DescriptionText datasetDescription={dataset.description} titleLink={datasetLink}/>
         </Grid>
         <Divider orientation="vertical" flexItem={true}></Divider>
         <Grid
@@ -194,7 +199,7 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = (props: Datase
               checkState={checkState}
               handleChange={handleChange}
             />
-          </Grid> 
+          </Grid>
           <Grid item>
           <NeuroglancerLink
               dataset={dataset}
@@ -204,10 +209,12 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = (props: Datase
         </Grid>
         <Divider orientation="vertical" flexItem={true}></Divider>
         <Grid item xs={4}>
-          <CardMedia
-            style={{ height: 256, width: 256, borderRadius: "10%" }}
-            image={dataset.thumbnailPath}
-          />
+          <CardActionArea component={RouterLink} to={datasetLink}>
+            <CardMedia
+              style={{ height: 256, width: 256, borderRadius: "10%" }}
+              image={dataset.thumbnailPath}
+            />
+          </CardActionArea>
         </Grid>
       </Grid>
     </Paper>
