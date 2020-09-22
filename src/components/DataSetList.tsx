@@ -92,9 +92,9 @@ const LayerCheckboxList: FunctionComponent<LayerCheckBoxListProps> = (props: Lay
     });
     
   return (
+    <Grid item>
+    <Typography variant="h6">Select layers</Typography>
     <FormControl component="fieldset" className={classes.formControl}>
-    <FormLabel component="legend">Select layers</FormLabel>
-    
     <FormLabel component="legend">EM</FormLabel>
     <Divider/>
     <FormGroup className={classes.formGroup}>{checkboxGroups.get('em')}</FormGroup>
@@ -102,6 +102,7 @@ const LayerCheckboxList: FunctionComponent<LayerCheckBoxListProps> = (props: Lay
     <Divider/>
     <FormGroup className={classes.formGroup}>{checkboxGroups.get('segmentation')}</FormGroup>
     </FormControl>
+    </Grid>
   );
 };
 
