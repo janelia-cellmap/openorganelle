@@ -8,7 +8,7 @@ import { contextType } from "react-markdown";
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
 type VolumeStores = 'n5' | 'precomputed' | 'zarr';
-type ContentType = 'em' | 'segmentation';
+export type ContentType = 'em' | 'segmentation';
 
 interface DisplaySettings {
     contrastMin: number
