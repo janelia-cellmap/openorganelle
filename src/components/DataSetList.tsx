@@ -102,15 +102,15 @@ const LayerCheckboxList: FunctionComponent<LayerCheckBoxListProps> = (props: Lay
 
   return (
     <Grid item>
-    <Typography variant="h6">Select layers</Typography>
-    <FormControl component="fieldset" className={classes.formControl}>
-    <FormLabel component="legend">EM</FormLabel>
-    <Divider/>
-    <FormGroup className={classes.formGroup}>{checkboxGroups.get('em')}</FormGroup>
-    <FormLabel component="legend">Segmentation</FormLabel>
-    <Divider/>
-    <FormGroup className={classes.formGroup}>{checkboxGroups.get('segmentation')}</FormGroup>
-    </FormControl>
+      <Typography variant="h6">Select layers</Typography>
+      <FormControl component="fieldset" className={classes.formControl}>
+      <FormLabel component="legend">EM</FormLabel>
+      <Divider/>
+      <FormGroup className={classes.formGroup}>{checkboxGroups.get('em')}</FormGroup>
+      <FormLabel component="legend">Segmentation</FormLabel>
+      <Divider/>
+      <FormGroup className={classes.formGroup}>{checkboxGroups.get('segmentation')}</FormGroup>
+      </FormControl>
     </Grid>
   );
 };
@@ -146,10 +146,9 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: Neuro
   );
 }};
 
-export const DatasetPaper: FunctionComponent<DatasetPaperProps> = (props: DatasetPaperProps) => {
+export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey}: DatasetPaperProps) => {
   const classes = useStyles();
   const [appState,] = useContext(AppContext);
-  const datasetKey = props.datasetKey;
   const dataset: Dataset = appState.datasets.get(datasetKey);
   const checkStateInit = new Map<string, boolean>();
   [...dataset.volumes.keys()].forEach((key) => {
@@ -219,6 +218,43 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = (props: Datase
   );
 };
 
+interface DataSetTileProps {
+  datasetKey: string;
+}
+
+function DataSetTile({datasetKey}: DataSetTileProps) {
+  const [appState,] = useContext(AppContext);
+  const dataset: Dataset = appState.datasets.get(datasetKey);
+  const datasetLink = `/datasets/${dataset.key}`;
+  const classes = useStyles();
+  return (
+    <Paper className={classes.paper}>
+      <Grid
+        container
+        className={classes.grid}
+        spacing={2}
+        direction="row"
+        justify="space-around"
+        alignItems="stretch"
+      >
+        <Grid item xs={4}>
+        <DescriptionText datasetDescription={dataset.description} titleLink={datasetLink}/>
+        </Grid>
+        <Divider orientation="vertical" flexItem={true}></Divider>
+        <Grid item xs={4}>
+          <CardActionArea component={RouterLink} to={datasetLink}>
+            <CardMedia
+              style={{ height: 256, width: 256, borderRadius: "10%" }}
+              image={dataset.thumbnailPath}
+            />
+          </CardActionArea>
+        </Grid>
+      </Grid>
+    </Paper>
+  );
+
+}
+
 export default function DataSetPaperList() {
   const [appState,] = useContext(AppContext);
   const [currentPage, setCurrentPage] = useState(1);
@@ -233,7 +269,7 @@ export default function DataSetPaperList() {
   const displayedDataSets = Array.from(datasets.keys())
     .slice(rangeStart, rangeEnd)
     .map((k, i) => (
-      <DatasetPaper
+      <DataSetTile
         datasetKey={k}
         key={`${k}_${rangeStart}_${i}`}
       />
