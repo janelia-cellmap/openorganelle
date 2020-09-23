@@ -15,7 +15,6 @@ const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
     title: {
       color: theme.palette.primary.main,
-      textDecoration: "none"
     }
   })
 );
@@ -27,10 +26,8 @@ export default function DatasetDescriptionText(props: DescriptionTextProps) {
 
   return (
     <Box>
-      <Typography variant="h6">
-        <RouterLink to={props.titleLink} className={classes.title}>
-          {ReactHtmlParser(description.Title)}
-        </RouterLink>
+      <Typography variant="h6" className={classes.title}>
+        {ReactHtmlParser(description.Title)}
       </Typography>
       {[...Object.keys(description.Summary)].map(value => (
         <p key={value}>
