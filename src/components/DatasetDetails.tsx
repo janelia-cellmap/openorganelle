@@ -6,7 +6,7 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import { AppContext } from "../context/AppContext";
 import { DatasetPaper } from "./DatasetList";
 
-const useStyles: any = makeStyles((theme) =>
+const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
     paper: {
       padding: theme.spacing(2),

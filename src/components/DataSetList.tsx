@@ -18,8 +18,6 @@ import FormLabel from "@material-ui/core/FormLabel";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { AppContext} from "../context/AppContext";
-import ReactHtmlParser from 'react-html-parser';
-import {DatasetDescription} from "../api/dataset_description";
 import DatasetTile from "./DatasetTile";
 import DatasetDescriptionText from "./DatasetDescriptionText";
 const useStyles: any = makeStyles((theme: Theme) =>
