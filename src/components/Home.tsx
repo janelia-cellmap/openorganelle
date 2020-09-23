@@ -8,7 +8,7 @@ import Hidden from "@material-ui/core/Hidden";
 import Software from "./Software";
 import Tutorials from "./Tutorials";
 import Publications from "./Publications";
-import DataSetPaperList from "./DataSetList";
+import DatasetList from "./DatasetList";
 import DatasetDetails from "./DatasetDetails";
 import thumbnail from "./cosem_segmentation_gradient.png";
 import "./Home.css";
@@ -120,7 +120,7 @@ export default function Home() {
             <Route path="/software" component={Software} />
             <Route path="/tutorials" component={Tutorials} />
             <Route path="/publications" component={Publications} />
-            <Route path="/" exact component={DataSetPaperList}/>
+            <Route path="/" exact component={DatasetList}/>
             <Route path="/datasets/:slug" component={DatasetDetails}/>
           </Switch>
         </Container>

@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
-import { AppContext } from "../context/AppContext";
-import { DatasetPaper } from "./DataSetList";
 import { useParams } from "react-router-dom";
 import Skeleton from '@material-ui/lab/Skeleton';
 import { Paper, Grid, Divider } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { AppContext } from "../context/AppContext";
+import { DatasetPaper } from "./DatasetList";
 
 const useStyles: any = makeStyles((theme) =>
   createStyles({
@@ -17,13 +17,14 @@ const useStyles: any = makeStyles((theme) =>
   })
 );
 
+interface DatasetDetailsProps {
+  url: string;
+}
 
-
-export default function DatasetDetails(props: any) {
+export default function DatasetDetails({url}: DatasetDetailsProps) {
   const classes = useStyles();
   let { slug } = useParams();
   const [appState] = useContext(AppContext);
-  // TODO: add loading spinner here instead of 404 page :-(.
   if (appState.datasetsLoading) {
     return (
       <Paper className={classes.paper}>
@@ -66,6 +67,6 @@ export default function DatasetDetails(props: any) {
   } else if (appState.datasets.get(slug) === undefined) {
     return <div> Error 404: Could not find a dataset with the key {slug}</div>;
   } else {
-    return <DatasetPaper datasetKey={slug} key={props.url} />;
+    return <DatasetPaper datasetKey={slug} key={url} />;
   }
 }

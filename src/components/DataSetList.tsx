@@ -18,8 +18,10 @@ import FormLabel from "@material-ui/core/FormLabel";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { AppContext} from "../context/AppContext";
-import {DatasetDescription} from "../api/dataset_description";
 import ReactHtmlParser from 'react-html-parser';
+import {DatasetDescription} from "../api/dataset_description";
+import DatasetTile from "./DatasetTile";
+import DatasetDescriptionText from "./DatasetDescriptionText";
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
     paper: {
@@ -57,23 +59,6 @@ type LayerCheckBoxListProps = {
   dataset: Dataset;
   checkState: Map<string, boolean>;
   handleChange: any;
-}
-
-
-type DescriptionTextProps = {
-  titleLink: string
-  datasetDescription: DatasetDescription
-}
-
-const DescriptionText: FunctionComponent<DescriptionTextProps> = (props: DescriptionTextProps) => {
-  const classes = useStyles();
-  const description = props.datasetDescription;
-
-  return <Box>
-    <h3><RouterLink to={props.titleLink}>{ReactHtmlParser(description.Title)}</RouterLink></h3>
-    {[...Object.keys(description.Summary)].map(p => <p key={p}><strong>{ReactHtmlParser(p)}</strong>: {ReactHtmlParser(description.Summary[p])}</p>)}
-  </Box>
-
 }
 
 const LayerCheckboxList: FunctionComponent<LayerCheckBoxListProps> = (props: LayerCheckBoxListProps) => {
@@ -179,7 +164,7 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey}:
         alignItems="stretch"
       >
         <Grid item xs={4}>
-        <DescriptionText datasetDescription={dataset.description} titleLink={datasetLink}/>
+        <DatasetDescriptionText datasetDescription={dataset.description} titleLink={datasetLink}/>
         </Grid>
         <Divider orientation="vertical" flexItem={true}></Divider>
         <Grid
@@ -218,44 +203,7 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey}:
   );
 };
 
-interface DataSetTileProps {
-  datasetKey: string;
-}
-
-function DataSetTile({datasetKey}: DataSetTileProps) {
-  const [appState,] = useContext(AppContext);
-  const dataset: Dataset = appState.datasets.get(datasetKey);
-  const datasetLink = `/datasets/${dataset.key}`;
-  const classes = useStyles();
-  return (
-    <Paper className={classes.paper}>
-      <Grid
-        container
-        className={classes.grid}
-        spacing={2}
-        direction="row"
-        justify="space-around"
-        alignItems="stretch"
-      >
-        <Grid item xs={4}>
-        <DescriptionText datasetDescription={dataset.description} titleLink={datasetLink}/>
-        </Grid>
-        <Divider orientation="vertical" flexItem={true}></Divider>
-        <Grid item xs={4}>
-          <CardActionArea component={RouterLink} to={datasetLink}>
-            <CardMedia
-              style={{ height: 256, width: 256, borderRadius: "10%" }}
-              image={dataset.thumbnailPath}
-            />
-          </CardActionArea>
-        </Grid>
-      </Grid>
-    </Paper>
-  );
-
-}
-
-export default function DataSetPaperList() {
+export default function DatasetList() {
   const [appState,] = useContext(AppContext);
   const [currentPage, setCurrentPage] = useState(1);
   const datasetsPerPage = 10;
@@ -266,10 +214,10 @@ export default function DataSetPaperList() {
   const rangeEnd = rangeStart + datasetsPerPage;
   const totalPages = Math.ceil(datasets.size / datasetsPerPage);
 
-  const displayedDataSets = Array.from(datasets.keys())
+  const displayedDatasets = Array.from(datasets.keys())
     .slice(rangeStart, rangeEnd)
     .map((k, i) => (
-      <DataSetTile
+      <DatasetTile
         datasetKey={k}
         key={`${k}_${rangeStart}_${i}`}
       />
@@ -288,7 +236,7 @@ export default function DataSetPaperList() {
           onChange={(e, value) => setCurrentPage(value)}
         />
       )}
-      {displayedDataSets}
+      {displayedDatasets}
       {datasets.size > datasetsPerPage && (
         <Pagination
           count={totalPages}
