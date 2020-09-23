@@ -7,7 +7,7 @@ export interface ContextProps {
   neuroglancerAddress: string,
   dataBucket: string,
   webGL2Enabled: boolean,
-  datasetsLoading: false,
+  datasetsLoading: boolean,
   datasets: Map<string, Dataset>
 }
 
@@ -20,6 +20,7 @@ const contextDefault: ContextProps = {
   neuroglancerAddress: "http://neuroglancer-demo.appspot.com/#!",
   dataBucket: 'janelia-cosem-datasets',
   webGL2Enabled: checkWebGL2(),
+  datasetsLoading: false,
   datasets: new Map()
 }
 
