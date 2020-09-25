@@ -1,13 +1,13 @@
-import { urlSafeStringify, encodeFragment, Transform, ViewerState, LayerDataSource, Space, Layer, skeletonRendering } from "@janelia-cosem/neuroglancer-url-tools";
+import { urlSafeStringify, encodeFragment, CoordinateSpaceTransform, CoordinateSpace, ViewerState, Layer, ImageLayer, LayerDataSource } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON, bucketNameToURL} from "./datasources"
 import * as Path from "path";
 import { bool } from "aws-sdk/clients/signer";
-import { kMaxLength } from "buffer";
-import { contextType } from "react-markdown";
 import {DatasetDescription} from "./dataset_description"
-import { Description } from "@material-ui/icons";
+
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
+type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
+
 type VolumeStores = 'n5' | 'precomputed' | 'zarr';
 export type ContentType = 'em' | 'segmentation';
 
@@ -76,6 +76,14 @@ interface NeuroglancerPrecomputedAttrs {
     num_channels: number
 }
 
+interface DatasetView {
+    name: string
+    description: string
+    position: number[]
+    scale: number
+    volumeNames: string[] 
+}
+
 const displayDefaults: DisplaySettings = {contrastMin: 0, contrastMax: 1, gamma: 1, invertColormap: false, color: "white"};
 
 // the filename of the readme document
@@ -117,12 +125,6 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType): stri
     }
     return '';
 }
-
-/* //shader for uint64 data
-void main() {
-  emitGrayscale(float(getDataValue().value[0]) / 255.0);
-}
-*/
 
 
 // A single n-dimensional array
@@ -175,23 +177,24 @@ export class Volume {
                          volumeMeta.contentType)
     }
 
-    toLayer(): Layer {
+    toLayer(layerType: LayerTypes): Layer {
         const srcURL = `${this.store}://${this.path}`;
-        const inputDimensions: Space = {
+        const inputDimensions: CoordinateSpace = {
             x: [1e-9 * this.gridSpacing[0], "m"],
             y: [1e-9 * this.gridSpacing[1], "m"],
             z: [1e-9 * this.gridSpacing[2], "m"]
         };
-        const transform = new Transform(
+        const transform: CoordinateSpaceTransform = {matrix: 
             [
                 [1, 0, 0, this.origin[0]],
                 [0, 1, 0, this.origin[1]],
                 [0, 0, 1, this.origin[2]]
             ],
-            outputDimensions,
-            inputDimensions)
+            outputDimensions: outputDimensions,
+            inputDimensions: inputDimensions}
 
-        const source = new LayerDataSource(srcURL, transform);
+        const source: LayerDataSource = {url: srcURL, 
+                                        CoordinateSpaceTransform: transform};
         let shader = '';
         if (SEGMENTATION_DTYPES.includes(this.dtype)){
             shader = makeShader(this.displaySettings, 'segmentation');
@@ -202,14 +205,17 @@ export class Volume {
         else {
             console.log(`Datatype ${this.dtype} not recognized`)
         }
-
-        const defaultSkeletonRendering: skeletonRendering = { mode2d: "lines_and_points", mode3d: "lines" };
-        let layer: Layer | null;
-        
-        layer = new Layer("image", source,
-            undefined, this.name, undefined, undefined, shader);
-            layer.blend = 'additive'
-            layer.opacity = .75;
+               
+        const layer = new ImageLayer('rendering',
+                               undefined,
+                               undefined, 
+                               source,
+                               0.75,
+                               'additive',
+                               shader,
+                               undefined, 
+                               undefined);
+        layer.name = this.name;
         return layer;
     }
 }
@@ -217,11 +223,11 @@ export class Volume {
 // a collection of volumes, i.e. a collection of ndimensional arrays 
 export class Dataset {
     public key: string;
-    public space: Space;
+    public space: CoordinateSpace;
     public volumes: Map<string, Volume>;   
     public description: DatasetDescription
     public thumbnailPath: string 
-    constructor(key: string, space: Space, volumes: Map<string, Volume>, description: DatasetDescription,
+    constructor(key: string, space: CoordinateSpace, volumes: Map<string, Volume>, description: DatasetDescription,
     thumbnailPath: string) {        
         this.key = key;
         this.space = space;
@@ -232,7 +238,7 @@ export class Dataset {
 
     makeNeuroglancerViewerState(volumes: Volume[]): string {
         const viewerPosition = undefined;
-        const layers = volumes.map(a => a.toLayer());
+        const layers = volumes.map(a => a.toLayer('image'));
         const projectionOrientation = undefined;
         const crossSectionOrientation = undefined;
         const projectionScale = undefined;
@@ -243,12 +249,26 @@ export class Dataset {
         const vState = new ViewerState(
             outputDimensions,
             viewerPosition,
-            crossSectionOrientation,
-            crossSectionScale,
-            projectionOrientation,
-            projectionScale,
             layers,
-            selectedLayer
+            '4panel',
+            undefined,
+            crossSectionScale,
+            undefined,
+            crossSectionOrientation,
+            projectionScale,
+            undefined,
+            projectionOrientation,
+            true,
+            true,
+            true,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            'black',
+            'black',            
+            selectedLayer,
+            undefined
         );
         return encodeFragment(urlSafeStringify(vState));
     }

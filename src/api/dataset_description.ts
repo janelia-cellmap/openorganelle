@@ -1,4 +1,5 @@
 
+// The contents of the README.json file which can be found in the root folder of each dataset
 interface DescriptionSummary {
     "Acquisition date": string
     "Dataset ID": string
@@ -11,6 +12,20 @@ interface DescriptionAbout {
     Protocol: string
     Contributions: string
 }
+
+
+interface DescriptionAcquisition {
+    "Final voxel size (nm)": string 
+    "Dimensions (\u00b5m)": string 
+    "Size (GB)": string
+    "Imaging duration (days)": string 
+    "Imaging start date":  string
+    "Primary energy (eV)": string 
+    "Bias (V)":  string
+    "Imaging current (nA)": string 
+    "Scanning speed (MHz)": string 
+}
+
 
 interface DescriptionAcquisition {
     "Final voxel size (nm)": string 
