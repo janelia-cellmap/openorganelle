@@ -1,5 +1,14 @@
-import { urlSafeStringify, encodeFragment, CoordinateSpaceTransform, CoordinateSpace, ViewerState, Layer, ImageLayer, LayerDataSource } from "@janelia-cosem/neuroglancer-url-tools";
-import { s3ls, getObjectFromJSON, bucketNameToURL} from "./datasources"
+import {
+  urlSafeStringify,
+  encodeFragment,
+  CoordinateSpaceTransform,
+  CoordinateSpace,
+  ViewerState,
+  Layer,
+  ImageLayer,
+  LayerDataSource,
+} from "@janelia-cosem/neuroglancer-url-tools";
+import { s3ls, getObjectFromJSON, bucketNameToURL } from "./datasources";
 import * as Path from "path";
 import { bool } from "aws-sdk/clients/signer";
 import {DatasetDescription} from "./dataset_description"
@@ -7,46 +16,55 @@ const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
 type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
 
-type VolumeStores = 'n5' | 'precomputed' | 'zarr';
-export type ContentType = 'em' | 'segmentation';
+type VolumeStores = "n5" | "precomputed" | "zarr";
+export type ContentType = "em" | "segmentation";
 
 interface DisplaySettings {
-    contrastMin: number
-    contrastMax: number
-    gamma: number
-    invertColormap: bool
-    color: string
+  contrastMin: number;
+  contrastMax: number;
+  gamma: number;
+  invertColormap: bool;
+  color: string;
 }
 
+export interface DatasetView {
+    name?: string;
+    description?: string;
+    position?: number[];
+    scale?: number;
+    volumeKeys?: string[];
+  }
+
 interface DatasetIndex {
-    name: string
-    volumes: {[key: string]: VolumeMeta}
+  name: string;
+  volumes: { [key: string]: VolumeMeta };
+  views: DatasetView[]
 }
 
 interface SpatialTransform {
-    axes: string[]
-    units: string[]
-    translate: number[]
-    scale: number[]
+  axes: string[];
+  units: string[];
+  translate: number[];
+  scale: number[];
 }
 
 interface VolumeMeta {
-    name: string
-    dataType: string
-    dimensions: number[]
-    transform: SpatialTransform
-    contentType: ContentType
-    description: string
-    alignment: string
-    roi: Array<any>
-    tags: Array<any>
-    displaySettings: DisplaySettings
-    store: VolumeStores
+  name: string;
+  dataType: string;
+  dimensions: number[];
+  transform: SpatialTransform;
+  contentType: ContentType;
+  description: string;
+  alignment: string;
+  roi: Array<any>;
+  tags: Array<any>;
+  displaySettings: DisplaySettings;
+  store: VolumeStores;
 }
 
 interface N5PixelResolution {
-    dimensions: number[]
-    unit: string
+  dimensions: number[];
+  unit: string;
 }
 
 interface N5ArrayAttrs {
@@ -58,13 +76,13 @@ interface N5ArrayAttrs {
 }
 
 interface NeuroglancerPrecomputedScaleAttrs {
-    chunk_sizes: number[]
-    encoding: string
-    key: string
-    resolution: number[]
-    size: number[]
-    voxel_offset: number[]
-    jpeg_quality?: number
+  chunk_sizes: number[];
+  encoding: string;
+  key: string;
+  resolution: number[];
+  size: number[];
+  voxel_offset: number[];
+  jpeg_quality?: number;
 }
 
 interface NeuroglancerPrecomputedAttrs {
@@ -83,25 +101,35 @@ interface DatasetView {
     volumeNames: string[]
 }
 
-const displayDefaults: DisplaySettings = {contrastMin: 0, contrastMax: 1, gamma: 1, invertColormap: false, color: "white"};
+const displayDefaults: DisplaySettings = {
+  contrastMin: 0,
+  contrastMax: 1,
+  gamma: 1,
+  invertColormap: false,
+  color: "white",
+};
 
 // the filename of the readme document
-const readmeFileName: string = 'README.md';
+const readmeFileName: string = "README.md";
 
 // one nanometer, expressed as a scaled meter
-const nm: [number, string] = [1e-9, 'm']
+const nm: [number, string] = [1e-9, "m"];
 
 // the axis order for neuroglancer is x y z
-const axisOrder = new Map([['x',0],['y',1],['z',2]]);
+const axisOrder = new Map([
+  ["x", 0],
+  ["y", 1],
+  ["z", 2],
+]);
 
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
-const outputDimensions: Space = { 'x': nm, 'y': nm, 'z': nm };
+const outputDimensions: CoordinateSpace = { x: nm, y: nm, z: nm };
 
 // the key delimiter for paths
 const sep = "/";
 
 // the field in the top-level metadata that lists all the datasets for display
-const targetVolumesKey = "volumes"
+const targetVolumesKey = "volumes";
 
 // the name of the base resolution; technically this can now be inferred from the multiscale metadata...
 const baseResolutionName = 's0'
@@ -116,15 +144,14 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType): stri
                 #uicontrol vec3 color color(default="${shaderArgs.color}")
                 float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
                 float normer(float val) {return (clamp(val, min, max) - min) / (max-min);}
-                void main() {emitRGB(color * pow(inverter(normer(toNormalized(getDataValue())), invertColormap), gamma));}`
-    break
-    case 'segmentation':
-        return `#uicontrol vec3 color color(default="${shaderArgs.color}")
-                void main() {emitRGB(color * ceil(float(getDataValue().value[0]) / 4294967295.0));}`
-    }
-    return '';
+                void main() {emitRGB(color * pow(inverter(normer(toNormalized(getDataValue())), invertColormap), gamma));}`;
+      break;
+    case "segmentation":
+      return `#uicontrol vec3 color color(default="${shaderArgs.color}")
+                void main() {emitRGB(color * ceil(float(getDataValue().value[0]) / 4294967295.0));}`;
+  }
+  return "";
 }
-
 
 // A single n-dimensional array
 export class Volume {
@@ -270,6 +297,40 @@ export class Dataset {
         );
         return encodeFragment(urlSafeStringify(vState));
     }
+    const projectionOrientation = undefined;
+    const crossSectionOrientation = undefined;
+    const projectionScale = undefined;
+    const crossSectionScale = view.scale;
+    const layers = view.volumeKeys.map((a) => this.volumes.get(a).toLayer("image"));
+    // the first layer is the selected layer; consider making this a kwarg
+    const selectedLayer = { layer: layers[0].name, visible: true };
+
+    const vState = new ViewerState(
+      this.space,
+      view.position,
+      layers,
+      "4panel",
+      undefined,
+      crossSectionScale,
+      undefined,
+      crossSectionOrientation,
+      projectionScale,
+      undefined,
+      projectionOrientation,
+      true,
+      true,
+      true,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      "black",
+      "black",
+      selectedLayer,
+      undefined
+    );
+    return encodeFragment(urlSafeStringify(vState));
+  }
 }
 
 async function getDatasetKeys(bucket: string): Promise<string[]> {
@@ -280,16 +341,22 @@ async function getDatasetKeys(bucket: string): Promise<string[]> {
     return datasetKeys
 }
 
-async function getDatasetIndex(bucket: string, datasetKey: string): Promise<DatasetIndex> {
-    const bucketURL = bucketNameToURL(bucket);
-    const indexFile = `${bucketURL}/${datasetKey}/index.json`
-    return getObjectFromJSON(indexFile)
+async function getDatasetIndex(
+  bucket: string,
+  datasetKey: string
+): Promise<DatasetIndex> {
+  const bucketURL = bucketNameToURL(bucket);
+  const indexFile = `${bucketURL}/${datasetKey}/index.json`;
+  return getObjectFromJSON(indexFile);
 }
 
-async function getDescription(bucket: string, key: string): Promise<DatasetDescription> {
-    const bucketURL = bucketNameToURL(bucket);
-    const descriptionURL = `${bucketURL}/${key}/README.json`;
-    return getObjectFromJSON(descriptionURL);
+async function getDescription(
+  bucket: string,
+  key: string
+): Promise<DatasetDescription> {
+  const bucketURL = bucketNameToURL(bucket);
+  const descriptionURL = `${bucketURL}/${key}/README.json`;
+  return getObjectFromJSON(descriptionURL);
 }
 
 export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {

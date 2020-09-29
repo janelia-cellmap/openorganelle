@@ -46,7 +46,6 @@ const useStyles: any = makeStyles((theme: Theme) =>
 
 type NeuroglancerLinkProps = {
   dataset: Dataset;
-  baseView: DatasetView
   checkState: Map<string, boolean>;
 };
 
@@ -105,7 +104,7 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: Neuro
   const [appState, ] = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const webGL2Enabled = appState.webGL2Enabled;
-  
+  const key = `${props.dataset.key}_NeuroglancerLink`;
   const displayVolumes: Volume[] = [];
   props.dataset.volumes.forEach((value: Volume, key: string)  => {
     if (props.checkState.get(key)) {displayVolumes.push(value)}});
@@ -113,12 +112,12 @@ const NeuroglancerLink: FunctionComponent<NeuroglancerLinkProps> = (props: Neuro
   if (displayVolumes.length === 0) {return <div> No layers selected </div>}
   else {
   return (
-    <Box>
+    <Box key={key}>
       <Link
         className={classes.hyperlink}
         href={`${
           neuroglancerAddress
-          }${props.dataset.makeNeuroglancerViewerState(view)}`}
+          }${props.dataset.makeNeuroglancerViewerState(displayVolumes)}`}
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -135,7 +134,7 @@ export const DatasetPaper: FunctionComponent<DatasetPaperProps> = ({datasetKey}:
   const [appState,] = useContext(AppContext);
   const dataset: Dataset = appState.datasets.get(datasetKey);
   const checkStateInit = new Map<string, boolean>();
-  dataset.views[0].volumeKeys.forEach((key) => {
+  [...dataset.volumes.keys()].forEach((key) => {
      checkStateInit.set(key, true)
   });
   const [checkState, setCheckState] = useState(checkStateInit);
