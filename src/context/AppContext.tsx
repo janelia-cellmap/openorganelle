@@ -11,7 +11,7 @@ export interface ContextProps {
   datasets: Map<string, Dataset>
 }
 
-interface IAppContext {
+interface AppContext {
   appState: ContextProps
   setAppstate: () => null
 }
@@ -24,7 +24,7 @@ const contextDefault: ContextProps = {
   datasets: new Map()
 }
 
-export const AppContext = React.createContext<IAppContext>({
+export const AppContext = React.createContext<AppContext>({
   appState: contextDefault,
   setAppstate: () => null
 });
