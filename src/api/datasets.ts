@@ -4,13 +4,11 @@ import {
   CoordinateSpaceTransform,
   CoordinateSpace,
   ViewerState,
-  Layer,
   ImageLayer,
   LayerDataSource,
 } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON, bucketNameToURL } from "./datasources";
 import * as Path from "path";
-import { bool } from "aws-sdk/clients/signer";
 import {DatasetDescription} from "./dataset_description"
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
@@ -27,12 +25,25 @@ interface DisplaySettings {
   color: string;
 }
 
-export interface DatasetView {
-    name?: string;
-    description?: string;
-    position?: number[];
-    scale?: number;
-    volumeKeys?: string[];
+export class DatasetView {
+    constructor(
+    public name: string, 
+    public description: string, 
+    public position?: number, 
+    public scale?: number, 
+    public volumeKeys: string[]){
+        
+        this.name = name;
+        this.description = description;
+
+        if (position === null) {this.position = undefined}
+        else (this.position = position)
+
+        if (scale === null) {this.scale = undefined}
+        else (this.scale = scale)
+
+        this.volumeKeys = volumeKeys;
+    }
   }
 
 interface DatasetIndex {
@@ -93,14 +104,6 @@ interface NeuroglancerPrecomputedAttrs {
     num_channels: number
 }
 
-interface DatasetView {
-    name: string
-    description: string
-    position: number[]
-    scale: number
-    volumeNames: string[]
-}
-
 const displayDefaults: DisplaySettings = {
   contrastMin: 0,
   contrastMax: 1,
@@ -108,9 +111,6 @@ const displayDefaults: DisplaySettings = {
   invertColormap: false,
   color: "white",
 };
-
-// the filename of the readme document
-const readmeFileName: string = "README.md";
 
 // one nanometer, expressed as a scaled meter
 const nm: [number, string] = [1e-9, "m"];
@@ -125,15 +125,6 @@ const axisOrder = new Map([
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: CoordinateSpace = { x: nm, y: nm, z: nm };
 
-// the key delimiter for paths
-const sep = "/";
-
-// the field in the top-level metadata that lists all the datasets for display
-const targetVolumesKey = "volumes";
-
-// the name of the base resolution; technically this can now be inferred from the multiscale metadata...
-const baseResolutionName = 's0'
-
 function makeShader(shaderArgs: DisplaySettings, contentType: ContentType): string{
     switch (contentType) {
     case 'em':
@@ -145,7 +136,6 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType): stri
                 float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
                 float normer(float val) {return (clamp(val, min, max) - min) / (max-min);}
                 void main() {emitRGB(color * pow(inverter(normer(toNormalized(getDataValue())), invertColormap), gamma));}`;
-      break;
     case "segmentation":
       return `#uicontrol vec3 color color(default="${shaderArgs.color}")
                 void main() {emitRGB(color * ceil(float(getDataValue().value[0]) / 4294967295.0));}`;
@@ -203,7 +193,7 @@ export class Volume {
                          volumeMeta.contentType)
     }
 
-    toLayer(layerType: LayerTypes): Layer {
+    toLayer(layerType: LayerTypes): ImageLayer {
         const srcURL = `${this.store}://${this.path}`;
         const inputDimensions: CoordinateSpace = {
             x: [1e-9 * this.gridSpacing[0], "m"],
@@ -252,22 +242,29 @@ export class Dataset {
     public volumes: Map<string, Volume>;
     public description: DatasetDescription
     public thumbnailPath: string
+    public views: DatasetView[]
     constructor(key: string, space: CoordinateSpace, volumes: Map<string, Volume>, description: DatasetDescription,
-    thumbnailPath: string) {
+    thumbnailPath: string, views: DatasetView[]) {
         this.key = key;
         this.space = space;
         this.volumes = volumes;
         this.description = description;
         this.thumbnailPath = thumbnailPath;
+        this.views = views;
     }
 
-    makeNeuroglancerViewerState(volumes: Volume[]): string {
-        const viewerPosition = undefined;
-        const layers = volumes.map(a => a.toLayer('image'));
+    makeNeuroglancerViewerState(view: DatasetView): string {        
+        const layers = [...this.volumes.keys()].filter(a => view.volumeKeys.includes(a)).map(a => this.volumes.get(a).toLayer('image'));
+        // hack to post-hoc adjust alpha if there is only 1 layer selected
+        if (layers.length  === 1) {layers[0].opacity = 1.0}
+        const viewerPosition = view.position;
+        let crossSectionScale = view.scale;
         const projectionOrientation = undefined;
         const crossSectionOrientation = undefined;
-        const projectionScale = undefined;
-        const crossSectionScale = 30.0;
+        const projectionScale = 65536;
+        if (crossSectionScale === undefined) {
+          crossSectionScale = 50.0;
+        }
         // the first layer is the selected layer; consider making this a kwarg
         const selectedLayer = {'layer': layers[0].name, 'visible': true};
 
@@ -296,42 +293,9 @@ export class Dataset {
             undefined
         );
         return encodeFragment(urlSafeStringify(vState));
-    }
-    const projectionOrientation = undefined;
-    const crossSectionOrientation = undefined;
-    const projectionScale = undefined;
-    const crossSectionScale = view.scale;
-    const layers = view.volumeKeys.map((a) => this.volumes.get(a).toLayer("image"));
-    // the first layer is the selected layer; consider making this a kwarg
-    const selectedLayer = { layer: layers[0].name, visible: true };
-
-    const vState = new ViewerState(
-      this.space,
-      view.position,
-      layers,
-      "4panel",
-      undefined,
-      crossSectionScale,
-      undefined,
-      crossSectionOrientation,
-      projectionScale,
-      undefined,
-      projectionOrientation,
-      true,
-      true,
-      true,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      "black",
-      "black",
-      selectedLayer,
-      undefined
-    );
-    return encodeFragment(urlSafeStringify(vState));
+    }    
   }
-}
+
 
 async function getDatasetKeys(bucket: string): Promise<string[]> {
     // get all the folders in the bucket
@@ -369,12 +333,14 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
         const description = await getDescription(bucket, key);
         const thumbnailPath: string =  `${outerPath}/thumbnail.jpg`
         const index = await getDatasetIndex(bucket, key);
+        const views: DatasetView[] = index.views.map(v => new DatasetView(v.name, v.description, v.position, v.scale, v.volumeKeys));
+
         if (index !== undefined){
             try {
             const volumeMeta = new Map(Object.entries(index.volumes));
-            const volumes: Map<string, Volume> = new Map;
+            const volumes: Map<string, Volume> = new Map();
             volumeMeta.forEach((v,k) => volumes.set(k, Volume.fromVolumeMeta(outerPath, k, v)));
-            datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailPath));
+            datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailPath, views));
         }
         catch (error) {
             console.log(error)

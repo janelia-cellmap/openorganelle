@@ -4,7 +4,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import { Paper, Grid, Divider } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import { AppContext } from "../context/AppContext";
-import { DatasetPaper } from "./DatasetList";
+import DatasetPaper from "./DatasetPaper";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,7 +23,7 @@ interface DatasetDetailsProps {
 
 export default function DatasetDetails({url}: DatasetDetailsProps) {
   const classes = useStyles();
-  let { slug } = useParams();
+  let { slug }: string = useParams();
   const [appState] = useContext(AppContext);
   if (appState.datasetsLoading) {
     return (
