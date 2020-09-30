@@ -45,9 +45,7 @@ export default function LayerCheckboxList({ dataset, checkState, handleChange }:
                 <FormLabel component="legend">EM</FormLabel>
                 <Divider />
                 <FormGroup className={classes.formGroup}>{checkboxGroups.get('em')}</FormGroup>
-                <FormLabel component="legend">Segmentation</FormLabel>
-                <Divider />
-                <FormGroup className={classes.formGroup}>{checkboxGroups.get('segmentation')}</FormGroup>
+                {(checkboxGroups.get('segmentation').length === 0) && <React.Fragment><FormLabel component="legend">Segmentation</FormLabel><Divider /><FormGroup className={classes.formGroup}>{checkboxGroups.get('segmentation')}</FormGroup></React.Fragment>}
             </FormControl>
         </Grid>
     );
