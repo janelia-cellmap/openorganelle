@@ -1,9 +1,9 @@
-import React, {useEffect, useContext} from "react";
+import React, { useEffect, useContext } from "react";
 import { Route, NavLink, Switch } from "react-router-dom";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
-import { Grid} from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import Hidden from "@material-ui/core/Hidden";
 import Software from "./Software";
 import Tutorials from "./Tutorials";
@@ -64,9 +64,9 @@ export default function Home() {
 
   // Update the global datasets var when Home renders for the first time
   useEffect(() => {
-    setAppState({...appState, datasetsLoading: true})
+    setAppState({ ...appState, datasetsLoading: true })
     makeDatasets(appState.dataBucket)
-      .then((ds) => setAppState({...appState, datasets: ds, datasetsLoading: false}));
+      .then((ds) => setAppState({ ...appState, datasets: ds, datasetsLoading: false }));
   }, []);
 
   return (
@@ -86,14 +86,12 @@ export default function Home() {
           <Grid item sm={10} md={6} className={classes.mastheadText}>
             <Typography variant="h3">Open Organelle</Typography>
             <Typography variant="body1" gutterBottom>
-              Welcome to the Hess Lab and COSEM Project Team FIB-SEM data
-              portal: Open Organelle. Here we present large volume, high
-              resolution 3D-Electron Microscopy (EM) data, acquired with a
-              focused ion beam milling scanning electron microscope (FIB-SEM)
-              via the Hess lab. Accompanying several of these EM volumes are automated
-              segmentations of intracellular sub-structures made possible by
-              COSEM. All datasets, training data, and predictions are available
-              for online viewing and download.
+              Welcome to the FIB-SEM Technology, Hess Lab, and COSEM Project Team’s 
+              focused ion beam milling scanning electron microscopy (FIB-SEM) data portal: Open Organelle. 
+              Here we present large volume, high resolution 3D-Electron Microscopy (EM) data, 
+              acquired with the enhanced FIB-SEM Technology developed at Janelia. Accompanying these EM volumes 
+              are automated segmentations of intracellular sub-structures made possible by COSEM. 
+              All datasets, training data, and predictions are available for online viewing and download.
             </Typography>
           </Grid>
         </Grid>
@@ -120,8 +118,8 @@ export default function Home() {
             <Route path="/software" component={Software} />
             <Route path="/tutorials" component={Tutorials} />
             <Route path="/publications" component={Publications} />
-            <Route path="/" exact component={DatasetList}/>
-            <Route path="/datasets/:slug" component={DatasetDetails}/>
+            <Route path="/" exact component={DatasetList} />
+            <Route path="/datasets/:slug" component={DatasetDetails} />
           </Switch>
         </Container>
       </div>

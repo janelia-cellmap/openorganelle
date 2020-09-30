@@ -6,8 +6,9 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../context/AppContext";
-import logo from "../COSEM_logo_invert_transparent.png";
-import janelia from "../janelia_logo.png";
+import cosemLogo from "../COSEM_logo_invert_transparent.png";
+import janeliaLogo from "../janelia_logo.png";
+import fibsemLogo from "../fibsem_logo.png";
 import {WebGL2CompatibilityWarning} from "./WebGL2Compatibility";
 
 const useStyles = makeStyles(theme => ({
@@ -22,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   spacer: {
     flexGrow: 1
   },
-  logo: {
+  cosemLogo: {
     maxHeight: "70px",
     marginRight: theme.spacing(2)
   },
@@ -36,7 +37,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-
+const cosemURL = "https://www.janelia.org/project-team/cosem"
+const hessURL = "https://www.janelia.org/lab/hess-lab"
+const fibsemURL = "https://www.janelia.org/lab/fib-sem-technology"
 
 export default function Navigation() {
   const classes = useStyles();
@@ -48,15 +51,18 @@ export default function Navigation() {
       <Toolbar variant="dense">
         <a href="https://www.janelia.org" className={classes.link}>
           <img
-            src={janelia}
+            src={janeliaLogo}
             alt="Janelia Research Campus"
             className={classes.janeliaLogo}
           />
         </a>
-        <a href="https://www.janelia.org/project-team/cosem">
-          <img src={logo} alt="COSEM" className={classes.logo} />
+        <a href={cosemURL}>
+          <img src={cosemLogo} alt="COSEM" className={classes.cosemLogo} />
         </a>
-        <a href="https://www.janelia.org/lab/hess-lab" className={classes.link}>
+        <a href={fibsemURL}>
+          <img src={fibsemLogo} alt="FIB-SEM Technology" className={classes.cosemLogo} />
+        </a>
+        <a href={hessURL} className={classes.link}>
           <Typography variant="h6" color="inherit" noWrap>
             Hess Lab
           </Typography>
