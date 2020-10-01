@@ -1,17 +1,22 @@
-import { Box, createStyles, Link, makeStyles } from "@material-ui/core";
+import { Box, createStyles, Link, Button } from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
 import React, {useContext } from "react";
 import { Dataset, DatasetView, Volume } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
 
-const useStyles: any = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            flexGrow: 1
-        },
-    })
-);
+const useStyles = makeStyles(theme => ({
+  root: {flexGrow: 1,
+        backgroundColor: "#fff",
+        fontFamily: "'Proxima Nova W01',Arial,Helvetica,sans-serif"},
+
+  link: {
+    color: theme.palette.info.contrastText,
+    backgroundColor: theme.palette.info.main,
+    fontSize: 12
+  }
+}));
 
 type NeuroglancerLinkProps = {
     dataset: Dataset;
@@ -25,7 +30,6 @@ export default function NeuroglancerLink({dataset, view, checkState}: Neuroglanc
     const [appState,] = useContext(AppContext);
     const neuroglancerAddress = appState.neuroglancerAddress;
     const webGL2Enabled = appState.webGL2Enabled;
-    const key = `${dataset.key}_NeuroglancerLink`;
     
     const local_view = {...view};
     local_view.volumeKeys = [];
@@ -37,17 +41,17 @@ export default function NeuroglancerLink({dataset, view, checkState}: Neuroglanc
     if (local_view.volumeKeys.length === 0) { return <div> No layers selected </div> }
     else {
       return (
-        <Box key={key}>
-          <Link
-            className={classes.hyperlink}
+        <Box>
+          <Button
+            className={classes.link}
             href={`${neuroglancerAddress
               }${dataset.makeNeuroglancerViewerState(local_view)}`}
             target="_blank"
             rel="noopener noreferrer"
+            endIcon={<LaunchIcon fontSize="small" />}
           >
-            View with Neuroglancer
-        </Link>
-          <LaunchIcon fontSize="small" />
+            View
+        </Button>
           {!webGL2Enabled && <WarningIcon />}
         </Box>
       );
