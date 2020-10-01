@@ -38,6 +38,7 @@ export default function LayerCheckboxList({ dataset, checkState, handleChange }:
         if (checkboxGroups.get(volume.contentType) === undefined) { checkboxGroups.set(volume.contentType, []) }
         checkboxGroups.get(volume.contentType).push(cb);
     });
+    console.log(checkboxGroups)
     return (
         <Grid item>
             <Typography variant="h6">Select layers</Typography>
@@ -45,7 +46,7 @@ export default function LayerCheckboxList({ dataset, checkState, handleChange }:
                 <FormLabel component="legend">EM</FormLabel>
                 <Divider />
                 <FormGroup className={classes.formGroup}>{checkboxGroups.get('em')}</FormGroup>
-                {(checkboxGroups.get('segmentation').length === 0) && <React.Fragment><FormLabel component="legend">Segmentation</FormLabel><Divider /><FormGroup className={classes.formGroup}>{checkboxGroups.get('segmentation')}</FormGroup></React.Fragment>}
+                {([...checkboxGroups.keys()].includes('segmentation')) && <React.Fragment><FormLabel component="legend">Segmentation</FormLabel><Divider /><FormGroup className={classes.formGroup}>{checkboxGroups.get('segmentation')}</FormGroup></React.Fragment>}
             </FormControl>
         </Grid>
     );
