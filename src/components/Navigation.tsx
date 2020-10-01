@@ -56,13 +56,13 @@ export default function Navigation() {
             className={classes.janeliaLogo}
           />
         </a>
-        <a href={cosemURL}>
+        <a href={cosemURL} target="_blank" rel="noopener noreferrer">
           <img src={cosemLogo} alt="COSEM" className={classes.cosemLogo} />
         </a>
-        <a href={fibsemURL}>
+        <a href={fibsemURL} target="_blank" rel="noopener noreferrer">
           <img src={fibsemLogo} alt="FIB-SEM Technology" className={classes.cosemLogo} />
         </a>
-        <a href={hessURL} className={classes.link}>
+        <a href={hessURL} className={classes.link} target="_blank" rel="noopener noreferrer">
           <Typography variant="h6" color="inherit" noWrap>
             Hess Lab
           </Typography>
