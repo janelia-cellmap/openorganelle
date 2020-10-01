@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
   link: {
     color: theme.palette.primary.contrastText,
     textDecoration: "none",
-    marginLeft: "1em"
+    marginLeft: "1em",
   },
   warning: {
     color: theme.palette.warning.light
@@ -49,14 +49,14 @@ export default function Navigation() {
     <React.Fragment>
     <AppBar position="fixed" className={classes.appbar}>
       <Toolbar variant="dense">
-        <a href="https://www.janelia.org" className={classes.link}>
+        <a href="https://www.janelia.org" className={classes.link} target="_blank" rel="noopener noreferrer">
           <img
             src={janeliaLogo}
             alt="Janelia Research Campus"
             className={classes.janeliaLogo}
           />
         </a>
-        <a href={cosemURL} target="_blank" rel="noopener noreferrer">
+        <a href={cosemURL} className={classes.link} target="_blank" rel="noopener noreferrer">
           <img src={cosemLogo} alt="COSEM" className={classes.cosemLogo} />
         </a>
         <a href={fibsemURL} target="_blank" rel="noopener noreferrer">
