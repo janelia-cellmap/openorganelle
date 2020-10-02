@@ -3,10 +3,11 @@ import { Paper, Grid, Divider, CardActionArea, CardMedia, createStyles, makeStyl
 import React, {useContext, useState } from "react";
 import { Dataset, DatasetView } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
-import DatasetDescriptionText from "./DatasetDescriptionText";
+import {DatasetDescriptionFull} from "./DatasetDescriptionText";
 import DatasetViewList from "./DatasetViewList";
 import LayerCheckboxList from "./LayerCheckboxList";
 import NeuroglancerLink from "./NeuroglancerLink";
+import { Description } from '@material-ui/icons';
 
 type DatasetPaperProps = {
     datasetKey: string;
@@ -19,10 +20,14 @@ interface CheckStates {
 
   const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
+    root: {
+      flexGrow:  1
+    },
     paper: {
       padding: theme.spacing(2),
       textAlign: "left",
       color: theme.palette.text.secondary,
+      fontFamily: "'Proxima Nova W01',Arial,Helvetica,sans-serif",
       margin: theme.spacing(2)
     },
     grid: {},
@@ -70,11 +75,12 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps){
       }
     };
   
-    const handleViewChange = (event: React.ChangeEvent<HTMLInputElement>, views: DatasetView[]) => {
+    const handleViewChange = (event: React.MouseEvent<HTMLInputElement>, views: DatasetView[]) => {
       // Only handle selected -> unselected event
+      
       if (event.target.checked === true) {
       
-        const newCheckState: bool[] = checkStates.viewCheckState.map(() => false);
+        const newCheckState: boolean[] = checkStates.viewCheckState.map(() => false);
         newCheckState[parseInt(event.target.name)] = event.target.checked;
     
         const newLayerState = new Map([...checkStates.layerCheckState.entries()].map(([k, v]) => [k, false]));      
@@ -85,6 +91,17 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps){
       }
     };
   
+    const handleViewToggle = (index: number, views: DatasetView[]) => () => {
+      const newViewState = checkStates.viewCheckState.map((v) => false);
+      newViewState[index] = true;
+
+      const newLayerState = new Map([...checkStates.layerCheckState.entries()].map(([k, v]) => [k, false]));      
+      views[newViewState.findIndex((v) => v)].volumeKeys.map(k => newLayerState.set(k, true));
+  
+      setCheckStates({...checkStates, layerCheckState: newLayerState, viewCheckState: newViewState});
+    }
+
+
     const datasetLink = `/datasets/${dataset.key}`;
   
     return (
@@ -97,8 +114,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps){
           justify="space-around"
           alignItems="stretch"
         >
-          <Grid item xs={4}>
-            <DatasetDescriptionText datasetDescription={dataset.description} titleLink={datasetLink} />
+          <Grid item xs={5}>
+            <DatasetDescriptionFull datasetDescription={dataset.description} titleLink={datasetLink} />
           </Grid>
           <Divider orientation="vertical" flexItem={true}></Divider>
           <Grid
@@ -107,8 +124,15 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps){
             direction="column"
             xs={4}
             spacing={2}
-            justify="flex-end"
+            justify="flex-start"
           >
+            <Grid item>
+            <DatasetViewList
+           views={dataset.views} 
+           handleToggle={handleViewToggle} 
+           checkState={checkStates.viewCheckState}>
+          </DatasetViewList>
+            </Grid>
             <Grid item>
               <LayerCheckboxList
                 dataset={dataset}
@@ -125,19 +149,14 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps){
             </Grid>
           </Grid>
           <Divider orientation="vertical" flexItem={true}></Divider>
-          <Grid item xs={4}>
+          <Grid item>
             <CardActionArea component={RouterLink} to={datasetLink}>
               <CardMedia
-                style={{ height: 256, width: 256, borderRadius: "10%" }}
+                style={{ height: 128, width: 128, borderRadius: "10%" }}
                 image={dataset.thumbnailPath}
               />
             </CardActionArea>
           </Grid>
-          <DatasetViewList
-           views={dataset.views} 
-           handleChange={(e) => handleViewChange(e, dataset.views)} 
-           checkState={checkStates.viewCheckState}>
-          </DatasetViewList>
         </Grid>
       </Paper>
     );

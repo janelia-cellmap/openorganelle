@@ -5,7 +5,7 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import { Grid, Divider, CardMedia, CardActionArea } from "@material-ui/core";
 import { AppContext } from "../context/AppContext";
 import { Dataset } from "../api/datasets";
-import DatasetDescriptionText from "./DatasetDescriptionText";
+import {DatasetDescriptionPreview} from "./DatasetDescriptionText";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,7 +41,7 @@ export default function DatasetTile({ datasetKey }: DatasetTileProps) {
           alignItems="stretch"
         >
           <Grid item xs={4}>
-            <DatasetDescriptionText
+            <DatasetDescriptionPreview
               datasetDescription={dataset.description}
               titleLink={datasetLink}
             />

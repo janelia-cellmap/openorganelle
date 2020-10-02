@@ -19,8 +19,9 @@ const useStyles: any = makeStyles((theme: Theme) =>
 );
 
 
-export default function DatasetDescriptionText(props: DescriptionTextProps) {
+export function DatasetDescriptionPreview(props: DescriptionTextProps) {
   const description = props.datasetDescription;
+  console.log(description)
   const classes = useStyles();
 
   return (
@@ -32,6 +33,32 @@ export default function DatasetDescriptionText(props: DescriptionTextProps) {
         <p key={value}>
           <strong>{ReactHtmlParser(value)}</strong>:{" "}
           {ReactHtmlParser(description.Summary[value])}
+        </p>
+      ))}
+    </Box>
+  );
+}
+
+export function DatasetDescriptionFull(props: DescriptionTextProps) {
+  const description = props.datasetDescription;
+  const classes = useStyles();
+
+  return (
+    <Box>
+      <Typography variant="h6" className={classes.title}>
+        {ReactHtmlParser(description.Title)}
+      </Typography>
+
+    {[...Object.keys(description["About this sample"])].map(value => (
+        <p key={value}>
+          <strong>{ReactHtmlParser(value)}</strong>:{" "}{ReactHtmlParser(description["About this sample"][value])}
+        </p>
+      ))}
+
+
+{[...Object.keys(description["Acquisition information"])].map(value => (
+        <p key={value}>
+          <strong>{ReactHtmlParser(value)}</strong>:{" "}{ReactHtmlParser(description["Acquisition information"][value])}
         </p>
       ))}
     </Box>

@@ -2,31 +2,56 @@
 import React from "react";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import { Grid } from "@material-ui/core";
+import { Checkbox, Grid, IconButton, ListItemIcon, ListItemSecondaryAction, ListItemText, Radio } from "@material-ui/core";
 import DatasetViewCard from "./DatasetViewCard";
 import { DatasetView } from "../api/datasets";
+import List from "@material-ui/core/List"
+import ListItem from '@material-ui/core/ListItem';
 
-const useStyles: any = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            flexGrow: 1
-        },
-    })
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      width: '100%',
+      maxWidth: '36ch',
+      backgroundColor: theme.palette.background.paper,
+    },
+    inline: {
+      display: 'inline',
+    },
+  }),
 );
 
 interface DatasetViewListProps {
     views: DatasetView[]
     checkState: boolean[]
-    handleChange: any
+    handleToggle: (val: number, views:  DatasetView[]) => () => void | undefined
 }
 
-export default function DatasetViewList({views, checkState, handleChange}: DatasetViewListProps){
+export default function DatasetViewList({views, checkState, handleToggle}: DatasetViewListProps){
     const classes = useStyles();
-    return <Grid container direction='column' className={classes.root}>
-        <Typography variant="h6">Select view</Typography>
-        {views.map((v, idx) =>
-            <Grid item key={idx}>
-                <DatasetViewCard view={v} handleChange={handleChange} checked={checkState[idx]} name={idx.toString()} /
-            ></Grid>)
-        }</Grid>
-}
+
+    return (
+        <List className={classes.root}>
+            <Typography variant="h6">Select a view</Typography>
+          {views.map((value, idx) => {
+            const labelId = `checkbox-list-label-${value.name}`;
+    
+            return (
+              <ListItem key={idx} role={undefined} dense button onClick={handleToggle(idx, views)}>
+                <ListItemIcon>
+                  <Radio
+                    edge="start"
+                    checked={checkState[idx]}
+                    tabIndex={-1}
+                    disableRipple
+                    inputProps={{ 'aria-labelledby': labelId }}
+                  />
+                </ListItemIcon>
+                <ListItemText id={labelId} primary={value.name} 
+                secondary={value.description}/>
+              </ListItem>
+            );
+          })}
+        </List>
+      ); 
+    }

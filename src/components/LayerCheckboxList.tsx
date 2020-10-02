@@ -41,12 +41,12 @@ export default function LayerCheckboxList({ dataset, checkState, handleChange }:
     console.log(checkboxGroups)
     return (
         <Grid item>
-            <Typography variant="h6">Select layers</Typography>
+            <Typography variant="h6">Select layers for this view</Typography>
             <FormControl component="fieldset" className={classes.formControl}>
-                <FormLabel component="legend">EM</FormLabel>
+                <FormLabel component="legend">EM Layers</FormLabel>
                 <Divider />
                 <FormGroup className={classes.formGroup}>{checkboxGroups.get('em')}</FormGroup>
-                {([...checkboxGroups.keys()].includes('segmentation')) && <React.Fragment><FormLabel component="legend">Segmentation</FormLabel><Divider /><FormGroup className={classes.formGroup}>{checkboxGroups.get('segmentation')}</FormGroup></React.Fragment>}
+                {([...checkboxGroups.keys()].includes('segmentation')) && <React.Fragment><FormLabel component="legend">Segmentation Layers</FormLabel><Divider /><FormGroup className={classes.formGroup}>{checkboxGroups.get('segmentation')}</FormGroup></React.Fragment>}
             </FormControl>
         </Grid>
     );
