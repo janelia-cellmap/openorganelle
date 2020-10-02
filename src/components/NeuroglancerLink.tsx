@@ -8,12 +8,11 @@ import WarningIcon from "@material-ui/icons/Warning";
 
 const useStyles = makeStyles(theme => ({
   root: {flexGrow: 1,
-        backgroundColor: "#fff",
         fontFamily: "'Proxima Nova W01',Arial,Helvetica,sans-serif"},
 
   link: {
-    color: theme.palette.info.contrastText,
-    backgroundColor: theme.palette.info.main,
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.primary.main,
     fontSize: 12
   }
 }));
