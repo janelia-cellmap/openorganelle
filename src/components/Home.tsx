@@ -11,6 +11,7 @@ import Publications from "./Publications";
 import DatasetList from "./DatasetList";
 import DatasetDetails from "./DatasetDetails";
 import thumbnail from "./cosem_segmentation_gradient.png";
+import banner from "./cosem_banner.jpg";
 import "./Home.css";
 import { AppContext } from "../context/AppContext";
 import { makeDatasets } from "../api/datasets";
@@ -28,12 +29,19 @@ const useStyles: any = makeStyles((theme: Theme) =>
     mastheadText: {
       marginTop: "3em",
       fontFamily: "'Proxima Nova W01',Arial,Helvetica,sans-serif",
-      padding: "1em"
+      padding: "1em",
+      position: "absolute",
+      bottom: "0",
+      left: "1em",
+      textShadow: "0 1px 0 black"
     },
     masthead: {
-      background: "#5084AC",
-      minHeight: "335px",
+      background: ["linear-gradient( to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7))",`url(${banner})`],
+      backgroundPositionX: 'right',
+      backgroundSize: "cover",
+      minHeight: "200px",
       marginBottom: 0,
+      position: "relative",
       color: "#fff"
     },
     secondaryNav: {
@@ -73,25 +81,10 @@ export default function Home() {
     <>
       <div className={classes.masthead}>
         <Grid container spacing={2} className={classes.root}>
-          <Hidden smDown>
-            <Grid item sm={4}>
-              <img
-                className={classes.thumbnail}
-                src={thumbnail}
-                alt="COSEM_demo_image"
-              />
-            </Grid>
-            <Grid item sm={1} />
-          </Hidden>
           <Grid item sm={10} md={6} className={classes.mastheadText}>
             <Typography variant="h3">Open Organelle</Typography>
             <Typography variant="body1" gutterBottom>
-              Welcome to the FIB-SEM Technology, Hess Lab, and COSEM Project Team’s 
-              focused ion beam milling scanning electron microscopy (FIB-SEM) data portal: Open Organelle. 
-              Here we present large volume, high resolution 3D-Electron Microscopy (EM) data, 
-              acquired with the enhanced FIB-SEM Technology developed at Janelia. Accompanying these EM volumes 
-              are automated segmentations of intracellular sub-structures made possible by COSEM. 
-              All datasets, training data, and predictions are available for online viewing and download.
+             Explore cells and tissue at nanometer resolution
             </Typography>
           </Grid>
         </Grid>
