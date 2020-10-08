@@ -1,8 +1,13 @@
 .content {
   margin: 1em;
+  margin-top: 54px;
   min-height: 600px;
+  flex: 1 0 auto;
 }
 
 .App {
   background: #fff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }

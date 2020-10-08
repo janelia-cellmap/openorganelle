@@ -31,7 +31,10 @@ const useStyles = makeStyles(theme => ({
   },
   appbar: {
     /* Chrome 10-25, Safari 5.1-6 */
-    background: "#303030",
+    background: "#333",
+  },
+  toolbar: {
+    minHeight: "54px",
   }
 }));
 
@@ -40,9 +43,9 @@ export default function Navigation() {
   const [appState, ] = useContext(AppContext);
 
   return (
-    <React.Fragment>
+    <>
     <AppBar position="fixed" className={classes.appbar}>
-      <Toolbar variant="dense">
+      <Toolbar variant="dense" className={classes.toolbar}>
         <a href="https://www.janelia.org" className={classes.link} target="_blank" rel="noopener noreferrer">
           <img
             src={janeliaLogo}
@@ -69,7 +72,6 @@ export default function Navigation() {
       </Toolbar>
       {!appState.webGL2Enabled && <WebGL2CompatibilityWarning/>}
     </AppBar>
-    <Toolbar/>
-    </React.Fragment>
+    </>
   );
 }

@@ -40,14 +40,15 @@ const useStyles: any = makeStyles((theme: Theme) =>
       backgroundPositionX: 'right',
       backgroundSize: "cover",
       minHeight: "200px",
-      marginBottom: 0,
       position: "relative",
-      color: "#fff"
+      color: "#fff",
+      margin: "0 -1em 0 -1em",
     },
     secondaryNav: {
       background: "#27507C",
       color: "#fff",
-      minHeight: "40px"
+      minHeight: "40px",
+      margin: "0 -1em 0 -1em"
     },
     navList: {
       display: "block",
@@ -78,34 +79,33 @@ export default function Home() {
   }, []);
 
   return (
-    <>
+    <div className="content">
       <div className={classes.masthead}>
-        <Grid container spacing={2} className={classes.root}>
-          <Grid item sm={10} md={6} className={classes.mastheadText}>
-            <Typography variant="h3">Open Organelle</Typography>
-            <Typography variant="body1" gutterBottom>
-             Explore cells and tissue at nanometer resolution
-            </Typography>
+          <Grid container spacing={2} className={classes.root}>
+            <Grid item sm={10} md={6} className={classes.mastheadText}>
+              <Typography variant="h3">Open Organelle</Typography>
+              <Typography variant="body1" gutterBottom>
+              Explore cells and tissue at nanometer resolution
+              </Typography>
+            </Grid>
           </Grid>
-        </Grid>
-      </div>
-      <div className={classes.secondaryNav}>
-        <ul className={classes.navList}>
-          <NavLink exact to="/">
-            <li className={classes.navListItem}>Datasets</li>
-          </NavLink>
-          <NavLink to="/software">
-            <li className={classes.navListItem}>Software</li>
-          </NavLink>
-          <NavLink to="/publications">
-            <li className={classes.navListItem}>Publications</li>
-          </NavLink>
-          <NavLink to="/tutorials">
-            <li className={classes.navListItem}>Tutorials</li>
-          </NavLink>
-        </ul>
-      </div>
-      <div className="content">
+        </div>
+        <div className={classes.secondaryNav}>
+          <ul className={classes.navList}>
+            <NavLink exact to="/">
+              <li className={classes.navListItem}>Datasets</li>
+            </NavLink>
+            <NavLink to="/software">
+              <li className={classes.navListItem}>Software</li>
+            </NavLink>
+            <NavLink to="/publications">
+              <li className={classes.navListItem}>Publications</li>
+            </NavLink>
+            <NavLink to="/tutorials">
+              <li className={classes.navListItem}>Tutorials</li>
+            </NavLink>
+          </ul>
+        </div>
         <Container maxWidth="lg">
           <Switch>
             <Route path="/software" component={Software} />
@@ -116,6 +116,5 @@ export default function Home() {
           </Switch>
         </Container>
       </div>
-    </>
   );
 }
