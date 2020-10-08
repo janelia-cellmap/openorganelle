@@ -20,7 +20,7 @@ export default function Settings() {
   const [appState, setAppState] = useContext(AppContext);
 
   return (
-    <div className={classes.settings}>
+    <div className="content">
       <Typography variant="h3" gutterBottom>
         Site settings
       </Typography>

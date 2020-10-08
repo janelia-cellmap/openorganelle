@@ -14,10 +14,17 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.primary.contrastText,
     textDecoration: "none",
     marginLeft: "1em",
+    display: "inline-block"
   },
   cosemLogo: {
     maxHeight: "70px",
     marginRight: theme.spacing(2)
+  },
+  footer: {
+    padding: '1em 0',
+    background: '#333',
+    color: '#fff',
+    textAlign: 'center'
   }
 }));
 
@@ -25,8 +32,7 @@ const useStyles = makeStyles(theme => ({
 export default function Footer() {
   const classes = useStyles();
   return (
-    <footer>
-      <p>HHMI &copy; 2020</p>
+    <footer className={classes.footer}>
       <a
         href={cosemURL}
         className={classes.link}
@@ -52,6 +58,7 @@ export default function Footer() {
           Hess Lab
         </Typography>
       </a>
+      <p>&copy; 2020 HHMI</p>
     </footer>
   );
 }
