@@ -46,7 +46,6 @@ export default function DatasetTile({ datasetKey }: DatasetTileProps) {
               titleLink={datasetLink}
             />
           </Grid>
-          <Divider orientation="vertical" flexItem={true}></Divider>
           <Grid item xs={4}>
             <CardActionArea>
               <CardMedia
