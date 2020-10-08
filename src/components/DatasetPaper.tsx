@@ -12,7 +12,7 @@ import { Description } from '@material-ui/icons';
 type DatasetPaperProps = {
     datasetKey: string;
   };
-  
+
 interface CheckStates {
     layerCheckState: Map<string, boolean>
     viewCheckState: boolean[]
@@ -49,7 +49,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps){
     const [appState,] = useContext(AppContext);
     const dataset: Dataset = appState.datasets.get(datasetKey);
     // initialize the layer checkboxes by looking at the first dataset view
-    
+
     const layerCheckStateInit = new Map<string, boolean>([...dataset.volumes.keys()].map(k => {
       let vkeys = dataset.views[0].volumeKeys;
       if (vkeys.includes(k)) {
@@ -59,12 +59,12 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps){
         return [k, false]
       }
     }));
-  
+
     // the first view is selected, by default
-    const viewCheckStateInit = dataset.views.map((v, idx) => idx === 0);  
-    
+    const viewCheckStateInit = dataset.views.map((v, idx) => idx === 0);
+
     const [checkStates, setCheckStates] = useState({layerCheckState: layerCheckStateInit, viewCheckState: viewCheckStateInit})
-    
+
     const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const newCheckState = new Map(
         checkStates.layerCheckState.set(event.target.name, event.target.checked).entries()
@@ -74,36 +74,36 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps){
         setCheckStates({...checkStates, layerCheckState: newCheckState});
       }
     };
-  
+
     const handleViewChange = (event: React.MouseEvent<HTMLInputElement>, views: DatasetView[]) => {
       // Only handle selected -> unselected event
-      
+
       if (event.target.checked === true) {
-      
+
         const newCheckState: boolean[] = checkStates.viewCheckState.map(() => false);
         newCheckState[parseInt(event.target.name)] = event.target.checked;
-    
-        const newLayerState = new Map([...checkStates.layerCheckState.entries()].map(([k, v]) => [k, false]));      
+
+        const newLayerState = new Map([...checkStates.layerCheckState.entries()].map(([k, v]) => [k, false]));
         views[newCheckState.findIndex((v) => v)].volumeKeys.map(k => newLayerState.set(k, true));
-  
+
         setCheckStates({...checkStates, layerCheckState: newLayerState, viewCheckState: newCheckState});
-        // reset the state of layer selection checkboxes 
+        // reset the state of layer selection checkboxes
       }
     };
-  
+
     const handleViewToggle = (index: number, views: DatasetView[]) => () => {
       const newViewState = checkStates.viewCheckState.map((v) => false);
       newViewState[index] = true;
 
-      const newLayerState = new Map([...checkStates.layerCheckState.entries()].map(([k, v]) => [k, false]));      
+      const newLayerState = new Map([...checkStates.layerCheckState.entries()].map(([k, v]) => [k, false]));
       views[newViewState.findIndex((v) => v)].volumeKeys.map(k => newLayerState.set(k, true));
-  
+
       setCheckStates({...checkStates, layerCheckState: newLayerState, viewCheckState: newViewState});
     }
 
 
     const datasetLink = `/datasets/${dataset.key}`;
-  
+
     return (
       <Paper className={classes.paper}>
         <Grid
@@ -128,8 +128,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps){
           >
             <Grid item>
             <DatasetViewList
-           views={dataset.views} 
-           handleToggle={handleViewToggle} 
+           views={dataset.views}
+           handleToggle={handleViewToggle}
            checkState={checkStates.viewCheckState}>
           </DatasetViewList>
             </Grid>
@@ -161,4 +161,4 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps){
       </Paper>
     );
   };
-  
+
