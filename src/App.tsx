@@ -2,6 +2,7 @@ import React from "react";
 import Home from "./components/Home";
 import About from "./components/About";
 import Navigation from "./components/Navigation";
+import Footer from "./components/Footer";
 import Settings from "./components/Settings";
 import { AppProvider } from "./context/AppContext";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
@@ -44,6 +45,7 @@ function App() {
                 <Home />
               </Route>
             </Switch>
+            <Footer/>
           </div>
         </Router>
       </AppProvider>
