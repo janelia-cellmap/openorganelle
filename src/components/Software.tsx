@@ -8,12 +8,48 @@ export default function Software() {
         Software
       </Typography>
 
+      <Typography variant="h4" gutterBottom>
+        Visualization
+      </Typography>
+      <ul>
+        <li>Neuroglancer</li>
+      </ul>
+      <Typography variant="h4" gutterBottom>
+        Registration
+      </Typography>
+      <Typography variant="h4" gutterBottom>
+        Annotation
+      </Typography>
+      <Typography variant="h4" gutterBottom>
+        Graphing
+      </Typography>
+      <Typography variant="h4" gutterBottom>
+        Python Libraries
+      </Typography>
+      <ul>
+        <li>SimpleITK</li>
+        <li>Numpy</li>
+        <li>Scipy</li>
+        <li>Zarr</li>
+        <li>Dask</li>
+      </ul>
+
+      <Typography variant="h4" gutterBottom>
+        ...ML?
+      </Typography>
+      <ul>
+        <li>docker</li>
+        <li>Tensorflow</li>
+      </ul>
+      <Typography variant="h4" gutterBottom>
+        Analysis
+      </Typography>
+
       <ul>
         <li>Amira-Avizo (ThermoFisher)</li>
         <li>
           FIJI (<a href="https://fiji.sc">https://fiji.sc</a>)
         </li>
-        <li>Neuroglancer</li>
         <li>
           BigDataViewer (
           <a href="https://imagej.net/BigDataViewer">
@@ -58,14 +94,7 @@ export default function Software() {
         <li>OriginPro</li>
         <li>matplotlib</li>
 
-        <li>docker</li>
-        <li>Tensorflow</li>
         <li>MongoDB/pymongo</li>
-        <li>SimpleITK</li>
-        <li>Numpy</li>
-        <li>Scipy</li>
-        <li>Zarr</li>
-        <li>Dask</li>
         <li>Apache spark</li>
         <li>
           Gurobi (<a href="https://www.gurobi.com">https://www.gurobi.com</a>)
