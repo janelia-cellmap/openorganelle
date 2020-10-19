@@ -8,6 +8,7 @@ import Hidden from "@material-ui/core/Hidden";
 import Software from "./Software";
 import Tutorials from "./Tutorials";
 import Publications from "./Publications";
+import Organelles from "./Organelles";
 import DatasetList from "./DatasetList";
 import DatasetDetails from "./DatasetDetails";
 import thumbnail from "./cosem_segmentation_gradient.png";
@@ -104,6 +105,9 @@ export default function Home() {
             <NavLink to="/tutorials">
               <li className={classes.navListItem}>Tutorials</li>
             </NavLink>
+            <NavLink to="/organelles">
+              <li className={classes.navListItem}>Organelles</li>
+            </NavLink>
           </ul>
         </div>
         <Container maxWidth="lg">
@@ -111,6 +115,7 @@ export default function Home() {
             <Route path="/software" component={Software} />
             <Route path="/tutorials" component={Tutorials} />
             <Route path="/publications" component={Publications} />
+            <Route path="/organelles" component={Organelles} />
             <Route path="/" exact component={DatasetList} />
             <Route path="/datasets/:slug" component={DatasetDetails} />
           </Switch>
