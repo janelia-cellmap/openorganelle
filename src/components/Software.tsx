@@ -12,7 +12,13 @@ export default function Software() {
         Visualization
       </Typography>
       <ul>
-        <li>Neuroglancer</li>
+        <li>
+          Neuroglancer (
+          <a href="https://opensource.google/projects/neuroglancer">
+            https://opensource.google/projects/neuroglancer
+          </a>
+          )
+        </li>
       </ul>
       <Typography variant="h4" gutterBottom>
         Registration
@@ -27,19 +33,33 @@ export default function Software() {
         Python Libraries
       </Typography>
       <ul>
-        <li>SimpleITK</li>
-        <li>Numpy</li>
-        <li>Scipy</li>
-        <li>Zarr</li>
-        <li>Dask</li>
+        <li>
+          SimpleITK(<a href="https://simpleitk.org/">https://simpleitk.org/</a>)
+        </li>
+        <li>
+          Numpy (<a href="https://numpy.org/">https://numpy.org/</a>)
+        </li>
+        <li>
+          Scipy (<a href="https://www.scipy.org/">https://www.scipy.org/</a>)
+        </li>
+        <li>
+          Zarr (
+          <a href="https://zarr.readthedocs.io/en/stable/">
+            https://zarr.readthedocs.io/en/stable/
+          </a>
+          )
+        </li>
+        <li>
+          Dask (<a href="https://dask.org/">https://dask.org/</a>)
+        </li>
       </ul>
 
       <Typography variant="h4" gutterBottom>
         ...ML?
       </Typography>
       <ul>
-        <li>docker</li>
-        <li>Tensorflow</li>
+        <li>docker (<a href="https://www.docker.com/">https://www.docker.com/</a>)</li>
+        <li>Tensorflow (<a href="https://www.tensorflow.org/">https://www.tensorflow.org/</a>)</li>
       </ul>
       <Typography variant="h4" gutterBottom>
         Analysis
@@ -91,11 +111,14 @@ export default function Software() {
           Knossos (<a href="https://knossos.app">https://knossos.app</a>)
         </li>
 
-        <li>OriginPro</li>
+        <li>OriginPro (<a href="https://www.originlab.com/origin">https://www.originlab.com/origin</a>)</li>
         <li>matplotlib</li>
 
         <li>MongoDB/pymongo</li>
-        <li>Apache spark</li>
+        <li>
+          Apache spark (
+          <a href="https://spark.apache.org/">https://spark.apache.org/</a>)
+        </li>
         <li>
           Gurobi (<a href="https://www.gurobi.com">https://www.gurobi.com</a>)
         </li>

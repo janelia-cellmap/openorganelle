@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from "react";
-import { Route, NavLink, Switch } from "react-router-dom";
+import { Route, NavLink, Link, Switch } from "react-router-dom";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
@@ -83,7 +83,7 @@ export default function Home() {
       <div className={classes.masthead}>
           <Grid container spacing={2} className={classes.root}>
             <Grid item sm={10} md={6} className={classes.mastheadText}>
-              <Typography variant="h3">Open Organelle</Typography>
+              <Typography variant="h3"><Link to="/">Open Organelle</Link></Typography>
               <Typography variant="body1" gutterBottom>
               Explore cells and tissue at nanometer resolution
               </Typography>
