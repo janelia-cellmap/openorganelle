@@ -1,6 +1,5 @@
 .content {
-  margin: 1em;
-  margin-top: 54px;
+  margin: 0 1em 1em;
   min-height: 600px;
   flex: 1 0 auto;
 }
