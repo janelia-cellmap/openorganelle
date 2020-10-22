@@ -37,15 +37,44 @@ export default function Organelles() {
 
   return (
     <div>
+      <h3>Organelles</h3>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell style={{width: "20em"}}>Organelle</TableCell>
+            <TableCell style={{ width: "20em" }}>Organelle</TableCell>
             <TableCell>Description</TableCell>
-            <TableCell style={{width: "5em"}}>Link</TableCell>
+            <TableCell style={{ width: "5em" }}>Link</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>{tableRows}</TableBody>
+      </Table>
+      <h3>Contact Sites</h3>
+      <Table>
+        <TableHead>
+            <TableCell style={{ width: "20em" }}>Organelle</TableCell>
+            <TableCell>File Name</TableCell>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell>Organelle</TableCell>
+            <TableCell>file_name</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+      <h3>Analysis</h3>
+      <Table>
+        <TableHead>
+            <TableCell style={{ width: "20em" }}>Organelle</TableCell>
+            <TableCell>File Name</TableCell>
+            <TableCell>Description</TableCell>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell>Organelle</TableCell>
+            <TableCell>file_name</TableCell>
+            <TableCell>description</TableCell>
+          </TableRow>
+        </TableBody>
       </Table>
     </div>
   );
