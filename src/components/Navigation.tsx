@@ -4,6 +4,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import SettingsIcon from '@material-ui/icons/Settings';
 import { Grid } from "@material-ui/core";
 import { AppContext } from "../context/AppContext";
 import janeliaLogo from "../janelia_logo.png";
@@ -113,9 +114,7 @@ export default function Navigation() {
           </Typography>
         </Link>
         <Link className={classes.link} to="/settings">
-          <Typography variant="h6" color="inherit" noWrap>
-            Settings
-          </Typography>
+          <SettingsIcon />
         </Link>
       </Toolbar>
       {!appState.webGL2Enabled && <WebGL2CompatibilityWarning/>}
