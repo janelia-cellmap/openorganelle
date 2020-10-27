@@ -58,13 +58,13 @@ const useStyles: any = makeStyles((theme: Theme) =>
       minHeight: "200px",
       position: "relative",
       color: "#fff",
-      margin: "62px -1em 0 -1em"
+      margin: "62px 0 0 -1em"
     },
     secondaryNav: {
       background: "#27507C",
       color: "#fff",
       minHeight: "40px",
-      margin: "0 -1em 0 -1em"
+      margin: "0 0 0 -1em"
     },
     navList: {
       display: "block",
