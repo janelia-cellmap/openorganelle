@@ -11,6 +11,8 @@ custom:
   client:
     bucketName: janelia-openorganelle-web-${self:custom.stage}
     distributionFolder: build
+    indexDocument: index.html
+    errorDocument: index.html
 
 provider:
   name: aws
