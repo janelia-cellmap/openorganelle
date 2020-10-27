@@ -53,6 +53,13 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
 
   if (description === undefined)
   {
+    return <Box>
+  <Typography variant="h6" className={classes.title}>
+    {ReactHtmlParser('No description provided')}
+  </Typography>
+  </Box>
+  }
+else {
   return (
     <Box>
       <Typography variant="h6" className={classes.title}>
@@ -74,12 +81,5 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
     </Box>
   );
 }
-
-else {
-  return <Box>
-  <Typography variant="h6" className={classes.title}>
-    {ReactHtmlParser('No description provided')}
-  </Typography>
-  </Box>
-}
+  
 }
