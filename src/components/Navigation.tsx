@@ -58,13 +58,13 @@ const useStyles: any = makeStyles((theme: Theme) =>
       minHeight: "200px",
       position: "relative",
       color: "#fff",
-      margin: "62px -1em 0 -1em"
+      margin: "62px 0 0 -1em"
     },
     secondaryNav: {
       background: "#27507C",
       color: "#fff",
       minHeight: "40px",
-      margin: "0 -1em 0 -1em"
+      margin: "0 0 0 -1em"
     },
     navList: {
       display: "block",
@@ -124,7 +124,7 @@ export default function Navigation() {
         <Grid item sm={10} md={6} className={classes.mastheadText}>
           <Typography variant="h3">
             <Link className={classes.homeLink} to="/">
-              Open Organelle
+              OpenOrganelle
             </Link>
           </Typography>
           <Typography variant="body1" gutterBottom>

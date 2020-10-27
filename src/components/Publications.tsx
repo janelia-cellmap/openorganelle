@@ -3,7 +3,7 @@ import Typography from "@material-ui/core/Typography";
 
 export default function Publications() {
   return (
-    <div>
+    <div style={{ maxWidth: "54em", marginLeft: "auto", marginRight: "auto" }}>
       <Typography variant="h3" gutterBottom>
         Publications
       </Typography>

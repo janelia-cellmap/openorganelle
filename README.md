@@ -1,4 +1,4 @@
-COSEM Data portal (Open Organelle)
+COSEM Data portal (OpenOrganelle)
 
 This app provides a gateway for visualization of large cloud-hosted FIB-SEM datasets via [neuroglancer](www.github.com/google/neuroglancer).
 

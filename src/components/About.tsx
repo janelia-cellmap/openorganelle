@@ -5,7 +5,7 @@ export default function About() {
   return (
     <div className="content">
       <Typography variant="h3" gutterBottom style={{ marginTop: "2em", textAlign: "center" }}>
-        Welcome to HHMI Janelia’s Open&nbsp;Organelle.
+        Welcome to HHMI Janelia’s OpenOrganelle.
       </Typography>
       <div
         style={{ maxWidth: "45em", marginLeft: "auto", marginRight: "auto" }}
