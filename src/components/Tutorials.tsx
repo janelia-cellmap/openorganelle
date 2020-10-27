@@ -22,7 +22,7 @@ export default function Tutorials() {
   return (
     <div style={{ maxWidth: "54em", marginLeft: "auto", marginRight: "auto" }}>
       <Typography variant="h3" gutterBottom>
-        OpenOrganelle Tutorials
+        Tutorials
       </Typography>
       <Paper className={classes.section}>
         <Typography variant="h4" gutterBottom>
