@@ -7,7 +7,7 @@ import ReactHtmlParser from 'react-html-parser';
 
 type DescriptionTextProps = {
   titleLink: string;
-  datasetDescription: DatasetDescription;
+  datasetDescription: DatasetDescription | undefined;
 };
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -21,9 +21,17 @@ const useStyles: any = makeStyles((theme: Theme) =>
 
 export function DatasetDescriptionPreview(props: DescriptionTextProps) {
   const description = props.datasetDescription;
-  console.log(description)
   const classes = useStyles();
-
+  if (description === undefined) {
+    return (
+      <Box>
+<Typography variant="h6" className={classes.title}>
+  {ReactHtmlParser('No description provided')}
+</Typography>
+</Box>
+    );  
+  }
+  else 
   return (
     <Box>
       <Typography variant="h6" className={classes.title}>
@@ -43,6 +51,8 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
   const description = props.datasetDescription;
   const classes = useStyles();
 
+  if (description === undefined)
+  {
   return (
     <Box>
       <Typography variant="h6" className={classes.title}>
@@ -63,4 +73,13 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
       ))}
     </Box>
   );
+}
+
+else {
+  return <Box>
+  <Typography variant="h6" className={classes.title}>
+    {ReactHtmlParser('No description provided')}
+  </Typography>
+  </Box>
+}
 }
