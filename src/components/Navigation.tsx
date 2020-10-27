@@ -124,7 +124,7 @@ export default function Navigation() {
         <Grid item sm={10} md={6} className={classes.mastheadText}>
           <Typography variant="h3">
             <Link className={classes.homeLink} to="/">
-              Open Organelle
+              OpenOrganelle
             </Link>
           </Typography>
           <Typography variant="body1" gutterBottom>
