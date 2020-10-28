@@ -7,6 +7,8 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 import ng_contrast from "./ng_contrast.png";
 import ng_resolution from "./ng_resolution.png";
+import fijiIcon from "./fiji_icon.png";
+import "./Tutorials.css";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,7 +30,7 @@ export default function Tutorials() {
         <Typography variant="h4" gutterBottom>
           Website
         </Typography>
-        <Typography variant="h5">Navigating OpenOrganelle</Typography>
+        <Typography variant="h5" gutterBottom>Navigating OpenOrganelle</Typography>
         <Typography paragraph>
           Our data portal is organized on five main pages. Datasets, Software,
           Tutorials, Publications, and Organelles. In these pages you will find
@@ -36,7 +38,7 @@ export default function Tutorials() {
           information about the mission of the data portal and the teams
           involved please visit our About page.
         </Typography>
-        <Typography variant="h5">Datasets</Typography>
+        <Typography variant="h5" gutterBottom>Datasets</Typography>
         <Typography paragraph>
           On the <Link to="/">Datasets</Link> page you will find a list of all
           the available FIB-SEM datasets and accompanying segmentations.
@@ -45,9 +47,9 @@ export default function Tutorials() {
           acquisition, data location, links for viewing in FIJI. On the
           individual dataset page you can also select layers to view in
           Neuroglancer to browse the data online. More about the layer selection
-          can be found in <a href="">Visualization</a>.
+          can be found in <a href="#visualization">Visualization</a>.
         </Typography>
-        <Typography variant="h5">Software</Typography>
+        <Typography variant="h5" gutterBottom>Software</Typography>
         <Typography paragraph>
           On the <Link to="/software">Software</Link> page is a comprehensive
           list of all the software that was used to generate these datasets.
@@ -55,20 +57,20 @@ export default function Tutorials() {
           manual, machine learning libraries, analysis, and much more. Here you
           will also find useful links to our GitHub repositories.
         </Typography>
-        <Typography variant="h5">Tutorials</Typography>
+        <Typography variant="h5" gutterBottom>Tutorials</Typography>
         <Typography paragraph>
           On the <Link to="/tutorials">Tutorials</Link> page, this page, is a
           compilation of instructions for navigating OpenOrganelle.
         </Typography>
-        <Typography variant="h5">Publications</Typography>
+        <Typography variant="h5" gutterBottom>Publications</Typography>
         <Typography paragraph>
           On the <Link to="/publications">Publications</Link> page you’ll find
           publications associated with these datasets as well as a list of
           “views” that are referenced in these publications. More information
           about pre-made data views can be found in
-          <a href="">Visualization</a>.
+          <a href="#visualization">Visualization</a>.
         </Typography>
-        <Typography variant="h5">Organelles</Typography>
+        <Typography variant="h5" gutterBottom>Organelles</Typography>
         <Typography paragraph>
           On the <Link to="/organelles">Organelles</Link> page is a catalog of
           all of the organelles that have been segmented. Included here is a
@@ -76,7 +78,7 @@ export default function Tutorials() {
           of these organelles in four different datasets.
         </Typography>
       </Paper>
-      <Paper className={classes.section}>
+      <Paper className={classes.section} id="visualization">
         <Typography variant="h4" gutterBottom>
           Visualization
         </Typography>
@@ -98,7 +100,7 @@ export default function Tutorials() {
             Neuroglancer instance.
           </li>
         </ul>
-        <Typography variant="h5">
+        <Typography variant="h5" gutterBottom>
           How to setup a Neuroglancer instance
         </Typography>
         <Typography>On a dataset page- </Typography>
@@ -120,8 +122,8 @@ export default function Tutorials() {
             the dataset thumbnail.
           </li>
         </ol>
-        <Typography variant="h5">How to use Neuroglancer</Typography>
-        <Typography variant="h6">Keyboard and mouse bindings</Typography>
+        <Typography variant="h5" gutterBottom>How to use Neuroglancer</Typography>
+        <Typography variant="h6" gutterBottom>Keyboard and mouse bindings</Typography>
         <Typography paragraph>
           Below is a non-exhaustive list of useful keyboard strokes and mouse
           clicks for browsing data within Neuroglancer. For a complete set of
@@ -129,31 +131,53 @@ export default function Tutorials() {
           ? in the upper right corner.
         </Typography>
         <ul>
-          <li> Left Click on a layer name to toggle its visibility.</li>
           <li>
-            Right Click on a layer to select it and modify its settings in the
-            side panel.
+            {" "}
+            <b>Left Click</b> on a layer name to toggle its visibility.
           </li>
-          <li>Space to toggle the view layout.</li>
-          <li>Left Click and drag the data to pan.</li>
-          <li>Right Click to recenter at that location.</li>
-          <li>Mouse Wheel to scroll through 2D slices.</li>
-          <li>Shft + Wheel to scroll at 10x speed.</li>
-          <li>Ctrl + Wheel to zoom.</li>
-          <li>Shift + Left Click to rotate in plane.</li>
-          <li>z to return to an orthogonal plane.</li>
           <li>
-            Double Left Click a segmentation to turn on/off a 3D rendering.
+            <b>Right Click</b> on a layer to select it and modify its settings
+            in the side panel.
           </li>
-          <li>a to toggle axis lines</li>
-          <li>b to toggle scale bar</li>
+          <li><kbd>space</kbd> to toggle the view layout.</li>
+          <li>
+            <b>Left Click</b> and drag the data to pan.
+          </li>
+          <li>
+            <b>Right Click</b> to recenter at that location.
+          </li>
+          <li>
+            <b>Mouse Wheel</b> to scroll through 2D slices.
+          </li>
+          <li>
+            <kbd>shift</kbd> + <b>Wheel</b> to scroll at 10x speed.
+          </li>
+          <li>
+            <kbd>ctrl</kbd> + <b>Wheel</b> to zoom.
+          </li>
+          <li>
+            <kbd>shift</kbd> + <b>Left Click</b> to rotate in plane.
+          </li>
+          <li>
+            <kbd>z</kbd> to return to an orthogonal plane.
+          </li>
+          <li>
+            <b>Double Left Click</b> a segmentation to turn on/off a 3D
+            rendering.
+          </li>
+          <li>
+            <kbd>a</kbd> to toggle axis lines
+          </li>
+          <li>
+            <kbd>b</kbd> to toggle scale bar
+          </li>
         </ul>
         <Typography variant="h6">
           Other useful tools In the side panel
         </Typography>
         <Typography paragraph>
-          (Ctrl + Left Click to show if closed) are customizable settings to
-          optimize the viewing experience of the data.
+          (<kbd>ctrl</kbd> + <b>Left Click</b> to show if closed) are
+          customizable settings to optimize the viewing experience of the data.
         </Typography>
         <Typography variant="h6">Side Panel - Source</Typography>
         <Typography>On this tab you can find:</Typography>
@@ -163,8 +187,8 @@ export default function Tutorials() {
           <li>The voxel size.</li>
         </ul>
         <Typography paragraph>
-          To manually add a new layer, click the + button, select the data type
-          (ex. N5), and enter the data location (ex. s3://…).
+          To manually add a new layer, click the <b>+</b> button, select the
+          data type (ex. N5), and enter the data location (ex. s3://…).
         </Typography>
         <Typography variant="h6">Side Panel - Rendering</Typography>
         <ul>
@@ -174,32 +198,36 @@ export default function Tutorials() {
               alt="Resoultion controls from neuroglancer"
               style={{ float: "right", margin: "0.5em" }}
             />
-            Resolution (slice): The data quality vs load speed can be
+            <b>Resolution</b> (slice): The data quality vs load speed can be
             customized. For instance, to optimize for quality (slow loading
             times) click on the left side of the histogram. To reset the
             settings, simply double click the histogram.
           </li>
           <li>
-            Blending: Select the preferred blending of the selected layer, i.e.
-            default or additive.
+            <b>Blending</b>: Select the preferred blending of the selected
+            layer, i.e. default or additive.
           </li>
-          <li>Opacity: Select the preferred opacity of the selected layer.</li>
+          <li>
+            <b>Opacity</b>: Select the preferred opacity of the selected layer.
+          </li>
           <li>
             <img
               src={ng_contrast}
               alt="Contrast controls from neuroglancer"
               style={{ float: "right", margin: "0.5em" }}
             />
-            Contrast: Adjust the contrast of the selected layer. To invert the
-            lookup table click the arrow. To adjust the contrast click and drag
-            the lower and upper bound on the graph.
+            <b>Contrast</b>: Adjust the contrast of the selected layer. To
+            invert the lookup table click the arrow. To adjust the contrast
+            click and drag the lower and upper bound on the graph.
           </li>
           <li>
-            Color: For segmentation layers, a preferred color can be selected by
-            clicking the color box.
+            <b>Color</b>: For segmentation layers, a preferred color can be
+            selected by clicking the color box.
           </li>
         </ul>
-        <Typography variant="h6">Side Panel - Seg.</Typography>
+        <Typography variant="h6" gutterBottom>
+          Side Panel - Seg.
+        </Typography>
         <Typography paragraph>
           If 3D renderings are available for a segmentation they will be visible
           on the segmentation panel. As you double click segmentations to turn
@@ -207,7 +235,9 @@ export default function Tutorials() {
           Selecting/deselecting renderings can also be performed by clicking on
           the IDs in the panel.
         </Typography>
-        <Typography variant="h6">Top Toolbar - Coordinates</Typography>
+        <Typography variant="h6" gutterBottom>
+          Top Toolbar - Coordinates
+        </Typography>
         <Typography paragraph>
           In the top left hand corner you will find the XYZ coordinates (in nm).
           To copy a location you can click the copy icon. To navigate to a
@@ -241,14 +271,19 @@ export default function Tutorials() {
           segmentations, and analysis on the{" "}
           <Link to="/organelles">Organelles</Link> page.
         </Typography>
-        <Typography variant="h5">How to open data in Fiji</Typography>
+        <Typography variant="h5" gutterBottom>
+          How to open data in Fiji
+        </Typography>
         <Typography paragraph>
           There are a couple options to view and/or open our N5 data within
-          Fiji. Within each individual dataset page you will find a Fiji icon .
+          Fiji. Within each individual dataset page you will find a Fiji icon{" "}
+          <img className="fiji_icon" src={fijiIcon} alt="blue fiji logo" /> .
           Clicking the icon will copy the dataset location to use in the Fiji
           app.
         </Typography>
-        <Typography variant="h6">Viewing data</Typography>
+        <Typography variant="h6" gutterBottom>
+          Viewing data
+        </Typography>
         <Typography paragraph>
           To simply view and browse the data, and take advantage of its
           multi-scale properties, use the BigDataViewer Plugin, Plugins &rarr;
@@ -256,24 +291,34 @@ export default function Tutorials() {
           See the BigDataviewer page for details for navigation / interaction
           documentation.
         </Typography>
-        <Typography variant="h6">Opening data</Typography>
+        <Typography variant="h6" gutterBottom>
+          Opening data
+        </Typography>
         <Typography paragraph>
           To open the datasets in Fiji and make use of all of the Fiji tools,
           File &rarr; Import &rarr; N5. For instructions on opening our datasets
           in Fiji please refer to n5-ij. Note, this option currently does not
           support multi-scale functionality.
         </Typography>
-        <Typography variant="h5">Downloading data</Typography>
+        <Typography variant="h5" gutterBottom>
+          Downloading data
+        </Typography>
         <Typography paragraph>
           Software page? point people to python / command line tools for
           downloading stuff from s3 AWS command line tools for downloading
         </Typography>
-        <Typography variant="h5">How to access analysis database(s)</Typography>
+        <Typography variant="h5" gutterBottom>
+          How to access analysis database(s)
+        </Typography>
         <Typography paragraph>
           The code used to process predictions and perform analysis can be found
-          here: https://github.com/janelia-cosem/hot-knife/tree/cosem-analysis.
-          Evaluations and metrics
+          in our{" "}
+          <a href="https://github.com/janelia-cosem/hot-knife/tree/cosem-analysis">
+            GitHub repository
+          </a>
+          .
         </Typography>
+        <Typography paragraph>Evaluations and metrics</Typography>
       </Paper>
 
       <Paper className={classes.section}>
@@ -295,19 +340,24 @@ export default function Tutorials() {
         <Typography paragraph>
           There are multiple avenues to share the datasets. We recommend sharing
           individual dataset pages (i.e.
-          https://openorganelle.janelia.org/datasets/jrc_hela-2) so others can
-          easily customize their Neuroglancer environments, find the data
-          location on S3, and find related material available (i.e. metadata,
-          analysis, segmentations, light microscopy). For consistency, we also
-          recommend referring to the data using their Data IDs (i.e.
+          <a href="https://openorganelle.janelia.org/datasets/jrc_hela-2">
+            https://openorganelle.janelia.org/datasets/jrc_hela-2
+          </a>
+          ) so others can easily customize their Neuroglancer environments, find
+          the data location on S3, and find related material available (i.e.
+          metadata, analysis, segmentations, light microscopy). For consistency,
+          we also recommend referring to the data using their Data IDs (i.e.
           jrc_hela-2).
         </Typography>
 
         <Typography paragraph>
           We welcome you to visit our GitHub repository to access all of our
-          code and software: https://github.com/janelia-cosem. More information
-          about the software used and written for this project can be found on
-          the “Software” page.
+          code and software:{" "}
+          <a href="https://github.com/janelia-cosem">
+            https://github.com/janelia-cosem
+          </a>
+          . More information about the software used and written for this
+          project can be found on the <Link to ="/software">Software</Link> page.
         </Typography>
 
         <Typography paragraph>

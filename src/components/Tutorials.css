@@ -1,0 +1,15 @@
+kbd {
+  font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.8em;
+  color: #000;
+  background: #eee;
+  padding: 0.3em 0.5em;
+  margin: 0.2em;
+  border-radius: 5px;
+  display: inline-block;
+  border: 1px solid #bbb;
+}
+
+.fiji_icon {
+  height: 1em;
+}
