@@ -26,7 +26,13 @@ export default function Tutorials() {
       <Typography variant="h3" gutterBottom>
         Tutorials
       </Typography>
-      <Paper className={classes.section}>
+      <ul>
+        <li><a href="#website">Website</a></li>
+        <li><a href="#visualization">Visualization</a></li>
+        <li><a href="#data_handling">Data Handling</a></li>
+        <li><a href="#sharing">Sharing</a></li>
+      </ul>
+      <Paper className={classes.section} id="website">
         <Typography variant="h4" gutterBottom>
           Website
         </Typography>
@@ -244,7 +250,7 @@ export default function Tutorials() {
           specific location, you can manually enter in the XYZ coordinates.
         </Typography>
       </Paper>
-      <Paper className={classes.section}>
+      <Paper className={classes.section} id="data_handling">
         <Typography variant="h4" gutterBottom>
           Data handling tutorials
         </Typography>
@@ -321,7 +327,7 @@ export default function Tutorials() {
         <Typography paragraph>Evaluations and metrics</Typography>
       </Paper>
 
-      <Paper className={classes.section}>
+      <Paper className={classes.section} id="sharing">
         <Typography variant="h4" gutterBottom>
           Sharing
         </Typography>
