@@ -1,9 +1,11 @@
 import React from "react";
+import ReactHtmlParser from 'react-html-parser';
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import AssignmentIcon from '@material-ui/icons/Assignment';
 import {DatasetDescription} from "../api/dataset_description";
-import ReactHtmlParser from 'react-html-parser';
+import fijiIcon from "./fiji_icon.png";
 
 type DescriptionTextProps = {
   titleLink: string;
@@ -14,6 +16,9 @@ const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
     title: {
       color: theme.palette.primary.main,
+    },
+    fijiCopy: {
+      height: "1.5em"
     }
   })
 );
@@ -61,6 +66,7 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
           <strong>{ReactHtmlParser(value)}</strong>:{" "}{ReactHtmlParser(description["Acquisition information"][value])}
         </p>
       ))}
+    <p><img src={fijiIcon} alt="copy fiji link"  className={classes.fijiCopy}/>Fiji Link | <AssignmentIcon /> Copy to Clipboard</p>
     </Box>
   );
 }
