@@ -48,24 +48,23 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps){
     const classes = useStyles();
     const [appState,] = useContext(AppContext);
     const dataset: Dataset = appState.datasets.get(datasetKey);
-    // initialize the layer checkboxes by looking at the first dataset view
-
-    const layerCheckStateInit = new Map<string, boolean>([...dataset.volumes.keys()].map(k => {
-      let vkeys = dataset.views[0].volumeKeys;
-      if (vkeys.includes(k)) {
-        return [k, true]
+    const volumeNames: string[] = [...dataset.volumes.keys()];
+    const layerCheckStateInit = new Map<string, boolean>(volumeNames.map(k => [k, false]));
+    // initialize the layer checkboxes by looking at the first dataset view 
+    for (let vn of volumeNames) {
+        let vkeys = dataset.views[0].volumeKeys;
+        if (vkeys.includes(vn)) {
+          layerCheckStateInit.set(vn, true)
+        }
       }
-      else {
-        return [k, false]
-      }
-    }));
-
+    console.log(layerCheckStateInit)
     // the first view is selected, by default
     const viewCheckStateInit = dataset.views.map((v, idx) => idx === 0);
 
     const [checkStates, setCheckStates] = useState({layerCheckState: layerCheckStateInit, viewCheckState: viewCheckStateInit})
 
     const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      console.log(event.target.name)
       const newCheckState = new Map(
         checkStates.layerCheckState.set(event.target.name, event.target.checked).entries()
       );

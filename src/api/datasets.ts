@@ -17,11 +17,15 @@ type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
 type VolumeStores = "n5" | "precomputed" | "zarr";
 export type ContentType = "em" | "segmentation";
 
+interface ContrastLimits {
+  min: number
+  max: number
+}
+
 interface DisplaySettings {
-  contrastMin: number;
-  contrastMax: number;
+  contrastLimits: ContrastLimits;
   gamma: number;
-  invertColormap: bool;
+  invertColormap: boolean;
   color: string;
 }
 
@@ -29,9 +33,9 @@ export class DatasetView {
     constructor(
     public name: string, 
     public description: string, 
-    public position?: number, 
-    public scale?: number, 
-    public volumeKeys: string[]){
+    public volumeKeys: string[],
+    public position?: number,          
+    public scale?: number){
         
         this.name = name;
         this.description = description;
@@ -48,7 +52,7 @@ export class DatasetView {
 
 interface DatasetIndex {
   name: string;
-  volumes: { [key: string]: VolumeMeta };
+  volumes: Volume[];
   views: DatasetView[]
 }
 
@@ -57,20 +61,6 @@ interface SpatialTransform {
   units: string[];
   translate: number[];
   scale: number[];
-}
-
-interface VolumeMeta {
-  name: string;
-  dataType: string;
-  dimensions: number[];
-  transform: SpatialTransform;
-  contentType: ContentType;
-  description: string;
-  alignment: string;
-  roi: Array<any>;
-  tags: Array<any>;
-  displaySettings: DisplaySettings;
-  store: VolumeStores;
 }
 
 interface N5PixelResolution {
@@ -105,9 +95,7 @@ interface NeuroglancerPrecomputedAttrs {
 }
 
 const displayDefaults: DisplaySettings = {
-  contrastMin: 0,
-  contrastMax: 1,
-  gamma: 1,
+  contrastLimits: {min: 0, max:1},
   invertColormap: false,
   color: "white",
 };
@@ -125,22 +113,24 @@ const axisOrder = new Map([
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: CoordinateSpace = { x: nm, y: nm, z: nm };
 
-function makeShader(shaderArgs: DisplaySettings, contentType: ContentType): string{
+const defaultView = new DatasetView('Default view', '', [], undefined, undefined);
+
+function makeShader(shaderArgs: DisplaySettings, contentType: ContentType): string | undefined{
     switch (contentType) {
     case 'em':
-        return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMin})
-                #uicontrol float max slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastMax})
-                #uicontrol float gamma slider(min=0, max=3, step=0.001, default=${shaderArgs.gamma})
-                #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertColormap? 1: 0})
-                #uicontrol vec3 color color(default="${shaderArgs.color}")
-                float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
-                float normer(float val) {return (clamp(val, min, max) - min) / (max-min);}
-                void main() {emitRGB(color * pow(inverter(normer(toNormalized(getDataValue())), invertColormap), gamma));}`;
+        return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastLimits.min})
+#uicontrol float max slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastLimits.max})
+#uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertColormap? 1: 0})
+#uicontrol vec3 color color(default="${shaderArgs.color}")
+float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
+float normer(float val) {return (clamp(val, min, max) - min) / (max-min);}
+void main() {emitRGB(color * inverter(normer(toNormalized(getDataValue())), invertColormap));}`;
     case "segmentation":
       return `#uicontrol vec3 color color(default="${shaderArgs.color}")
                 void main() {emitRGB(color * ceil(float(getDataValue().value[0]) / 4294967295.0));}`;
-  }
-  return "";
+      default:
+        return undefined;
+              }
 }
 
 // A single n-dimensional array
@@ -148,74 +138,58 @@ export class Volume {
     constructor(
         public path: string,
         public name: string,
-        public dtype: string,
+        public datasetName: string,
+        public dataType: string,
         public dimensions: number[],
-        public origin: number[],
-        public gridSpacing: number[],
-        public unit: string,
-        public displaySettings: DisplaySettings,
-        public store: VolumeStores,
+        public transform: SpatialTransform,
         public contentType: ContentType,
+        public containerType: VolumeStores,
+        public displaySettings: DisplaySettings,
+        public description: string,
+        public version: string,
+        public tags: string[]
     ) {
         this.path = path;
         this.name = name;
-        this.dtype = dtype;
+        this.datasetName = datasetName;
+        this.dataType = dataType;
         this.dimensions = dimensions;
-        this.origin = origin;
-        this.gridSpacing = gridSpacing;
-        this.unit = unit;
-        this.displaySettings = displaySettings;
-        this.store = store;
+        this.transform = transform;
         this.contentType = contentType;
+        this.containerType = containerType;
+        this.displaySettings = displaySettings;
+        this.description = description;
+        this.version = version;
+        this.tags = tags;
      }
 
     // Convert n5 attributes to an internal representation of the volume
     // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer
     // viewer state construction
 
-    static fromVolumeMeta(outerPath:string, innerPath: string, volumeMeta: VolumeMeta): Volume {
-        // convert relative path to absolute path
-        //const absPath = Path.resolve(outerPath, innerPath);
-        const absPath = new URL(outerPath);
-        absPath.pathname = Path.resolve(absPath.pathname, innerPath);
-        // reorder the transform parameters as needed
-        const axisIndices: Array<any> = volumeMeta.transform.axes.map(v => axisOrder.get(v));
-        const reorder = (arg: Array<any>) => axisIndices.map(v => arg[v])
-        return new Volume(absPath.toString(),
-                         volumeMeta.description,
-                         volumeMeta.dataType,
-                         reorder(volumeMeta.dimensions),
-                         reorder(volumeMeta.transform.translate),
-                         reorder(volumeMeta.transform.scale),
-                         reorder(volumeMeta.transform.units)[0],
-                         volumeMeta.displaySettings,
-                         volumeMeta.store,
-                         volumeMeta.contentType)
-    }
-
     toLayer(layerType: LayerTypes): ImageLayer {
-        const srcURL = `${this.store}://${this.path}`;
+        const srcURL = `${this.containerType}://${this.path}`;
         const inputDimensions: CoordinateSpace = {
-            x: [1e-9 * this.gridSpacing[0], "m"],
-            y: [1e-9 * this.gridSpacing[1], "m"],
-            z: [1e-9 * this.gridSpacing[2], "m"]
+            x: [1e-9 * this.transform.scale[this.transform.axes.indexOf('x')], "m"],
+            y: [1e-9 * this.transform.scale[this.transform.axes.indexOf('y')], "m"],
+            z: [1e-9 * this.transform.scale[this.transform.axes.indexOf('z')], "m"]
         };
-        const transform: CoordinateSpaceTransform = {matrix:
+        const layerTransform: CoordinateSpaceTransform = {matrix:
             [
-                [1, 0, 0, this.origin[0]],
-                [0, 1, 0, this.origin[1]],
-                [0, 0, 1, this.origin[2]]
+                [1, 0, 0, this.transform.translate[this.transform.axes.indexOf('x')]],
+                [0, 1, 0, this.transform.translate[this.transform.axes.indexOf('y')]],
+                [0, 0, 1, this.transform.translate[this.transform.axes.indexOf('z')]]
             ],
             outputDimensions: outputDimensions,
             inputDimensions: inputDimensions}
-
+        // need to update the layerdatasource object to have a transform property
         const source: LayerDataSource = {url: srcURL,
-                                        CoordinateSpaceTransform: transform};
+                                        transform: layerTransform};
         let shader = '';
-        if (SEGMENTATION_DTYPES.includes(this.dtype)){
+        if (SEGMENTATION_DTYPES.includes(this.dataType)){
             shader = makeShader(this.displaySettings, 'segmentation');
         }
-        else if (IMAGE_DTYPES.includes(this.dtype)) {
+        else if (IMAGE_DTYPES.includes(this.dataType)) {
             shader = makeShader(this.displaySettings, 'em');
         }
         else {
@@ -240,7 +214,7 @@ export class Dataset {
     public key: string;
     public space: CoordinateSpace;
     public volumes: Map<string, Volume>;
-    public description: DatasetDescription
+    public description: DatasetDescription | undefined
     public thumbnailPath: string
     public views: DatasetView[]
     constructor(key: string, space: CoordinateSpace, volumes: Map<string, Volume>, description: DatasetDescription,
@@ -323,6 +297,17 @@ async function getDescription(
   return getObjectFromJSON(descriptionURL);
 }
 
+function reifyPath(outerPath: string, innerPath: string): string {
+  const absPath = new URL(outerPath);
+  absPath.pathname = Path.resolve(absPath.pathname, innerPath);
+  return absPath.toString();
+}
+
+function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
+  volumeMeta.path = reifyPath(outerPath, volumeMeta.path);
+  return new Volume(...Object.values(volumeMeta))
+}
+
 export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {
     // get the keys to the datasets
     const datasetKeys: string[] = await getDatasetKeys(bucket);
@@ -333,13 +318,14 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
         const description = await getDescription(bucket, key);
         const thumbnailPath: string =  `${outerPath}/thumbnail.jpg`
         const index = await getDatasetIndex(bucket, key);
-        const views: DatasetView[] = index.views.map(v => new DatasetView(v.name, v.description, v.position, v.scale, v.volumeKeys));
-
         if (index !== undefined){
             try {
-            const volumeMeta = new Map(Object.entries(index.volumes));
+            const views: DatasetView[] = index.views.map(v => new DatasetView(v.name, v.description, v.position, v.scale, v.volumeKeys));
+            if (views.length === 0) {views.push(defaultView)}
             const volumes: Map<string, Volume> = new Map();
-            volumeMeta.forEach((v,k) => volumes.set(k, Volume.fromVolumeMeta(outerPath, k, v)));
+            console.log(index)
+            index.volumes.forEach(v => volumes.set(v.name, makeVolume(outerPath, v)));
+            console.log(volumes)
             datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailPath, views));
         }
         catch (error) {

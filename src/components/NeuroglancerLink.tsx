@@ -32,6 +32,7 @@ export default function NeuroglancerLink({dataset, view, checkState}: Neuroglanc
     
     const local_view = {...view};
     local_view.volumeKeys = [];
+    //console.log(checkState)
     dataset.volumes.forEach((value: Volume, key: string) => {
       if (checkState.get(key)) { local_view.volumeKeys.push(key) }
     });
