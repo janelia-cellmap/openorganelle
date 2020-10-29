@@ -6,6 +6,7 @@ import {
   ViewerState,
   ImageLayer,
   LayerDataSource,
+  SegmentationLayer,
 } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON, bucketNameToURL } from "./datasources";
 import * as Path from "path";
@@ -27,6 +28,7 @@ interface DisplaySettings {
   gamma: number;
   invertColormap: boolean;
   color: string;
+  defaultLayerType: LayerTypes
 }
 
 export class DatasetView {
@@ -103,37 +105,38 @@ const displayDefaults: DisplaySettings = {
 // one nanometer, expressed as a scaled meter
 const nm: [number, string] = [1e-9, "m"];
 
-// the axis order for neuroglancer is x y z
-const axisOrder = new Map([
-  ["x", 0],
-  ["y", 1],
-  ["z", 2],
-]);
-
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: CoordinateSpace = { x: nm, y: nm, z: nm };
 
 const defaultView = new DatasetView('Default view', '', [], undefined, undefined);
 
-function makeShader(shaderArgs: DisplaySettings, contentType: ContentType): string | undefined{
+function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataType: string): string | undefined{
+  let lower = 0;
+  let upper = 0;
+  let cmin = 0;
+  let cmax = 0;  
     switch (contentType) {
-    case 'em':
-        return `#uicontrol float min slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastLimits.min})
-#uicontrol float max slider(min=0, max=1, step=0.001, default=${shaderArgs.contrastLimits.max})
-#uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertColormap? 1: 0})
-#uicontrol vec3 color color(default="${shaderArgs.color}")
-float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
-float normer(float val) {return (clamp(val, min, max) - min) / (max-min);}
-void main() {emitRGB(color * inverter(normer(toNormalized(getDataValue())), invertColormap));}`;
+    case 'em':{
+      if (dataType === 'uint8') {lower = 0; upper = 255}
+      else if (dataType == 'uint16') {lower = 0; upper = 65535}
+      let cmin = shaderArgs.contrastLimits.min * (upper - lower);
+      let cmax = shaderArgs.contrastLimits.max * (upper - lower);
+        return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${Math.max(0, cmin - 2 * (cmax-cmin))}, ${Math.min(upper, cmax + 2 * (cmax - cmin))}])
+        #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertColormap? 1: 0})
+        float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
+          void main() {
+          emitGrayscale(inverter(normalized(), invertColormap));
+        }`
+      };
     case "segmentation":
-      return `#uicontrol vec3 color color(default="${shaderArgs.color}")
-                void main() {emitRGB(color * ceil(float(getDataValue().value[0]) / 4294967295.0));}`;
+      return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${cmin}, ${cmax}])\n#uicontrol vec3 color color(default="${shaderArgs.color}")\nvoid main() {emitRGB(color * normalized());}`;
       default:
         return undefined;
               }
 }
 
 // A single n-dimensional array
+// this constructor syntax can be shortened but I forget how
 export class Volume {
     constructor(
         public path: string,
@@ -167,7 +170,7 @@ export class Volume {
     // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer
     // viewer state construction
 
-    toLayer(layerType: LayerTypes): ImageLayer {
+    toLayer(layerType: LayerTypes): ImageLayer | SegmentationLayer {
         const srcURL = `${this.containerType}://${this.path}`;
         const inputDimensions: CoordinateSpace = {
             x: [1e-9 * this.transform.scale[this.transform.axes.indexOf('x')], "m"],
@@ -185,27 +188,33 @@ export class Volume {
         // need to update the layerdatasource object to have a transform property
         const source: LayerDataSource = {url: srcURL,
                                         transform: layerTransform};
-        let shader = '';
-        if (SEGMENTATION_DTYPES.includes(this.dataType)){
-            shader = makeShader(this.displaySettings, 'segmentation');
+        
+        if (layerType === 'image'){
+          let shader: string | undefined = '';
+          if (SEGMENTATION_DTYPES.includes(this.dataType)){
+              shader = makeShader(this.displaySettings, 'segmentation', this.datasetName);
+          }
+          else if (IMAGE_DTYPES.includes(this.dataType)) {
+              shader = makeShader(this.displaySettings, 'em', this.dataType);
+          }
+          else {shader = undefined}
+          const layer = new ImageLayer('rendering',
+                                undefined,
+                                undefined,
+                                source,
+                                0.75,
+                                'additive',
+                                shader,
+                                undefined,
+                                undefined);
+          layer.name = this.name;
+          return layer
         }
-        else if (IMAGE_DTYPES.includes(this.dataType)) {
-            shader = makeShader(this.displaySettings, 'em');
+        else if (layerType === 'segmentation') {
+          const layer =  new SegmentationLayer(source, 'source', true);
+          layer.name = this.name;
+          return layer
         }
-        else {
-            console.log(`Datatype ${this.dtype} not recognized`)
-        }
-        const layer = new ImageLayer('rendering',
-                               undefined,
-                               undefined,
-                               source,
-                               0.75,
-                               'additive',
-                               shader,
-                               undefined,
-                               undefined);
-        layer.name = this.name;
-        return layer;
     }
 }
 
@@ -228,7 +237,10 @@ export class Dataset {
     }
 
     makeNeuroglancerViewerState(view: DatasetView): string {        
-        const layers = [...this.volumes.keys()].filter(a => view.volumeKeys.includes(a)).map(a => this.volumes.get(a).toLayer('image'));
+        const layers = [...this.volumes.keys()].filter(a => view.volumeKeys.includes(a)).map(a => 
+          {let vol = this.volumes.get(a);
+            console.log(vol);
+            return vol.toLayer(vol.displaySettings.defaultLayerType)});
         // hack to post-hoc adjust alpha if there is only 1 layer selected
         if (layers.length  === 1) {layers[0].opacity = 1.0}
         const viewerPosition = view.position;
@@ -305,7 +317,27 @@ function reifyPath(outerPath: string, innerPath: string): string {
 
 function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
   volumeMeta.path = reifyPath(outerPath, volumeMeta.path);
-  return new Volume(...Object.values(volumeMeta))
+  // this is a shim until we add a defaultLayerType field to the volume metadata
+  let ds = volumeMeta.displaySettings;
+  if (volumeMeta.dataType === 'uint64' && (volumeMeta.name.indexOf('_seg') === -1)) {ds.defaultLayerType = 'segmentation'}
+  else (ds.defaultLayerType = 'image')
+  volumeMeta.displaySettings = ds;
+
+  // console.log([volumeMeta.name, volumeMeta.displaySettings.defaultLayerType])
+  // this looks so stupid! there must be a better way to do this that doesn't enrage the 
+  // linter
+  return new Volume(volumeMeta.path, 
+                    volumeMeta.name, 
+                    volumeMeta.datasetName, 
+                    volumeMeta.dataType,
+                    volumeMeta.dimensions,
+                    volumeMeta.transform, 
+                    volumeMeta.contentType,
+                    volumeMeta.containerType,
+                    volumeMeta.displaySettings,
+                    volumeMeta.description,
+                    volumeMeta.version,
+                    volumeMeta.tags)
 }
 
 export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {
@@ -323,9 +355,7 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
             const views: DatasetView[] = index.views.map(v => new DatasetView(v.name, v.description, v.position, v.scale, v.volumeKeys));
             if (views.length === 0) {views.push(defaultView)}
             const volumes: Map<string, Volume> = new Map();
-            console.log(index)
             index.volumes.forEach(v => volumes.set(v.name, makeVolume(outerPath, v)));
-            console.log(volumes)
             datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailPath, views));
         }
         catch (error) {
