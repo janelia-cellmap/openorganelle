@@ -31,7 +31,6 @@ type LayerCheckBoxListCollectionProps = {
 function LayerCheckboxList({ volumes, checkState, handleChange }: LayerCheckBoxListProps) {
     const classes = useStyles();
     const contentType = volumes[0].contentType;
-    console.log(volumes)
     const checkBoxList = volumes?.map((volume: Volume) => {
         return <FormControlLabel
             control={
