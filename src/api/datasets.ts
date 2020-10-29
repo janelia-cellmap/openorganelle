@@ -238,14 +238,16 @@ export class Volume {
 // a collection of volumes, i.e. a collection of ndimensional arrays
 export class Dataset {
     public key: string;
+    public path: string;
     public space: CoordinateSpace;
     public volumes: Map<string, Volume>;
     public description: DatasetDescription
     public thumbnailPath: string
     public views: DatasetView[]
-    constructor(key: string, space: CoordinateSpace, volumes: Map<string, Volume>, description: DatasetDescription,
+    constructor(key: string, path: string, space: CoordinateSpace, volumes: Map<string, Volume>, description: DatasetDescription,
     thumbnailPath: string, views: DatasetView[]) {
         this.key = key;
+        this.path = path;
         this.space = space;
         this.volumes = volumes;
         this.description = description;
@@ -340,7 +342,7 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
             const volumeMeta = new Map(Object.entries(index.volumes));
             const volumes: Map<string, Volume> = new Map();
             volumeMeta.forEach((v,k) => volumes.set(k, Volume.fromVolumeMeta(outerPath, k, v)));
-            datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailPath, views));
+            datasets.set(key, new Dataset(key, outerPath, outputDimensions, volumes, description, thumbnailPath, views));
         }
         catch (error) {
             console.log(error)

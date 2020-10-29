@@ -10,6 +10,7 @@ import fijiIcon from "./fiji_icon.png";
 type DescriptionTextProps = {
   titleLink: string;
   datasetDescription: DatasetDescription | undefined;
+  storageLocation: string;
 };
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -70,19 +71,19 @@ else {
       <Typography variant="h6" className={classes.title}>
         {ReactHtmlParser(description.Title)}
       </Typography>
-      <p><strong>{ReactHtmlParser('Dataset ID')}</strong>:{" "}{ReactHtmlParser(description.Summary["Dataset ID"])}</p>
+      <p><strong>Dataset ID</strong>:{" "}{ReactHtmlParser(description.Summary["Dataset ID"])}</p>
     {[...Object.keys(description["About this sample"])].map(value => (
         <p key={value}>
           <strong>{ReactHtmlParser(value)}</strong>:{" "}{ReactHtmlParser(description["About this sample"][value])}
         </p>
       ))}
 
-
 {[...Object.keys(description["Acquisition information"])].map(value => (
         <p key={value}>
           <strong>{ReactHtmlParser(value)}</strong>:{" "}{ReactHtmlParser(description["Acquisition information"][value])}
         </p>
       ))}
+    <p><strong>Dataset location</strong>:{props.storageLocation}</p>
     <p><img src={fijiIcon} alt="copy fiji link"  className={classes.fijiCopy}/>Fiji Link | <AssignmentIcon /> Copy to Clipboard</p>
     </Box>
   );

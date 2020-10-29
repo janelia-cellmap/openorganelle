@@ -115,7 +115,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps){
           alignItems="stretch"
         >
           <Grid item xs={5}>
-            <DatasetDescriptionFull datasetDescription={dataset.description} titleLink={datasetLink} />
+            <DatasetDescriptionFull datasetDescription={dataset.description} titleLink={datasetLink} storageLocation={dataset.path}/>
           </Grid>
           <Divider orientation="vertical" flexItem={true}></Divider>
           <Grid
