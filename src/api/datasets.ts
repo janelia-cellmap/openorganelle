@@ -166,7 +166,6 @@ export class Volume {
         this.tags = tags;
      }
 
-    // Convert n5 attributes to an internal representation of the volume
     // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer
     // viewer state construction
 
