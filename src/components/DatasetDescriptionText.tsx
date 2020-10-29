@@ -70,7 +70,7 @@ else {
       <Typography variant="h6" className={classes.title}>
         {ReactHtmlParser(description.Title)}
       </Typography>
-
+      <p><strong>{ReactHtmlParser('Dataset ID')}</strong>:{" "}{ReactHtmlParser(description.Summary["Dataset ID"])}</p>
     {[...Object.keys(description["About this sample"])].map(value => (
         <p key={value}>
           <strong>{ReactHtmlParser(value)}</strong>:{" "}{ReactHtmlParser(description["About this sample"][value])}
