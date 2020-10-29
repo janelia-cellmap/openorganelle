@@ -57,14 +57,12 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps){
           layerCheckStateInit.set(vn, true)
         }
       }
-    console.log(layerCheckStateInit)
     // the first view is selected, by default
     const viewCheckStateInit = dataset.views.map((v, idx) => idx === 0);
 
     const [checkStates, setCheckStates] = useState({layerCheckState: layerCheckStateInit, viewCheckState: viewCheckStateInit})
 
     const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      console.log(event.target.name)
       const newCheckState = new Map(
         checkStates.layerCheckState.set(event.target.name, event.target.checked).entries()
       );
