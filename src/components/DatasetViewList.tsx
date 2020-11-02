@@ -32,7 +32,7 @@ export default function DatasetViewList({views, checkState, handleToggle}: Datas
 
     return (
         <List className={classes.root}>
-            <Typography variant="h6">Select a view</Typography>
+            <Typography variant="h6">1. Select a view</Typography>
           {views.map((value, idx) => {
             const labelId = `checkbox-list-label-${value.name}`;
     

@@ -101,7 +101,7 @@ export default function LayerCheckboxListCollection({
   });
   return (
     <Grid item>
-      <Typography variant="h6">Select layers for this view</Typography>
+      <Typography variant="h6">2. Select layers for the view</Typography>
       <FormControl component="fieldset" className={classes.formControl}>
         {checkboxLists}
       </FormControl>
