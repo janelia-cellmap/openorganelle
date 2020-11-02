@@ -238,7 +238,6 @@ export class Dataset {
     makeNeuroglancerViewerState(view: DatasetView): string {        
         const layers = [...this.volumes.keys()].filter(a => view.volumeKeys.includes(a)).map(a => 
           {let vol = this.volumes.get(a);
-            console.log(vol);
             return vol.toLayer(vol.displaySettings.defaultLayerType)});
         // hack to post-hoc adjust alpha if there is only 1 layer selected
         if (layers.length  === 1) {layers[0].opacity = 1.0}
@@ -351,7 +350,7 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
         const index = await getDatasetIndex(bucket, key);
         if (index !== undefined){
             try {
-            const views: DatasetView[] = index.views.map(v => new DatasetView(v.name, v.description, v.position, v.scale, v.volumeKeys));
+            const views: DatasetView[] = index.views.map(v => new DatasetView(v.name, v.description, v.volumeKeys, v.position, v.scale));
             if (views.length === 0) {views.push(defaultView)}
             const volumes: Map<string, Volume> = new Map();
             index.volumes.forEach(v => volumes.set(v.name, makeVolume(outerPath, v)));
