@@ -149,37 +149,26 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             />
           </CardActionArea>
         </Grid>
-
-        <Grid
-          item
-          container
-          direction="column"
-          xs={4}
-          spacing={2}
-          justify="flex-start"
-        >
-          <Grid item>
-            <NeuroglancerLink
-              dataset={dataset}
-              checkState={checkStates.layerCheckState}
-              view={dataset.views[checkStates.viewCheckState.findIndex(a => a)]}
-            />
-          </Grid>
-
-          <Grid item>
-            <DatasetViewList
-              views={dataset.views}
-              handleToggle={handleViewToggle}
-              checkState={checkStates.viewCheckState}
-            />
-          </Grid>
-          <Grid item>
-            <LayerCheckboxList
-              dataset={dataset}
-              checkState={checkStates.layerCheckState}
-              handleChange={handleLayerChange}
-            />
-          </Grid>
+        <Grid item xs={12}>
+          <NeuroglancerLink
+            dataset={dataset}
+            checkState={checkStates.layerCheckState}
+            view={dataset.views[checkStates.viewCheckState.findIndex(a => a)]}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <DatasetViewList
+            views={dataset.views}
+            handleToggle={handleViewToggle}
+            checkState={checkStates.viewCheckState}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <LayerCheckboxList
+            dataset={dataset}
+            checkState={checkStates.layerCheckState}
+            handleChange={handleLayerChange}
+          />
         </Grid>
       </Grid>
     </Paper>
