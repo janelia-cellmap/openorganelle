@@ -10,12 +10,6 @@ const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
     fontFamily: "'Proxima Nova W01',Arial,Helvetica,sans-serif"
-  },
-
-  link: {
-    color: theme.palette.primary.contrastText,
-    backgroundColor: theme.palette.primary.main,
-    fontSize: 12
   }
 }));
 
@@ -44,12 +38,24 @@ export default function NeuroglancerLink({
   });
 
   if (local_view.volumeKeys.length === 0) {
-    return <div> No layers selected </div>;
+    return (
+      <div>
+        <Button
+          variant="contained"
+          disabled
+          endIcon={<LaunchIcon fontSize="small" />}
+        >
+          View
+        </Button>{" "}
+        - select layers to view.
+      </div>
+    );
   } else {
     return (
       <Box>
         <Button
-          className={classes.link}
+          variant="contained"
+          color="primary"
           href={`${neuroglancerAddress}${dataset.makeNeuroglancerViewerState(
             local_view
           )}`}
