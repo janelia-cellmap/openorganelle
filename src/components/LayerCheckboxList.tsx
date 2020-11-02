@@ -6,7 +6,6 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  Grid,
   makeStyles,
   Theme,
   Typography
@@ -18,6 +17,11 @@ const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1
+    },
+    control: {
+      width: "100%",
+      height: "400px",
+      overflow: "scroll"
     }
   })
 );
@@ -100,11 +104,11 @@ export default function LayerCheckboxListCollection({
     }
   });
   return (
-    <Grid item>
+    <>
       <Typography variant="h6">2. Select layers for the view</Typography>
-      <FormControl component="fieldset" className={classes.formControl}>
+      <div className={classes.control}>
         {checkboxLists}
-      </FormControl>
-    </Grid>
+      </div>
+    </>
   );
 }

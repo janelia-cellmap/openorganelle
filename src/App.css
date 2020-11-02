@@ -10,3 +10,17 @@
   display: flex;
   flex-direction: column;
 }
+
+
+/* stops the scrollbar from being hidden by default */
+
+.content ::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+.content ::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, .5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
