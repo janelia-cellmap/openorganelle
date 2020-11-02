@@ -149,7 +149,9 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             titleLink={datasetLink}
           />
         </Grid>
+
         <Divider orientation="vertical" flexItem={true}></Divider>
+
         <Grid
           item
           container
@@ -159,24 +161,25 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
           justify="flex-start"
         >
           <Grid item>
+            <NeuroglancerLink
+              dataset={dataset}
+              checkState={checkStates.layerCheckState}
+              view={dataset.views[checkStates.viewCheckState.findIndex(a => a)]}
+            />
+          </Grid>
+
+          <Grid item>
             <DatasetViewList
               views={dataset.views}
               handleToggle={handleViewToggle}
               checkState={checkStates.viewCheckState}
-            ></DatasetViewList>
+            />
           </Grid>
           <Grid item>
             <LayerCheckboxList
               dataset={dataset}
               checkState={checkStates.layerCheckState}
               handleChange={handleLayerChange}
-            />
-          </Grid>
-          <Grid item>
-            <NeuroglancerLink
-              dataset={dataset}
-              checkState={checkStates.layerCheckState}
-              view={dataset.views[checkStates.viewCheckState.findIndex(a => a)]}
             />
           </Grid>
         </Grid>
