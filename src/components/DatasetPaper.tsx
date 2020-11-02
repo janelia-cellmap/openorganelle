@@ -38,7 +38,6 @@ const useStyles: any = makeStyles((theme: Theme) =>
       fontFamily: "'Proxima Nova W01',Arial,Helvetica,sans-serif",
       margin: theme.spacing(2)
     },
-    grid: {},
     formcontrol: {
       margin: theme.spacing(1)
     },
@@ -135,22 +134,21 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
   return (
     <Paper className={classes.paper}>
-      <Grid
-        container
-        className={classes.grid}
-        spacing={2}
-        direction="row"
-        justify="space-around"
-        alignItems="stretch"
-      >
-        <Grid item xs={5}>
+      <Grid container spacing={2}>
+        <Grid item xs={10}>
           <DatasetDescriptionFull
             datasetDescription={dataset.description}
             titleLink={datasetLink}
           />
         </Grid>
-
-        <Divider orientation="vertical" flexItem={true}></Divider>
+        <Grid item xs={2}>
+          <CardActionArea component={RouterLink} to={datasetLink}>
+            <CardMedia
+              style={{ height: 128, width: 128, borderRadius: "10%" }}
+              image={dataset.thumbnailPath}
+            />
+          </CardActionArea>
+        </Grid>
 
         <Grid
           item
@@ -182,15 +180,6 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
               handleChange={handleLayerChange}
             />
           </Grid>
-        </Grid>
-        <Divider orientation="vertical" flexItem={true}></Divider>
-        <Grid item>
-          <CardActionArea component={RouterLink} to={datasetLink}>
-            <CardMedia
-              style={{ height: 128, width: 128, borderRadius: "10%" }}
-              image={dataset.thumbnailPath}
-            />
-          </CardActionArea>
         </Grid>
       </Grid>
     </Paper>
