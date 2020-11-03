@@ -17,6 +17,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
 import { ContentType, Dataset, Volume } from "../api/datasets";
+import LayerGroup from "./LayerGroup";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,51 +42,11 @@ const contentTypeProps = new Map([
   ["analysis", "Analysis Layers"]
 ]);
 
-type LayerCheckBoxListProps = {
-  volumes: Volume[];
-  checkState: Map<string, boolean>;
-  handleChange: any;
-};
-
 type LayerCheckBoxListCollectionProps = {
   dataset: Dataset;
   checkState: Map<string, boolean>;
   handleChange: any;
 };
-
-function LayerCheckboxList({
-  volumes,
-  checkState,
-  handleChange
-}: LayerCheckBoxListProps) {
-  const contentType = volumes[0].contentType;
-  const checkBoxList = volumes?.map((volume: Volume) => {
-    return (
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={checkState.get(volume.name)}
-            onChange={handleChange}
-            color="primary"
-            name={volume.name}
-            size="small"
-          />
-        }
-        label={volume.description}
-        key={`${volume.name}`}
-      />
-    );
-  });
-  return (
-    <React.Fragment key={contentType}>
-      <FormLabel component="legend" style={{ fontWeight: "bold", marginTop: "1em" }}>
-        {contentTypeProps.get(contentType)}
-      </FormLabel>
-      <Divider />
-      <FormGroup>{checkBoxList}</FormGroup>
-    </React.Fragment>
-  );
-}
 
 function LayersList({ dataset, checkState, handleChange, filter }) {
   const classes = useStyles();
@@ -118,7 +79,7 @@ function LayersList({ dataset, checkState, handleChange, filter }) {
     let volumes: Volume[] = volumeGroups.get(ct);
     if (volumes !== undefined && volumes.length > 0) {
       console.log(volumes);
-      return LayerCheckboxList({ volumes, checkState, handleChange });
+      return <LayerGroup volumes={volumes} checkState={checkState} handleChange={handleChange} contentTypeProps={contentTypeProps} />;
     }
     return null;
   });
