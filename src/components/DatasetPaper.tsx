@@ -132,60 +132,68 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   };
 
   const clearLayers = () => {
-    console.log('clearing layers');
+    console.log("clearing layers");
     const newLayerState = new Map(
       [...checkStates.layerCheckState.entries()].map(([k, v]) => [k, false])
     );
     setCheckStates({
       ...checkStates,
-      layerCheckState: newLayerState,
+      layerCheckState: newLayerState
     });
   };
 
   const datasetLink = `/datasets/${dataset.key}`;
 
   return (
-    <Paper className={classes.paper}>
-      <Grid container spacing={2}>
-        <Grid item xs={10}>
-          <DatasetDescriptionFull
-            datasetDescription={dataset.description}
-            titleLink={datasetLink}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <CardActionArea component={RouterLink} to={datasetLink}>
-            <CardMedia
-              style={{ height: 128, width: 128, borderRadius: "10%" }}
-              image={dataset.thumbnailPath}
+    <>
+      <Paper className={classes.paper} variant="outlined" >
+        <Grid container spacing={2}>
+          <Grid item xs={10}>
+            <DatasetDescriptionFull
+              datasetDescription={dataset.description}
+              titleLink={datasetLink}
             />
-          </CardActionArea>
+          </Grid>
+          <Grid item xs={2}>
+            <CardActionArea component={RouterLink} to={datasetLink}>
+              <CardMedia
+                style={{ height: 128, width: 128, borderRadius: "10%" }}
+                image={dataset.thumbnailPath}
+              />
+            </CardActionArea>
+          </Grid>
         </Grid>
-        <Grid item xs={10}>
-          <NeuroglancerLink
-            dataset={dataset}
-            checkState={checkStates.layerCheckState}
-            view={dataset.views[checkStates.viewCheckState.findIndex(a => a)]}
-          />
+      </Paper>
+      <Paper className={classes.paper} variant="outlined" >
+        <Grid container spacing={2}>
+          <Grid item xs={10}>
+            <NeuroglancerLink
+              dataset={dataset}
+              checkState={checkStates.layerCheckState}
+              view={dataset.views[checkStates.viewCheckState.findIndex(a => a)]}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <Button onClick={clearLayers} variant="outlined">
+              Clear Layers
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <DatasetViewList
+              views={dataset.views}
+              handleToggle={handleViewToggle}
+              checkState={checkStates.viewCheckState}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <LayerCheckboxList
+              dataset={dataset}
+              checkState={checkStates.layerCheckState}
+              handleChange={handleLayerChange}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={2}>
-          <Button onClick={clearLayers} variant="outlined">Clear Layers</Button>
-        </Grid>
-        <Grid item xs={6}>
-          <DatasetViewList
-            views={dataset.views}
-            handleToggle={handleViewToggle}
-            checkState={checkStates.viewCheckState}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <LayerCheckboxList
-            dataset={dataset}
-            checkState={checkStates.layerCheckState}
-            handleChange={handleLayerChange}
-          />
-        </Grid>
-      </Grid>
-    </Paper>
+      </Paper>
+    </>
   );
 }
