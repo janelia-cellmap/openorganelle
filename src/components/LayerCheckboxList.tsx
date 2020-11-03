@@ -97,7 +97,8 @@ function LayersList({ dataset, checkState, handleChange, filter }) {
     if (filter) {
       // TODO: make this case insensitive
       filteredVolumes = filteredVolumes.filter(v =>
-        v.description.toLowerCase().includes(filter.toLowerCase())
+        v.description.toLowerCase().includes(filter.toLowerCase()) ||
+        v.name.toLowerCase().includes(filter.toLowerCase())
       );
     }
     setVolumes(filteredVolumes);
