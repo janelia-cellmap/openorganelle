@@ -39,7 +39,7 @@ export default function NeuroglancerLink({
 
   if (local_view.volumeKeys.length === 0) {
     return (
-      <div>
+      <>
         <Button
           variant="contained"
           disabled
@@ -48,11 +48,11 @@ export default function NeuroglancerLink({
           View
         </Button>{" "}
         - select layers to view.
-      </div>
+      </>
     );
   } else {
     return (
-      <Box>
+      <>
         <Button
           variant="contained"
           color="primary"
@@ -66,7 +66,7 @@ export default function NeuroglancerLink({
           View
         </Button>
         {!webGL2Enabled && <WarningIcon />}
-      </Box>
+      </>
     );
   }
 }
