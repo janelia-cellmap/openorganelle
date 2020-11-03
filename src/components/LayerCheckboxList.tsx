@@ -1,53 +1,136 @@
-import { Checkbox, createStyles, Divider, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, makeStyles, Theme, Typography } from "@material-ui/core";
-import React from "react";
+import {
+  Checkbox,
+  createStyles,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  makeStyles,
+  Theme,
+  Typography
+} from "@material-ui/core";
+import InputLabel from "@material-ui/core/InputLabel";
+import TextField from "@material-ui/core/TextField";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import SearchIcon from "@material-ui/icons/Search";
+import React, { useState, useEffect } from "react";
 import { ContentType, Dataset, Volume } from "../api/datasets";
+import LayerGroup from "./LayerGroup";
 
 const useStyles: any = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            flexGrow: 1
-        },
-    })
+  createStyles({
+    root: {
+      flexGrow: 1
+    },
+    margin: {
+      margin: "0.3em 0"
+    },
+    control: {
+      width: "100%",
+      height: "400px",
+      overflow: "scroll"
+    }
+  })
 );
 
-type LayerCheckBoxListProps = {
-    dataset: Dataset;
-    checkState: Map<string, boolean>;
-    handleChange: any;
+const contentTypeProps = new Map([
+  ["em", "EM Layers"],
+  ["prediction", "Prediction Layers"],
+  ["segmentation", "Segmentation Layers"],
+  ["analysis", "Analysis Layers"]
+]);
+
+type LayerCheckBoxListCollectionProps = {
+  dataset: Dataset;
+  checkState: Map<string, boolean>;
+  handleChange: any;
+};
+
+function LayersList({ dataset, checkState, handleChange, filter }) {
+  const classes = useStyles();
+  const [volumesList, setVolumes] = useState([]);
+
+  useEffect(() => {
+    // filter volumes based on filter string
+    let filteredVolumes = Array.from(dataset.volumes.values());
+    if (filter) {
+      // TODO: make this case insensitive
+      filteredVolumes = filteredVolumes.filter(v =>
+        v.description.toLowerCase().includes(filter.toLowerCase()) ||
+        v.name.toLowerCase().includes(filter.toLowerCase())
+      );
+    }
+    setVolumes(filteredVolumes);
+  }, [dataset, filter]);
+
+  const volumeGroups: Map<ContentType, Volume[]> = new Map();
+
+  volumesList.forEach((v: Volume) => {
+    if (volumeGroups.get(v.contentType) === undefined) {
+      volumeGroups.set(v.contentType, []);
+    }
+    volumeGroups.get(v.contentType).push(v);
+  });
+
+  const checkboxLists = Array.from(contentTypeProps.keys()).map((ct) => {
+    console.log(ct);
+    let volumes: Volume[] = volumeGroups.get(ct);
+    if (volumes !== undefined && volumes.length > 0) {
+      console.log(volumes);
+      return <LayerGroup volumes={volumes} checkState={checkState} handleChange={handleChange} contentTypeProps={contentTypeProps} />;
+    }
+    return null;
+  });
+
+  return <div className={classes.control}>{checkboxLists}</div>;
 }
 
-export default function LayerCheckboxList({ dataset, checkState, handleChange }: LayerCheckBoxListProps) {
-    const classes = useStyles();
-    const checkboxGroups: Map<ContentType, JSX.Element[]> = new Map();
-    dataset.volumes.forEach((volume: Volume, key: string) => {
+function LayerFilter({ value, onChange }) {
+  const classes = useStyles();
+  return (
+    <FormControl className={classes.margin} fullWidth variant="outlined">
+      <InputLabel htmlFor="input-with-icon-adornment">
+        type keywords here to filter the list
+      </InputLabel>
+      <OutlinedInput
+        id="input-with-icon-adornment"
+        labelWidth={250}
+        value={value}
+        onChange={onChange}
+        startAdornment={
+          <InputAdornment position="start">
+            <SearchIcon />
+          </InputAdornment>
+        }
+      />
+    </FormControl>
+  );
+}
 
-        let cb = <FormControlLabel
-            control={
-                <Checkbox
-                    checked={checkState.get(key)}
-                    onChange={handleChange}
-                    color="primary"
-                    name={key}
-                    size="small"
-                />
-            }
-            label={volume.name}
-            key={`${dataset.key}/${key}`}
-        />;
 
-        if (checkboxGroups.get(volume.contentType) === undefined) { checkboxGroups.set(volume.contentType, []) }
-        checkboxGroups.get(volume.contentType).push(cb);
-    });
-    console.log(checkboxGroups)
-    return (
-        <Grid item>
-            <Typography variant="h6">Select layers for this view</Typography>
-            <FormControl component="fieldset" className={classes.formControl}>
-                <FormLabel component="legend">EM Layers</FormLabel>
-                <Divider />
-                <FormGroup className={classes.formGroup}>{checkboxGroups.get('em')}</FormGroup>
-                {([...checkboxGroups.keys()].includes('segmentation')) && <React.Fragment><FormLabel component="legend">Segmentation Layers</FormLabel><Divider /><FormGroup className={classes.formGroup}>{checkboxGroups.get('segmentation')}</FormGroup></React.Fragment>}
-            </FormControl>
-        </Grid>
-    );
-};
+export default function LayerCheckboxListCollection({
+  dataset,
+  checkState,
+  handleChange
+}: LayerCheckBoxListCollectionProps) {
+  const [layerFilter, setLayerFilter] = useState("");
+
+  const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLayerFilter(event.target.value);
+  };
+
+  return (
+    <>
+      <Typography variant="h6">2. Select layers for the view</Typography>
+      <LayerFilter value={layerFilter} onChange={handleLayerChange} />
+      <LayersList
+        filter={layerFilter}
+        dataset={dataset}
+        checkState={checkState}
+        handleChange={handleChange}
+      />
+    </>
+  );
+}
