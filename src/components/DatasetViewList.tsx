@@ -68,7 +68,7 @@ export default function DatasetViewList({
               </ListItemIcon>
               <ListItemText
                 id={labelId}
-                primary={value.name}
+                primary={<b>{value.name}</b>}
                 secondary={value.description}
               />
             </ListItem>
