@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       width: "100%",
       backgroundColor: theme.palette.background.paper,
-      height: "400px",
+      height: "440px",
       overflow: "scroll"
     },
     inline: {
