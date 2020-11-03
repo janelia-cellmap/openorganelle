@@ -1,6 +1,7 @@
 import { Link as RouterLink } from "react-router-dom";
 import {
   Paper,
+  Button,
   Grid,
   Divider,
   CardActionArea,
@@ -130,6 +131,17 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     });
   };
 
+  const clearLayers = () => {
+    console.log('clearing layers');
+    const newLayerState = new Map(
+      [...checkStates.layerCheckState.entries()].map(([k, v]) => [k, false])
+    );
+    setCheckStates({
+      ...checkStates,
+      layerCheckState: newLayerState,
+    });
+  };
+
   const datasetLink = `/datasets/${dataset.key}`;
 
   return (
@@ -149,12 +161,15 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             />
           </CardActionArea>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={10}>
           <NeuroglancerLink
             dataset={dataset}
             checkState={checkStates.layerCheckState}
             view={dataset.views[checkStates.viewCheckState.findIndex(a => a)]}
           />
+        </Grid>
+        <Grid item xs={2}>
+          <Button onClick={clearLayers} variant="outlined">Clear Layers</Button>
         </Grid>
         <Grid item xs={6}>
           <DatasetViewList
