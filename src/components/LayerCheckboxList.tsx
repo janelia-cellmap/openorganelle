@@ -78,7 +78,7 @@ function LayerCheckboxList({
   });
   return (
     <React.Fragment key={contentType}>
-      <FormLabel component="legend">
+      <FormLabel component="legend" style={{ fontWeight: "bold", marginTop: "1em" }}>
         {contentTypeProps.get(contentType)}
       </FormLabel>
       <Divider />
