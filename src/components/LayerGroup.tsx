@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Volume } from "../api/datasets";
 import {
   Checkbox,
@@ -22,7 +22,13 @@ export default function LayerGroup({
   handleChange,
   contentTypeProps
 }: LayerCheckBoxListProps) {
+  const [expanded, setExpanded] = useState(true);
   const contentType = volumes[0].contentType;
+
+  const handleClick = () => {
+    setExpanded(!expanded);
+  };
+
   const checkBoxList = volumes?.map((volume: Volume) => {
     return (
       <FormControlLabel
@@ -42,11 +48,13 @@ export default function LayerGroup({
   });
   return (
     <React.Fragment key={contentType}>
-      <FormLabel component="legend" style={{ fontWeight: "bold", marginTop: "1em" }}>
+      <FormLabel component="legend" style={{ fontWeight: "bold", marginTop: "1em" }} onClick={handleClick}>
         {contentTypeProps.get(contentType)}
       </FormLabel>
       <Divider />
+      {expanded ? (
       <FormGroup>{checkBoxList}</FormGroup>
+      ) : ''}
     </React.Fragment>
   );
 }
