@@ -75,10 +75,8 @@ function LayersList({ dataset, checkState, handleChange, filter }) {
   });
 
   const checkboxLists = Array.from(contentTypeProps.keys()).map((ct) => {
-    console.log(ct);
     let volumes: Volume[] = volumeGroups.get(ct);
     if (volumes !== undefined && volumes.length > 0) {
-      console.log(volumes);
       return <LayerGroup volumes={volumes} checkState={checkState} handleChange={handleChange} contentTypeProps={contentTypeProps} />;
     }
     return null;

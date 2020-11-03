@@ -146,7 +146,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
   return (
     <>
-      <Paper className={classes.paper} variant="outlined" >
+      <Paper className={classes.paper} variant="outlined">
         <Grid container spacing={2}>
           <Grid item xs={10}>
             <DatasetDescriptionFull
@@ -155,16 +155,22 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             />
           </Grid>
           <Grid item xs={2}>
-            <CardActionArea component={RouterLink} to={datasetLink}>
-              <CardMedia
-                style={{ height: 128, width: 128, borderRadius: "10%" }}
-                image={dataset.thumbnailPath}
-              />
-            </CardActionArea>
+            <NeuroglancerLink
+              dataset={dataset}
+              checkState={checkStates.layerCheckState}
+              view={dataset.views[checkStates.viewCheckState.findIndex(a => a)]}
+            >
+              <CardActionArea>
+                <CardMedia
+                  style={{ height: 128, width: 128, borderRadius: "10%" }}
+                  image={dataset.thumbnailPath}
+                />
+              </CardActionArea>
+            </NeuroglancerLink>
           </Grid>
         </Grid>
       </Paper>
-      <Paper className={classes.paper} variant="outlined" >
+      <Paper className={classes.paper} variant="outlined">
         <Grid container spacing={2}>
           <Grid item xs={10}>
             <NeuroglancerLink
