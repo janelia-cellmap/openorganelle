@@ -29,8 +29,11 @@ export default function DatasetList() {
   const rangeStart = (currentPage - 1) * datasetsPerPage;
   const rangeEnd = rangeStart + datasetsPerPage;
   const totalPages = Math.ceil(datasets.size / datasetsPerPage);
-
-  const displayedDatasets = Array.from(datasets.keys())
+  const sortParam = Array.from(datasets.values()).map(v => Array.from(v.volumes.keys()).length)
+  const datasetKeys = Array.from(datasets.keys());
+  // sort by number of volumes; this will break when the metadata changes to putting volumes in an array
+  const datasetKeysSorted = datasetKeys.sort((a, b) => Array.from(datasets.get(b)?.volumes.keys()).length - Array.from(datasets.get(a)?.volumes.keys()).length); 
+  const displayedDatasets = datasetKeysSorted
     .slice(rangeStart, rangeEnd)
     .map((k, i) => (
       <DatasetTile
