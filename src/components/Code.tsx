@@ -1,12 +1,26 @@
 import React from "react";
 import Typography from "@material-ui/core/Typography";
+import Paper from "@material-ui/core/Paper";
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+
+const useStyles: any = makeStyles((theme: Theme) =>
+  createStyles({
+    section: {
+      padding: "1em",
+      marginTop: "1em"
+    }
+  })
+);
+
 
 export default function Code() {
+  const classes = useStyles();
   return (
     <div style={{ maxWidth: "54em", marginLeft: "auto", marginRight: "auto" }}>
       <Typography variant="h3" gutterBottom>
         OpenOrganelle Code
       </Typography>
+      <Paper className={classes.section} id="website">
       <Typography gutterBottom>
         All of the software we developed for preparing, analyzing, and
         visualizing these datasets is open source. These tools can be found on
@@ -78,6 +92,7 @@ export default function Code() {
       <Typography gutterBottom>
         Install the Fiji plugin we used to evaluate network predictions.
       </Typography>
+    </Paper>
     </div>
   );
 }
