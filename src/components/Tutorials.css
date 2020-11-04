@@ -1,4 +1,4 @@
-kbd {
+.tutorials kbd {
   font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
   font-size: 0.8em;
   color: #000;
@@ -10,12 +10,12 @@ kbd {
   border: 1px solid #bbb;
 }
 
-.fiji_icon {
+.tutorials .fiji_icon {
   height: 1em;
 }
 
 @media (min-width: 600px) {
-  .toc {
+  .tutorials .toc {
     position: fixed;
   }
 }

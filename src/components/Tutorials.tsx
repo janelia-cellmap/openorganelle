@@ -22,7 +22,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 export default function Tutorials() {
   const classes = useStyles();
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} className="tutorials">
       <Grid item sm={3}>
         <ul className="toc">
           <li>

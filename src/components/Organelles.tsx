@@ -5,7 +5,9 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import "./Organelles.css";
 
 const tableData = [
   [
@@ -368,47 +370,63 @@ export default function Organelles() {
       </TableRow>
     );
   });
+
   return (
-    <div>
-      <h3>Organelles</h3>
-      <Paper className={classes.section} id="website">
-        <Table>
-          <TableHead>
-            <TableRow>
+    <Grid container spacing={3} className="organelles">
+      <Grid item sm={3}>
+        <ul className="toc">
+          <li>
+            <a href="#organelles">Organelles</a>
+          </li>
+          <li>
+            <a href="#contact_sites">Contact Sites</a>
+          </li>
+          <li>
+            <a href="#analysis">Analysis</a>
+          </li>
+        </ul>
+      </Grid>
+      <Grid item sm={9}>
+        <h3 id="organelles">Organelles</h3>
+        <Paper className={classes.section} id="website">
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell style={{ width: "20em" }}>Organelle</TableCell>
+                <TableCell>Short Hand Name</TableCell>
+                <TableCell>File Name</TableCell>
+                <TableCell style={{ width: "30em" }}>Description</TableCell>
+                <TableCell style={{ width: "5em" }}>jrc_hela-2</TableCell>
+                <TableCell style={{ width: "5em" }}>jrc_hela-3</TableCell>
+                <TableCell style={{ width: "5em" }}>jrc_jurkat-1</TableCell>
+                <TableCell style={{ width: "5em" }}>jrc_macrophage-2</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>{tableRows}</TableBody>
+          </Table>
+        </Paper>
+        <h3 id="contact_sites">Contact Sites</h3>
+        <Paper className={classes.section} id="website">
+          <Table>
+            <TableHead>
               <TableCell style={{ width: "20em" }}>Organelle</TableCell>
-              <TableCell>Short Hand Name</TableCell>
               <TableCell>File Name</TableCell>
-              <TableCell style={{ width: "30em" }}>Description</TableCell>
-              <TableCell style={{ width: "5em" }}>jrc_hela-2</TableCell>
-              <TableCell style={{ width: "5em" }}>jrc_hela-3</TableCell>
-              <TableCell style={{ width: "5em" }}>jrc_jurkat-1</TableCell>
-              <TableCell style={{ width: "5em" }}>jrc_macrophage-2</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>{tableRows}</TableBody>
-        </Table>
-      </Paper>
-      <h3>Contact Sites</h3>
-      <Paper className={classes.section} id="website">
-        <Table>
-          <TableHead>
-            <TableCell style={{ width: "20em" }}>Organelle</TableCell>
-            <TableCell>File Name</TableCell>
-          </TableHead>
-          <TableBody>{contactRows}</TableBody>
-        </Table>
-      </Paper>
-      <h3>Analysis</h3>
-      <Paper className={classes.section} id="website">
-        <Table>
-          <TableHead>
-            <TableCell style={{ width: "20em" }}>Organelle</TableCell>
-            <TableCell>File Name</TableCell>
-            <TableCell>Description</TableCell>
-          </TableHead>
-          <TableBody>{analysisRows}</TableBody>
-        </Table>
-      </Paper>
-    </div>
+            </TableHead>
+            <TableBody>{contactRows}</TableBody>
+          </Table>
+        </Paper>
+        <h3 id="analysis">Analysis</h3>
+        <Paper className={classes.section} id="website">
+          <Table>
+            <TableHead>
+              <TableCell style={{ width: "20em" }}>Organelle</TableCell>
+              <TableCell>File Name</TableCell>
+              <TableCell>Description</TableCell>
+            </TableHead>
+            <TableBody>{analysisRows}</TableBody>
+          </Table>
+        </Paper>
+      </Grid>
+    </Grid>
   );
 }
