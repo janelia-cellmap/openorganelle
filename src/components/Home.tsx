@@ -5,7 +5,7 @@ import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import { Grid } from "@material-ui/core";
 import Hidden from "@material-ui/core/Hidden";
-import Software from "./Software";
+import Code from "./Code";
 import Tutorials from "./Tutorials";
 import Publications from "./Publications";
 import Organelles from "./Organelles";
@@ -45,7 +45,7 @@ export default function Home() {
     <div className="content">
       <Container maxWidth="lg">
         <Switch>
-          <Route path="/software" component={Software} />
+          <Route path="/code" component={Code} />
           <Route path="/tutorials" component={Tutorials} />
           <Route path="/publications" component={Publications} />
           <Route path="/organelles" component={Organelles} />

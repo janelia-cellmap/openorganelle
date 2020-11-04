@@ -17,12 +17,14 @@ type NeuroglancerLinkProps = {
   dataset: Dataset;
   view: DatasetView;
   checkState: Map<string, boolean>;
+  children: React.ReactNode;
 };
 
 export default function NeuroglancerLink({
   dataset,
   view,
-  checkState
+  checkState,
+  children
 }: NeuroglancerLinkProps) {
   const classes = useStyles();
   const [appState] = useContext(AppContext);
@@ -37,34 +39,43 @@ export default function NeuroglancerLink({
     }
   });
 
-  if (local_view.volumeKeys.length === 0) {
-    return (
-      <>
-        <Button
-          variant="contained"
-          disabled
-          endIcon={<LaunchIcon fontSize="small" />}
-        >
-          View
-        </Button>{" "}
-        - select layers to view.
-      </>
-    );
+  let ngLink = "";
+  const disabled = Boolean(local_view.volumeKeys.length === 0);
+
+  if (!disabled) {
+    ngLink = `${neuroglancerAddress}${dataset.makeNeuroglancerViewerState(
+      local_view
+    )}`;
+  }
+
+  if (children) {
+    return React.Children.map(children, child => {
+      const updatedProps = {
+        disabled,
+        href: ngLink,
+        target: "_blank",
+        rel: "noopener noreferrer"
+      };
+      if (React.isValidElement(child)) {
+        return React.cloneElement(child, updatedProps);
+      }
+      return child;
+    });
   } else {
     return (
       <>
         <Button
           variant="contained"
+          disabled={disabled}
           color="primary"
-          href={`${neuroglancerAddress}${dataset.makeNeuroglancerViewerState(
-            local_view
-          )}`}
+          href={ngLink}
           target="_blank"
           rel="noopener noreferrer"
           endIcon={<LaunchIcon fontSize="small" />}
         >
           View
         </Button>
+        {disabled ? " - select layers to view." : ""}
         {!webGL2Enabled && <WarningIcon />}
       </>
     );
