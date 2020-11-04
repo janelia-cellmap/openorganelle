@@ -138,17 +138,17 @@ export default function Navigation() {
           <NavLink exact to="/">
             <li className={classes.navListItem}>Datasets</li>
           </NavLink>
-          <NavLink to="/code">
-            <li className={classes.navListItem}>Code</li>
-          </NavLink>
-          <NavLink to="/publications">
-            <li className={classes.navListItem}>Publications</li>
-          </NavLink>
           <NavLink to="/tutorials">
             <li className={classes.navListItem}>Tutorials</li>
           </NavLink>
           <NavLink to="/organelles">
             <li className={classes.navListItem}>Organelles</li>
+          </NavLink>
+          <NavLink to="/code">
+            <li className={classes.navListItem}>Code</li>
+          </NavLink>
+          <NavLink to="/publications">
+            <li className={classes.navListItem}>Publications</li>
           </NavLink>
         </ul>
       </div>
