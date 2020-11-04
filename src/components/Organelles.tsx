@@ -4,6 +4,8 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 const tableData = [
   [
@@ -322,7 +324,17 @@ const analysisList = [
   ]
 ];
 
+const useStyles: any = makeStyles((theme: Theme) =>
+  createStyles({
+    section: {
+      padding: "1em",
+      marginTop: "1em"
+    }
+  })
+);
+
 export default function Organelles() {
+  const classes = useStyles();
   const tableRows = tableData.map(row => {
     return (
       <TableRow key={row[0]}>
@@ -330,18 +342,10 @@ export default function Organelles() {
         <TableCell>{row[1]}</TableCell>
         <TableCell>{row[2]}</TableCell>
         <TableCell>{row[3]}</TableCell>
-        <TableCell>
-          {row[4] !== '' && <a href={row[4]}>hela_2</a>}
-        </TableCell>
-        <TableCell>
-          {row[5] !== '' && <a href={row[5]}>hela_2</a>}
-        </TableCell>
-        <TableCell>
-          {row[6] !== '' && <a href={row[6]}>hela_2</a>}
-        </TableCell>
-        <TableCell>
-          {row[7] !== '' && <a href={row[7]}>hela_2</a>}
-        </TableCell>
+        <TableCell>{row[4] !== "" && <a href={row[4]}>hela_2</a>}</TableCell>
+        <TableCell>{row[5] !== "" && <a href={row[5]}>hela_2</a>}</TableCell>
+        <TableCell>{row[6] !== "" && <a href={row[6]}>hela_2</a>}</TableCell>
+        <TableCell>{row[7] !== "" && <a href={row[7]}>hela_2</a>}</TableCell>
       </TableRow>
     );
   });
@@ -367,38 +371,44 @@ export default function Organelles() {
   return (
     <div>
       <h3>Organelles</h3>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell style={{ width: "20em" }}>Organelle</TableCell>
-            <TableCell>Short Hand Name</TableCell>
-            <TableCell>File Name</TableCell>
-            <TableCell style={{ width: "30em" }}>Description</TableCell>
-            <TableCell style={{ width: "5em" }}>jrc_hela-2</TableCell>
-            <TableCell style={{ width: "5em" }}>jrc_hela-3</TableCell>
-            <TableCell style={{ width: "5em" }}>jrc_jurkat-1</TableCell>
-            <TableCell style={{ width: "5em" }}>jrc_macrophage-2</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>{tableRows}</TableBody>
-      </Table>
+      <Paper className={classes.section} id="website">
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell style={{ width: "20em" }}>Organelle</TableCell>
+              <TableCell>Short Hand Name</TableCell>
+              <TableCell>File Name</TableCell>
+              <TableCell style={{ width: "30em" }}>Description</TableCell>
+              <TableCell style={{ width: "5em" }}>jrc_hela-2</TableCell>
+              <TableCell style={{ width: "5em" }}>jrc_hela-3</TableCell>
+              <TableCell style={{ width: "5em" }}>jrc_jurkat-1</TableCell>
+              <TableCell style={{ width: "5em" }}>jrc_macrophage-2</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>{tableRows}</TableBody>
+        </Table>
+      </Paper>
       <h3>Contact Sites</h3>
-      <Table>
-        <TableHead>
-          <TableCell style={{ width: "20em" }}>Organelle</TableCell>
-          <TableCell>File Name</TableCell>
-        </TableHead>
-        <TableBody>{contactRows}</TableBody>
-      </Table>
+      <Paper className={classes.section} id="website">
+        <Table>
+          <TableHead>
+            <TableCell style={{ width: "20em" }}>Organelle</TableCell>
+            <TableCell>File Name</TableCell>
+          </TableHead>
+          <TableBody>{contactRows}</TableBody>
+        </Table>
+      </Paper>
       <h3>Analysis</h3>
-      <Table>
-        <TableHead>
-          <TableCell style={{ width: "20em" }}>Organelle</TableCell>
-          <TableCell>File Name</TableCell>
-          <TableCell>Description</TableCell>
-        </TableHead>
-        <TableBody>{analysisRows}</TableBody>
-      </Table>
+      <Paper className={classes.section} id="website">
+        <Table>
+          <TableHead>
+            <TableCell style={{ width: "20em" }}>Organelle</TableCell>
+            <TableCell>File Name</TableCell>
+            <TableCell>Description</TableCell>
+          </TableHead>
+          <TableBody>{analysisRows}</TableBody>
+        </Table>
+      </Paper>
     </div>
   );
 }
