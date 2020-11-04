@@ -13,3 +13,9 @@ kbd {
 .fiji_icon {
   height: 1em;
 }
+
+@media (min-width: 600px) {
+  .toc {
+    position: fixed;
+  }
+}

@@ -16,9 +16,6 @@ const useStyles: any = makeStyles((theme: Theme) =>
       padding: "1em",
       marginTop: "1em"
     },
-    toc: {
-      position: "fixed"
-    }
   })
 );
 
@@ -26,8 +23,8 @@ export default function Tutorials() {
   const classes = useStyles();
   return (
     <Grid container spacing={3}>
-      <Grid item sm={2}>
-        <ul className={classes.toc}>
+      <Grid item sm={3}>
+        <ul className="toc">
           <li>
             <a href="#website">Website</a>
           </li>
@@ -42,7 +39,7 @@ export default function Tutorials() {
           </li>
         </ul>
       </Grid>
-      <Grid item sm={10}>
+      <Grid item sm={9}>
         <div
           style={{ maxWidth: "54em", marginLeft: "auto", marginRight: "auto" }}
         >
