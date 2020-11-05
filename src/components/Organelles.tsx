@@ -4,7 +4,6 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import "./Organelles.css";
@@ -372,8 +371,8 @@ export default function Organelles() {
   });
 
   return (
-    <Grid container spacing={3} className="organelles">
-      <Grid item sm={3}>
+    <Grid container spacing={1} className="organelles">
+      <Grid item sm={2}>
         <ul className="toc">
           <li>
             <a href="#organelles">Organelles</a>
@@ -386,10 +385,10 @@ export default function Organelles() {
           </li>
         </ul>
       </Grid>
-      <Grid item sm={9}>
-        <h3 id="organelles">Organelles</h3>
-        <Paper className={classes.section} id="website">
-          <Table>
+      <Grid item sm={10}>
+        <a className="anchor" id="organelles"/>
+        <h3>Organelles</h3>
+          <Table className="sticky border">
             <TableHead>
               <TableRow>
                 <TableCell style={{ width: "20em" }}>Organelle</TableCell>
@@ -404,20 +403,18 @@ export default function Organelles() {
             </TableHead>
             <TableBody>{tableRows}</TableBody>
           </Table>
-        </Paper>
-        <h3 id="contact_sites">Contact Sites</h3>
-        <Paper className={classes.section} id="website">
-          <Table>
+        <a className="anchor" id="contact_sites"/>
+        <h3>Contact Sites</h3>
+          <Table className="sticky border">
             <TableHead>
               <TableCell style={{ width: "20em" }}>Organelle</TableCell>
               <TableCell>File Name</TableCell>
             </TableHead>
             <TableBody>{contactRows}</TableBody>
           </Table>
-        </Paper>
-        <h3 id="analysis">Analysis</h3>
-        <Paper className={classes.section} id="website">
-          <Table>
+        <a className="anchor" id="analysis" />
+        <h3>Analysis</h3>
+          <Table className="sticky border">
             <TableHead>
               <TableCell style={{ width: "20em" }}>Organelle</TableCell>
               <TableCell>File Name</TableCell>
@@ -425,7 +422,6 @@ export default function Organelles() {
             </TableHead>
             <TableBody>{analysisRows}</TableBody>
           </Table>
-        </Paper>
       </Grid>
     </Grid>
   );

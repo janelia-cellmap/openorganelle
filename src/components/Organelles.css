@@ -3,3 +3,21 @@
     position: fixed;
   }
 }
+
+.organelles .border {
+  border: 1px solid #eee;
+  border-radius: 20px;
+}
+
+.organelles .sticky th {
+  position: sticky;
+  top: 54px;
+  background: #eee;
+}
+
+a.anchor {
+  display: block;
+  position: relative;
+  top: -150px;
+  visibility: hidden;
+}
