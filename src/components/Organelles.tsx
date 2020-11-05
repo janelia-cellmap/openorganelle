@@ -4,6 +4,8 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import Typography from "@material-ui/core/Typography";
+import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import "./Organelles.css";
@@ -395,23 +397,33 @@ export default function Organelles() {
   });
 
   return (
-    <Grid container spacing={1} className="organelles">
-      <Grid item sm={2}>
-        <ul className="toc">
+    <Grid container spacing={3} className="organelles">
+      <Grid item md={3}>
+        <Paper className="toc">
+        <ul>
           <li>
-            <a href="#organelles">Organelles</a>
+            <Typography variant="h5" gutterBottom>
+              <a href="#organelles">Organelles</a>
+            </Typography>
           </li>
           <li>
-            <a href="#contact_sites">Contact Sites</a>
+            <Typography variant="h5" gutterBottom>
+              <a href="#contact_sites">Contact Sites</a>
+            </Typography>
           </li>
           <li>
-            <a href="#analysis">Analysis</a>
+            <Typography variant="h5" gutterBottom>
+              <a href="#analysis">Analysis</a>
+            </Typography>
           </li>
         </ul>
+    </Paper>
       </Grid>
-      <Grid item sm={10}>
+      <Grid item md={9}>
         <a className="anchor" id="organelles" />
-        <h3>Organelles</h3>
+        <Typography variant="h3" gutterBottom>
+        Organelles
+        </Typography>
         <Table className="sticky border">
           <TableHead>
             <TableRow>

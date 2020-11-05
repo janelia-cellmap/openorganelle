@@ -1,8 +1,27 @@
-@media (min-width: 600px) {
+@media (min-width: 960px) {
   .organelles .toc {
-    position: fixed;
+    position: sticky;
+    top: 82px;
   }
 }
+
+.organelles .toc {
+  padding: 1em;
+  margin-top: 1em;
+}
+
+.organelles .toc li {
+  list-style: none;
+}
+
+.organelles .toc ul {
+  padding: 0 1em;
+}
+
+.organelles .toc a {
+  text-decoration: none;
+}
+
 
 .organelles .border {
   border: 1px solid #eee;

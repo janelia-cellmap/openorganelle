@@ -23,25 +23,33 @@ export default function Tutorials() {
   const classes = useStyles();
   return (
     <Grid container spacing={3} className="tutorials">
-      <Grid item sm={3}>
+      <Grid item md={3}>
         <Paper className="toc">
           <ul>
             <li>
-              <a href="#website">Website</a>
+              <Typography variant="h5" gutterBottom>
+                <a href="#website">Website</a>
+              </Typography>
             </li>
             <li>
+              <Typography variant="h5" gutterBottom>
               <a href="#visualization">Visualization</a>
+              </Typography>
             </li>
             <li>
+              <Typography variant="h5" gutterBottom>
               <a href="#data_handling">Data Handling</a>
+              </Typography>
             </li>
             <li>
+              <Typography variant="h5" gutterBottom>
               <a href="#sharing">Sharing</a>
+              </Typography>
             </li>
           </ul>
         </Paper>
       </Grid>
-      <Grid item sm={9}>
+      <Grid item md={9}>
         <div
           style={{ maxWidth: "54em", marginLeft: "auto", marginRight: "auto" }}
         >
