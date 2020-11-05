@@ -410,42 +410,42 @@ export default function Organelles() {
         </ul>
       </Grid>
       <Grid item sm={10}>
-        <a className="anchor" id="organelles"/>
+        <a className="anchor" id="organelles" />
         <h3>Organelles</h3>
-          <Table className="sticky border">
-            <TableHead>
-              <TableRow>
-                <TableCell style={{ width: "20em" }}>Organelle</TableCell>
-                <TableCell>Short Hand Name</TableCell>
-                <TableCell>File Name</TableCell>
-                <TableCell style={{ width: "30em" }}>Description</TableCell>
-                <TableCell style={{ width: "5em" }}>jrc_hela-2</TableCell>
-                <TableCell style={{ width: "5em" }}>jrc_hela-3</TableCell>
-                <TableCell style={{ width: "5em" }}>jrc_jurkat-1</TableCell>
-                <TableCell style={{ width: "5em" }}>jrc_macrophage-2</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>{tableRows}</TableBody>
-          </Table>
-        <a className="anchor" id="contact_sites"/>
-        <h3>Contact Sites</h3>
-          <Table className="sticky border">
-            <TableHead>
+        <Table className="sticky border">
+          <TableHead>
+            <TableRow>
               <TableCell style={{ width: "20em" }}>Organelle</TableCell>
+              <TableCell>Short Hand Name</TableCell>
               <TableCell>File Name</TableCell>
-            </TableHead>
-            <TableBody>{contactRows}</TableBody>
-          </Table>
+              <TableCell style={{ width: "30em" }}>Description</TableCell>
+              <TableCell style={{ width: "5em" }}>jrc_hela-2</TableCell>
+              <TableCell style={{ width: "5em" }}>jrc_hela-3</TableCell>
+              <TableCell style={{ width: "5em" }}>jrc_jurkat-1</TableCell>
+              <TableCell style={{ width: "5em" }}>jrc_macrophage-2</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>{tableRows}</TableBody>
+        </Table>
+        <a className="anchor" id="contact_sites" />
+        <h3>Contact Sites</h3>
+        <Table className="sticky border">
+          <TableHead>
+            <TableCell style={{ width: "20em" }}>Organelle</TableCell>
+            <TableCell>File Name</TableCell>
+          </TableHead>
+          <TableBody>{contactRows}</TableBody>
+        </Table>
         <a className="anchor" id="analysis" />
         <h3>Analysis</h3>
-          <Table className="sticky border">
-            <TableHead>
-              <TableCell style={{ width: "20em" }}>Organelle</TableCell>
-              <TableCell>File Name</TableCell>
-              <TableCell>Description</TableCell>
-            </TableHead>
-            <TableBody>{analysisRows}</TableBody>
-          </Table>
+        <Table className="sticky border">
+          <TableHead>
+            <TableCell style={{ width: "20em" }}>Organelle</TableCell>
+            <TableCell>File Name</TableCell>
+            <TableCell>Description</TableCell>
+          </TableHead>
+          <TableBody>{analysisRows}</TableBody>
+        </Table>
       </Grid>
     </Grid>
   );
