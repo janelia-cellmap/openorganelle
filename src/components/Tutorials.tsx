@@ -46,7 +46,8 @@ export default function Tutorials() {
           <Typography variant="h3" gutterBottom>
             Tutorials
           </Typography>
-          <Paper className={classes.section} id="website">
+          <a className="anchor" id="website"/>
+          <Paper className={classes.section}>
             <Typography variant="h4" gutterBottom>
               Website
             </Typography>
@@ -112,7 +113,8 @@ export default function Tutorials() {
               examples of these organelles in four different datasets.
             </Typography>
           </Paper>
-          <Paper className={classes.section} id="visualization">
+          <a className="anchor" id="visualization"/>
+          <Paper className={classes.section}>
             <Typography variant="h4" gutterBottom>
               Visualization
             </Typography>
@@ -287,7 +289,8 @@ export default function Tutorials() {
               coordinates.
             </Typography>
           </Paper>
-          <Paper className={classes.section} id="data_handling">
+          <a className="anchor" id="data_handling"/>
+          <Paper className={classes.section}>
             <Typography variant="h4" gutterBottom>
               Data handling tutorials
             </Typography>
@@ -365,7 +368,8 @@ export default function Tutorials() {
             <Typography paragraph>Evaluations and metrics</Typography>
           </Paper>
 
-          <Paper className={classes.section} id="sharing">
+          <a className="anchor" id="sharing"/>
+          <Paper className={classes.section}>
             <Typography variant="h4" gutterBottom>
               Sharing
             </Typography>
