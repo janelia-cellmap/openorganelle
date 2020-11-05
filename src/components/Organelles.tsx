@@ -343,10 +343,34 @@ export default function Organelles() {
         <TableCell>{row[1]}</TableCell>
         <TableCell>{row[2]}</TableCell>
         <TableCell>{row[3]}</TableCell>
-        <TableCell>{row[4] !== "" && <a href={row[4]}>hela_2</a>}</TableCell>
-        <TableCell>{row[5] !== "" && <a href={row[5]}>hela_2</a>}</TableCell>
-        <TableCell>{row[6] !== "" && <a href={row[6]}>hela_2</a>}</TableCell>
-        <TableCell>{row[7] !== "" && <a href={row[7]}>hela_2</a>}</TableCell>
+        <TableCell>
+          {row[4] !== "" && (
+            <a href={row[4]} target="_blank" rel="noopener noreferrer">
+              view
+            </a>
+          )}
+        </TableCell>
+        <TableCell>
+          {row[5] !== "" && (
+            <a href={row[5]} target="_blank" rel="noopener noreferrer">
+              view
+            </a>
+          )}
+        </TableCell>
+        <TableCell>
+          {row[6] !== "" && (
+            <a href={row[6]} target="_blank" rel="noopener noreferrer">
+              view
+            </a>
+          )}
+        </TableCell>
+        <TableCell>
+          {row[7] !== "" && (
+            <a href={row[7]} target="_blank" rel="noopener noreferrer">
+              view
+            </a>
+          )}
+        </TableCell>
       </TableRow>
     );
   });
