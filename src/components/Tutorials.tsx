@@ -15,7 +15,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
     section: {
       padding: "1em",
       marginTop: "1em"
-    },
+    }
   })
 );
 
@@ -24,20 +24,22 @@ export default function Tutorials() {
   return (
     <Grid container spacing={3} className="tutorials">
       <Grid item sm={3}>
-        <ul className="toc">
-          <li>
-            <a href="#website">Website</a>
-          </li>
-          <li>
-            <a href="#visualization">Visualization</a>
-          </li>
-          <li>
-            <a href="#data_handling">Data Handling</a>
-          </li>
-          <li>
-            <a href="#sharing">Sharing</a>
-          </li>
-        </ul>
+        <Paper className="toc">
+          <ul>
+            <li>
+              <a href="#website">Website</a>
+            </li>
+            <li>
+              <a href="#visualization">Visualization</a>
+            </li>
+            <li>
+              <a href="#data_handling">Data Handling</a>
+            </li>
+            <li>
+              <a href="#sharing">Sharing</a>
+            </li>
+          </ul>
+        </Paper>
       </Grid>
       <Grid item sm={9}>
         <div
@@ -46,7 +48,7 @@ export default function Tutorials() {
           <Typography variant="h3" gutterBottom>
             Tutorials
           </Typography>
-          <a className="anchor" id="website"/>
+          <a className="anchor" id="website" />
           <Paper className={classes.section}>
             <Typography variant="h4" gutterBottom>
               Website
@@ -113,7 +115,7 @@ export default function Tutorials() {
               examples of these organelles in four different datasets.
             </Typography>
           </Paper>
-          <a className="anchor" id="visualization"/>
+          <a className="anchor" id="visualization" />
           <Paper className={classes.section}>
             <Typography variant="h4" gutterBottom>
               Visualization
@@ -289,7 +291,7 @@ export default function Tutorials() {
               coordinates.
             </Typography>
           </Paper>
-          <a className="anchor" id="data_handling"/>
+          <a className="anchor" id="data_handling" />
           <Paper className={classes.section}>
             <Typography variant="h4" gutterBottom>
               Data handling tutorials
@@ -368,7 +370,7 @@ export default function Tutorials() {
             <Typography paragraph>Evaluations and metrics</Typography>
           </Paper>
 
-          <a className="anchor" id="sharing"/>
+          <a className="anchor" id="sharing" />
           <Paper className={classes.section}>
             <Typography variant="h4" gutterBottom>
               Sharing

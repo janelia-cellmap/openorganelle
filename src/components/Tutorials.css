@@ -14,8 +14,18 @@
   height: 1em;
 }
 
+.tutorials li {
+  list-style: none;
+}
+
+.tutorials ul {
+  padding: 0 1em;
+}
+
 @media (min-width: 600px) {
   .tutorials .toc {
     position: fixed;
+    padding: 1em;
+    margin-top: 1em;
   }
 }
