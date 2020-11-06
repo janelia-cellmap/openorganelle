@@ -33,17 +33,17 @@ export default function Tutorials() {
             </li>
             <li>
               <Typography variant="h5" gutterBottom>
-              <a href="#visualization">Visualization</a>
+                <a href="#visualization">Visualization</a>
               </Typography>
             </li>
             <li>
               <Typography variant="h5" gutterBottom>
-              <a href="#data_handling">Data Handling</a>
+                <a href="#data_handling">Data Handling</a>
               </Typography>
             </li>
             <li>
               <Typography variant="h5" gutterBottom>
-              <a href="#sharing">Sharing</a>
+                <a href="#sharing">Sharing</a>
               </Typography>
             </li>
           </ul>
@@ -66,10 +66,10 @@ export default function Tutorials() {
             </Typography>
             <Typography paragraph>
               Our data portal is organized on five main pages. Datasets,
-              Software, Tutorials, Publications, and Organelles. In these pages
-              you will find tools and resources for browsing and consuming the
-              data. For more information about the mission of the data portal
-              and the teams involved please visit our About page.
+              Tutorials, Organelles, Code, and Publications. In these pages you
+              will find tools and resources for browsing and consuming the data.
+              For more information about the mission of the data portal and the
+              teams involved please visit our About page.
             </Typography>
             <Typography variant="h5" gutterBottom>
               Datasets
@@ -86,22 +86,30 @@ export default function Tutorials() {
               <a href="#visualization">Visualization</a>.
             </Typography>
             <Typography variant="h5" gutterBottom>
-              Software
-            </Typography>
-            <Typography paragraph>
-              On the <Link to="/software">Software</Link> page is a
-              comprehensive list of all the software that was used to generate
-              these datasets. This includes commercially available and
-              homewritten software used for manual, machine learning libraries,
-              analysis, and much more. Here you will also find useful links to
-              our GitHub repositories.
-            </Typography>
-            <Typography variant="h5" gutterBottom>
               Tutorials
             </Typography>
             <Typography paragraph>
               On the <Link to="/tutorials">Tutorials</Link> page, this page, is
               a compilation of instructions for navigating OpenOrganelle.
+            </Typography>
+            <Typography variant="h5" gutterBottom>
+              Organelles
+            </Typography>
+            <Typography paragraph>
+              On the <Link to="/organelles">Organelles</Link> page is a catalog
+              of all of the organelles that have been segmented. Included here
+              is a description of the organelles as well as Neuroglancer links
+              to examples of these organelles in four different datasets.
+            </Typography>
+
+            <Typography variant="h5" gutterBottom>
+              Code
+            </Typography>
+            <Typography paragraph>
+              On the <Link to="/code">Code</Link> page is a collection of all
+              the software we developed for preparing, analyzing and visualizing
+              the datasets. Here you will also find useful links to our GitHub
+              repositories.
             </Typography>
             <Typography variant="h5" gutterBottom>
               Publications
@@ -112,15 +120,6 @@ export default function Tutorials() {
               of “views” that are referenced in these publications. More
               information about pre-made data views can be found in
               <a href="#visualization">Visualization</a>.
-            </Typography>
-            <Typography variant="h5" gutterBottom>
-              Organelles
-            </Typography>
-            <Typography paragraph>
-              On the <Link to="/organelles">Organelles</Link> page is a catalog
-              of all of the organelles that have been segmented. Included here
-              is a description of the organelles as well as Neurglancer links to
-              examples of these organelles in four different datasets.
             </Typography>
           </Paper>
           <a className="anchor" id="visualization" />
@@ -304,27 +303,19 @@ export default function Tutorials() {
             <Typography variant="h4" gutterBottom>
               Data handling tutorials
             </Typography>
-            <Typography variant="h5">Data organization</Typography>
-            <Typography>
-              General data and metadata structure? - See our{" "}
-              <a href="https://github.com/janelia-cosem/schemas/blob/master/README.md">
-                schema
-              </a>{" "}
-              documentation.
+            <Typography variant="h5" gutterBottom>
+              Data organization
             </Typography>
-            <ul>
-              <li>Raw EM data</li>
-              <li>LM</li>
-              <li>Predictions</li>
-              <li>Segmentations</li>
-              <li>
-                Analysis (curvature, skeletons, contact sites, classified
-                segmentations)
-              </li>
-            </ul>
-            <Typography paragraph>
-              You can find an extensive list of available predictions,
-              segmentations, and analysis on the{" "}
+            <Typography gutterBottom>
+              Documentation of how data, metadata, and derived data are
+              organized for the COSEM project is on our
+              <a href="https://github.com/janelia-cosem/schemas/blob/master/README.md">
+                GitHub schema page
+              </a>
+              . Included on OpenOrganelle are the raw EM datasets, organelle
+              predictions, refined segmentations, analysis, and correlative
+              light microscopy. For an extensive list of available predictions,
+              segmentations, and analysis, please visit the{" "}
               <Link to="/organelles">Organelles</Link> page.
             </Typography>
             <Typography variant="h5" gutterBottom>
@@ -361,8 +352,13 @@ export default function Tutorials() {
               Downloading data
             </Typography>
             <Typography paragraph>
-              Software page? point people to python / command line tools for
-              downloading stuff from s3 AWS command line tools for downloading
+              To download datasets, we recommend using the AWS command line
+              interface (AWS CLI). Instructions for using this tool can be found
+              on their{" "}
+              <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">
+                user guide
+              </a>
+              .
             </Typography>
             <Typography variant="h5" gutterBottom>
               How to access analysis database(s)
@@ -375,7 +371,6 @@ export default function Tutorials() {
               </a>
               .
             </Typography>
-            <Typography paragraph>Evaluations and metrics</Typography>
           </Paper>
 
           <a className="anchor" id="sharing" />
@@ -410,14 +405,11 @@ export default function Tutorials() {
             </Typography>
 
             <Typography paragraph>
-              We welcome you to visit our GitHub repository to access all of our
-              code and software:{" "}
-              <a href="https://github.com/janelia-cosem">
-                https://github.com/janelia-cosem
-              </a>
-              . More information about the software used and written for this
-              project can be found on the <Link to="/software">Software</Link>{" "}
-              page.
+              We welcome you to visit our GitHub repository,{" "}
+              <a href="https://github.com/janelia-cosem">janelia-cosem</a>, to
+              access all of our code and software. More information about the
+              software used and written for this project can be found on the{" "}
+              <Link to="/code">Code</Link> page.
             </Typography>
 
             <Typography paragraph>
