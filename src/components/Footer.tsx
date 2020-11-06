@@ -6,7 +6,7 @@ import fibsemLogo from "../fibsem_logo.png";
 
 const cosemURL = "https://www.janelia.org/project-team/cosem";
 const hessURL = "https://www.janelia.org/lab/hess-lab";
-const fibsemURL = "https://www.janelia.org/lab/fib-sem-technology";
+const fibsemURL = "https://www.janelia.org/project-team/fib-sem-technology";
 
 const useStyles = makeStyles(theme => ({
   link: {
