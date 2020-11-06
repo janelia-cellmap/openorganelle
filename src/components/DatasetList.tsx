@@ -4,20 +4,10 @@ import React, {
 } from "react";
 
 import Pagination from "@material-ui/lab/Pagination";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { Dataset} from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import DatasetTile from "./DatasetTile";
-
-const useStyles: any = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            flexGrow: 1
-        },
-    })
-);
-
 
 export default function DatasetList() {
   const [appState,] = useContext(AppContext);
@@ -29,7 +19,6 @@ export default function DatasetList() {
   const rangeStart = (currentPage - 1) * datasetsPerPage;
   const rangeEnd = rangeStart + datasetsPerPage;
   const totalPages = Math.ceil(datasets.size / datasetsPerPage);
-  const sortParam = Array.from(datasets.values()).map(v => Array.from(v.volumes.keys()).length)
   const datasetKeys = Array.from(datasets.keys());
   // sort by number of volumes; this will break when the metadata changes to putting volumes in an array
   const datasetKeysSorted = datasetKeys.sort((a, b) => Array.from(datasets.get(b)?.volumes.keys()).length - Array.from(datasets.get(a)?.volumes.keys()).length); 
