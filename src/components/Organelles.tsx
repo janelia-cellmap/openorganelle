@@ -7,7 +7,6 @@ import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import "./Organelles.css";
 
 const tableData = [
@@ -327,17 +326,7 @@ const analysisList = [
   ]
 ];
 
-const useStyles: any = makeStyles((theme: Theme) =>
-  createStyles({
-    section: {
-      padding: "1em",
-      marginTop: "1em"
-    }
-  })
-);
-
 export default function Organelles() {
-  const classes = useStyles();
   const tableRows = tableData.map(row => {
     return (
       <TableRow key={row[0]}>
@@ -400,29 +389,29 @@ export default function Organelles() {
     <Grid container spacing={3} className="organelles">
       <Grid item md={3}>
         <Paper className="toc">
-        <ul>
-          <li>
-            <Typography variant="h5" gutterBottom>
-              <a href="#organelles">Organelles</a>
-            </Typography>
-          </li>
-          <li>
-            <Typography variant="h5" gutterBottom>
-              <a href="#contact_sites">Contact Sites</a>
-            </Typography>
-          </li>
-          <li>
-            <Typography variant="h5" gutterBottom>
-              <a href="#analysis">Analysis</a>
-            </Typography>
-          </li>
-        </ul>
-    </Paper>
+          <ul>
+            <li>
+              <Typography variant="h5" gutterBottom>
+                <a href="#organelles">Organelles</a>
+              </Typography>
+            </li>
+            <li>
+              <Typography variant="h5" gutterBottom>
+                <a href="#contact_sites">Contact Sites</a>
+              </Typography>
+            </li>
+            <li>
+              <Typography variant="h5" gutterBottom>
+                <a href="#analysis">Analysis</a>
+              </Typography>
+            </li>
+          </ul>
+        </Paper>
       </Grid>
       <Grid item md={9}>
-        <a className="anchor" id="organelles" />
+        <p className="anchor" id="organelles" />
         <Typography variant="h3" gutterBottom>
-        Organelles
+          Organelles
         </Typography>
         <Table className="sticky border">
           <TableHead>
@@ -439,22 +428,26 @@ export default function Organelles() {
           </TableHead>
           <TableBody>{tableRows}</TableBody>
         </Table>
-        <a className="anchor" id="contact_sites" />
+        <p className="anchor" id="contact_sites" />
         <h3>Contact Sites</h3>
         <Table className="sticky border">
           <TableHead>
-            <TableCell style={{ width: "20em" }}>Organelle</TableCell>
-            <TableCell>File Name</TableCell>
+            <TableRow>
+              <TableCell style={{ width: "20em" }}>Organelle</TableCell>
+              <TableCell>File Name</TableCell>
+            </TableRow>
           </TableHead>
           <TableBody>{contactRows}</TableBody>
         </Table>
-        <a className="anchor" id="analysis" />
+        <p className="anchor" id="analysis" />
         <h3>Analysis</h3>
         <Table className="sticky border">
           <TableHead>
-            <TableCell style={{ width: "20em" }}>Organelle</TableCell>
-            <TableCell>File Name</TableCell>
-            <TableCell>Description</TableCell>
+            <TableRow>
+              <TableCell style={{ width: "20em" }}>Organelle</TableCell>
+              <TableCell>File Name</TableCell>
+              <TableCell>Description</TableCell>
+            </TableRow>
           </TableHead>
           <TableBody>{analysisRows}</TableBody>
         </Table>

@@ -56,7 +56,7 @@ export default function Tutorials() {
           <Typography variant="h3" gutterBottom>
             Tutorials
           </Typography>
-          <a className="anchor" id="website" />
+          <p className="anchor" id="website" />
           <Paper className={classes.section}>
             <Typography variant="h4" gutterBottom>
               Website
@@ -122,7 +122,7 @@ export default function Tutorials() {
               <a href="#visualization">Visualization</a>.
             </Typography>
           </Paper>
-          <a className="anchor" id="visualization" />
+          <p className="anchor" id="visualization" />
           <Paper className={classes.section}>
             <Typography variant="h4" gutterBottom>
               Visualization
@@ -298,7 +298,7 @@ export default function Tutorials() {
               coordinates.
             </Typography>
           </Paper>
-          <a className="anchor" id="data_handling" />
+          <p className="anchor" id="data_handling" />
           <Paper className={classes.section}>
             <Typography variant="h4" gutterBottom>
               Data handling tutorials
@@ -373,7 +373,7 @@ export default function Tutorials() {
             </Typography>
           </Paper>
 
-          <a className="anchor" id="sharing" />
+          <p className="anchor" id="sharing" />
           <Paper className={classes.section}>
             <Typography variant="h4" gutterBottom>
               Sharing
