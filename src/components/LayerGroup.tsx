@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Volume } from "../api/datasets";
 import {
   Checkbox,
-  Divider,
   FormControlLabel,
   FormGroup,
-  FormLabel
 } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
 import Typography from "@material-ui/core/Typography";
@@ -67,7 +65,7 @@ export default function LayerGroup({
         <Typography>{contentTypeProps.get(contentType)}</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Typography><FormGroup>{checkBoxList}</FormGroup></Typography>
+        <FormGroup>{checkBoxList}</FormGroup>
       </AccordionDetails>
     </Accordion>
   );

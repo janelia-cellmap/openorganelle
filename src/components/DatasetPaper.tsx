@@ -1,9 +1,7 @@
-import { Link as RouterLink } from "react-router-dom";
 import {
   Paper,
   Button,
   Grid,
-  Divider,
   CardActionArea,
   CardMedia,
   createStyles,
@@ -16,7 +14,6 @@ import { DatasetDescriptionFull } from "./DatasetDescriptionText";
 import DatasetViewList from "./DatasetViewList";
 import LayerCheckboxList from "./LayerCheckboxList";
 import NeuroglancerLink from "./NeuroglancerLink";
-import { Description } from "@material-ui/icons";
 
 type DatasetPaperProps = {
   datasetKey: string;
@@ -82,34 +79,6 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     // Prevent all checkboxes from being deselected
     if (![...newCheckState.values()].every(v => !v)) {
       setCheckStates({ ...checkStates, layerCheckState: newCheckState });
-    }
-  };
-
-  const handleViewChange = (
-    event: React.MouseEvent<HTMLInputElement>,
-    views: DatasetView[]
-  ) => {
-    // Only handle selected -> unselected event
-
-    if (event.target.checked === true) {
-      const newCheckState: boolean[] = checkStates.viewCheckState.map(
-        () => false
-      );
-      newCheckState[parseInt(event.target.name)] = event.target.checked;
-
-      const newLayerState = new Map(
-        [...checkStates.layerCheckState.entries()].map(([k, v]) => [k, false])
-      );
-      views[newCheckState.findIndex(v => v)].volumeKeys.map(k =>
-        newLayerState.set(k, true)
-      );
-
-      setCheckStates({
-        ...checkStates,
-        layerCheckState: newLayerState,
-        viewCheckState: newCheckState
-      });
-      // reset the state of layer selection checkboxes
     }
   };
 

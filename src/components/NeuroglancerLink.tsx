@@ -1,17 +1,9 @@
-import { Box, createStyles, Link, Button } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button } from "@material-ui/core";
 import React, { useContext } from "react";
 import { Dataset, DatasetView, Volume } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-    fontFamily: "'Proxima Nova W01',Arial,Helvetica,sans-serif"
-  }
-}));
 
 type NeuroglancerLinkProps = {
   dataset: Dataset;
@@ -26,7 +18,6 @@ export default function NeuroglancerLink({
   checkState,
   children
 }: NeuroglancerLinkProps) {
-  const classes = useStyles();
   const [appState] = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const webGL2Enabled = appState.webGL2Enabled;
