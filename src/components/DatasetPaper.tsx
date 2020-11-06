@@ -9,6 +9,7 @@ import {
 } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import { Dataset, DatasetView } from "../api/datasets";
+import { bucketNameToURL } from "../api/datasources";
 import { AppContext } from "../context/AppContext";
 import { DatasetDescriptionFull } from "./DatasetDescriptionText";
 import DatasetViewList from "./DatasetViewList";
@@ -112,6 +113,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   };
 
   const datasetLink = `/datasets/${dataset.key}`;
+	const clipLink = `${bucketNameToURL(appState.dataBucket)}/${dataset.key}/${dataset.key}.n5`;
 
   return (
     <>
@@ -119,6 +121,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
         <Grid container spacing={2}>
           <Grid item xs={10}>
             <DatasetDescriptionFull
+							clipLink = {clipLink}
               datasetDescription={dataset.description}
               titleLink={datasetLink}
             />

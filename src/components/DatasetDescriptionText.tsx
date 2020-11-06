@@ -4,12 +4,12 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import fijiIcon from "./fiji_icon.png";
+import ClipboardLink from "./ClipboardLink";
 import { DatasetDescription } from "../api/dataset_description";
 
 type DescriptionTextProps = {
   titleLink: string;
+  clipLink: string;
   datasetDescription: DatasetDescription | undefined;
   storageLocation: string;
 };
@@ -18,9 +18,6 @@ const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
     title: {
       color: theme.palette.primary.main
-    },
-    fijiCopy: {
-      height: "1.5em"
     }
   })
 );
@@ -93,14 +90,7 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
             <p>
               <strong>Dataset location</strong>:{props.storageLocation}
             </p>
-            <p>
-              <img
-                src={fijiIcon}
-                alt="copy fiji link"
-                className={classes.fijiCopy}
-              />
-              Fiji Link | <AssignmentIcon /> Copy to Clipboard
-            </p>
+            <ClipboardLink link={props.clipLink} />
           </Grid>
           <Grid item xs={6}>
             {[...Object.keys(description["Acquisition information"])].map(
