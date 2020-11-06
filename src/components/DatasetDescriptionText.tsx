@@ -71,38 +71,15 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
           {ReactHtmlParser(description.Title)}
         </Typography>
         <Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             {[...Object.keys(description["About this sample"])].map(value => (
               <p key={value}>
                 <strong>{ReactHtmlParser(value)}</strong>:{" "}
                 {ReactHtmlParser(description["About this sample"][value])}
               </p>
             ))}
-            <Grid item xs={6}>
-            {[...Object.keys(description["Dataset information"])].map(
-              value => (
-                <p key={value}>
-                  <strong>{ReactHtmlParser(value)}</strong>:{" "}
-                  {ReactHtmlParser(
-                    description["Dataset information"][value]
-                  )}
-                </p>
-              )
-            )}
           </Grid>
-            <p>
-              <strong>Dataset location</strong>:{props.storageLocation}
-            </p>
-            <p>
-              <img
-                src={fijiIcon}
-                alt="copy fiji link"
-                className={classes.fijiCopy}
-              />
-              Fiji Link | <AssignmentIcon /> Copy to Clipboard
-            </p>
-          </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             {[...Object.keys(description["Acquisition information"])].map(
               value => (
                 <p key={value}>
@@ -113,6 +90,29 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
                 </p>
               )
             )}
+          </Grid>
+          <Grid item xs={4}>
+            {[...Object.keys(description["Dataset information"])].map(
+              value => (
+                <p key={value}>
+                  <strong>{ReactHtmlParser(value)}</strong>:{" "}
+                  {ReactHtmlParser(
+                    description["Dataset information"][value]
+                  )}
+                </p>
+              )
+            )}
+                        <p>
+              <strong>Dataset location</strong>:{props.storageLocation}
+            </p>
+            <p>
+              <img
+                src={fijiIcon}
+                alt="copy fiji link"
+                className={classes.fijiCopy}
+              />
+              Fiji Link | <AssignmentIcon /> Copy to Clipboard
+            </p>
           </Grid>
         </Grid>
       </>
