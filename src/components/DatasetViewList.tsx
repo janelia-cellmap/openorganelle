@@ -2,11 +2,7 @@ import React from "react";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import {
-  Checkbox,
-  Grid,
-  IconButton,
   ListItemIcon,
-  ListItemSecondaryAction,
   ListItemText,
   Radio
 } from "@material-ui/core";

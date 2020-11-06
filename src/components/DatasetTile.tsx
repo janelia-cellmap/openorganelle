@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import Paper from "@material-ui/core/Paper";
 import { Link as RouterLink } from "react-router-dom";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { Grid, Divider, CardMedia, CardActionArea } from "@material-ui/core";
+import { Grid, CardMedia, CardActionArea } from "@material-ui/core";
 import { AppContext } from "../context/AppContext";
 import { Dataset } from "../api/datasets";
 import {DatasetDescriptionPreview} from "./DatasetDescriptionText";
