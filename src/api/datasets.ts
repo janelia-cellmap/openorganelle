@@ -358,6 +358,7 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
               if (vObj.name === 'Default View'){views.unshift(vObj)}
               else views.push(vObj)
             }
+            if (views.length === 0){views.push(defaultView)}
             const volumes: Map<string, Volume> = new Map();
             index.volumes.forEach(v => volumes.set(v.name, makeVolume(outerPath, v)));
             datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailPath, views));
