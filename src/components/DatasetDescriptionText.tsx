@@ -78,6 +78,18 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
                 {ReactHtmlParser(description["About this sample"][value])}
               </p>
             ))}
+            <Grid item xs={6}>
+            {[...Object.keys(description["Dataset information"])].map(
+              value => (
+                <p key={value}>
+                  <strong>{ReactHtmlParser(value)}</strong>:{" "}
+                  {ReactHtmlParser(
+                    description["Dataset information"][value]
+                  )}
+                </p>
+              )
+            )}
+          </Grid>
             <p>
               <strong>Dataset location</strong>:{props.storageLocation}
             </p>
