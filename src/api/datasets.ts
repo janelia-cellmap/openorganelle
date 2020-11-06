@@ -123,9 +123,10 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataT
       let cmax = shaderArgs.contrastLimits.max * (upper - lower);
         return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${Math.max(0, cmin - 2 * (cmax-cmin))}, ${Math.min(upper, cmax + 2 * (cmax - cmin))}])
         #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertColormap? 1: 0})
+        #uicontrol vec3 color color(default="${shaderArgs.color}") 
         float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
           void main() {
-          emitGrayscale(inverter(normalized(), invertColormap));
+          emitRGB(color * inverter(normalized(), invertColormap));
         }`
       };
     case "segmentation":
