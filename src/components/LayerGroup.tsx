@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Volume } from "../api/datasets";
 import {
   Checkbox,
   Divider,
   FormControlLabel,
   FormGroup,
-  FormLabel,
+  FormLabel
 } from "@material-ui/core";
-
+import Accordion from "@material-ui/core/Accordion";
+import Typography from "@material-ui/core/Typography";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 type LayerCheckBoxListProps = {
   volumes: Volume[];
@@ -25,7 +29,13 @@ export default function LayerGroup({
   const [expanded, setExpanded] = useState(true);
   const contentType = volumes[0].contentType;
 
-  const handleClick = () => {
+  useEffect(() => {
+    if (contentType !== "em") {
+      setExpanded(false);
+    }
+  }, [contentType]);
+
+  const handleExpand = () => {
     setExpanded(!expanded);
   };
 
@@ -46,17 +56,19 @@ export default function LayerGroup({
       />
     );
   });
+
   return (
-    <React.Fragment key={contentType}>
-      <FormLabel component="legend" style={{ fontWeight: "bold", marginTop: "1em" }} onClick={handleClick}>
-        {contentTypeProps.get(contentType)}
-      </FormLabel>
-      <Divider />
-      {expanded ? (
-      <FormGroup>{checkBoxList}</FormGroup>
-      ) : ''}
-    </React.Fragment>
+    <Accordion key={contentType} expanded={expanded} onChange={handleExpand}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="content"
+        id="panel1bh-header"
+      >
+        <Typography>{contentTypeProps.get(contentType)}</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Typography><FormGroup>{checkBoxList}</FormGroup></Typography>
+      </AccordionDetails>
+    </Accordion>
   );
 }
-
-

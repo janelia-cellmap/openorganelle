@@ -1,17 +1,11 @@
 import {
-  Checkbox,
   createStyles,
-  Divider,
   FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
   makeStyles,
   Theme,
   Typography
 } from "@material-ui/core";
 import InputLabel from "@material-ui/core/InputLabel";
-import TextField from "@material-ui/core/TextField";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
@@ -77,7 +71,7 @@ function LayersList({ dataset, checkState, handleChange, filter }) {
   const checkboxLists = Array.from(contentTypeProps.keys()).map((ct) => {
     let volumes: Volume[] = volumeGroups.get(ct);
     if (volumes !== undefined && volumes.length > 0) {
-      return <LayerGroup volumes={volumes} checkState={checkState} handleChange={handleChange} contentTypeProps={contentTypeProps} />;
+      return <LayerGroup key={ct} volumes={volumes} checkState={checkState} handleChange={handleChange} contentTypeProps={contentTypeProps} />;
     }
     return null;
   });
