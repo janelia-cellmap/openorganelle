@@ -102,6 +102,16 @@ export default function About() {
         </p>
 
         <p>
+          Many of the datasets used in this research were derived from a HeLa
+          cell line. Henrietta Lacks, and the HeLa cell line that was
+          established from her tumor cells without her knowledge or consent in
+          1951, have made significant contributions to scientific progress and
+          advances in human health. We are grateful to Henrietta Lacks, now
+          deceased, and to her surviving family members for their contributions
+          to biomedical research.
+        </p>
+
+        <p>
           {" "}
           We especially thank Amazon Web Services for free hosting of our data
           through their open data program.
