@@ -336,8 +336,10 @@ export default function Tutorials() {
               To simply view and browse the data, and take advantage of its
               multi-scale properties, use the BigDataViewer Plugin, Plugins
               &rarr; BigDataViewer &rarr; N5 Viewer. For instructions refer to
-              N5 Viewer. See the BigDataviewer page for details for navigation /
-              interaction documentation.
+              <a href="https://github.com/saalfeldlab/n5-viewer"> N5 Viewer</a>.
+              See the{" "}
+              <a href="https://imagej.net/BigDataViewer">BigDataviewer</a> page
+              for details for navigation / interaction documentation.
             </Typography>
             <Typography variant="h6" gutterBottom>
               Opening data
@@ -345,8 +347,9 @@ export default function Tutorials() {
             <Typography paragraph>
               To open the datasets in Fiji and make use of all of the Fiji
               tools, File &rarr; Import &rarr; N5. For instructions on opening
-              our datasets in Fiji please refer to n5-ij. Note, this option
-              currently does not support multi-scale functionality.
+              our datasets in Fiji please refer to{" "}
+              <a href="https://github.com/saalfeldlab/n5-ij">n5-ij</a>. Note,
+              this option currently does not support multi-scale functionality.
             </Typography>
             <Typography variant="h5" gutterBottom>
               Downloading data
