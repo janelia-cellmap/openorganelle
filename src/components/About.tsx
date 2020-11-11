@@ -15,8 +15,8 @@ export default function About() {
         style={{ maxWidth: "45em", marginLeft: "auto", marginRight: "auto" }}
       >
         <p style={{ textIndent: "3ch" }}>
-          On this data portal we present large volume, high resolution
-          3D-Electron Microscopy (EM) datasets, acquired with the enhanced
+          On this data portal we present high resolution
+          3D-Electron Microscopy (EM) datasets acquired with the enhanced
           focused ion beam scanning electron microscopy (FIB-SEM) technology
           developed at Janelia (
           <a href="https://elifesciences.org/articles/25916">Xu et al. 2017</a>,{" "}
@@ -28,7 +28,7 @@ export default function About() {
             Xu et al. 2020b
           </a>
           ). Accompanying these EM volumes are automated segmentations and
-          analysis of intracellular sub-structures made possible by the COSEM
+          analyses of intracellular sub-structures made possible by the COSEM
           Project Team (Heinrich et al., 2020).
         </p>
 
@@ -47,7 +47,7 @@ export default function About() {
             FIB-SEM Technology
           </a>
           ). This provides a unique opportunity for COSEM to expand research
-          that lies at the intersection of those fields and drive forward our
+          at the intersection of those fields and drive forward our
           tools to study and knowledge about subcellular structures.{" "}
         </p>
 
@@ -73,32 +73,32 @@ export default function About() {
         <Typography variant="h5">Acknowledgements:</Typography>
 
         <p style={{ textIndent: "3ch" }}>
-          This work is part of the COSEM Project Team at Janelia Research
-          Campus, Howard Hughes Medical Institute, Ashburn, VA. During this
-          effort, the COSEM Project Team consisted of: Riasat Ali, Rebecca
-          Arruda, Rohit Bahtra, Davis Bennett, Destiny Nguyen, Woohyun Park, and
-          Alyson Petruncio, led by Aubrey Weigel, with Steering Committee of Jan
-          Funke, Harald Hess, Wyatt Korff, Jenniffer Lippincott-Schwartz, and
-          Stephan Saalfeld. We thank Rohit Bahtra, a Janelia-LCR Summer
-          Internship Program student, for his work generating masks of datasets
-          and providing manual annotations. We thank Arslan Aziz, a Janelia
-          Undergraduate Scholars Program student, for his work correcting
-          mitochondria over-merging. We thank Gudrun Ihrke and Project Technical
-          Resources for management and coordination and staff support. We thank
-          Janelia Scientific Computing Shared Resource, especially Tom Dolafi
-          and Stuart Berg. We thank Victoria Custard for administrative support.
-          We thank Song Pang and Gleb Shtengel for their work collecting and
-          organizing the FIB-SEM data to seed OpenOrganelle. We further thank
-          Gleb Shtengel for his early work manually segmenting organelles,
-          motivating the need for more automated approaches. We thank K.
-          Hayworth and W. Qiu at Howard Hughes Medical Institute (HHMI) Janelia
-          Research Campus (JRC) for invaluable discussions and data collection
-          support. We gratefully acknowledge P. Rivlin, S. Plaza, and I.
-          Meinertzhagen for JRC EM shared resource and FlyEM project team
-          support on staining protocols development. We thank the electron
-          microscopy facility of MPI-CBG and of the CMCB Technology Platform at
-          TU Dresden for their services. We also thank Y. Wu from Pietro De
-          Camilli’s laboratory at Yale for advice.
+          This work is part of the COSEM Project Team at Janelia Research Campus, 
+          Howard Hughes Medical Institute, Ashburn, VA. During this effort, the 
+          COSEM Project Team consisted of: Riasat Ali, Rebecca Arruda, Rohit Bahtra, 
+          Davis Bennett, Destiny Nguyen, Woohyun Park, and Alyson Petruncio, 
+          led by Aubrey Weigel, with Steering Committee of Jan Funke, Harald Hess, 
+          Wyatt Korff, Jennifer Lippincott-Schwartz, and Stephan Saalfeld. 
+          We thank Rohit Bahtra, a Janelia-LCR Summer Internship Program student, 
+          for his work generating masks of datasets and providing manual annotations. 
+          We thank Arslan Aziz, a Janelia Undergraduate Scholars Program student, 
+          for his work correcting mitochondria over-merging. We thank Gudrun Ihrke 
+          and Project Technical Resources for management and coordination and staff 
+          support. We thank Janelia Scientific Computing Shared Resource, particularly 
+          Tom Dolafi and Stuart Berg for assistance with software infrastructure. We 
+          thank Victoria Custard for administrative support. We especially thank 
+          C. Shan Xu for developing the enhanced FIB-SEM technique.We further 
+          thank Gleb Shtengel for his early work manually segmenting organelles,
+          motivating the need for more automated approaches. We thank Song Pang 
+          and C. Shan Xu for their work collecting, pre-processing, 
+          and organizing the FIB-SEM data to seed OpenOrganelle.
+          We thank Kenneth Hayworth and Wei Qiu for invaluable discussions and 
+          data collection support. We gratefully acknowledge Patricia Rivlin, 
+          Steve Plaza, and Ian Meinertzhagen for JRC EM shared resource and 
+          FlyEM project team support on staining protocols development. 
+          We thank the electron microscopy facility of MPI-CBG and of 
+          the CMCB Technology Platform at TU Dresden for their services. 
+          We also thank Yumei Wu from Pietro De Camilli’s laboratory at Yale for advice.
         </p>
 
         <p>
