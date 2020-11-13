@@ -7,6 +7,7 @@ import {
   ImageLayer,
   LayerDataSource,
   SegmentationLayer,
+  ManagedLayer,
 } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON, bucketNameToURL } from "./datasources";
 import * as Path from "path";
@@ -56,6 +57,11 @@ interface DatasetIndex {
   name: string;
   volumes: Volume[];
   views: DatasetView[]
+}
+
+interface MeshSpec {
+  path: string
+  format: string
 }
 
 interface SpatialTransform {
@@ -118,7 +124,7 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataT
     switch (contentType) {
     case 'em':{
       if (dataType === 'uint8') {lower = 0; upper = 255}
-      else if (dataType == 'uint16') {lower = 0; upper = 65535}
+      else if (dataType === 'uint16') {lower = 0; upper = 65535}
       let cmin = shaderArgs.contrastLimits.min * (upper - lower);
       let cmax = shaderArgs.contrastLimits.max * (upper - lower);
         return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${Math.max(0, cmin - 2 * (cmax-cmin))}, ${Math.min(upper, cmax + 2 * (cmax - cmin))}])
@@ -151,7 +157,8 @@ export class Volume {
         public displaySettings: DisplaySettings,
         public description: string,
         public version: string,
-        public tags: string[]
+        public tags: string[],
+        public subsource: MeshSpec | undefined 
     ) {
         this.path = path;
         this.name = name;
@@ -165,6 +172,7 @@ export class Volume {
         this.description = description;
         this.version = version;
         this.tags = tags;
+        this.subsource = subsource;
      }
 
     // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer
@@ -172,6 +180,10 @@ export class Volume {
 
     toLayer(layerType: LayerTypes): ImageLayer | SegmentationLayer {
         const srcURL = `${this.containerType}://${this.path}`;
+        let subsrcURL = undefined;
+        if ((this.subsource !== undefined) && (this.subsource !== null)) {
+          let subsrcURL = `${this.containerType}://${this.subsource.path}`;
+        }
         const inputDimensions: CoordinateSpace = {
             x: [1e-9 * this.transform.scale[this.transform.axes.indexOf('x')], "m"],
             y: [1e-9 * this.transform.scale[this.transform.axes.indexOf('y')], "m"],
@@ -189,6 +201,8 @@ export class Volume {
         const source: LayerDataSource = {url: srcURL,
                                         transform: layerTransform};
         
+        let layer = undefined;
+
         if (layerType === 'image'){
           let shader: string | undefined = '';
           if (SEGMENTATION_DTYPES.includes(this.dataType)){
@@ -198,7 +212,7 @@ export class Volume {
               shader = makeShader(this.displaySettings, 'em', this.dataType);
           }
           else {shader = undefined}
-          const layer = new ImageLayer('rendering',
+          layer = new ImageLayer('rendering',
                                 undefined,
                                 undefined,
                                 source,
@@ -207,14 +221,18 @@ export class Volume {
                                 shader,
                                 undefined,
                                 undefined);
-          layer.name = this.name;
-          return layer
         }
         else if (layerType === 'segmentation') {
-          const layer =  new SegmentationLayer(source, 'source', true);
-          layer.name = this.name;
-          return layer
+          if (subsrcURL !== undefined) {
+            layer = new SegmentationLayer([source, subsrcURL], 'source', true);  
+          }
+          else {
+            layer = new SegmentationLayer(source, 'source', true);
+          }
         }
+        
+        layer.name = this.name
+        return layer
     }
 }
 
@@ -239,7 +257,7 @@ export class Dataset {
     makeNeuroglancerViewerState(view: DatasetView): string {        
         const layers = [...this.volumes.keys()].filter(a => view.volumeKeys.includes(a)).map(a => 
           {let vol = this.volumes.get(a);
-            return vol.toLayer(vol.displaySettings.defaultLayerType)});
+            return vol.toLayer(vol.displaySettings.defaultLayerType)});       
         // hack to post-hoc adjust alpha if there is only 1 layer selected
         if (layers.length  === 1) {layers[0].opacity = 1.0}
         const viewerPosition = view.position;
@@ -336,7 +354,8 @@ function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
                     volumeMeta.displaySettings,
                     volumeMeta.description,
                     volumeMeta.version,
-                    volumeMeta.tags)
+                    volumeMeta.tags,
+                    volumeMeta.subsource)
 }
 
 export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {

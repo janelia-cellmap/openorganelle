@@ -43,7 +43,7 @@ export default function About() {
           </a>
           ), and large-volume, high-resolution EM data acquisition (
           <a href="https://www.janelia.org/lab/hess-lab">Hess lab</a> and{" "}
-          <a href="https://www.janelia.org/lab/fib-sem-technology">
+          <a href="https://www.janelia.org/project-team/fib-sem-technology">
             FIB-SEM Technology
           </a>
           ). This provides a unique opportunity for COSEM to expand research
