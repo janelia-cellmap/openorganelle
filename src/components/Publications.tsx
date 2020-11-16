@@ -33,7 +33,7 @@ export default function Publications() {
             Isotropic 3D electron microscopy reference library of whole cells
             and tissues.
           </b>{" "}
-          Manuscript in preparation (2020).
+          bioRxiv (2020) <a href="https://www.biorxiv.org/content/10.1101/2020.11.13.382457v1">10.1101/2020.11.13.382457</a>.
         </p>
         <p>
           <i>
@@ -43,7 +43,7 @@ export default function Publications() {
             Lippincott-Schwartz, Stephan Saalfeld, Aubrey V. Weigel, COSEM
             Project Team.{" "}
           </i>
-          <b>Cell organelle segmentation in electron microscopy. </b>
+          <b>Automatic whole cell organelle segmentation in volumetric electron microscopy.</b>
           Manuscript in preparation (2020)
         </p>
       </Paper>
