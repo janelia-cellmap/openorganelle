@@ -43,7 +43,7 @@ export default function Publications() {
             Lippincott-Schwartz, Stephan Saalfeld, Aubrey V. Weigel, COSEM
             Project Team.{" "}
           </i>
-          <b>Automatic whole cell organelle segmentation in volumetric electron microscopy.</b>
+          <b>Automatic whole cell organelle segmentation in volumetric electron microscopy. </b>
           Manuscript in preparation (2020)
         </p>
       </Paper>
