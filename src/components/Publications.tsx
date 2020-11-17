@@ -44,7 +44,7 @@ export default function Publications() {
             Project Team.{" "}
           </i>
           <b>Automatic whole cell organelle segmentation in volumetric electron microscopy. </b>
-          Manuscript in preparation (2020)
+          bioRxiv (2020) <a href="https://doi.org/10.1101/2020.11.14.382143"> 10.1101/2020.11.14.382143</a>
         </p>
       </Paper>
       <Typography variant="h3" gutterBottom>
