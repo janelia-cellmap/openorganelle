@@ -63,7 +63,7 @@ export default function About() {
             the enhanced FIB-SEM platform (Hess Lab and FIB-SEM Technology) both
             demands and enables the development of universal machine learning
             classifiers for the automatic detection of sub-cellular structures
-            in these data. The COSEM team, in collaboration with the Saalfeld
+            in these data. The COSEM project team, in collaboration with the Saalfeld
             and Funke labs with biological guidance from the Lippincott-Schwartz
             lab, has begun tackling the segmentation problem as well as the
             subsequent large-scale quantitative analysis of these data to answer
