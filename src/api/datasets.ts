@@ -37,7 +37,7 @@ export class DatasetView {
     public name: string, 
     public description: string, 
     public volumeKeys: string[],
-    public position?: number,          
+    public position?: number[],          
     public scale?: number){
         
         this.name = name;
