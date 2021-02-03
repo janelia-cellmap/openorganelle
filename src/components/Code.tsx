@@ -25,7 +25,7 @@ export default function Code() {
         All of the software we developed for preparing, analyzing, and
         visualizing these datasets is open source. These tools can be found on
         the <a href="https://github.com/janelia-cosem/">COSEM</a> and{" "}
-        <a href="ttps://github.com/saalfeldlab/">Saalfeld lab</a> github pages.
+        <a href="https://github.com/saalfeldlab/">Saalfeld lab</a> github pages.
       </Typography>
       <Typography variant="h4" gutterBottom>
         Network training and validation
