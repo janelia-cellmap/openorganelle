@@ -10,7 +10,7 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
-import { ContentType, Dataset, Volume } from "../api/datasets";
+import { ContentType, Dataset, VolumeSource } from "../api/datasets";
 import LayerGroup from "./LayerGroup";
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -31,9 +31,10 @@ const useStyles: any = makeStyles((theme: Theme) =>
 
 const contentTypeProps = new Map([
   ["em", "EM Layers"],
+  ["lm", "LM Layers"],
   ["prediction", "Prediction Layers"],
   ["segmentation", "Segmentation Layers"],
-  ["analysis", "Analysis Layers"]
+  ["analysis", "Analysis Layers"],
 ]);
 
 type LayerCheckBoxListCollectionProps = {
@@ -59,9 +60,9 @@ function LayersList({ dataset, checkState, handleChange, filter }) {
     setVolumes(filteredVolumes);
   }, [dataset, filter]);
 
-  const volumeGroups: Map<ContentType, Volume[]> = new Map();
+  const volumeGroups: Map<ContentType, VolumeSource[]> = new Map();
 
-  volumesList.forEach((v: Volume) => {
+  volumesList.forEach((v: VolumeSource) => {
     if (volumeGroups.get(v.contentType) === undefined) {
       volumeGroups.set(v.contentType, []);
     }
@@ -69,7 +70,7 @@ function LayersList({ dataset, checkState, handleChange, filter }) {
   });
 
   const checkboxLists = Array.from(contentTypeProps.keys()).map((ct) => {
-    let volumes: Volume[] = volumeGroups.get(ct);
+    let volumes: VolumeSource[] = volumeGroups.get(ct);
     if (volumes !== undefined && volumes.length > 0) {
       return <LayerGroup key={ct} volumes={volumes} checkState={checkState} handleChange={handleChange} contentTypeProps={contentTypeProps} />;
     }
