@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Volume, ContentTypeMetadata, ContentType } from "../api/datasets";
+import { Volume, ContentTypeMetadata, ContentType, contentTypeDescriptions } from "../api/datasets";
 import { Checkbox, FormControlLabel, FormGroup, Switch } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
 import Typography from "@material-ui/core/Typography";
@@ -73,15 +73,6 @@ export default function VolumeCheckboxCollection({
       />
     );
   });
-<<<<<<< HEAD
-
-  const groupTitle = (
-    <Typography>{contentTypeProps.get(contentType)}</Typography>
-  );
-  let groupSummary = contentTypeDescriptions.get(contentType) ? contentTypeDescriptions.get(contentType) : '';
-
-
-=======
   
   let layerTypeSwitch;
   if (!(layerTypeToggleLabel === undefined) && !(handleLayerChange === undefined)) {
@@ -91,7 +82,6 @@ export default function VolumeCheckboxCollection({
     layerTypeSwitch = undefined;
   }
   
->>>>>>> add toggle for selecting layer type for segmentation datasets
   return (
     <Accordion key={contentType} expanded={expanded} onChange={handleExpand}>
       <AccordionSummary
