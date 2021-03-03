@@ -263,19 +263,12 @@ export class Dataset {
         this.views = views;
     }
 
-    makeNeuroglancerViewerState(view: DatasetView): string | undefined {
-        const layers = [...this.volumes.keys()].filter(a => view.volumeKeys.includes(a)).map(a =>
-          {let vol = this.volumes.get(a);
-            return vol?.toLayer(vol.displaySettings.defaultLayerType)});
-        // hack to post-hoc adjust alpha if there is only 1 layer selected and it is an imagelayer
-        // remove undefined layers
-        const layers_filtered = layers.filter(f => f !== undefined)
-        if (layers_filtered.length == 0) {
-          return undefined
-        }
-        if (layers_filtered.length  === 1 && layers_filtered[0] instanceof ImageLayer) {layers_filtered[0].opacity = 1.0}
-        const viewerPosition = view.position;
-        let crossSectionScale = view.scale? view.scale : 50.0;
+    makeNeuroglancerViewerState(layers: SegmentationLayer[] | ImageLayer[], 
+                                 viewerPosition: number[] | undefined, 
+                                 crossSectionScale: number | undefined,
+                                 ){
+        // hack to post-hoc adjust alpha if there is only 1 layer selected
+        if (layers.length  === 1 && layers[0] instanceof ImageLayer) {layers[0].opacity = 1.0}
         const projectionOrientation = undefined;
         const crossSectionOrientation = undefined;
         crossSectionScale = crossSectionScale? crossSectionScale : 50;
