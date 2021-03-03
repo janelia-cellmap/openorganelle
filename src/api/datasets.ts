@@ -105,6 +105,11 @@ interface NeuroglancerPrecomputedAttrs {
     num_channels: number
 }
 
+export interface ContentTypeMetadata {
+  label: string
+  description: string
+} 
+
 // one nanometer, expressed as a scaled meter
 const nm: [number, string] = [1e-9, "m"];
 
@@ -113,11 +118,12 @@ const outputDimensions: CoordinateSpace = { x: nm, y: nm, z: nm };
 
 const defaultView = new DatasetView('Default view', '', [], undefined, undefined);
 
-export const contentTypeDescriptions = new Map<string, string>();
-contentTypeDescriptions.set('em', "Raw FIB-SEM data.");
-contentTypeDescriptions.set('segmentation', "Predictions that have undergone refinements such as thresholding, smoothing, size filtering, and connected component analysis.");
-contentTypeDescriptions.set('prediction', "Raw distance transform inferences scaled from 0 to 255. A voxel value of 127 represent a predicted distance of 0 nm.");
-contentTypeDescriptions.set('analysis', "Results of applying various analysis routines on raw data, predictions, or segmentations.");
+export const contentTypeDescriptions = new Map<string, ContentTypeMetadata>();
+contentTypeDescriptions.set('em', {label: "EM Layers", description: "Raw FIB-SEM data."});
+contentTypeDescriptions.set('lm', {label: "LM Layers", description: "Light microscopy data."});
+contentTypeDescriptions.set('segmentation', {label: "Segmentation Layers", description: "Predictions that have undergone refinements such as thresholding, smoothing, size filtering, and connected component analysis."});
+contentTypeDescriptions.set('prediction', {label: "Prediction Layers", description: "Raw distance transform inferences scaled from 0 to 255. A voxel value of 127 represent a predicted distance of 0 nm."});
+contentTypeDescriptions.set('analysis', {label: "Analysis Layers", description: "Results of applying various analysis routines on raw data, predictions, or segmentations."});
 
 function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataType: string): string | undefined{
   let lower = 0;
@@ -274,12 +280,12 @@ export class Dataset {
         const crossSectionOrientation = undefined;
         const projectionScale = 65536;
         // the first layer is the selected layer; consider making this a kwarg
-        const selectedLayer = {'layer': layers_filtered[0]!.name, 'visible': true};
+        const selectedLayer = {'layer': layers[0]!.name, 'visible': true};
 
         const vState = new ViewerState(
             outputDimensions,
             viewerPosition,
-            layers_filtered as Layer[],
+            layers as Layer[],
             '4panel',
             undefined,
             crossSectionScale,
@@ -303,8 +309,7 @@ export class Dataset {
         return encodeFragment(urlSafeStringify(vState));
     }
   }
-
-
+  
 async function getDatasetKeys(bucket: string): Promise<string[]> {
     // get all the folders in the bucket
     let datasetKeys = (await s3ls(bucket, '', '/', '', false)).folders;
