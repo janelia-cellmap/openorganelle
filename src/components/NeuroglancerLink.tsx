@@ -1,15 +1,21 @@
 import { Button } from "@material-ui/core";
 import React, { useContext } from "react";
-import { Dataset, DatasetView, Volume } from "../api/datasets";
+import { Dataset, DatasetView, LayerTypes, Volume } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
+import { ImageLayer, Layer, SegmentationLayer } from "@janelia-cosem/neuroglancer-url-tools";
+
+interface VolumeCheckStates {
+  selected: boolean
+  layerType?: LayerTypes
+}
 
 type NeuroglancerLinkProps = {
   dataset: Dataset;
   view: DatasetView;
-  checkState: Map<string, boolean>;
-  children?: React.ReactNode;
+  checkState: Map<string, VolumeCheckStates>;
+  children: React.ReactNode;
 };
 
 export default function NeuroglancerLink({
@@ -25,18 +31,28 @@ export default function NeuroglancerLink({
   const local_view = { ...view };
   local_view.volumeKeys = [];
   dataset.volumes.forEach((value: Volume, key: string) => {
-    if (checkState.get(key)) {
+    if (checkState.get(key)?.selected) {
       local_view.volumeKeys.push(key);
     }
   });
 
   let ngLink = "";
-  const disabled = local_view.volumeKeys.length === 0;
-
+  
+  const disabled = Boolean(local_view.volumeKeys.length === 0);
+  const layers = local_view.volumeKeys.map(vk => {
+    let layerType = checkState.get(vk)?.layerType
+    if (layerType === undefined) {
+      layerType = dataset.volumes.get(vk)?.displaySettings.defaultLayerType;
+    }
+    let result = dataset.volumes.get(vk)!.toLayer(layerType as LayerTypes);
+    console.log(result)
+    return result;
+  });
   if (!disabled) {
     ngLink = `${neuroglancerAddress}${dataset.makeNeuroglancerViewerState(
-      local_view
-    )}`;
+      layers as SegmentationLayer[] | ImageLayer[],
+      local_view.position,
+      local_view.scale)}`;
   }
 
   if (children) {
