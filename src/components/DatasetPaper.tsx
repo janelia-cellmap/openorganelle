@@ -9,7 +9,7 @@ import {
   Theme
 } from "@material-ui/core";
 import React, { useContext, useState } from "react";
-import { Dataset, DatasetView } from "../api/datasets";
+import { ContentType, Dataset, DatasetView, LayerTypes } from "../api/datasets";
 import { bucketNameToURL } from "../api/datasources";
 import { AppContext } from "../context/AppContext";
 import { DatasetDescriptionFull } from "./DatasetDescriptionText";
@@ -21,9 +21,9 @@ type DatasetPaperProps = {
   datasetKey: string;
 };
 
-interface CheckStates {
-  layerCheckState: Map<string, boolean>;
-  viewCheckState: boolean[];
+export interface VolumeCheckStates {
+  selected: boolean
+  layerType?: LayerTypes
 }
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -55,67 +55,85 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const dataset: Dataset = appState.datasets.get(datasetKey)!;
 
   const volumeNames: string[] = [...dataset.volumes.keys()];
-  const layerCheckStateInit = new Map<string, boolean>(
-    volumeNames.map(k => [k, false])
+  
+  const datasetLink = `/datasets/${dataset.key}`;
+	const clipLink = `${bucketNameToURL(appState.dataBucket)}/${dataset.key}/${dataset.key}.n5`;
+  
+  const volumeCheckStateInit = new Map<string, VolumeCheckStates>(
+    volumeNames.map(k => [k, {selected: false, layerType: undefined}])
   );
   // initialize the layer checkboxes by looking at the first dataset view
   for (let vn of volumeNames) {
     let vkeys = dataset.views[0].volumeKeys;
     if (vkeys.includes(vn)) {
-      layerCheckStateInit.set(vn, true);
+      volumeCheckStateInit.set(vn, {...volumeCheckStateInit.get(vn), selected: true});
     }
   }
   // the first view is selected, by default
   const viewCheckStateInit = dataset.views.map((v, idx) => idx === 0);
-
+  
   const [checkStates, setCheckStates] = useState({
-    layerCheckState: layerCheckStateInit,
-    viewCheckState: viewCheckStateInit
+    volumeCheckState: volumeCheckStateInit,
+    viewCheckState: viewCheckStateInit,
   });
 
-  const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const volumeCheckState = checkStates.volumeCheckState.get(event.target.name);
     const newCheckState = new Map(
-      checkStates.layerCheckState
-        .set(event.target.name, event.target.checked)
+      checkStates.volumeCheckState
+        .set(event.target.name, {...volumeCheckState, selected: event.target.checked})
         .entries()
     );
+
     // Prevent all checkboxes from being deselected
-    if (![...newCheckState.values()].every(v => !v)) {
-      setCheckStates({ ...checkStates, layerCheckState: newCheckState });
+    if (![...newCheckState.values()].every(v => !v.selected)) {
+      setCheckStates({ ...checkStates, volumeCheckState: newCheckState });
     }
   };
 
-  const handleViewToggle = (index: number, views: DatasetView[]) => () => {
+  const handleViewChange = (index: number, views: DatasetView[]) => () => {
     const newViewState = checkStates.viewCheckState.map(v => false);
     newViewState[index] = true;
 
-    const newLayerState = new Map(
-      [...checkStates.layerCheckState.entries()].map(([k, v]) => [k, false])
+    const newVolumeState = new Map(
+      [...checkStates.volumeCheckState.entries()].map(([k, v]) => [k, {...v, selected: false}])
     );
     views[newViewState.findIndex(v => v)].volumeKeys.map(k =>
-      newLayerState.set(k, true)
+      newVolumeState.set(k, {...newVolumeState.get(k), selected: true})
     );
 
     setCheckStates({
-      ...checkStates,
-      layerCheckState: newLayerState,
+      volumeCheckState: newVolumeState,
       viewCheckState: newViewState
     });
   };
 
+
+ // Update the default layer type for all the affected volumes
+  const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let contentType: ContentType = (event.target.name as ContentType);
+    let newLayerType = undefined;
+    const newVolumeCheckState = new Map(checkStates.volumeCheckState.entries());
+    for (let k of newVolumeCheckState.keys()){
+      let val = newVolumeCheckState.get(k);
+      if (!(val === undefined) && (dataset.volumes.get(k)?.contentType === contentType)) {
+        if (event.target.checked) {newLayerType=('segmentation' as LayerTypes)}
+        newVolumeCheckState.set(k, {...val, layerType: newLayerType})
+      }
+    }
+    setCheckStates({ ...checkStates, volumeCheckState: newVolumeCheckState});
+  };
+
   const clearLayers = () => {
     console.log("clearing layers");
-    const newLayerState = new Map(
-      [...checkStates.layerCheckState.entries()].map(([k, v]) => [k, false])
+    const newVolumeCheckState = new Map(
+      [...checkStates.volumeCheckState.entries()].map(([k, v]) => [k, {selected: false}])
     );
     setCheckStates({
       ...checkStates,
-      layerCheckState: newLayerState
+      volumeCheckState: newVolumeCheckState
     });
   };
-
-  const datasetLink = `/datasets/${dataset.key}`;
-	const clipLink = `${bucketNameToURL(appState.dataBucket)}/${dataset.key}/${dataset.key}.n5`;
 
   return (
     <>
@@ -131,7 +149,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
           <Grid item xs={2}>
             <NeuroglancerLink
               dataset={dataset}
-              checkState={checkStates.layerCheckState}
+              checkState={checkStates.volumeCheckState}
               view={dataset.views[checkStates.viewCheckState.findIndex(a => a)]}
             >
               <CardActionArea>
@@ -149,7 +167,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
           <Grid item xs={10}>
             <NeuroglancerLink
               dataset={dataset}
-              checkState={checkStates.layerCheckState}
+              checkState={checkStates.volumeCheckState}
               view={dataset.views[checkStates.viewCheckState.findIndex(a => a)]}
             />
           </Grid>
@@ -161,15 +179,17 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
           <Grid item xs={6}>
             <DatasetViewList
               views={dataset.views}
-              handleToggle={handleViewToggle}
+              handleToggle={handleViewChange}
               checkState={checkStates.viewCheckState}
             />
           </Grid>
           <Grid item xs={6}>
             <LayerCheckboxList
               dataset={dataset}
-              checkState={checkStates.layerCheckState}
-              handleChange={handleLayerChange}
+              checkState={checkStates.volumeCheckState}
+              handleVolumeChange={handleVolumeChange}
+              handleLayerChange={handleLayerChange}
+              filter={""}
             />
           </Grid>
         </Grid>

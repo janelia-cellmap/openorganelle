@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Volume, ContentType, contentTypeDescriptions } from "../api/datasets";
-import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
+import { Volume, ContentTypeMetadata, ContentType } from "../api/datasets";
+import { Checkbox, FormControlLabel, FormGroup, Switch } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
 import Typography from "@material-ui/core/Typography";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -8,45 +8,50 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { ToggleButton, ToggleButtonGroup } from "@material-ui/lab";
+import { VolumeCheckStates } from "./DatasetPaper";
 
-type LayerCheckBoxListProps = {
-  volumes: Volume[];
-  checkState: Map<string, boolean>;
-  handleChange: any;
-  contentTypeProps: any;
-};
+interface LayerTypeToggleProps {
+  label: string
+  checked: boolean
+  contentType: ContentType
+  handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+}
 
-/*
-  const [formats, setFormats] = React.useState(() => ['bold', 'italic']);
-  const handleFormat = (event: React.MouseEvent<HTMLElement>, newFormats: string[]) => {
-      setFormats(newFormats);
-    };
+interface VolumeCheckboxCollectionProps {
+  volumes: Volume[]
+  checkState: Map<string, VolumeCheckStates>
+  handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  contentType: string,
+  contentTypeInfo: ContentTypeMetadata,
+  accordionExpanded: boolean
+  layerTypeToggleLabel?: string,
+  layerTypeToggleChecked?: boolean
+  handleLayerChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+}
 
-<ToggleButtonGroup value={formats} onChange={handleFormat} aria-label="text formatting">
-<ToggleButton value="bold" aria-label="bold" selected={true}>
-  <Typography variant='body2'> {"View as labels"} </Typography>
-</ToggleButton>
-<ToggleButton value="italic" aria-label="italic" selected={false}>
-<Typography> {"View as intensities"} </Typography>
-</ToggleButton></ToggleButtonGroup>
-*/
+const LayerTypeSwitch = ({label, checked, contentType, handleLayerChange}: LayerTypeToggleProps) => {
+  return (
+    <FormGroup row>
+      <FormControlLabel
+        control={<Switch checked={checked} onChange={handleLayerChange} name={contentType} />}
+        label={label}
+      />
+    </FormGroup>
+  );
+}
 
-
-export default function LayerGroup({
+export default function VolumeCheckboxCollection({
   volumes,
   checkState,
-  handleChange,
-  contentTypeProps
-}: LayerCheckBoxListProps) {
-  const [expanded, setExpanded] = useState(false);
-  const contentType = volumes[0].contentType;
-
-  useEffect(() => {
-    if (contentType === "em") {
-      setExpanded(true);
-    }
-  }, [contentType]);
-
+  handleVolumeChange,
+  contentType,
+  contentTypeInfo,
+  accordionExpanded,
+  layerTypeToggleLabel,
+  handleLayerChange
+}: VolumeCheckboxCollectionProps) {
+  const [expanded, setExpanded] = useState(accordionExpanded);
+  
   const handleExpand = () => {
     setExpanded(!expanded);
   };
@@ -56,8 +61,8 @@ export default function LayerGroup({
       <FormControlLabel
         control={
           <Checkbox
-            checked={checkState.get(volume.name)}
-            onChange={handleChange}
+            checked={checkState.get(volume.name)!.selected}
+            onChange={handleVolumeChange}
             color="primary"
             name={volume.name}
             size="small"
@@ -68,25 +73,15 @@ export default function LayerGroup({
       />
     );
   });
-
-  const groupTitle = (
-    <Typography>{contentTypeProps.get(contentType)}</Typography>
-  );
-<<<<<<< HEAD
-  let groupSummary;
-  if (contentType === "segmentation") {
-    groupSummary =
-      "Predictions that have undergone refinements such as, thresholding, smoothing, size filtering, and connected component analysis.";
+  
+  let layerTypeSwitch;
+  if (!(layerTypeToggleLabel === undefined) && !(handleLayerChange === undefined)) {
+    layerTypeSwitch = LayerTypeSwitch({label: layerTypeToggleLabel, checked: checkState.get(volumes[0].name)?.layerType === 'segmentation', contentType: (contentType as ContentType), handleLayerChange: handleLayerChange});
   }
-  if (contentType === ("prediction" as ContentType)) {
-    groupSummary =
-      "Raw distance transform inferences scaled from 0 to 255. A voxel value of 127 represent a predicted distance of 0 nm.";
+  else {
+    layerTypeSwitch = undefined;
   }
-=======
-  let groupSummary = contentTypeDescriptions.get(contentType) ? contentTypeDescriptions.get(contentType) : '';
-
->>>>>>> add Map of content type descriptions and use it in the LayerGroup
-
+  
   return (
     <Accordion key={contentType} expanded={expanded} onChange={handleExpand}>
       <AccordionSummary
@@ -94,14 +89,15 @@ export default function LayerGroup({
         aria-controls="content"
         id="panel1bh-header"
       >
-        {groupTitle}
+      <Typography>{contentTypeInfo.label}</Typography>
       </AccordionSummary>
       <Typography
         variant="body2"
         style={{ margin: "0 1em", color: "rgba(0,0,0,0.5)" }}
       >
-        {groupSummary}
+        {contentTypeInfo.description}
       </Typography>
+      {layerTypeSwitch}
       <AccordionDetails>
         <FormGroup>{checkBoxList}</FormGroup>
       </AccordionDetails>
