@@ -16,6 +16,11 @@ interface VolumeCheckStates {
   layerType?: LayerTypes
 }
 
+interface VolumeCheckStates {
+  selected: boolean
+  layerType?: LayerTypes
+}
+
 type NeuroglancerLinkProps = {
   dataset: Dataset;
   view: DatasetView;
