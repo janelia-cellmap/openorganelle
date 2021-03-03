@@ -10,8 +10,9 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
-import { ContentType, Dataset, VolumeSource } from "../api/datasets";
-import LayerGroup from "./LayerGroup";
+import { ContentType, contentTypeDescriptions, Dataset, Volume } from "../api/datasets";
+import VolumeCheckboxCollection from "./LayerGroup";
+import { VolumeCheckStates } from "./DatasetPaper";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,23 +30,18 @@ const useStyles: any = makeStyles((theme: Theme) =>
   })
 );
 
-const contentTypeProps = new Map([
-  ["em", "EM Layers"],
-  ["lm", "LM Layers"],
-  ["prediction", "Prediction Layers"],
-  ["segmentation", "Segmentation Layers"],
-  ["analysis", "Analysis Layers"],
-]);
-
-type LayerCheckBoxListCollectionProps = {
+interface LayerCheckboxListProps {
   dataset: Dataset;
-  checkState: Map<string, boolean>;
-  handleChange: any;
-};
+  checkState: Map<string, VolumeCheckStates>;
+  handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  filter: string | undefined;
+}
 
-function LayersList({ dataset, checkState, handleChange, filter }) {
+function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLayerChange, filter}: LayerCheckboxListProps) {
   const classes = useStyles();
   const [volumesList, setVolumes] = useState([]);
+  const volumeGroups: Map<ContentType, Volume[]> = new Map();
 
   useEffect(() => {
     // filter volumes based on filter string
@@ -60,19 +56,32 @@ function LayersList({ dataset, checkState, handleChange, filter }) {
     setVolumes(filteredVolumes);
   }, [dataset, filter]);
 
-  const volumeGroups: Map<ContentType, VolumeSource[]> = new Map();
-
-  volumesList.forEach((v: VolumeSource) => {
+  volumesList.forEach((v: Volume) => {
     if (volumeGroups.get(v.contentType) === undefined) {
       volumeGroups.set(v.contentType, []);
     }
     volumeGroups.get(v.contentType).push(v);
   });
 
-  const checkboxLists = Array.from(contentTypeProps.keys()).map((ct) => {
-    let volumes: VolumeSource[] = volumeGroups.get(ct);
+  const checkboxLists = Array.from(contentTypeDescriptions.keys()).map((ct) => {
+    let volumes = (volumeGroups.get(ct) as Volume[]);
+    let contentTypeInfo = contentTypeDescriptions.get(ct);
+    let expanded = (ct === 'em');
+    let layerTypeToggleLabel;
+    if (ct === 'segmentation') {
+      layerTypeToggleLabel= "Enable 3D Rendering";
+    }
     if (volumes !== undefined && volumes.length > 0) {
-      return <LayerGroup key={ct} volumes={volumes} checkState={checkState} handleChange={handleChange} contentTypeProps={contentTypeProps} />;
+      return <VolumeCheckboxCollection 
+              key={ct} 
+              volumes={volumes} 
+              checkState={checkState} 
+              handleVolumeChange={handleVolumeChange} 
+              contentType={ct} 
+              contentTypeInfo={contentTypeInfo} 
+              accordionExpanded={expanded}
+              handleLayerChange={handleLayerChange}
+              layerTypeToggleLabel={layerTypeToggleLabel}/>;
     }
     return null;
   });
@@ -103,26 +112,30 @@ function LayerFilter({ value, onChange }) {
 }
 
 
-export default function LayerCheckboxListCollection({
+export default function LayerCheckboxList({
   dataset,
   checkState,
-  handleChange
-}: LayerCheckBoxListCollectionProps) {
-  const [layerFilter, setLayerFilter] = useState("");
-
+  handleVolumeChange,
+  handleLayerChange,
+  filter,
+}: LayerCheckboxListProps) {
+  if (filter === undefined) {filter = ""};
+  const [layerFilter, setLayerFilter] = useState(filter);
+/*
   const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLayerFilter(event.target.value);
   };
-
+  */
   return (
     <>
       <Typography variant="h6">2. Select layers for the view</Typography>
       <LayerFilter value={layerFilter} onChange={handleLayerChange} />
-      <LayersList
-        filter={layerFilter}
+      <FilteredLayersList
         dataset={dataset}
         checkState={checkState}
-        handleChange={handleChange}
+        handleVolumeChange={handleVolumeChange}
+        handleLayerChange={handleLayerChange}
+        filter={layerFilter}
       />
     </>
   );

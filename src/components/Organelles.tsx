@@ -870,7 +870,7 @@ export default function Organelles() {
   const [appState] = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const datasets = appState.datasets;
-  if (datasets.size == 0) {
+  if (datasets.size === 0) {
     return (
       <div>
         <CircularProgress />
@@ -889,7 +889,7 @@ export default function Organelles() {
         <TableCell>{row.short_name}</TableCell>
         <TableCell>{row.file_name}</TableCell>
         <TableCell>{row.description}</TableCell>
-        {neuroglancer_urls.length == 0
+        {neuroglancer_urls.length === 0
           ? demo_dataset_names.map((v) => <TableCell></TableCell>)
           : neuroglancer_urls.map((v, idx) => (
               <TableCell key={idx}>
