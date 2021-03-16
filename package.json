@@ -52,6 +52,7 @@
     ]
   },
   "devDependencies": {
+    "@types/jest": "^26.0.20",
     "@types/node": "^13.13.21",
     "@types/react-router-dom": "^5.1.5",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
