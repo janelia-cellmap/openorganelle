@@ -33,11 +33,25 @@ const organelleNames = [
   { value: "peripheral_er", label: "Peripheral ER" },
   { value: "plasma_membrane", label: "Plasma Membrane" },
   { value: "vesicle", label: "Vesicle" },
-]
+];
 
 const organelleItems = organelleNames.map(organelle => (
   <MenuItem key={organelle.value} value={organelle.value}>
     {organelle.label}
+  </MenuItem>
+));
+
+const measurementOptions = [
+  { value: "planarity", label: "Planarity (0-1)"},
+  { value: "surfaceArea", label: "Surface Area (nm^2)"},
+  { value: "volume", label: "Volume (nm^3)"},
+  { value: "length", label: "Length (nm)"},
+  { value: "id", label: "ID"},
+];
+
+const measurementItems = measurementOptions.map(measurement => (
+  <MenuItem key={measurement.value} value={measurement.value}>
+    {measurement.label}
   </MenuItem>
 ));
 
@@ -51,6 +65,7 @@ const useStyles = makeStyles(theme => ({
 export default function Analysis() {
   const [dataset, setDataSet] = useState("");
   const [organelles, setOrganelles] = useState([]);
+  const [measurements, setMeasurements] = useState([]);
   const classes = useStyles();
 
   return (
@@ -81,6 +96,21 @@ export default function Analysis() {
           {organelleItems}
         </Select>
       </FormControl>
+      <FormControl variant="filled" className={classes.formControl}>
+        <InputLabel id="demo-simple-select-label">
+          Measurement Selection
+        </InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          multiple
+          value={measurements}
+          onChange={e => setMeasurements(e.target.value)}
+        >
+          {measurementItems}
+        </Select>
+      </FormControl>
+
 
       <p>execute a query</p>
       {cypherBuilder({dataset, organelles, measurement})}
