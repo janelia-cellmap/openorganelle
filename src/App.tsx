@@ -1,6 +1,7 @@
 import React from "react";
 import Home from "./components/Home";
 import About from "./components/About";
+import Analysis from "./components/Analysis";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import Settings from "./components/Settings";
@@ -40,6 +41,9 @@ function App() {
               </Route>
               <Route path="/about">
                 <About />
+              </Route>
+              <Route path="/analysis">
+                <Analysis />
               </Route>
               <Route path="">
                 <Home />
