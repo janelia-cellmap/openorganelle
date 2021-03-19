@@ -13,7 +13,11 @@ const useStyles: any = makeStyles((theme: Theme) =>
   })
 );
 
-export default function ClipboardLink({ link }) {
+interface ClipBoardLinkProps {
+  link: string
+}
+
+export default function ClipboardLink({ link }: ClipBoardLinkProps) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 

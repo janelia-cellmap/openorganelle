@@ -21,9 +21,6 @@ const theme = createMuiTheme({
       main: '#27507C',
     },
   },
-  status: {
-    danger: "orange"
-  }
 });
 
 function App() {

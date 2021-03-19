@@ -5,7 +5,8 @@ import {
   CardActionArea,
   CardMedia,
   createStyles,
-  makeStyles
+  makeStyles,
+  Theme
 } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import { Dataset, DatasetView } from "../api/datasets";
@@ -50,8 +51,9 @@ const useStyles: any = makeStyles((theme: Theme) =>
 
 export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const classes = useStyles();
-  const [appState] = useContext(AppContext);
-  const dataset: Dataset = appState.datasets.get(datasetKey);
+  const {appState, setAppState} = useContext(AppContext);
+  const dataset: Dataset = appState.datasets.get(datasetKey)!;
+
   const volumeNames: string[] = [...dataset.volumes.keys()];
   const layerCheckStateInit = new Map<string, boolean>(
     volumeNames.map(k => [k, false])

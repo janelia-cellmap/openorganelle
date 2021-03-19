@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Volume } from "../api/datasets";
+import { ContentType, Volume } from "../api/datasets";
 import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
 import Typography from "@material-ui/core/Typography";
@@ -60,7 +60,7 @@ export default function LayerGroup({
     groupSummary =
       "Predictions that have undergone refinements such as, thresholding, smoothing, size filtering, and connected component analysis.";
   }
-  if (contentType === "prediction") {
+  if (contentType === ("prediction" as ContentType)) {
     groupSummary =
       "Raw distance transform inferences scaled from 0 to 255. A voxel value of 127 represent a predicted distance of 0 nm.";
   }

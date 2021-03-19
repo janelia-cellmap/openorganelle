@@ -5,13 +5,13 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import ClipboardLink from "./ClipboardLink";
-import { DatasetDescription } from "../api/dataset_description";
+import { DatasetDescription, DescriptionSummary, DescriptionAbout, DescriptionAcquisition } from "../api/dataset_description";
 
 type DescriptionTextProps = {
   titleLink: string;
-  clipLink: string;
+  clipLink?: string;
   datasetDescription: DatasetDescription | undefined;
-  storageLocation: string;
+  storageLocation?: string;
 };
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -42,7 +42,7 @@ export function DatasetDescriptionPreview(props: DescriptionTextProps) {
         {[...Object.keys(description.Summary)].map(value => (
           <p key={value}>
             <strong>{ReactHtmlParser(value)}</strong>:{" "}
-            {ReactHtmlParser(description.Summary[value])}
+            {ReactHtmlParser(description.Summary[value as keyof DescriptionSummary])}
           </p>
         ))}
       </Box>
@@ -72,7 +72,7 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
             {[...Object.keys(description["About this sample"])].map(value => (
               <p key={value}>
                 <strong>{ReactHtmlParser(value)}</strong>:{" "}
-                {ReactHtmlParser(description["About this sample"][value])}
+                {ReactHtmlParser(description["About this sample"][value as keyof DescriptionAbout])}
               </p>
             ))}
           </Grid>
@@ -82,19 +82,26 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
                 <p key={value}>
                   <strong>{ReactHtmlParser(value)}</strong>:{" "}
                   {ReactHtmlParser(
-                    description["Acquisition information"][value]
+                    description["Acquisition information"][value as keyof DescriptionAcquisition]
                   )}
                 </p>
               )
             )}
           </Grid>
+        </Grid>
+      </>
+    );
+  }
+}
+
+/*
           <Grid item xs={4}>
             {[...Object.keys(description["Dataset information"])].map(
               value => (
                 <p key={value}>
                   <strong>{ReactHtmlParser(value)}</strong>:{" "}
                   {ReactHtmlParser(
-                    description["Dataset information"][value]
+                    description["Dataset information"][value as keyof DatasetDescription]
                   )}
                 </p>
               )
@@ -104,8 +111,4 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
             </p>
             <ClipboardLink link={props.clipLink} />
           </Grid>
-        </Grid>
-      </>
-    );
-  }
-}
+*/

@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Settings() {
   const classes = useStyles();
-  const [appState, setAppState] = useContext(AppContext);
+  const {appState, setAppState} = useContext(AppContext);
 
   return (
     <div className="content">

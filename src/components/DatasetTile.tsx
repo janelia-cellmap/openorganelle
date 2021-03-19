@@ -26,8 +26,8 @@ interface DatasetTileProps {
 }
 
 export default function DatasetTile({ datasetKey }: DatasetTileProps) {
-  const [appState] = useContext(AppContext);
-  const dataset: Dataset = appState.datasets.get(datasetKey);
+  const {appState, setAppState} = useContext(AppContext);
+  const dataset: Dataset = appState.datasets.get(datasetKey)!;
   const datasetLink = `/datasets/${dataset.key}`;
   const classes = useStyles();
   return (

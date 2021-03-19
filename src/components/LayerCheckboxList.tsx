@@ -10,7 +10,7 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
-import { ContentType, Dataset, VolumeSource } from "../api/datasets";
+import { ContentType, Dataset, Volume} from "../api/datasets";
 import LayerGroup from "./LayerGroup";
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -37,15 +37,28 @@ const contentTypeProps = new Map([
   ["analysis", "Analysis Layers"],
 ]);
 
+type LayersListProps = {
+  dataset: Dataset;
+  checkState: Map<string, boolean>;
+  handleChange: any;
+  filter: string;
+}
+
+interface LayerFilterProps {
+  value: any;
+  onChange: any;
+}
+
 type LayerCheckBoxListCollectionProps = {
   dataset: Dataset;
   checkState: Map<string, boolean>;
   handleChange: any;
 };
 
-function LayersList({ dataset, checkState, handleChange, filter }) {
+function LayersList({ dataset, checkState, handleChange, filter }: LayersListProps) {
   const classes = useStyles();
-  const [volumesList, setVolumes] = useState([]);
+  const volume_list_init: Volume[] = []
+  const [volumesList, setVolumes] = useState(volume_list_init);
 
   useEffect(() => {
     // filter volumes based on filter string
@@ -57,20 +70,21 @@ function LayersList({ dataset, checkState, handleChange, filter }) {
         v.name.toLowerCase().includes(filter.toLowerCase())
       );
     }
-    setVolumes(filteredVolumes);
+    setVolumes(
+      filteredVolumes);
   }, [dataset, filter]);
 
-  const volumeGroups: Map<ContentType, VolumeSource[]> = new Map();
+  const volumeGroups: Map<ContentType, Volume[]> = new Map();
 
-  volumesList.forEach((v: VolumeSource) => {
+  volumesList.forEach((v: Volume) => {
     if (volumeGroups.get(v.contentType) === undefined) {
       volumeGroups.set(v.contentType, []);
     }
-    volumeGroups.get(v.contentType).push(v);
+    volumeGroups.get(v.contentType)!.push(v);
   });
 
   const checkboxLists = Array.from(contentTypeProps.keys()).map((ct) => {
-    let volumes: VolumeSource[] = volumeGroups.get(ct);
+    let volumes: Volume[] = volumeGroups.get(ct as ContentType)!;
     if (volumes !== undefined && volumes.length > 0) {
       return <LayerGroup key={ct} volumes={volumes} checkState={checkState} handleChange={handleChange} contentTypeProps={contentTypeProps} />;
     }
@@ -80,7 +94,7 @@ function LayersList({ dataset, checkState, handleChange, filter }) {
   return <div className={classes.control}>{checkboxLists}</div>;
 }
 
-function LayerFilter({ value, onChange }) {
+function LayerFilter({ value, onChange } : LayerFilterProps) {
   const classes = useStyles();
   return (
     <FormControl className={classes.margin} fullWidth variant="outlined">
