@@ -88,13 +88,6 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
               )
             )}
           </Grid>
-        </Grid>
-      </>
-    );
-  }
-}
-
-/*
           <Grid item xs={4}>
             {[...Object.keys(description["Dataset information"])].map(
               value => (
@@ -109,6 +102,11 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
                         <p>
               <strong>Dataset location</strong>:{props.storageLocation}
             </p>
-            <ClipboardLink link={props.clipLink} />
+            <ClipboardLink link={String(props.clipLink)} />
           </Grid>
-*/
+        </Grid>
+      </>
+    );
+  }
+}
+

@@ -51,7 +51,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
     },
     masthead: {
       background: 
-        `linear-gradient( to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7)) url(${banner})`,
+        `linear-gradient( to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7)), url(${banner})`,
       backgroundPositionX: "right",
       backgroundSize: "cover",
       minHeight: "200px",

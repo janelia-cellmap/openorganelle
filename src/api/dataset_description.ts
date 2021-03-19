@@ -29,4 +29,5 @@ export interface DatasetDescription {
   Summary: DescriptionSummary;
   "About this sample": DescriptionAbout;
   "Acquisition information": DescriptionAcquisition;
+  "Dataset information": any;
 }
