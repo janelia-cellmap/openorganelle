@@ -221,10 +221,10 @@ export class Volume {
         }
         else if (layerType === 'segmentation') {
           if (subsrcURL !== undefined) {
-            layer = new SegmentationLayer([source, subsrcURL], 'source', true, this.name);  
+            layer = new SegmentationLayer('source', true, undefined, this.name, [source, subsrcURL]);  
           }
           else {
-            layer = new SegmentationLayer(source, 'source', true, this.name);
+            layer = new SegmentationLayer('source', true, undefined, this.name, source);
           }
         }
         return layer
