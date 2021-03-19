@@ -13,7 +13,7 @@ export interface ContextProps {
 
 interface AppContext {
   appState: ContextProps
-  setAppstate: () => null
+  setAppState: (appState: ContextProps) => null | void
 }
 
 const contextDefault: ContextProps = {
@@ -26,15 +26,15 @@ const contextDefault: ContextProps = {
 
 export const AppContext = React.createContext<AppContext>({
   appState: contextDefault,
-  setAppstate: () => null
+  setAppState: () => null,
 });
 
 export const AppProvider = (props: any) => {
 
-  const [state, setState] = useState<ContextProps>(contextDefault);
+  const [appState, setAppState] = useState<ContextProps>(contextDefault);
   const { children } = props;
   return (
-    <AppContext.Provider value={[state, setState]}>
+    <AppContext.Provider value={{appState, setAppState}}>
       {children}
     </AppContext.Provider>
   );

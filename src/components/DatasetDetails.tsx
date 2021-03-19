@@ -23,8 +23,8 @@ interface DatasetDetailsProps {
 
 export default function DatasetDetails({url}: DatasetDetailsProps) {
   const classes = useStyles();
-  let { slug }: string = useParams();
-  const [appState] = useContext(AppContext);
+  let { slug }: {slug: string} = useParams();
+  const {appState, setAppState} = useContext(AppContext);
   if (appState.datasetsLoading) {
     return (
       <Paper className={classes.paper}>

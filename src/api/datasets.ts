@@ -8,6 +8,7 @@ import {
   LayerDataSource,
   SegmentationLayer,
   ManagedLayer,
+  Layer,
 } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON, bucketNameToURL } from "./datasources";
 import * as Path from "path";
@@ -102,12 +103,6 @@ interface NeuroglancerPrecomputedAttrs {
     num_channels: number
 }
 
-const displayDefaults: DisplaySettings = {
-  contrastLimits: {min: 0, max:1},
-  invertColormap: false,
-  color: "white",
-};
-
 // one nanometer, expressed as a scaled meter
 const nm: [number, string] = [1e-9, "m"];
 
@@ -134,7 +129,7 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataT
           void main() {
           emitRGB(color * inverter(normalized(), invertColormap));
         }`
-      };
+      }
     case "segmentation":
       return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${cmin}, ${cmax}])\n#uicontrol vec3 color color(default="${shaderArgs.color}")\nvoid main() {emitRGB(color * normalized());}`;
       default:
@@ -178,7 +173,7 @@ export class Volume {
     // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer
     // viewer state construction
 
-    toLayer(layerType: LayerTypes): ImageLayer | SegmentationLayer {
+    toLayer(layerType: LayerTypes): Layer | undefined {
         const srcURL = `${this.containerType}://${this.path}`;
         let subsrcURL = undefined;
         if ((this.subsource !== undefined) && (this.subsource !== null)) {
@@ -197,11 +192,12 @@ export class Volume {
             ],
             outputDimensions: outputDimensions,
             inputDimensions: inputDimensions}
+
         // need to update the layerdatasource object to have a transform property
         const source: LayerDataSource = {url: srcURL,
-                                        transform: layerTransform};
+                                         CoordinateSpaceTransform: layerTransform};
         
-        let layer = undefined;
+        let layer: Layer | undefined = undefined;
 
         if (layerType === 'image'){
           let shader: string | undefined = '';
@@ -215,6 +211,7 @@ export class Volume {
           layer = new ImageLayer('rendering',
                                 undefined,
                                 undefined,
+                                this.name,
                                 source,
                                 0.75,
                                 'additive',
@@ -224,14 +221,12 @@ export class Volume {
         }
         else if (layerType === 'segmentation') {
           if (subsrcURL !== undefined) {
-            layer = new SegmentationLayer([source, subsrcURL], 'source', true);  
+            layer = new SegmentationLayer('source', true, undefined, this.name, [source, subsrcURL]);  
           }
           else {
-            layer = new SegmentationLayer(source, 'source', true);
+            layer = new SegmentationLayer('source', true, undefined, this.name, source);
           }
         }
-        
-        layer.name = this.name
         return layer
     }
 }
@@ -254,27 +249,29 @@ export class Dataset {
         this.views = views;
     }
 
-    makeNeuroglancerViewerState(view: DatasetView): string {        
+    makeNeuroglancerViewerState(view: DatasetView): string | undefined {        
         const layers = [...this.volumes.keys()].filter(a => view.volumeKeys.includes(a)).map(a => 
           {let vol = this.volumes.get(a);
-            return vol.toLayer(vol.displaySettings.defaultLayerType)});       
-        // hack to post-hoc adjust alpha if there is only 1 layer selected
-        if (layers.length  === 1) {layers[0].opacity = 1.0}
+            return vol?.toLayer(vol.displaySettings.defaultLayerType)});       
+        // hack to post-hoc adjust alpha if there is only 1 layer selected and it is an imagelayer
+        // remove undefined layers
+        const layers_filtered = layers.filter(f => f !== undefined)
+        if (layers_filtered.length == 0) {
+          return undefined
+        }
+        if (layers_filtered.length  === 1 && layers_filtered[0] instanceof ImageLayer) {layers_filtered[0].opacity = 1.0}
         const viewerPosition = view.position;
-        let crossSectionScale = view.scale;
+        let crossSectionScale = view.scale? view.scale : 50.0;
         const projectionOrientation = undefined;
         const crossSectionOrientation = undefined;
         const projectionScale = 65536;
-        if (crossSectionScale === undefined) {
-          crossSectionScale = 50.0;
-        }
         // the first layer is the selected layer; consider making this a kwarg
-        const selectedLayer = {'layer': layers[0].name, 'visible': true};
+        const selectedLayer = {'layer': layers_filtered[0]!.name, 'visible': true};
 
         const vState = new ViewerState(
             outputDimensions,
             viewerPosition,
-            layers,
+            layers_filtered as Layer[],
             '4panel',
             undefined,
             crossSectionScale,

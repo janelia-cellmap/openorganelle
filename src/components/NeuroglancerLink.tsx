@@ -9,7 +9,7 @@ type NeuroglancerLinkProps = {
   dataset: Dataset;
   view: DatasetView;
   checkState: Map<string, boolean>;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 export default function NeuroglancerLink({
@@ -18,7 +18,7 @@ export default function NeuroglancerLink({
   checkState,
   children
 }: NeuroglancerLinkProps) {
-  const [appState] = useContext(AppContext);
+  const {appState, setAppState} = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const webGL2Enabled = appState.webGL2Enabled;
 
@@ -31,7 +31,7 @@ export default function NeuroglancerLink({
   });
 
   let ngLink = "";
-  const disabled = Boolean(local_view.volumeKeys.length === 0);
+  const disabled = local_view.volumeKeys.length === 0;
 
   if (!disabled) {
     ngLink = `${neuroglancerAddress}${dataset.makeNeuroglancerViewerState(
@@ -40,7 +40,8 @@ export default function NeuroglancerLink({
   }
 
   if (children) {
-    return React.Children.map(children, child => {
+    return <>
+    {React.Children.map(children, child => {
       const updatedProps = {
         disabled,
         href: ngLink,
@@ -51,7 +52,8 @@ export default function NeuroglancerLink({
         return React.cloneElement(child, updatedProps);
       }
       return child;
-    });
+    })}
+    </>;
   } else {
     return (
       <>

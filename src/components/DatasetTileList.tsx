@@ -1,4 +1,4 @@
-import { createStyles, makeStyles, Typography } from "@material-ui/core";
+import { createStyles, makeStyles, Theme, Typography } from "@material-ui/core";
 import { Pagination } from "@material-ui/lab";
 import React, { useContext, useState } from "react";
 import { Dataset } from "../api/datasets";
@@ -14,7 +14,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 );
 
 export default function DatasetTileList() {
-    const [appState,] = useContext(AppContext);
+    const {appState, setAppState} = useContext(AppContext);
     const [currentPage, setCurrentPage] = useState(1);
     const datasetsPerPage = 10;
   

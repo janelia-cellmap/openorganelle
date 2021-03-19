@@ -14,6 +14,8 @@ const dataSets = [
   { value: "jrc_jurkat-1", label: "Immortalized T-Cells (Jurkat)" }
 ];
 
+const measurement = "";
+
 const dataSetItems = dataSets.map(dataset => (
   <MenuItem key={dataset.value} value={dataset.value}>
     {dataset.label}
@@ -60,7 +62,7 @@ export default function Analysis() {
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={dataset}
-          onChange={e => setDataSet(e.target.value)}
+          onChange={(e: any) => setDataSet(e.target.value)}
         >
           {dataSetItems}
         </Select>
@@ -74,14 +76,14 @@ export default function Analysis() {
           id="demo-simple-select"
           multiple
           value={organelles}
-          onChange={e => setOrganelles(e.target.value)}
+          onChange={(e: any) => setOrganelles(e.target.value)}
         >
           {organelleItems}
         </Select>
       </FormControl>
 
       <p>execute a query</p>
-      {cypherBuilder({dataset, organelles})}
+      {cypherBuilder({dataset, organelles, measurement})}
     </div>
   );
 }

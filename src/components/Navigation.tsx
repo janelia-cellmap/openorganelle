@@ -11,6 +11,7 @@ import janeliaLogo from "../janelia_logo.png";
 import {WebGL2CompatibilityWarning} from "./WebGL2Compatibility";
 import banner from "./cosem_banner.jpg";
 
+
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
   link: {
@@ -49,10 +50,8 @@ const useStyles: any = makeStyles((theme: Theme) =>
       textShadow: "0 1px 0 black"
     },
     masthead: {
-      background: [
-        "linear-gradient( to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7))",
-        `url(${banner})`
-      ],
+      background: 
+        `linear-gradient( to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7)), url(${banner})`,
       backgroundPositionX: "right",
       backgroundSize: "cover",
       minHeight: "200px",
@@ -89,7 +88,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 
 export default function Navigation() {
   const classes = useStyles();
-  const [appState, ] = useContext(AppContext);
+  const {appState,  setAppState} = useContext(AppContext);
 
   return (
     <>

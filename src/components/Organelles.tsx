@@ -867,7 +867,7 @@ const analysisList = [
 ];
 
 export default function Organelles() {
-  const [appState] = useContext(AppContext);
+  const {appState, setAppState} = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const datasets = appState.datasets;
   if (datasets.size === 0) {
@@ -880,7 +880,7 @@ export default function Organelles() {
   const tableRows = tableData.map((row) => {
     const neuroglancer_urls = row.examples.map((v, idx) => {
       return `${neuroglancerAddress}${datasets
-        .get(demo_dataset_names[idx])
+        .get(demo_dataset_names[idx])!
         .makeNeuroglancerViewerState(v)}`;
     });
     return (

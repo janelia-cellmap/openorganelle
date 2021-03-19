@@ -12,7 +12,7 @@ import { AppContext } from "../context/AppContext";
 import { makeDatasets } from "../api/datasets";
 
 export default function Home() {
-  const [appState, setAppState] = useContext(AppContext);
+  const {appState, setAppState} = useContext(AppContext);
 
   // Update the global datasets var when Home renders for the first time
   useEffect(() => {
