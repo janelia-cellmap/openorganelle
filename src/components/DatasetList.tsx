@@ -10,7 +10,7 @@ import { AppContext } from "../context/AppContext";
 import DatasetTile from "./DatasetTile";
 
 export default function DatasetList() {
-  const {appState, setAppState} = useContext(AppContext);
+  const {appState} = useContext(AppContext);
   const [currentPage, setCurrentPage] = useState(1);
   const datasetsPerPage = 10;
 

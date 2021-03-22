@@ -868,7 +868,7 @@ const analysisList = [
 ];
 
 export default function Organelles() {
-  const {appState, setAppState} = useContext(AppContext);
+  const {appState} = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const datasets = appState.datasets;
   if (datasets.size === 0) {

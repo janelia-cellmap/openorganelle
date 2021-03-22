@@ -51,7 +51,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 
 export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const classes = useStyles();
-  const {appState, setAppState} = useContext(AppContext);
+  const {appState} = useContext(AppContext);
   const dataset: Dataset = appState.datasets.get(datasetKey)!;
 
   const volumeNames: string[] = [...dataset.volumes.keys()];

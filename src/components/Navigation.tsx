@@ -88,7 +88,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 
 export default function Navigation() {
   const classes = useStyles();
-  const {appState,  setAppState} = useContext(AppContext);
+  const {appState} = useContext(AppContext);
 
   return (
     <>

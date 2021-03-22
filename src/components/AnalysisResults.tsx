@@ -27,8 +27,15 @@ interface resultsProps {
   cypher: string;
 }
 
+interface queryResponse {
+  isLoading: boolean,
+  isError: boolean,
+  data : any,
+  error : any
+}
+
 export default function AnalysisResults({ cypher }: resultsProps) {
-  const { isLoading, isError, data, error } = useQuery(
+  const { isLoading, isError, data, error } : queryResponse = useQuery(
     ["analysis", cypher],
     () => fetchAnalysisResults(cypher),
     { staleTime: 30000 }
@@ -43,8 +50,8 @@ export default function AnalysisResults({ cypher }: resultsProps) {
     return <p>Loading...</p>;
   }
 
-  if (isError) {
-    return <p>There was an error with your request</p>;
+  if (isError && error) {
+    return <p>There was an error with your request: { error.message}</p>;
   }
 
   console.log(data);
@@ -83,8 +90,6 @@ export default function AnalysisResults({ cypher }: resultsProps) {
     });
     return rowObject;
   });
-
-  console.log(dataRows);
 
   if (data) {
     return (

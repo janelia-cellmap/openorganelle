@@ -20,8 +20,6 @@ const dataSets = [
   { value: "jrc_jurkat-1", label: "Immortalized T-Cells (jrc_jurkat-1)" }
 ];
 
-const measurement = "";
-
 const dataSetItems = dataSets.map(dataset => (
   <MenuItem key={dataset.value} value={dataset.value}>
     {dataset.label}
