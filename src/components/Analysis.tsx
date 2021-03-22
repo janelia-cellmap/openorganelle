@@ -10,14 +10,14 @@ import cypherBuilder from "../utils/cypherBuilder";
 const defaultMeasurementOptions = [
   { value: "surfaceArea", label: "Surface Area (nm^2)" },
   { value: "volume", label: "Volume (nm^3)" },
-  { value: "id", label: "ID" }
+  { value: "ID", label: "ID" }
 ];
 
 const dataSets = [
-  { value: "jrc_hela-2", label: "Interphase HeLa cell" },
-  { value: "jrc_hela-3", label: "Interphase Hela cell" },
-  { value: "jrc_macrophage-2", label: "Macrophage cell" },
-  { value: "jrc_jurkat-1", label: "Immortalized T-Cells (Jurkat)" }
+  { value: "jrc_hela-2", label: "Interphase HeLa cell (jrc_hela-2)" },
+  { value: "jrc_hela-3", label: "Interphase Hela cell (jrc_hela-3)" },
+  { value: "jrc_macrophage-2", label: "Macrophage cell (jrc_macrophage-2)" },
+  { value: "jrc_jurkat-1", label: "Immortalized T-Cells (jrc_jurkat-1)" }
 ];
 
 const measurement = "";
@@ -29,14 +29,14 @@ const dataSetItems = dataSets.map(dataset => (
 ));
 
 const organelleNames = [
-  { value: "endosome", label: "Endosome" },
+  { value: "endo", label: "Endosome" },
   { value: "er", label: "ER" },
   { value: "golgi", label: "Golgi" },
-  { value: "microtubule", label: "Microtubule" },
-  { value: "mitochondria", label: "Mitochondria" },
+  { value: "mt", label: "Microtubule" },
+  { value: "mito", label: "Mitochondria" },
   { value: "nucleus", label: "Nucleus" },
-  { value: "peripheral_er", label: "Peripheral ER" },
-  { value: "plasma_membrane", label: "Plasma Membrane" },
+  { value: "er-periph", label: "Peripheral ER" },
+  { value: "pm", label: "Plasma Membrane" },
   { value: "vesicle", label: "Vesicle" }
 ];
 
@@ -71,7 +71,7 @@ function reducer(state: any, action: any) {
         return state;
       }
       // if mitochondria is not selected remove length from measurements
-      if (action.payload.indexOf('mitochondria') < 0) {
+      if (action.payload.indexOf('mito') < 0) {
         measurements = measurements.filter((m: string) => m !== 'length');
       }
       // if ER is not selected, make sure to remove planarity from measurements
@@ -104,7 +104,7 @@ export default function Analysis() {
     // length measurement is only for mitochondria in any dataset apart from
     // macrophage
     if (
-      state.organelles.indexOf("mitochondria") >= 0 &&
+      state.organelles.indexOf("mito") >= 0 &&
       state.dataset !== "jrc_macrophage-2"
     ) {
       updatedOptions.push({ value: "length", label: "Length (nm)" });
@@ -113,7 +113,6 @@ export default function Analysis() {
     if (state.organelles.indexOf("er") >= 0 && state.organelles.length > 1) {
       updatedOptions.push({ value: "planarity", label: "Planarity (0-1)" });
     }
-    console.log({ updatedOptions, state });
     setMeasurementOptions(updatedOptions);
   }, [state]);
 
