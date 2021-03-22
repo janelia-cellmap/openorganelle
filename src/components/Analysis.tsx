@@ -122,6 +122,8 @@ export default function Analysis() {
     </MenuItem>
   ));
 
+  const cypher = cypherBuilder(state);
+
   return (
     <div className="content">
       <p>Analysis portal</p>
@@ -170,8 +172,8 @@ export default function Analysis() {
           {measurementItems}
         </Select>
       </FormControl>
-
-      <AnalysisResults cypher={cypherBuilder(state)} />
+      {cypher ?
+        <AnalysisResults cypher={cypher} /> : ''}
     </div>
   );
 }

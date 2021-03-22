@@ -24,7 +24,7 @@ function fetchAnalysisResults(cypher: string) {
 }
 
 interface resultsProps {
-  cypher: string | undefined;
+  cypher: string;
 }
 
 export default function AnalysisResults({ cypher }: resultsProps) {
@@ -44,7 +44,7 @@ export default function AnalysisResults({ cypher }: resultsProps) {
   }
 
   if (isError) {
-    return <p>There was an error with your request: {error.message}</p>;
+    return <p>There was an error with your request</p>;
   }
 
   console.log(data);
@@ -65,10 +65,20 @@ export default function AnalysisResults({ cypher }: resultsProps) {
     }
   ];
 
-  const dataRows = data.data.map((row, rowNum) => {
-    const rowObject = {};
-    data.columns.forEach((header, i) => {
-      rowObject["id"] = rowNum;
+
+  interface gridObject {
+    id: number,
+    [key: string]: any
+  };
+
+  interface rowObject {
+    row: string[]
+  }
+
+
+  const dataRows = data.data.map((row: rowObject, rowNum: number) => {
+    const rowObject: gridObject = { id: rowNum};
+    data.columns.forEach((header: string, i: number) => {
       rowObject[header] = row.row[i];
     });
     return rowObject;
