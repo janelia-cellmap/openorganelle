@@ -43,6 +43,17 @@ Additionally, the bucket must be configured for cross-origin requests (CORS), e.
 
 ```
 
+# Deployment
+
+To deploy to dev run the deploy command without any additional arguments
+```
+npm run deploy
+```
+To deploy to production or the validation server pass in the stage as well, eg:
+```
+npm run deploy -- --stage val
+```
+
 # React App Stuff
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
