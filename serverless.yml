@@ -4,6 +4,7 @@ service: sle-openorganelle-client
 
 plugins:
   - serverless-finch
+  - serverless-plugin-package-json
 
 custom:
   stage: ${opt:stage, self:provider.stage}
@@ -25,4 +26,4 @@ provider:
   tags: 
     PROJECT: cosem
     DEVELOPER: ${env:USER}
-    VERSION: 0.1.0
+    VERSION: ${pkgjson:version}
