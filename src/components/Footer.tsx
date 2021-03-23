@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 
 import cosemLogo from "../COSEM_logo_invert_transparent.png";
@@ -69,7 +70,7 @@ export default function Footer() {
               Hess Lab
         </a>
       </div>
-      <p>&copy; 2020 HHMI</p>
+      <p>&copy; 2020 HHMI - <Link style={{color: "#fff"}} to="/terms_of_use">Terms of Use</Link></p>
     </footer>
   );
 }

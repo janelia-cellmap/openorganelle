@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
@@ -63,11 +64,11 @@ export default function About() {
             the enhanced FIB-SEM platform (Hess Lab and FIB-SEM Technology) both
             demands and enables the development of universal machine learning
             classifiers for the automatic detection of sub-cellular structures
-            in these data. The COSEM project team, in collaboration with the Saalfeld
-            and Funke labs with biological guidance from the Lippincott-Schwartz
-            lab, has begun tackling the segmentation problem as well as the
-            subsequent large-scale quantitative analysis of these data to answer
-            biological questions.
+            in these data. The COSEM project team, in collaboration with the
+            Saalfeld and Funke labs with biological guidance from the
+            Lippincott-Schwartz lab, has begun tackling the segmentation problem
+            as well as the subsequent large-scale quantitative analysis of these
+            data to answer biological questions.
           </p>
 
           <p style={{ textIndent: "3ch" }}>
@@ -115,6 +116,10 @@ export default function About() {
               cosemdata@janelia.hhmi.org
             </a>
           </p>
+          <p style={{ textIndent: "3ch" }}>
+            Please see our <Link to="/terms_of_use">Terms of use</Link> for more
+            details.
+          </p>
         </Paper>
         <Paper className={classes.section}>
           <Typography variant="h5">Acknowledgements:</Typography>
@@ -157,9 +162,9 @@ export default function About() {
             <a href="https://www.janelia.org/support-team/project-technical-resources">
               Project Technical Resources
             </a>{" "}
-            for management and coordination and staff support. We thank
+            for management and coordination and staff support. We thank{" "}
             <a href="https://www.janelia.org/support-team/scientific-computing-systems">
-              Janelia Scientific Computing Shared Resource
+              Janelia Scientific Computing Shared Resources
             </a>
             , particularly Tom Dolafi and Stuart Berg for assistance with
             software infrastructure. We thank Victoria Custard for

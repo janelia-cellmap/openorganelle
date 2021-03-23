@@ -421,6 +421,11 @@ export default function Tutorials() {
                 cosemdata@janelia.hhmi.org
               </a>
             </Typography>
+
+            <Typography paragraph>
+              Please see our <Link to="/terms_of_use">Terms of use</Link> for
+              more details.
+            </Typography>
           </Paper>
         </div>
       </Grid>

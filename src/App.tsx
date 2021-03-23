@@ -5,6 +5,7 @@ import Analysis from "./components/Analysis";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import Settings from "./components/Settings";
+import TermsOfUse from "./components/TermsOfUse";
 import { AppProvider } from "./context/AppContext";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
@@ -41,6 +42,9 @@ function App() {
               </Route>
               <Route path="/analysis">
                 <Analysis />
+              </Route>
+              <Route path="/terms_of_use">
+                <TermsOfUse />
               </Route>
               <Route path="">
                 <Home />
