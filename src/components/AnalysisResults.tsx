@@ -23,19 +23,46 @@ function fetchAnalysisResults(cypher: string) {
     });
 }
 
+type headerLookup = {
+   [key: string]: string
+};
+
+const headerNames: headerLookup = {
+  "organelle.ID": "ID",
+  "organelle.surfaceArea": "Surface Area (nm^2)",
+  "organelle.volume": "Volume (nm^3)",
+  "organelle.length": "Length (nm)",
+  "organelle.planarity": "Planarity (0-1)",
+  "contact.volume": "Volume (nm^2)",
+  "contact.ID": "ID",
+  "organelleA.ID": "ID",
+  "organelleB.ID": "ID",
+};
+
+function formatColumnHeader(columnName: string, organelles: string[]) {
+  // TODO: remap the organelleA and organelleB ids to the organelle names?
+  return {
+    field: columnName,
+    headerName: headerNames[columnName],
+    width: 200,
+    type: "number"
+  };
+}
+
 interface resultsProps {
   cypher: string;
+  organelles: string[];
 }
 
 interface queryResponse {
-  isLoading: boolean,
-  isError: boolean,
-  data : any,
-  error : any
+  isLoading: boolean;
+  isError: boolean;
+  data: any;
+  error: any;
 }
 
-export default function AnalysisResults({ cypher }: resultsProps) {
-  const { isLoading, isError, data, error } : queryResponse = useQuery(
+export default function AnalysisResults({ cypher, organelles }: resultsProps) {
+  const { isLoading, isError, data, error }: queryResponse = useQuery(
     ["analysis", cypher],
     () => fetchAnalysisResults(cypher),
     { staleTime: 30000 }
@@ -51,40 +78,29 @@ export default function AnalysisResults({ cypher }: resultsProps) {
   }
 
   if (isError && error) {
-    return <p>There was an error with your request: { error.message}</p>;
+    return <p>There was an error with your request: {error.message}</p>;
   }
 
   console.log(data);
 
-  const columns = [
-    { field: "organelle.ID", headerName: "ID", type: "number", width: 150 },
-    {
-      field: "organelle.surfaceArea",
-      headerName: "Surface Area",
-      width: 150,
-      type: "number"
-    },
-    {
-      field: "organelle.volume",
-      headerName: "Volume",
-      width: 150,
-      type: "number"
-    }
-  ];
-
+  // Columns list needs to be modified based on the query type and measurements
+  // selected.
+  // loop over the columns in the 'data' object to figure out which ones are present
+  const columns = data.columns.map((column: string) =>
+    formatColumnHeader(column, organelles)
+  );
 
   interface gridObject {
-    id: number,
-    [key: string]: any
-  };
-
-  interface rowObject {
-    row: string[]
+    id: number;
+    [key: string]: any;
   }
 
+  interface rowObject {
+    row: string[];
+  }
 
   const dataRows = data.data.map((row: rowObject, rowNum: number) => {
-    const rowObject: gridObject = { id: rowNum};
+    const rowObject: gridObject = { id: rowNum };
     data.columns.forEach((header: string, i: number) => {
       rowObject[header] = row.row[i];
     });

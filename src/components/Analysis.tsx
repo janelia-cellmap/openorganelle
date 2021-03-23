@@ -171,7 +171,7 @@ export default function Analysis() {
         </Select>
       </FormControl>
       {cypher ?
-        <AnalysisResults cypher={cypher} /> : ''}
+        <AnalysisResults cypher={cypher} organelles={state.organelles} /> : ''}
     </div>
   );
 }
