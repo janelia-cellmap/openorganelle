@@ -149,6 +149,9 @@ export default function Navigation() {
           <NavLink to="/publications">
             <li className={classes.navListItem}>Publications</li>
           </NavLink>
+          <NavLink to="/analysis">
+            <li className={classes.navListItem}>Analysis</li>
+          </NavLink>
         </ul>
       </div>
   </>
