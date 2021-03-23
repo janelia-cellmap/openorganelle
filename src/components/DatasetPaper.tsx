@@ -125,7 +125,6 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   };
 
   const clearLayers = () => {
-    console.log("clearing layers");
     const newVolumeCheckState = new Map(
       [...checkStates.volumeCheckState.entries()].map(([k, v]) => [k, {selected: false}])
     );
