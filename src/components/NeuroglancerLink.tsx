@@ -15,7 +15,7 @@ type NeuroglancerLinkProps = {
   dataset: Dataset;
   view: DatasetView;
   checkState: Map<string, VolumeCheckStates>;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 export default function NeuroglancerLink({
