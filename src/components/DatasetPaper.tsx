@@ -118,7 +118,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
       let val = newVolumeCheckState.get(k);
       if (!(val === undefined) && (dataset.volumes.get(k)?.contentType === contentType)) {
         if (event.target.checked) {newLayerType=('segmentation' as LayerTypes)}
-        newVolumeCheckState.set(k, {...val, layerType: newLayerType})
+        newVolumeCheckState.set(k, {...val, layerType: (newLayerType as LayerTypes)})
       }
     }
     setCheckStates({ ...checkStates, volumeCheckState: newVolumeCheckState});
