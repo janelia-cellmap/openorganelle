@@ -268,6 +268,7 @@ export class Dataset {
         if (layers.length  === 1 && layers[0] instanceof ImageLayer) {layers[0].opacity = 1.0}
         const projectionOrientation = undefined;
         const crossSectionOrientation = undefined;
+        crossSectionScale = crossSectionScale? crossSectionScale : 50;
         const projectionScale = 65536;
         // the first layer is the selected layer; consider making this a kwarg
         const selectedLayer = {'layer': layers[0]!.name, 'visible': true};
