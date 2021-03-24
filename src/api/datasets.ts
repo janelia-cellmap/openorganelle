@@ -278,6 +278,7 @@ export class Dataset {
         let crossSectionScale = view.scale? view.scale : 50.0;
         const projectionOrientation = undefined;
         const crossSectionOrientation = undefined;
+        crossSectionScale = crossSectionScale? crossSectionScale : 50;
         const projectionScale = 65536;
         // the first layer is the selected layer; consider making this a kwarg
         const selectedLayer = {'layer': layers[0]!.name, 'visible': true};
