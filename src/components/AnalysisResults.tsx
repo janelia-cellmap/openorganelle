@@ -13,7 +13,7 @@ function fetchAnalysisResults(cypher: string) {
     body: JSON.stringify({ statements: [{ statement: cypher }] })
   };
 
-  return fetch("http://vmdmz122.int.janelia.org:7474/db/graph.db/tx", options)
+  return fetch("http://vmdmz122.int.janelia.org:7474/db/reimported.db/tx", options)
     .then(response => response.json())
     .then(res => {
       if (res.results) {
@@ -24,7 +24,7 @@ function fetchAnalysisResults(cypher: string) {
 }
 
 type headerLookup = {
-   [key: string]: string
+  [key: string]: string;
 };
 
 const headerNames: headerLookup = {
@@ -36,7 +36,7 @@ const headerNames: headerLookup = {
   "contact.volume": "Volume (nm^2)",
   "contact.ID": "ID",
   "organelleA.ID": "ID",
-  "organelleB.ID": "ID",
+  "organelleB.ID": "ID"
 };
 
 function formatColumnHeader(columnName: string, organelles: string[]) {
@@ -99,15 +99,15 @@ export default function AnalysisResults({ cypher, organelles }: resultsProps) {
     row: string[];
   }
 
-  const dataRows = data.data.map((row: rowObject, rowNum: number) => {
-    const rowObject: gridObject = { id: rowNum };
-    data.columns.forEach((header: string, i: number) => {
-      rowObject[header] = row.row[i];
-    });
-    return rowObject;
-  });
-
   if (data) {
+    const dataRows = data.data.map((row: rowObject, rowNum: number) => {
+      const rowObject: gridObject = { id: rowNum };
+      data.columns.forEach((header: string, i: number) => {
+        rowObject[header] = row.row[i];
+      });
+      return rowObject;
+    });
+
     return (
       <div style={{ height: 600, width: "100%" }}>
         <DataGrid rows={dataRows} columns={columns} pageSize={50} />
