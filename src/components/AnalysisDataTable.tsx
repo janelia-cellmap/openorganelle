@@ -1,5 +1,10 @@
 import React from "react";
 import { useTable, useSortBy, usePagination } from "react-table";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 interface AnalysisDataTableProps {
   data: any[],
@@ -33,14 +38,14 @@ export default function AnalysisDataTable({ data, columns }: AnalysisDataTablePr
 
   return (
     <>
-      <table {...getTableProps()}>
-        <thead>
+      <Table  size="small" {...getTableProps()}>
+        <TableHead>
           {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
+            <TableRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
                 // Add the sorting props to control sorting. For this example
                 // we can add them into the header props
-                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                <TableCell {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render("Header")}
                   {/* Add a sort direction indicator */}
                   <span>
@@ -50,26 +55,26 @@ export default function AnalysisDataTable({ data, columns }: AnalysisDataTablePr
                         : " 🔼"
                       : ""}
                   </span>
-                </th>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
+        </TableHead>
+        <TableBody {...getTableBodyProps()}>
           {page.map((row, i) => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()}>
+              <TableRow {...row.getRowProps()}>
                 {row.cells.map(cell => {
                   return (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    <TableCell {...cell.getCellProps()}>{cell.render("Cell")}</TableCell>
                   );
                 })}
-              </tr>
+              </TableRow>
             );
           })}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
       <br />
       <div className="pagination">
         <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
