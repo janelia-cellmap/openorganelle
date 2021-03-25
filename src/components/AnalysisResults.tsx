@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "react-query";
-import { DataGrid } from "@material-ui/data-grid";
+import AnalysisDataTable from "./AnalysisDataTable";
 
 function fetchAnalysisResults(cypher: string) {
   const options = {
@@ -13,7 +13,7 @@ function fetchAnalysisResults(cypher: string) {
     body: JSON.stringify({ statements: [{ statement: cypher }] })
   };
 
-  return fetch("http://vmdmz122.int.janelia.org:7474/db/reimported.db/tx", options)
+  return fetch("http://vmdmz122.int.janelia.org:7474/db/graph.db/tx", options)
     .then(response => response.json())
     .then(res => {
       if (res.results) {
@@ -42,10 +42,8 @@ const headerNames: headerLookup = {
 function formatColumnHeader(columnName: string, organelles: string[]) {
   // TODO: remap the organelleA and organelleB ids to the organelle names?
   return {
-    field: columnName,
-    headerName: headerNames[columnName],
-    width: 200,
-    type: "number"
+    accessor: columnName.replace('.','_'),
+    Header: headerNames[columnName]
   };
 }
 
@@ -81,7 +79,6 @@ export default function AnalysisResults({ cypher, organelles }: resultsProps) {
     return <p>There was an error with your request: {error.message}</p>;
   }
 
-  console.log(data);
 
   // Columns list needs to be modified based on the query type and measurements
   // selected.
@@ -103,15 +100,13 @@ export default function AnalysisResults({ cypher, organelles }: resultsProps) {
     const dataRows = data.data.map((row: rowObject, rowNum: number) => {
       const rowObject: gridObject = { id: rowNum };
       data.columns.forEach((header: string, i: number) => {
-        rowObject[header] = row.row[i];
+        rowObject[header.replace('.','_')] = row.row[i];
       });
       return rowObject;
     });
 
     return (
-      <div style={{ height: 600, width: "100%" }}>
-        <DataGrid rows={dataRows} columns={columns} pageSize={50} />
-      </div>
+		  <AnalysisDataTable data={dataRows} columns={columns} />
     );
   }
   return <p>Results for query {cypher} here</p>;
