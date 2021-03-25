@@ -7,7 +7,6 @@ import {
   ImageLayer,
   LayerDataSource,
   SegmentationLayer,
-  ManagedLayer,
   Layer,
 } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON, bucketNameToURL } from "./datasources";
