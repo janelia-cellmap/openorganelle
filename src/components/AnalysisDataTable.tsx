@@ -1,7 +1,12 @@
 import React from "react";
 import { useTable, useSortBy, usePagination } from "react-table";
 
-export default function AnalysisDataTable({ data, columns }) {
+interface AnalysisDataTableProps {
+  data: any[],
+  columns: any[]
+};
+
+export default function AnalysisDataTable({ data, columns }: AnalysisDataTableProps) {
   const {
     getTableProps,
     getTableBodyProps,
