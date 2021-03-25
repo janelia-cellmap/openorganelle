@@ -1,27 +1,27 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import Home from "./components/Home";
-import About from "./components/About";
-import Analysis from "./components/Analysis";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import Settings from "./components/Settings";
-import TermsOfUse from "./components/TermsOfUse";
 import { AppProvider } from "./context/AppContext";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
 import "./App.css";
 
+const Analysis = lazy(() => import("./components/Analysis"));
+const TermsOfUse = lazy(() => import("./components/TermsOfUse"));
+const About = lazy(() => import("./components/About"));
+
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: '#5084AC',
+      main: "#5084AC"
     },
     secondary: {
-      main: '#27507C',
-    },
-  },
+      main: "#27507C"
+    }
+  }
 });
 
 function App() {
@@ -33,24 +33,26 @@ function App() {
             <header className="header">
               <Navigation />
             </header>
-            <Switch>
-              <Route path="/settings">
-                <Settings />
-              </Route>
-              <Route path="/about">
-                <About />
-              </Route>
-              <Route path="/analysis">
-                <Analysis />
-              </Route>
-              <Route path="/terms_of_use">
-                <TermsOfUse />
-              </Route>
-              <Route path="">
-                <Home />
-              </Route>
-            </Switch>
-            <Footer/>
+            <Suspense fallback={<div>Loading...</div>}>
+              <Switch>
+                <Route path="/settings">
+                  <Settings />
+                </Route>
+                <Route path="/about">
+                  <About />
+                </Route>
+                <Route path="/analysis">
+                  <Analysis />
+                </Route>
+                <Route path="/terms_of_use">
+                  <TermsOfUse />
+                </Route>
+                <Route path="">
+                  <Home />
+                </Route>
+              </Switch>
+            </Suspense>
+            <Footer />
           </div>
         </Router>
       </AppProvider>
