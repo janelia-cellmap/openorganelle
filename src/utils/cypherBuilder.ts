@@ -3,11 +3,12 @@
 
 interface builderProps {
   dataset: string;
-  organelles: string[];
+  organelleA: string;
+  organelleB?: string;
   measurements: string[];
 }
 
-const contactTypes = [
+export const contactTypes = [
   "endo_er",
   "endo_golgi",
   "endo_mt",
@@ -25,22 +26,44 @@ const contactTypes = [
   "mt_vesicle"
 ];
 
+export function getContacts(organelle: string): string[] {
+  const contacts: string[] = [];
+  // filter contact types for any that match 'organelle'
+  const filtered = contactTypes.filter(
+    type =>
+      type.indexOf(`${organelle}_`) >= 0 || type.indexOf(`_${organelle}`) >= 0
+  );
+  // split the filtered contacts and return the ones that don't
+  // match the organelle
+  filtered.forEach(type => {
+    const split = type.split("_");
+    split.forEach(contact => {
+      if (contact !== organelle && contacts.indexOf(contact) === -1) {
+        contacts.push(contact);
+      }
+    });
+  });
+  return contacts;
+}
+
 export default function cypherBuilder({
   dataset,
-  organelles,
+  organelleA,
+  organelleB,
   measurements
 }: builderProps): string | undefined {
   let query = undefined;
   // are all parameters present
   if (
     dataset &&
-    organelles &&
-    organelles.length > 0 &&
+    organelleA &&
+    organelleA.length > 0 &&
     measurements &&
     measurements.length > 0
   ) {
     // is this a contact query or a single organelle query
-    const isContactQuery = organelles.length > 1;
+    const isContactQuery =
+      organelleA.length > 0 && organelleB && organelleB.length > 0;
     if (isContactQuery) {
       // organelle order for the contact tag is important as there are only certain combinations
       // eg: er_golgi, mito_mt, mt_nucleus
@@ -48,17 +71,13 @@ export default function cypherBuilder({
       // check organelles are in the allowed contacts
       const contactType = contactTypes.filter(
         type =>
-          type === organelles.join("_") ||
-          type ===
-            organelles
-              .slice() // prevent in place modification of the organelles array
-              .reverse()
-              .join("_")
+          type === `${organelleA}_${organelleB}` ||
+          type === `${organelleB}_${organelleA}`
       )[0];
 
       if (!contactType) {
         throw Error(
-          `There are no contacts between ${organelles[0]} and ${organelles[1]}`
+          `There are no contacts between ${organelleA} and ${organelleB}`
         );
       }
 
@@ -75,7 +94,7 @@ export default function cypherBuilder({
         .map((m: string) => `organelle.${m}`)
         .join(", ");
 
-      query = `MATCH(organelle:\`${dataset}|${organelles[0]}\`) RETURN ${returnParameters};`;
+      query = `MATCH(organelle:\`${dataset}|${organelleA}\`) RETURN ${returnParameters};`;
     }
   }
   return query;

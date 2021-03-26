@@ -33,23 +33,26 @@ const headerNames: headerLookup = {
   "organelle.volume": "Volume (nm^3)",
   "organelle.length": "Length (nm)",
   "organelle.planarity": "Planarity (0-1)",
+  "organelleA.ID": "OrganelleA ID",
+  "organelleB.ID": "OrganelleB ID",
   "contact.volume": "Volume (nm^2)",
   "contact.ID": "ID",
-  "organelleA.ID": "ID",
-  "organelleB.ID": "ID"
+  "contact.surfaceArea": "Surface Area (nm^2)",
+  "contact.planarity": "Planarity (0-1)"
 };
 
 function formatColumnHeader(columnName: string, organelles: string[]) {
   // TODO: remap the organelleA and organelleB ids to the organelle names?
   return {
-    accessor: columnName.replace('.','_'),
+    accessor: columnName.replace(".", "_"),
     Header: headerNames[columnName]
   };
 }
 
 interface resultsProps {
   cypher: string;
-  organelles: string[];
+  organelleA: string;
+  organelleB: string;
 }
 
 interface queryResponse {
@@ -59,7 +62,11 @@ interface queryResponse {
   error: any;
 }
 
-export default function AnalysisResults({ cypher, organelles }: resultsProps) {
+export default function AnalysisResults({
+  cypher,
+  organelleA,
+  organelleB
+}: resultsProps) {
   const { isLoading, isError, data, error }: queryResponse = useQuery(
     ["analysis", cypher],
     () => fetchAnalysisResults(cypher),
@@ -79,12 +86,11 @@ export default function AnalysisResults({ cypher, organelles }: resultsProps) {
     return <p>There was an error with your request: {error.message}</p>;
   }
 
-
   // Columns list needs to be modified based on the query type and measurements
   // selected.
   // loop over the columns in the 'data' object to figure out which ones are present
   const columns = data.columns.map((column: string) =>
-    formatColumnHeader(column, organelles)
+    formatColumnHeader(column, [organelleA, organelleB])
   );
 
   interface gridObject {
@@ -100,14 +106,12 @@ export default function AnalysisResults({ cypher, organelles }: resultsProps) {
     const dataRows = data.data.map((row: rowObject, rowNum: number) => {
       const rowObject: gridObject = { id: rowNum };
       data.columns.forEach((header: string, i: number) => {
-        rowObject[header.replace('.','_')] = row.row[i];
+        rowObject[header.replace(".", "_")] = row.row[i];
       });
       return rowObject;
     });
 
-    return (
-		  <AnalysisDataTable data={dataRows} columns={columns} />
-    );
+    return <AnalysisDataTable data={dataRows} columns={columns} />;
   }
   return <p>Results for query {cypher} here</p>;
 }
