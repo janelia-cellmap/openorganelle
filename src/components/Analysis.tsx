@@ -140,7 +140,9 @@ export default function Analysis() {
         );
       });
       organelleItems.unshift(
-        <MenuItem key="none" value="">---</MenuItem>
+        <MenuItem key="none" value="">
+          ---
+        </MenuItem>
       );
       setOrganelleBoptions(organelleItems);
     }
@@ -228,7 +230,7 @@ export default function Analysis() {
           organelleB={state.organelleB}
         />
       ) : (
-        ""
+        <p> Please select a dataset, organelle and measurements from above</p>
       )}
     </div>
   );

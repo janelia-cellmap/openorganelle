@@ -113,5 +113,5 @@ export default function AnalysisResults({
 
     return <AnalysisDataTable data={dataRows} columns={columns} />;
   }
-  return <p>Results for query {cypher} here</p>;
+  return null;
 }
