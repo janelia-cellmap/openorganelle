@@ -190,7 +190,7 @@ export default function Analysis() {
 
       <FormControl variant="filled" className={classes.formControl}>
         <InputLabel id="organelleBLabel">
-          Organelle Selection ({organelleBoptions.length})
+          Optional Connected Organelle ({organelleBoptions.length})
         </InputLabel>
         <Select
           labelId="organelleBLabel"
