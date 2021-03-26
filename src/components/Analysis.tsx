@@ -139,7 +139,9 @@ export default function Analysis() {
           </MenuItem>
         );
       });
-
+      organelleItems.unshift(
+        <MenuItem key="none" value="">---</MenuItem>
+      );
       setOrganelleBoptions(organelleItems);
     }
   }, [state]);
