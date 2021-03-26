@@ -220,6 +220,7 @@ export default function Analysis() {
           {measurementItems}
         </Select>
       </FormControl>
+      <code>{cypher}</code>
       {cypher ? (
         <AnalysisResults
           cypher={cypher}
