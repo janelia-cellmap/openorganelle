@@ -46,53 +46,6 @@ export default function AnalysisResultsGraphic({ data }: AnalysisResultsGraphicP
     links
   };
 
-  /* const myData = {
-    nodes: [
-      {
-        id: "id1",
-        name: "name1",
-        org: "er",
-        val: 1
-      },
-      {
-        id: "id3",
-        name: "name3",
-        org: "er",
-        val: 4
-      },
-      {
-        id: "id4",
-        name: "name4",
-        org: "golgi",
-        val: 2
-      },
-      {
-        id: "id2",
-        name: "name2",
-        org: "mt",
-        val: 10
-      }
-    ],
-    links: [
-      {
-        source: "id1",
-        target: "id2"
-      },
-      {
-        source: "id1",
-        target: "id3"
-      },
-      {
-        source: "id4",
-        target: "id2"
-      },
-      {
-        source: "id4",
-        target: "id1"
-      }
-    ]
-  }; */
-
   return (
     <ForceGraph3D
       graphData={myData}
