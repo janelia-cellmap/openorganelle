@@ -18,7 +18,7 @@ test("creates cypher for er contact with golgi", () => {
       organelleB: "golgi",
       measurements: ["planarity"]
     })
-  ).toBe("MATCH p=(organelleA:`jrc_hela-2|er`)-[contact:`jrc_hela-2|er_golgi_contacts`]->(organelleB:`jrc_hela-2|golgi`) RETURN contact.planarity, organelleA.ID, organelleB.ID LIMIT 30;");
+  ).toBe("MATCH p=(organelleA:`jrc_hela-2|er`)-[contact:`jrc_hela-2|er_golgi_contacts`]->(organelleB:`jrc_hela-2|golgi`) RETURN contact.planarity, organelleA.ID, organelleB.ID LIMIT 1000;");
 });
 
 test("creates cypher for golgi contact with er", () => {
@@ -29,7 +29,7 @@ test("creates cypher for golgi contact with er", () => {
       organelleA: "golgi",
       measurements: ["planarity"]
     })
-  ).toBe("MATCH p=(organelleA:`jrc_hela-2|er`)-[contact:`jrc_hela-2|er_golgi_contacts`]->(organelleB:`jrc_hela-2|golgi`) RETURN contact.planarity, organelleA.ID, organelleB.ID LIMIT 30;");
+  ).toBe("MATCH p=(organelleA:`jrc_hela-2|er`)-[contact:`jrc_hela-2|er_golgi_contacts`]->(organelleB:`jrc_hela-2|golgi`) RETURN contact.planarity, organelleA.ID, organelleB.ID LIMIT 1000;");
 });
 
 test("creates cypher for er contact with er", () => {

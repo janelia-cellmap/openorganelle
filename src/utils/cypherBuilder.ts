@@ -87,7 +87,7 @@ export default function cypherBuilder({
       const contactParameters = measurements.map((m: string) => `contact.${m}`);
       contactParameters.push("organelleA.ID", "organelleB.ID");
       const contactReturn = `RETURN ${contactParameters.join(", ")}`;
-      const completeCypher = `${contactMatch} ${contactReturn} LIMIT 30;`;
+      const completeCypher = `${contactMatch} ${contactReturn} LIMIT 1000;`;
       query = completeCypher;
     } else {
       const returnParameters = measurements

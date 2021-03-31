@@ -1,6 +1,7 @@
 import React from "react";
 import { useQuery } from "react-query";
 import AnalysisDataTable from "./AnalysisDataTable";
+import AnalysisResultsGraphic from "./AnalysisResultsGraphic";
 
 function fetchAnalysisResults(cypher: string) {
   const options = {
@@ -70,7 +71,7 @@ export default function AnalysisResults({
   const { isLoading, isError, data, error }: queryResponse = useQuery(
     ["analysis", cypher],
     () => fetchAnalysisResults(cypher),
-    { staleTime: 30000 }
+    { staleTime: Infinity, refetchOnWindowFocus: false }
   );
   if (!cypher) {
     return (
@@ -111,7 +112,12 @@ export default function AnalysisResults({
       return rowObject;
     });
 
-    return <AnalysisDataTable data={dataRows} columns={columns} />;
+    return (
+      <>
+        <AnalysisDataTable data={dataRows} columns={columns} />
+        <AnalysisResultsGraphic data={dataRows} />
+      </>
+    );
   }
   return null;
 }
