@@ -6,6 +6,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import AnalysisResults from "./AnalysisResults";
 import cypherBuilder, { getContacts } from "../utils/cypherBuilder";
+import { organelleNames } from "../utils/organelles";
 
 const defaultMeasurementOptions = [
   { value: "surfaceArea", label: "Surface Area (nm^2)" },
@@ -25,19 +26,6 @@ const dataSetItems = dataSets.map(dataset => (
     {dataset.label}
   </MenuItem>
 ));
-
-const organelleNames = [
-  { value: "endo", label: "Endosome" },
-  { value: "er", label: "ER" },
-  { value: "golgi", label: "Golgi" },
-  { value: "mt", label: "Microtubule" },
-  { value: "mito", label: "Mitochondria" },
-  { value: "nucleus", label: "Nucleus" },
-  { value: "ribo", label: "Ribosome" },
-  { value: "er-periph", label: "Peripheral ER" },
-  { value: "pm", label: "Plasma Membrane" },
-  { value: "vesicle", label: "Vesicle" }
-];
 
 const organelleItems = organelleNames.map(organelle => (
   <MenuItem key={organelle.value} value={organelle.value}>

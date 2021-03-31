@@ -4,24 +4,26 @@ import ForceGraph3D, { NodeObject } from "react-force-graph-3d";
 interface CustomNodeObject extends NodeObject {
   org?: string;
   name?: string;
+  label?: string;
 }
 
 interface AnalysisResultsGraphicProps {
   data: any;
+  organelles: any[];
 }
 
-export default function AnalysisResultsGraphic({ data }: AnalysisResultsGraphicProps) {
+export default function AnalysisResultsGraphic({ data, organelles }: AnalysisResultsGraphicProps) {
   const nodeLookup = new Set();
   const nodes: any[] = [];
   const links: any[] = [];
 
   data.forEach((item: any) => {
-    console.log(item);
     if (!nodeLookup.has(item.organelleA_ID)) {
       nodes.push({
         id: item.organelleA_ID,
         name: item.organelleA_ID,
-        org: "er",
+        org: organelles[0].abbr,
+        label: organelles[0].full,
         val: 1
       });
       nodeLookup.add(item.organelleA_ID);
@@ -30,7 +32,8 @@ export default function AnalysisResultsGraphic({ data }: AnalysisResultsGraphicP
       nodes.push({
         id: item.organelleB_ID,
         name: item.organelleB_ID,
-        org: "mt",
+        org: organelles[1].abbr,
+        label: organelles[1].full,
         val: 1
       });
       nodeLookup.add(item.organelleB_ID);
@@ -55,13 +58,16 @@ export default function AnalysisResultsGraphic({ data }: AnalysisResultsGraphicP
       linkColor={() => "#333"}
       onNodeClick={(node: CustomNodeObject) => console.log(`${node.name} clicked`)}
       nodeLabel={(node: CustomNodeObject) => {
-        return `<span style="color:#000">${node.name} (${node.org})<span>`;
+        return `<span style="color:#000">${node.name} (${node.label})<span>`;
       }}
       nodeColor={(node: CustomNodeObject) => {
-        if (node.org === "er") {
-          return "#ff0000";
-        } else {
-          return "#00ff00";
+        switch (node.org) {
+          case "er":
+            return "#ff0000";
+          case "endo":
+            return "#0000ff";
+          default:
+            return "#00ff00";
         }
       }}
     />

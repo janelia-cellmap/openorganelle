@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery } from "react-query";
 import AnalysisDataTable from "./AnalysisDataTable";
 import AnalysisResultsGraphic from "./AnalysisResultsGraphic";
+import { organelleTitles } from "../utils/organelles";
 
 function fetchAnalysisResults(cypher: string) {
   const options = {
@@ -42,11 +43,23 @@ const headerNames: headerLookup = {
   "contact.planarity": "Planarity (0-1)"
 };
 
-function formatColumnHeader(columnName: string, organelles: string[]) {
-  // TODO: remap the organelleA and organelleB ids to the organelle names?
+// remap the organelleA and organelleB ids to the organelle names
+function setHeaderName(columnName: string, organelles: any[]) {
+  if (columnName.match(/organelleA/)) {
+    const fullName = organelles[0].full;
+    return `${fullName} ID`;
+  }
+  if (columnName.match(/organelleB/)) {
+    const fullName = organelles[1].full;
+    return `${fullName} ID`;
+  }
+  return headerNames[columnName];
+}
+
+function formatColumnHeader(columnName: string, organelles: any[]) {
   return {
     accessor: columnName.replace(".", "_"),
-    Header: headerNames[columnName]
+    Header: setHeaderName(columnName, organelles)
   };
 }
 
@@ -68,6 +81,9 @@ export default function AnalysisResults({
   organelleA,
   organelleB
 }: resultsProps) {
+
+  const organelleLabels = [organelleA, organelleB].map(org => ({ abbr: org, full: organelleTitles[org] }));
+
   const { isLoading, isError, data, error }: queryResponse = useQuery(
     ["analysis", cypher],
     () => fetchAnalysisResults(cypher),
@@ -91,7 +107,7 @@ export default function AnalysisResults({
   // selected.
   // loop over the columns in the 'data' object to figure out which ones are present
   const columns = data.columns.map((column: string) =>
-    formatColumnHeader(column, [organelleA, organelleB])
+    formatColumnHeader(column, organelleLabels)
   );
 
   interface gridObject {
@@ -115,7 +131,7 @@ export default function AnalysisResults({
     return (
       <>
         <AnalysisDataTable data={dataRows} columns={columns} />
-        <AnalysisResultsGraphic data={dataRows} />
+        <AnalysisResultsGraphic data={dataRows} organelles={organelleLabels} />
       </>
     );
   }
