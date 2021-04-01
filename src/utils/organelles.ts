@@ -11,11 +11,11 @@ export const organelleNames = [
   { value: "vesicle", label: "Vesicle" }
 ];
 
-type titleIterator = {
+type lookupIterator = {
   [key: string]: string;
 };
 
-export const organelleTitles: titleIterator = {
+export const organelleTitles: lookupIterator = {
   endo: "Endosome",
   er: "ER",
   golgi: "Golgi",
@@ -26,4 +26,17 @@ export const organelleTitles: titleIterator = {
   "er-periph": "Peripheral ER",
   pm: "Plasma Membrane",
   vesicle: "Vesicle"
+};
+
+export const organelleColors: lookupIterator = {
+  endo: "#4e79a7",
+  er: "#59a14f",
+  golgi: "#9c755f",
+  mt: "#f28e2b",
+  mito: "#edc948",
+  nucleus: "#bab0ac",
+  ribo: "#e15759",
+  "er-periph": "#b07aa1",
+  pm: "#76b7b2",
+  vesicle: "#ff9da7"
 };

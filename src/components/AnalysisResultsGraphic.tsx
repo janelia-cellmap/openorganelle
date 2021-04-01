@@ -1,5 +1,6 @@
 import React from "react";
 import ForceGraph3D, { NodeObject } from "react-force-graph-3d";
+import { organelleColors } from "../utils/organelles";
 
 interface CustomNodeObject extends NodeObject {
   org?: string;
@@ -61,14 +62,8 @@ export default function AnalysisResultsGraphic({ data, organelles }: AnalysisRes
         return `<span style="color:#000">${node.name} (${node.label})<span>`;
       }}
       nodeColor={(node: CustomNodeObject) => {
-        switch (node.org) {
-          case "er":
-            return "#ff0000";
-          case "endo":
-            return "#0000ff";
-          default:
-            return "#00ff00";
-        }
+        const org = node.org || "default";
+        return organelleColors[org];
       }}
     />
   );
