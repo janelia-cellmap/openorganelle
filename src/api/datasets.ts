@@ -18,10 +18,9 @@ import {isUri} from "valid-url";
 
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
-type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
-
-type VolumeStores = "n5" | "precomputed" | "zarr";
-export type ContentType = "em" | "segmentation";
+export type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
+export type VolumeStores = "n5" | "precomputed" | "zarr";
+export type ContentType = "em" | "segmentation" | "prediction" | "analysis";
 
 interface ContrastLimits {
   min: number
@@ -111,6 +110,14 @@ const nm: [number, string] = [1e-9, "m"];
 
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: CoordinateSpace = { x: nm, y: nm, z: nm };
+
+const defaultView = new DatasetView('Default view', '', [], undefined, undefined);
+
+export const contentTypeDescriptions = new Map<string, string>();
+contentTypeDescriptions.set('em', "Raw FIB-SEM data.");
+contentTypeDescriptions.set('segmentation', "Predictions that have undergone refinements such as thresholding, smoothing, size filtering, and connected component analysis.");
+contentTypeDescriptions.set('prediction', "Raw distance transform inferences scaled from 0 to 255. A voxel value of 127 represent a predicted distance of 0 nm.");
+contentTypeDescriptions.set('analysis', "Results of applying various analysis routines on raw data, predictions, or segmentations.");
 
 function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataType: string): string | undefined{
   let lower = 0;

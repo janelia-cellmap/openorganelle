@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ContentType, Volume } from "../api/datasets";
+import { Volume, ContentType, contentTypeDescriptions } from "../api/datasets";
 import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
 import Typography from "@material-ui/core/Typography";
@@ -7,6 +7,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { ToggleButton, ToggleButtonGroup } from "@material-ui/lab";
 
 type LayerCheckBoxListProps = {
   volumes: Volume[];
@@ -14,6 +15,22 @@ type LayerCheckBoxListProps = {
   handleChange: any;
   contentTypeProps: any;
 };
+
+/*
+  const [formats, setFormats] = React.useState(() => ['bold', 'italic']);
+  const handleFormat = (event: React.MouseEvent<HTMLElement>, newFormats: string[]) => {
+      setFormats(newFormats);
+    };
+
+<ToggleButtonGroup value={formats} onChange={handleFormat} aria-label="text formatting">
+<ToggleButton value="bold" aria-label="bold" selected={true}>
+  <Typography variant='body2'> {"View as labels"} </Typography>
+</ToggleButton>
+<ToggleButton value="italic" aria-label="italic" selected={false}>
+<Typography> {"View as intensities"} </Typography>
+</ToggleButton></ToggleButtonGroup>
+*/
+
 
 export default function LayerGroup({
   volumes,
@@ -55,15 +72,8 @@ export default function LayerGroup({
   const groupTitle = (
     <Typography>{contentTypeProps.get(contentType)}</Typography>
   );
-  let groupSummary;
-  if (contentType === "segmentation") {
-    groupSummary =
-      "Predictions that have undergone refinements such as, thresholding, smoothing, size filtering, and connected component analysis.";
-  }
-  if (contentType === ("prediction" as ContentType)) {
-    groupSummary =
-      "Raw distance transform inferences scaled from 0 to 255. A voxel value of 127 represent a predicted distance of 0 nm.";
-  }
+  let groupSummary = contentTypeDescriptions.get(contentType) ? contentTypeDescriptions.get(contentType) : '';
+
 
   return (
     <Accordion key={contentType} expanded={expanded} onChange={handleExpand}>
