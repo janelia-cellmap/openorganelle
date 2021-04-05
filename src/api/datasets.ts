@@ -109,8 +109,6 @@ const nm: [number, string] = [1e-9, "m"];
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: CoordinateSpace = { x: nm, y: nm, z: nm };
 
-const defaultView = new DatasetView('Default view', '', [], undefined, undefined);
-
 function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataType: string): string | undefined{
   let lower = 0;
   let upper = 0;
@@ -374,9 +372,11 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
               if (vObj.name === 'Default View'){views.unshift(vObj)}
               else views.push(vObj)
             }
-            if (views.length === 0){views.push(defaultView)}
             const volumes: Map<string, Volume> = new Map();
             index.volumes.forEach(v => volumes.set(v.name, makeVolume(outerPath, v)));
+            if (views.length === 0){
+              let defaultView = new DatasetView('Default view', '', Array.from(volumes.keys()), undefined, undefined);  
+              views.push(defaultView)}
             datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailPath, views));
         }
         catch (error) {
