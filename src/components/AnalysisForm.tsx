@@ -57,9 +57,8 @@ export default function AnalysisForm() {
   const [dataset, setDataset] = useState(query.get("ds") || "");
   const [organelleA, setOrganelleA] = useState(query.get("oa") || "");
   const [organelleB, setOrganelleB] = useState(query.get("ob") || "");
-  const initialMeasurements = query.get("m") || "";
   const [measurements, setMeasurements] = useState<string[]>(
-    initialMeasurements.split(",").filter(item => item !== "")
+    query.getAll("m") || []
   );
 
   // options that are set based on the other options chosen.
@@ -144,16 +143,21 @@ export default function AnalysisForm() {
         setMeasurements(selected => selected.filter(item => item !== "length"));
       }
       // planarity is only for ER contact sites
-      if ((e.target.value !== "er" && organelleB !== "er") || organelleB === "") {
+      if (
+        (e.target.value !== "er" && organelleB !== "er") ||
+        organelleB === ""
+      ) {
         setMeasurements(selected =>
           selected.filter(item => item !== "planarity")
         );
       }
-
     } else {
       setOrganelleB(e.target.value as string);
       // planarity is only for ER contact sites
-      if (e.target.value === "" || (organelleA !== "er" && e.target.value !== "er")) {
+      if (
+        e.target.value === "" ||
+        (organelleA !== "er" && e.target.value !== "er")
+      ) {
         setMeasurements(selected =>
           selected.filter(item => item !== "planarity")
         );
@@ -172,7 +176,10 @@ export default function AnalysisForm() {
     query.set("ds", dataset);
     query.set("oa", organelleA);
     query.set("ob", organelleB);
-    query.set("m", measurements.join(","));
+    query.delete('m');
+    measurements.forEach(measurement => {
+      query.append("m", measurement)
+    });
     history.push({
       pathname: "",
       search: query.toString()

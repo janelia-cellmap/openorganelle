@@ -13,13 +13,11 @@ function useQuery() {
 export default function Analysis() {
   const query = useQuery();
 
-  const measurements = query.get("m") || "";
-
   const state = {
     dataset: query.get("ds") || "",
     organelleA: query.get("oa") || "",
     organelleB: query.get("ob") || "",
-    measurements: measurements.split(",").filter(item => item !== "")
+    measurements: query.getAll("m") || []
   };
 
   const cypher = cypherBuilder(state);
