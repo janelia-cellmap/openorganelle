@@ -3,27 +3,7 @@ import { useQuery } from "react-query";
 import AnalysisDataTable from "./AnalysisDataTable";
 import AnalysisResultsGraphic from "./AnalysisResultsGraphic";
 import { organelleTitles } from "../utils/organelles";
-
-function fetchAnalysisResults(cypher: string) {
-  const options = {
-    method: "POST",
-    headers: {
-      accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Basic bmVvNGo6QWlFc2h0ZUMwUzNNIQ==`
-    },
-    body: JSON.stringify({ statements: [{ statement: cypher }] })
-  };
-
-  return fetch("http://vmdmz122.int.janelia.org:7474/db/graph.db/tx", options)
-    .then(response => response.json())
-    .then(res => {
-      if (res.results) {
-        return res.results[0];
-      }
-      return;
-    });
-}
+import { fetchAnalysisResults, queryResponse } from "../utils/datafetching";
 
 type headerLookup = {
   [key: string]: string;
@@ -38,7 +18,7 @@ const headerNames: headerLookup = {
   "organelleA.ID": "Organelle ID",
   "organelleB.ID": "Connected Organelle ID",
   "contact.volume": "Volume (nm^2)",
-  "contact.ID": "ID",
+  "contact_ID": "ID",
   "contact.surfaceArea": "Surface Area (nm^2)",
   "contact.planarity": "Planarity (0-1)"
 };
@@ -69,20 +49,15 @@ interface resultsProps {
   organelleB: string;
 }
 
-interface queryResponse {
-  isLoading: boolean;
-  isError: boolean;
-  data: any;
-  error: any;
-}
-
 export default function AnalysisResults({
   cypher,
   organelleA,
   organelleB
 }: resultsProps) {
-
-  const organelleLabels = [organelleA, organelleB].map(org => ({ abbr: org, full: organelleTitles[org] }));
+  const organelleLabels = [organelleA, organelleB].map(org => ({
+    abbr: org,
+    full: organelleTitles[org]
+  }));
 
   const { isLoading, isError, data, error }: queryResponse = useQuery(
     ["analysis", cypher],
@@ -103,12 +78,13 @@ export default function AnalysisResults({
     return <p>There was an error with your request: {error.message}</p>;
   }
 
-  // Columns list needs to be modified based on the query type and measurements
-  // selected.
-  // loop over the columns in the 'data' object to figure out which ones are present
-  const columns = data.columns.map((column: string) =>
-    formatColumnHeader(column, organelleLabels)
-  );
+  // Columns list needs to be modified based on the query type
+  // and measurements selected.
+  // loop over the columns in the 'data' object to figure out which
+  // ones are present
+  const columns = data.columns
+    .filter((column: string) => !column.match(/intId.*/))
+    .map((column: string) => formatColumnHeader(column, organelleLabels));
 
   interface gridObject {
     id: number;

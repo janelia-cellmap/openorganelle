@@ -40,3 +40,9 @@ export const organelleColors: lookupIterator = {
   pm: "#76b7b2",
   vesicle: "#ff9da7"
 };
+
+export function convertLabelToOrganelle(label: string) {
+  console.log(label);
+  const [dataset, organelleAbbr] = label.split('|');
+  return organelleTitles[organelleAbbr];
+}

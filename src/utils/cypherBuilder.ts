@@ -46,6 +46,10 @@ export function getContacts(organelle: string): string[] {
   return contacts;
 }
 
+export function connectionsCypher(id: string) : string {
+  return `MATCH (n) WHERE id(n) = ${id} MATCH (n)-[r]-(c)  RETURN n, r, c, labels(n) as labelsN, labels(c) as labelsC LIMIT 1000`;
+}
+
 export default function cypherBuilder({
   dataset,
   organelleA,
@@ -84,8 +88,13 @@ export default function cypherBuilder({
       const selected = contactType.split("_");
 
       const contactMatch = `MATCH p=(organelleA:\`${dataset}|${selected[0]}\`)-[contact:\`${dataset}|${contactType}_contacts\`]->(organelleB:\`${dataset}|${selected[1]}\`)`;
-      const contactParameters = measurements.map((m: string) => `contact.${m}`);
-      contactParameters.push("organelleA.ID", "organelleB.ID");
+      const contactParameters = measurements.map((m: string) => {
+        if (m === "ID") {
+          return `contact.\`${dataset}|${contactType}_contacts${m}\` as contact_ID`;
+        }
+        return `contact.${m}`;
+      });
+      contactParameters.push("organelleA.ID", "organelleB.ID", "id(organelleA) as intIdA", "id(organelleB) as intIdB");
       const contactReturn = `RETURN ${contactParameters.join(", ")}`;
       const completeCypher = `${contactMatch} ${contactReturn} LIMIT 1000;`;
       query = completeCypher;
@@ -94,7 +103,7 @@ export default function cypherBuilder({
         .map((m: string) => `organelle.${m}`)
         .join(", ");
 
-      query = `MATCH(organelle:\`${dataset}|${organelleA}\`) RETURN ${returnParameters};`;
+      query = `MATCH(organelle:\`${dataset}|${organelleA}\`) RETURN ${returnParameters}, id(organelle) as intId;`;
     }
   }
   return query;

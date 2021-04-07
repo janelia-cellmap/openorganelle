@@ -9,10 +9,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 import { getContacts } from "../utils/cypherBuilder";
 import { organelleNames } from "../utils/organelles";
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
+import { useQuery } from "../utils/customHooks";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -176,6 +173,8 @@ export default function AnalysisForm() {
     query.set("ds", dataset);
     query.set("oa", organelleA);
     query.set("ob", organelleB);
+    // clear out any individual id selections that were made.
+    query.delete('id');
     query.delete('m');
     measurements.forEach(measurement => {
       query.append("m", measurement)
