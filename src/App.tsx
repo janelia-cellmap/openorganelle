@@ -1,5 +1,4 @@
 import React, { Suspense, lazy } from "react";
-import Home from "./components/Home";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import Settings from "./components/Settings";
@@ -12,6 +11,7 @@ import "./App.css";
 const Analysis = lazy(() => import("./components/Analysis"));
 const TermsOfUse = lazy(() => import("./components/TermsOfUse"));
 const About = lazy(() => import("./components/About"));
+const Home = lazy(() => import("./components/Home"));
 
 const theme = createMuiTheme({
   palette: {
