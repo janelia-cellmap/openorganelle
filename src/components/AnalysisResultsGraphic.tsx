@@ -2,7 +2,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import ForceGraph3D, { NodeObject } from "react-force-graph-3d";
 import { organelleColors } from "../utils/organelles";
-import { useQuery } from "../utils/customHooks";
+import { useQueryString } from "../utils/customHooks";
 
 interface CustomNodeObject extends NodeObject {
   org?: string;
@@ -20,7 +20,7 @@ export default function AnalysisResultsGraphic({
   data,
   organelles
 }: AnalysisResultsGraphicProps) {
-  const query = useQuery();
+  const query = useQueryString();
   const history = useHistory();
 
   const nodeLookup = new Set();
@@ -76,8 +76,6 @@ export default function AnalysisResultsGraphic({
             search: query.toString()
           });
         }
-
-        console.log(node.intId);
       }}
       nodeLabel={(node: CustomNodeObject) => {
         return `<span style="color:#000">${node.name} (${node.label})<span>`;

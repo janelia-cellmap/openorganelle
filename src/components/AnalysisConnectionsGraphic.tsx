@@ -1,6 +1,8 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import ForceGraph3D, { NodeObject } from "react-force-graph-3d";
 import { organelleColors } from "../utils/organelles";
+import { useQueryString } from "../utils/customHooks";
 
 interface ACGProps {
   data: any[];
@@ -15,6 +17,9 @@ interface CustomNodeObject extends NodeObject {
 
 
 export default function AnalysisConnectionsGraphic({data}: ACGProps) {
+  const query = useQueryString();
+  const history = useHistory();
+
   const nodeLookup = new Set();
   const nodes: any[] = [];
   const links: any[] = [];
@@ -23,10 +28,10 @@ export default function AnalysisConnectionsGraphic({data}: ACGProps) {
     if (!nodeLookup.has(item.n)) {
       nodes.push({
         id: item.n,
-        name: item.n,
-        intId: item.linkId,
+        name: item.nOrgFull,
+        intId: item.nIntId,
         org: item.nOrg,
-        label: item.n,
+        label: item.nId,
         val: 1
       });
       nodeLookup.add(item.n);
@@ -34,10 +39,10 @@ export default function AnalysisConnectionsGraphic({data}: ACGProps) {
     if (!nodeLookup.has(item.c)) {
       nodes.push({
         id: item.c,
-        name: item.c,
-        intId: item.linkId,
+        name: item.cOrgFull,
+        intId: item.cIntId,
         org: item.cOrg,
-        label: item.c,
+        label: item.cId,
         val: 1
       });
 
@@ -47,7 +52,6 @@ export default function AnalysisConnectionsGraphic({data}: ACGProps) {
       source: item.n,
       target: item.c
     });
-    console.log(item);
   });
 
   const myData = {
@@ -62,16 +66,15 @@ export default function AnalysisConnectionsGraphic({data}: ACGProps) {
       height={500}
       backgroundColor="#fff"
       linkColor={() => "#333"}
-      /* onNodeClick={(node: CustomNodeObject) => {
-              if (node.intId) {
+      onNodeClick={(node: CustomNodeObject) => {
+       if (node.intId) {
           query.set('id', node.intId);
           history.push({
             pathname: "",
             search: query.toString()
           });
         }
-        console.log(node.intId);
-      }}*/
+      }}
       nodeLabel={(node: CustomNodeObject) => {
         return `<span style="color:#000">${node.name} (${node.label})<span>`;
       }}

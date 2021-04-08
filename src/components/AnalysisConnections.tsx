@@ -4,6 +4,7 @@ import { useQuery } from "react-query";
 import AnalysisDataTable from "./AnalysisDataTable";
 import AnalysisConnectionsGraphic from "./AnalysisConnectionsGraphic";
 import { fetchAnalysisResults, queryResponse } from "../utils/datafetching";
+import { useQueryString } from "../utils/customHooks";
 import {
   convertLabelToOrganelle,
   convertLabelToOrganelleAbbreviation
@@ -19,6 +20,8 @@ export default function AnalysisConnections({ cypher }: ACProps) {
     () => fetchAnalysisResults(cypher),
     { staleTime: Infinity, refetchOnWindowFocus: false }
   );
+
+  const queryString = useQueryString();
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -41,8 +44,8 @@ export default function AnalysisConnections({ cypher }: ACProps) {
       accessor: "c",
       Header: "Connected to Organelle",
       Cell: ({ row }: { row: any }) => {
-        const link = `/analysis?id=${row.original.linkId}`;
-        console.log(row);
+        queryString.set('id', row.original.linkId);
+        const link = `?${queryString.toString()}`;
         return <Link to={link}>{row.values.c}</Link>;
       }
     }
@@ -50,16 +53,18 @@ export default function AnalysisConnections({ cypher }: ACProps) {
 
   const dataRows: string[] = data.data.map((entry: any) => {
     const row = {
-      n: `${entry.row[0].ID} - ${entry.meta[0].id} - ${convertLabelToOrganelle(
-        entry.row[3][0]
-      )}`,
-      r: entry.meta[1].id,
-      c: `${entry.row[2].ID} - ${entry.meta[2].id} -  ${convertLabelToOrganelle(
-        entry.row[4][0]
-      )}`,
-      linkId: entry.meta[2].id,
+      n: `${entry.row[0].ID} - ${convertLabelToOrganelle(entry.row[3][0])}`,
+      nId: entry.row[0].ID,
+      nIntId: entry.meta[0].id,
+      nOrgFull: convertLabelToOrganelle(entry.row[3][0]),
       nOrg: convertLabelToOrganelleAbbreviation(entry.row[3][0]),
-      cOrg: convertLabelToOrganelleAbbreviation(entry.row[4][0])
+      r: entry.meta[1].id,
+      c: `${entry.row[2].ID} - ${convertLabelToOrganelle(entry.row[4][0])}`,
+      cId: entry.row[2].ID,
+      cIntId: entry.meta[2].id,
+      cOrgFull: convertLabelToOrganelle(entry.row[4][0]),
+      cOrg: convertLabelToOrganelleAbbreviation(entry.row[4][0]),
+      linkId: entry.meta[2].id
     };
     return row;
   });

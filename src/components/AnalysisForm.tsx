@@ -9,7 +9,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 import { getContacts } from "../utils/cypherBuilder";
 import { organelleNames } from "../utils/organelles";
-import { useQuery } from "../utils/customHooks";
+import { useQueryString } from "../utils/customHooks";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -47,7 +47,7 @@ const initialOrganelleBoptions: any[] = [];
 
 export default function AnalysisForm() {
   const classes = useStyles();
-  const query = useQuery();
+  const query = useQueryString();
   const history = useHistory();
 
   // values chosen by the user that will be passed on to the search
