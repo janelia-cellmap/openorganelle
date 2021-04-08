@@ -4,7 +4,10 @@ import { useQuery } from "react-query";
 import AnalysisDataTable from "./AnalysisDataTable";
 import AnalysisConnectionsGraphic from "./AnalysisConnectionsGraphic";
 import { fetchAnalysisResults, queryResponse } from "../utils/datafetching";
-import { convertLabelToOrganelle } from "../utils/organelles";
+import {
+  convertLabelToOrganelle,
+  convertLabelToOrganelleAbbreviation
+} from "../utils/organelles";
 
 interface ACProps {
   cypher: string;
@@ -28,30 +31,35 @@ export default function AnalysisConnections({ cypher }: ACProps) {
   const columns = [
     {
       accessor: "n",
-      Header: "Organelle",
+      Header: "Organelle"
     },
     {
       accessor: "r",
-      Header: "Connection Id",
+      Header: "Connection Id"
     },
     {
       accessor: "c",
       Header: "Connected to Organelle",
-      Cell: ({ row }: { row: any}) => {
+      Cell: ({ row }: { row: any }) => {
         const link = `/analysis?id=${row.original.linkId}`;
         console.log(row);
         return <Link to={link}>{row.values.c}</Link>;
       }
-
     }
   ];
 
   const dataRows: string[] = data.data.map((entry: any) => {
     const row = {
-      n: `${entry.row[0].ID} - ${entry.meta[0].id} - ${convertLabelToOrganelle(entry.row[3][0])}`,
+      n: `${entry.row[0].ID} - ${entry.meta[0].id} - ${convertLabelToOrganelle(
+        entry.row[3][0]
+      )}`,
       r: entry.meta[1].id,
-      c: `${entry.row[2].ID} - ${entry.meta[2].id} -  ${convertLabelToOrganelle(entry.row[4][0])}`,
-      linkId: entry.meta[2].id
+      c: `${entry.row[2].ID} - ${entry.meta[2].id} -  ${convertLabelToOrganelle(
+        entry.row[4][0]
+      )}`,
+      linkId: entry.meta[2].id,
+      nOrg: convertLabelToOrganelleAbbreviation(entry.row[3][0]),
+      cOrg: convertLabelToOrganelleAbbreviation(entry.row[4][0])
     };
     return row;
   });
@@ -60,7 +68,7 @@ export default function AnalysisConnections({ cypher }: ACProps) {
     <>
       <p>Connections for {cypher}</p>
       <AnalysisDataTable data={dataRows} columns={columns} />
-      <AnalysisConnectionsGraphic />
+      <AnalysisConnectionsGraphic data={dataRows} />
     </>
   );
 }

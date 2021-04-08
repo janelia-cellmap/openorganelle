@@ -2,7 +2,6 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import ForceGraph3D, { NodeObject } from "react-force-graph-3d";
 import { organelleColors } from "../utils/organelles";
-import { connectionsCypher } from "../utils/cypherBuilder";
 import { useQuery } from "../utils/customHooks";
 
 interface CustomNodeObject extends NodeObject {

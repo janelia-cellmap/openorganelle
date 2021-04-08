@@ -41,8 +41,12 @@ export const organelleColors: lookupIterator = {
   vesicle: "#ff9da7"
 };
 
+export function convertLabelToOrganelleAbbreviation(label: string) {
+  const [, organelleAbbr] = label.split('|');
+  return organelleAbbr;
+}
+
 export function convertLabelToOrganelle(label: string) {
-  console.log(label);
-  const [dataset, organelleAbbr] = label.split('|');
+  const organelleAbbr = convertLabelToOrganelleAbbreviation(label);
   return organelleTitles[organelleAbbr];
 }
