@@ -14,6 +14,7 @@ function useQuery() {
 export default function Analysis() {
   const query = useQuery();
   const intId = query.get("id");
+  const dataset = query.get("ds") || "";
 
   if (intId) {
     // TODO: when clicking on a node, the backend should load in all the
@@ -26,12 +27,12 @@ export default function Analysis() {
     return (
       <div className="content">
         <AnalysisForm />
-        <AnalysisConnections cypher={cypher} />
+        <AnalysisConnections cypher={cypher} datasetKey={dataset} />
       </div>
     );
   } else {
     const state = {
-      dataset: query.get("ds") || "",
+      dataset,
       organelleA: query.get("oa") || "",
       organelleB: query.get("ob") || "",
       measurements: query.getAll("m") || []

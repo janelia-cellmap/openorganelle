@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "react-query";
+
 import AnalysisDataTable from "./AnalysisDataTable";
 import AnalysisConnectionsGraphic from "./AnalysisConnectionsGraphic";
+import NeuroglancerLink from "./NeuroglancerLink";
+
+import { Dataset, makeDatasets } from "../api/datasets";
+import { AppContext } from "../context/AppContext";
 import { fetchAnalysisResults, queryResponse } from "../utils/datafetching";
 import { useQueryString } from "../utils/customHooks";
 import {
@@ -12,18 +17,30 @@ import {
 
 interface ACProps {
   cypher: string;
+  datasetKey: string;
 }
 
-export default function AnalysisConnections({ cypher }: ACProps) {
+export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
   const { isLoading, isError, data, error }: queryResponse = useQuery(
     ["analysisConnection", cypher],
     () => fetchAnalysisResults(cypher),
     { staleTime: Infinity, refetchOnWindowFocus: false }
   );
+  const { appState, setAppState } = useContext(AppContext);
+
+  // Update the global datasets var when Home renders for the first time
+  useEffect(() => {
+    setAppState({ ...appState, datasetsLoading: true });
+    makeDatasets(appState.dataBucket).then(ds =>
+      setAppState({ ...appState, datasets: ds, datasetsLoading: false })
+    );
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const dataset: Dataset = appState.datasets.get(datasetKey)!;
 
   const queryString = useQueryString();
 
-  if (isLoading) {
+  if (isLoading || appState.datasetsLoading) {
     return <p>Loading...</p>;
   }
 
@@ -44,7 +61,7 @@ export default function AnalysisConnections({ cypher }: ACProps) {
       accessor: "c",
       Header: "Connected to Organelle",
       Cell: ({ row }: { row: any }) => {
-        queryString.set('id', row.original.linkId);
+        queryString.set("id", row.original.linkId);
         const link = `?${queryString.toString()}`;
         return <Link to={link}>{row.values.c}</Link>;
       }
@@ -69,11 +86,18 @@ export default function AnalysisConnections({ cypher }: ACProps) {
     return row;
   });
 
+  const checkState = new Map([["fibsem-unit8", true]]);
+
   return (
     <>
       <p>Connections for {cypher}</p>
       <AnalysisDataTable data={dataRows} columns={columns} />
       <AnalysisConnectionsGraphic data={dataRows} />
+      <NeuroglancerLink
+        dataset={dataset}
+        checkState={checkState}
+        view={dataset.views[0]}
+      />
     </>
   );
 }
