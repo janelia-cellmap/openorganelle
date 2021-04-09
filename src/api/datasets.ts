@@ -35,12 +35,12 @@ interface DisplaySettings {
 
 export class DatasetView {
     constructor(
-    public name: string, 
-    public description: string, 
+    public name: string,
+    public description: string,
     public volumeKeys: string[],
-    public position?: number[],          
+    public position?: number[],
     public scale?: number){
-        
+
         this.name = name;
         this.description = description;
 
@@ -113,7 +113,7 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataT
   let lower = 0;
   let upper = 0;
   let cmin = 0;
-  let cmax = 0;  
+  let cmax = 0;
     switch (contentType) {
     case 'em':{
       if (dataType === 'uint8') {lower = 0; upper = 255}
@@ -122,7 +122,7 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataT
       let cmax = shaderArgs.contrastLimits.max * (upper - lower);
         return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${Math.max(0, cmin - 2 * (cmax-cmin))}, ${Math.min(upper, cmax + 2 * (cmax - cmin))}])
         #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertColormap? 1: 0})
-        #uicontrol vec3 color color(default="${shaderArgs.color}") 
+        #uicontrol vec3 color color(default="${shaderArgs.color}")
         float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
           void main() {
           emitRGB(color * inverter(normalized(), invertColormap));
@@ -151,7 +151,7 @@ export class Volume {
         public description: string,
         public version: string,
         public tags: string[],
-        public subsource: MeshSpec | undefined 
+        public subsource: MeshSpec | undefined
     ) {
         this.path = path;
         this.name = name;
@@ -194,7 +194,7 @@ export class Volume {
         // need to update the layerdatasource object to have a transform property
         const source: LayerDataSource = {url: srcURL,
                                          CoordinateSpaceTransform: layerTransform};
-        
+
         let layer: Layer | undefined = undefined;
 
         if (layerType === 'image'){
@@ -219,7 +219,7 @@ export class Volume {
         }
         else if (layerType === 'segmentation') {
           if (subsrcURL !== undefined) {
-            layer = new SegmentationLayer('source', true, undefined, this.name, [source, subsrcURL]);  
+            layer = new SegmentationLayer('source', true, undefined, this.name, [source, subsrcURL]);
           }
           else {
             layer = new SegmentationLayer('source', true, undefined, this.name, source);
@@ -247,10 +247,10 @@ export class Dataset {
         this.views = views;
     }
 
-    makeNeuroglancerViewerState(view: DatasetView): string | undefined {        
-        const layers = [...this.volumes.keys()].filter(a => view.volumeKeys.includes(a)).map(a => 
+    makeNeuroglancerViewerState(view: DatasetView): string | undefined {
+        const layers = [...this.volumes.keys()].filter(a => view.volumeKeys.includes(a)).map(a =>
           {let vol = this.volumes.get(a);
-            return vol?.toLayer(vol.displaySettings.defaultLayerType)});       
+            return vol?.toLayer(vol.displaySettings.defaultLayerType)});
         // hack to post-hoc adjust alpha if there is only 1 layer selected and it is an imagelayer
         // remove undefined layers
         const layers_filtered = layers.filter(f => f !== undefined)
@@ -291,7 +291,7 @@ export class Dataset {
             undefined
         );
         return encodeFragment(urlSafeStringify(vState));
-    }    
+    }
   }
 
 
@@ -336,14 +336,14 @@ function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
   volumeMeta.displaySettings = ds;
 
   // console.log([volumeMeta.name, volumeMeta.displaySettings.defaultLayerType])
-  // this looks so stupid! there must be a better way to do this that doesn't enrage the 
+  // this looks so stupid! there must be a better way to do this that doesn't enrage the
   // linter
-  return new Volume(volumeMeta.path, 
-                    volumeMeta.name, 
-                    volumeMeta.datasetName, 
+  return new Volume(volumeMeta.path,
+                    volumeMeta.name,
+                    volumeMeta.datasetName,
                     volumeMeta.dataType,
                     volumeMeta.dimensions,
-                    volumeMeta.transform, 
+                    volumeMeta.transform,
                     volumeMeta.contentType,
                     volumeMeta.containerType,
                     volumeMeta.displaySettings,
@@ -354,36 +354,44 @@ function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
 }
 
 export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {
-    // get the keys to the datasets
-    const datasetKeys: string[] = await getDatasetKeys(bucket);
-    // Get a list of volume metadata specifications, represented instances of Map<string, VolumeMeta>
-    const datasets: Map<string, Dataset> = new Map();
-    for (const key of datasetKeys) {
-        const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
-        const description = await getDescription(bucket, key);
-        const thumbnailPath: string =  `${outerPath}/thumbnail.jpg`
-        const index = await getDatasetIndex(bucket, key);
-        if (index !== undefined){
-            try {
-            const views: DatasetView[] = [];
-            // make sure that the default view is at the beginning of the list
-            for (let v of index.views) {
-              let vObj = new DatasetView(v.name, v.description, v.volumeKeys, v.position, v.scale);
-              if (vObj.name === 'Default View'){views.unshift(vObj)}
-              else views.push(vObj)
+  // get the keys to the datasets
+  const datasetKeys: string[] = await getDatasetKeys(bucket);
+  // Get a list of volume metadata specifications, represented instances
+  // of Map<string, VolumeMeta>
+  const datasets: Map<string, Dataset> = new Map();
+  let ds = await Promise.all(
+    datasetKeys.map(async key => {
+      const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
+      const description = await getDescription(bucket, key);
+      const thumbnailPath: string =  `${outerPath}/thumbnail.jpg`
+      const index = await getDatasetIndex(bucket, key);
+      if (index !== undefined){
+        try {
+          const views: DatasetView[] = [];
+          // make sure that the default view is at the beginning of the list
+          for (let v of index.views) {
+            let vObj = new DatasetView(v.name, v.description, v.volumeKeys, v.position, v.scale);
+            if (vObj.name === 'Default View'){
+              views.unshift(vObj)
             }
-            const volumes: Map<string, Volume> = new Map();
-            index.volumes.forEach(v => volumes.set(v.name, makeVolume(outerPath, v)));
-            if (views.length === 0){
-              let defaultView = new DatasetView('Default view', '', Array.from(volumes.keys()), undefined, undefined);  
-              views.push(defaultView)}
-            datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailPath, views));
+            else views.push(vObj)
+          }
+          const volumes: Map<string, Volume> = new Map();
+          index.volumes.forEach(v => volumes.set(v.name, makeVolume(outerPath, v)));
+          if (views.length === 0){
+            let defaultView = new DatasetView('Default view', '', Array.from(volumes.keys()), undefined, undefined);
+            views.push(defaultView)
+          }
+          datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailPath, views));
         }
         catch (error) {
-            console.log(error)
+          console.log(error)
         }
-        }
-        else {console.log(`Could not load index.json from ${outerPath}`)}
-    }
-    return datasets
+      }
+      else {
+        console.log(`Could not load index.json from ${outerPath}`)
+      }
+    })
+  );
+  return datasets;
 }
