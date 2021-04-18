@@ -29,7 +29,7 @@ export default function NeuroglancerLink({
   checkState,
   children
 }: NeuroglancerLinkProps) {
-  const {appState, setAppState} = useContext(AppContext);
+  const {appState, } = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const webGL2Enabled = appState.webGL2Enabled;
 
@@ -50,7 +50,6 @@ export default function NeuroglancerLink({
       layerType = dataset.volumes.get(vk)?.displaySettings.defaultLayerType;
     }
     let result = dataset.volumes.get(vk)!.toLayer(layerType as LayerTypes);
-    console.log(result)
     return result;
   });
   if (!disabled) {

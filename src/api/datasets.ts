@@ -62,6 +62,7 @@ interface DatasetIndex {
 interface MeshSpec {
   path: string
   format: string
+  ids?: number[]
 }
 
 interface SpatialTransform {
@@ -112,8 +113,6 @@ const nm: [number, string] = [1e-9, "m"];
 
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: CoordinateSpace = { x: nm, y: nm, z: nm };
-
-const defaultView = new DatasetView('Default view', '', [], undefined, undefined);
 
 export const contentTypeDescriptions = new Map<string, ContentTypeMetadata>();
 contentTypeDescriptions.set('em', {label: "EM Layers", description: "Raw FIB-SEM data."});
@@ -190,7 +189,7 @@ export class Volume {
         if ((this.subsource !== undefined) && (this.subsource !== null)) {
           let subsrcURL = `${this.containerType}://${this.subsource.path}`;
         }
-        const inputDimensions: CoordinateSpace = {
+         const inputDimensions: CoordinateSpace = {
             x: [1e-9 * this.transform.scale[this.transform.axes.indexOf('x')], "m"],
             y: [1e-9 * this.transform.scale[this.transform.axes.indexOf('y')], "m"],
             z: [1e-9 * this.transform.scale[this.transform.axes.indexOf('z')], "m"]
@@ -334,6 +333,7 @@ function reifyPath(outerPath: string, innerPath: string): string {
 }
 
 function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
+  console.log(volumeMeta)
   volumeMeta.path = reifyPath(outerPath, volumeMeta.path);
   // this is a shim until we add a defaultLayerType field to the volume metadata
   let ds = volumeMeta.displaySettings;
