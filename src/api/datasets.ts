@@ -12,7 +12,10 @@ import {
 } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON, bucketNameToURL } from "./datasources";
 import * as Path from "path";
-import {DatasetDescription} from "./dataset_description"
+
+import {DatasetDescription} from "./dataset_description";
+import {isUri} from "valid-url";
+
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
 type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
@@ -321,10 +324,18 @@ async function getDescription(
   return getObjectFromJSON(descriptionURL);
 }
 
+// This function will disappear when the dataset metadata starts providing full URLs
 function reifyPath(outerPath: string, innerPath: string): string {
-  const absPath = new URL(outerPath);
-  absPath.pathname = Path.resolve(absPath.pathname, innerPath);
-  return absPath.toString();
+  // Check if the innerPath is already a URL; if so, return it:
+  if (isUri(innerPath)) {
+    return innerPath;
+}
+  else {
+    const absPath = new URL(outerPath);
+    absPath.pathname = Path.resolve(absPath.pathname, innerPath);
+    return absPath.toString();
+  }
+
 }
 
 function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
@@ -335,7 +346,6 @@ function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
   else (ds.defaultLayerType = 'image')
   volumeMeta.displaySettings = ds;
 
-  // console.log([volumeMeta.name, volumeMeta.displaySettings.defaultLayerType])
   // this looks so stupid! there must be a better way to do this that doesn't enrage the
   // linter
   return new Volume(volumeMeta.path,
