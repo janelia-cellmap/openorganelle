@@ -18,7 +18,7 @@ interface AppContext {
 
 const contextDefault: ContextProps = {
   neuroglancerAddress: "http://neuroglancer-demo.appspot.com/#!",
-  dataBucket: 'janelia-cosem-datasets',
+  dataBucket: 'janelia-cosem',
   webGL2Enabled: checkWebGL2(),
   datasetsLoading: false,
   datasets: new Map()
