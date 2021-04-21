@@ -11,6 +11,7 @@ import "./Organelles.css";
 import { DatasetView } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { ImageLayer } from "@janelia-cosem/neuroglancer-url-tools";
 class OrganelleTableEntry {
   constructor(
     public full_name: string,
@@ -879,9 +880,12 @@ export default function Organelles() {
   }
   const tableRows = tableData.map((row) => {
     const neuroglancer_urls = row.examples.map((v, idx) => {
-      return `${neuroglancerAddress}${datasets
-        .get(demo_dataset_names[idx])!
-        .makeNeuroglancerViewerState(v)}`;
+      let dataset = datasets.get(demo_dataset_names[idx])!;
+      let layers = v.volumeKeys.map(vk => {
+        let result = dataset.volumes.get(vk)!.toLayer("image");
+        return result;
+      }); 
+      return `${neuroglancerAddress}${dataset.makeNeuroglancerViewerState(layers as ImageLayer[], v.position, v.scale)}`;
     });
     return (
       <TableRow key={row.full_name}>
