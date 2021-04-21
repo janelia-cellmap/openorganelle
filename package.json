@@ -15,6 +15,7 @@
     "@types/react-html-parser": "^2.0.1",
     "@types/react-pdf": "^5.0.1",
     "@types/url-parse": "^1.4.3",
+    "@types/valid-url": "^1.0.3",
     "aws-sdk": "^2.758.0",
     "node-fetch": "^2.6.1",
     "path": "^0.12.7",
@@ -25,7 +26,8 @@
     "react-pdf": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.3",
-    "serverless-finch": "^2.6.0"
+    "serverless-finch": "^2.6.0",
+    "valid-url": "^1.0.9"
   },
   "scripts": {
     "start": "react-scripts start",
