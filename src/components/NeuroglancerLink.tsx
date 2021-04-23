@@ -34,17 +34,17 @@ export default function NeuroglancerLink({
   const webGL2Enabled = appState.webGL2Enabled;
 
   const local_view = { ...view };
-  local_view.volumeKeys = [];
+  local_view.volumeNames = [];
   dataset.volumes.forEach((value: Volume, key: string) => {
     if (checkState.get(key)?.selected) {
-      local_view.volumeKeys.push(key);
+      local_view.volumeNames.push(key);
     }
   });
 
   let ngLink = "";
   
-  const disabled = Boolean(local_view.volumeKeys.length === 0);
-  const layers = local_view.volumeKeys.map(vk => {
+  const disabled = Boolean(local_view.volumeNames.length === 0);
+  const layers = local_view.volumeNames.map(vk => {
     let layerType = checkState.get(vk)?.layerType
     if (layerType === undefined) {
       layerType = dataset.volumes.get(vk)?.displaySettings.defaultLayerType;
