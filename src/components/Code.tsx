@@ -66,8 +66,8 @@ export default function Code() {
         </Typography>
         <Typography gutterBottom>
           Source code:{" "}
-          <a href="https://github.com/janelia-cosem/hot-knife/tree/cosem-analysis">
-            https://github.com/janelia-cosem/hot-knife/tree/cosem-analysis
+          <a href="https://github.com/janelia-cosem/cosem-segmentation-analysis">
+            https://github.com/janelia-cosem/cosem-segmentation-analysis
           </a>
         </Typography>
         <Typography gutterBottom>
