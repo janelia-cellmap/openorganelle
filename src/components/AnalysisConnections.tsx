@@ -86,7 +86,7 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
     return row;
   });
 
-  const checkState = new Map([["fibsem-unit8", true]]);
+  const checkState = new Map([["fibsem-unit8", {selected: true}]]);
 
   return (
     <>
