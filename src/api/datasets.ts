@@ -16,7 +16,7 @@ import * as Path from "path";
 
 import {DatasetDescription} from "./dataset_description";
 import {isUri} from "valid-url";
-import { LocalConvenienceStoreOutlined } from "@material-ui/icons";
+import { LocalConvenienceStoreOutlined, Subscriptions } from "@material-ui/icons";
 
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
@@ -26,8 +26,8 @@ export type VolumeStores = "n5" | "precomputed" | "zarr";
 export type ContentType = "em" | "segmentation" | "prediction" | "analysis";
 
 interface ContrastLimits {
-  start?: number
-  end?: number
+  start: number
+  end: number
   min: number
   max: number
 }
@@ -113,6 +113,23 @@ export interface ContentTypeMetadata {
   description: string
 } 
 
+function SpatialTransformToNeuroglancer(transform: SpatialTransform, outputDimensions: CoordinateSpace): CoordinateSpaceTransform {
+  const inputDimensions: CoordinateSpace = {
+    x: [1e-9 * transform.scale[transform.axes.indexOf('x')], "m"],
+    y: [1e-9 * transform.scale[transform.axes.indexOf('y')], "m"],
+    z: [1e-9 * transform.scale[transform.axes.indexOf('z')], "m"]
+};
+  const layerTransform: CoordinateSpaceTransform = {matrix:
+    [
+        [1, 0, 0, transform.translate[transform.axes.indexOf('x')]],
+        [0, 1, 0, transform.translate[transform.axes.indexOf('y')]],
+        [0, 0, 1, transform.translate[transform.axes.indexOf('z')]]
+    ],
+    outputDimensions: outputDimensions,
+    inputDimensions: inputDimensions}
+  return layerTransform
+}
+
 // one nanometer, expressed as a scaled meter
 const nm: [number, string] = [1e-9, "m"];
 
@@ -135,8 +152,9 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataT
     case 'em':{
       if (dataType === 'uint8') {lower = 0; upper = 255}
       else if (dataType === 'uint16') {lower = 0; upper = 65535}
-      let cmin = shaderArgs.contrastLimits.min * (upper - lower);
-      let cmax = shaderArgs.contrastLimits.max * (upper - lower);
+      const interval = upper-lower;
+      let cmin = shaderArgs.contrastLimits.start * interval;
+      let cmax = shaderArgs.contrastLimits.end * interval;
         return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${Math.max(0, cmin - 2 * (cmax-cmin))}, ${Math.min(upper, cmax + 2 * (cmax - cmin))}])
         #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertLUT? 1: 0})
         #uicontrol vec3 color color(default="${shaderArgs.color}")
@@ -147,9 +165,13 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataT
       }
     case "segmentation":
       return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${cmin}, ${cmax}])\n#uicontrol vec3 color color(default="${shaderArgs.color}")\nvoid main() {emitRGB(color * normalized());}`;
-      default:
-        return undefined;
+    default:
+      return undefined;
               }
+}
+
+interface LayerDataSource2 extends LayerDataSource {
+  transform: any
 }
 
 // A single n-dimensional array
@@ -188,25 +210,15 @@ export class Volume implements VolumeSource {
 
     toLayer(layerType: LayerTypes): Layer | undefined {
         const srcURL = `${this.format}://${this.path}`;
-        const subsrcURLs = this.subsources.map(v => `precomputed://${v.path}`);
-         const inputDimensions: CoordinateSpace = {
-            x: [1e-9 * this.transform.scale[this.transform.axes.indexOf('x')], "m"],
-            y: [1e-9 * this.transform.scale[this.transform.axes.indexOf('y')], "m"],
-            z: [1e-9 * this.transform.scale[this.transform.axes.indexOf('z')], "m"]
-        };
-        const layerTransform: CoordinateSpaceTransform = {matrix:
-            [
-                [1, 0, 0, this.transform.translate[this.transform.axes.indexOf('x')]],
-                [0, 1, 0, this.transform.translate[this.transform.axes.indexOf('y')]],
-                [0, 0, 1, this.transform.translate[this.transform.axes.indexOf('z')]]
-            ],
-            outputDimensions: outputDimensions,
-            inputDimensions: inputDimensions}
 
         // need to update the layerdatasource object to have a transform property
-        const source: LayerDataSource = {url: srcURL,
-                                         CoordinateSpaceTransform: layerTransform};
+        const source: LayerDataSource2 = {url: srcURL,
+                                         transform: SpatialTransformToNeuroglancer(this.transform, outputDimensions),
+                                        CoordinateSpaceTransform: SpatialTransformToNeuroglancer(this.transform, outputDimensions)};
 
+        const subsources = this.subsources.map(subsource => {
+          return {url: `precomputed://${subsource.path}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions)}
+        });
         let layer: Layer | undefined = undefined;
 
         if (layerType === 'image'){
@@ -230,10 +242,9 @@ export class Volume implements VolumeSource {
                                 undefined);
         }
         else if (layerType === 'segmentation') {
-          if (subsrcURLs !== undefined) {
-            const subsource: LayerDataSource = {url: subsrcURLs[0], CoordinateSpaceTransform: layerTransform};
-            //let mesh = new SingleMeshLayer(undefined, undefined, undefined, subsource, '' )
-            layer = new SegmentationLayer('source', true, undefined, this.name, [source, subsource], this.subsources[0].ids);
+          if (subsources.length > 0) {
+            console.log(this.subsources[0].transform)
+            layer = new SegmentationLayer('source', true, undefined, this.name, [source, ...subsources], this.subsources[0].ids);
           }
           else {
             layer = new SegmentationLayer('source', true, undefined, this.name, source);
