@@ -18,7 +18,7 @@ const headerNames: headerLookup = {
   "organelleA.ID": "Organelle ID",
   "organelleB.ID": "Connected Organelle ID",
   "contact.volume": "Volume (nm^2)",
-  "contact_ID": "ID",
+  contact_ID: "Contact ID",
   "contact.surfaceArea": "Surface Area (nm^2)",
   "contact.planarity": "Planarity (0-1)"
 };
@@ -107,7 +107,14 @@ export default function AnalysisResults({
     return (
       <>
         <AnalysisDataTable data={dataRows} columns={columns} />
-        <AnalysisResultsGraphic data={dataRows} organelles={organelleLabels} />
+        {organelleB !== "" ? (
+          <AnalysisResultsGraphic
+            data={dataRows}
+            organelles={organelleLabels}
+          />
+        ) : (
+          ""
+        )}
       </>
     );
   }

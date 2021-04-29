@@ -74,10 +74,12 @@ export default function AnalysisForm() {
     ) {
       updatedOptions.push({ value: "length", label: "Length (nm)" });
     }
-    // planarity is only for ER contact sites
+    // planarity is only for mito, ribo or ER-periph contact sites
     if (
-      (organelleA === "er" && organelleB.length > 0) ||
-      (organelleB === "er" && organelleA.length > 0)
+      (organelleA === "mito" && organelleB.length === 0) ||
+      (organelleA === "ribo" && organelleB.length === 0) ||
+      (organelleA === "er-periph" && organelleB.match(/^mito|ribo$/)) ||
+      (organelleB === "er-periph" && organelleA.match(/^mito|ribo$/))
     ) {
       updatedOptions.push({ value: "planarity", label: "Planarity (0-1)" });
     }
@@ -131,6 +133,7 @@ export default function AnalysisForm() {
     e: React.ChangeEvent<{ value: unknown }>,
     organelleType: string
   ) => {
+
     if (organelleType === "a") {
       setOrganelleA(e.target.value as string);
       setOrganelleB("");
@@ -139,21 +142,21 @@ export default function AnalysisForm() {
       if (e.target.value !== "mito" || organelleB !== "") {
         setMeasurements(selected => selected.filter(item => item !== "length"));
       }
-      // planarity is only for ER contact sites
-      if (
-        (e.target.value !== "er" && organelleB !== "er") ||
-        organelleB === ""
-      ) {
+      // planarity is only for ER-periph contact sites, mito or ribo 
+      // changing organelleA clears organelleB selection, so we only need to check
+      // if organelleA matches allowed values.
+      if (typeof e.target.value === "string" && !e.target.value.match(/^mito|ribo$/)) {
         setMeasurements(selected =>
           selected.filter(item => item !== "planarity")
         );
       }
     } else {
       setOrganelleB(e.target.value as string);
-      // planarity is only for ER contact sites
+      // planarity is only for ER-periph contacts with mito & ribo
+      const combined = [organelleA, e.target.value].sort().toString();
+      console.log(combined);
       if (
-        e.target.value === "" ||
-        (organelleA !== "er" && e.target.value !== "er")
+        e.target.value === "" || !combined.match(/^er-periph,(ribo|mito)$/)
       ) {
         setMeasurements(selected =>
           selected.filter(item => item !== "planarity")
