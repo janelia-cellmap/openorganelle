@@ -90,7 +90,7 @@ export default function cypherBuilder({
       const contactMatch = `MATCH p=(organelleA:\`${dataset}|${selected[0]}\`)-[contact:\`${dataset}|${contactType}_contacts\`]->(organelleB:\`${dataset}|${selected[1]}\`)`;
       const contactParameters = measurements.map((m: string) => {
         if (m === "ID") {
-          return `contact.\`${dataset}|${contactType}_contacts${m}\` as contact_ID`;
+          return `contact.ID as contact_ID`;
         }
         return `contact.${m}`;
       });
