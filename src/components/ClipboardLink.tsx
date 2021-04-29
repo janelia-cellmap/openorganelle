@@ -3,10 +3,15 @@ import AssignmentIcon from "@material-ui/icons/Assignment";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Snackbar from "@material-ui/core/Snackbar";
 import IconButton from "@material-ui/core/IconButton";
+import FolderOpen from "@material-ui/icons/FolderOpen"
 
 import fijiIcon from "./fiji_icon.png";
+import { Button } from "@material-ui/core";
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
+    FileBrowser: {
+      height: "1em"
+    },
     fijiCopy: {
       height: "1em"
     }
@@ -27,7 +32,7 @@ export default function ClipboardLink({ link }: ClipBoardLinkProps) {
 
   return (
     <>
-      <a href={link}>AWS</a>
+      <Button variant="contained" color="primary" href={link} target="_blank" rel= "noopener noreferrer" startIcon={<FolderOpen/>}> Browse </Button>
       <IconButton
         onClick={() => {
           navigator.clipboard.writeText(link);
