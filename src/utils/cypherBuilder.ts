@@ -103,7 +103,7 @@ export default function cypherBuilder({
         .map((m: string) => `organelle.${m}`)
         .join(", ");
 
-      query = `MATCH(organelle:\`${dataset}|${organelleA}\`) RETURN ${returnParameters}, id(organelle) as intId;`;
+      query = `MATCH(organelle:\`${dataset}|${organelleA}\`) RETURN ${returnParameters}, id(organelle) as intIdi LIMIT 100000;`;
     }
   }
   return query;
