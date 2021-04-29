@@ -44,9 +44,13 @@ export default function Analysis() {
         <AnalysisForm />
         {cypher ? (
           <>
-            <Card style={{ padding: "1em", margin: "1em" }}>
-              <code>{cypher}</code>
-            </Card>
+            {process.env.NODE_ENV !== "production" ? (
+              <Card style={{ padding: "1em", margin: "1em" }}>
+                <code>{cypher}</code>
+              </Card>
+            ) : (
+              ""
+            )}
             <AnalysisResults
               cypher={cypher}
               organelleA={state.organelleA}
