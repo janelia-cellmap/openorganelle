@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@janelia-cosem/neuroglancer-url-tools": "^1.1.2",
+    "@janelia-cosem/neuroglancer-url-tools": "file:../neuroglancer-url-tools",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
