@@ -56,13 +56,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
   const volumeNames: string[] = [...dataset.volumes.keys()];
   
-<<<<<<< HEAD
-  const datasetLink = `/datasets/${dataset.key}`;
-	const clipLink = `https://open.quiltdata.com/b/${appState.dataBucket}/tree/${dataset.key}/`;
-=======
   const datasetLink = `/datasets/${dataset.name}`;
-	const clipLink = `${bucketNameToURL(appState.dataBucket)}/${dataset.name}/${dataset.name}.n5`;
->>>>>>> progress towards meshes and the new metadata
+	const clipLink = `https://open.quiltdata.com/b/${appState.dataBucket}/tree/${dataset.name}/`;
   
   const volumeCheckStateInit = new Map<string, VolumeCheckStates>(
     volumeNames.map(k => [k, {selected: false, layerType: undefined}])
