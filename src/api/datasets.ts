@@ -9,52 +9,35 @@ import {
   SegmentationLayer,
   ManagedLayer,
   Layer,
+  SingleMeshLayer,
 } from "@janelia-cosem/neuroglancer-url-tools";
-import { s3ls, getObjectFromJSON, bucketNameToURL } from "./datasources";
+import { s3ls, getObjectFromJSON, bucketNameToURL, s3URItoURL } from "./datasources";
 import * as Path from "path";
 
 import {DatasetDescription} from "./dataset_description";
 import {isUri} from "valid-url";
+import { LocalConvenienceStoreOutlined } from "@material-ui/icons";
 
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
+export type DataFormats = "n5" | "zarr" | "precomputed" | "neuroglancer_legacy_mesh"
 export type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
 export type VolumeStores = "n5" | "precomputed" | "zarr";
 export type ContentType = "em" | "segmentation" | "prediction" | "analysis";
 
 interface ContrastLimits {
+  start?: number
+  end?: number
   min: number
   max: number
 }
 
 interface DisplaySettings {
   contrastLimits: ContrastLimits;
-  gamma: number;
-  invertColormap: boolean;
+  invertLUT: boolean;
   color: string;
   defaultLayerType: LayerTypes
 }
-
-export class DatasetView {
-    constructor(
-    public name: string,
-    public description: string,
-    public volumeKeys: string[],
-    public position?: number[],
-    public scale?: number){
-
-        this.name = name;
-        this.description = description;
-
-        if (position === null) {this.position = undefined}
-        else (this.position = position)
-
-        if (scale === null) {this.scale = undefined}
-        else (this.scale = scale)
-
-        this.volumeKeys = volumeKeys;
-    }
-  }
 
 interface DatasetIndex {
   name: string;
@@ -62,10 +45,25 @@ interface DatasetIndex {
   views: DatasetView[]
 }
 
-interface MeshSpec {
-  path: string
-  format: string
+interface DataSource {
+  name: string
+  path: string  
+  format: DataFormats
+  transform: SpatialTransform
+  description: string
+  version: string
+  tags: string[]
+}
+
+interface MeshSource extends DataSource {
   ids?: number[]
+}
+
+interface VolumeSource extends DataSource{
+  dataType: string
+  contentType: ContentType
+  displaySettings: DisplaySettings
+  subsources: MeshSource[]
 }
 
 interface SpatialTransform {
@@ -75,35 +73,39 @@ interface SpatialTransform {
   scale: number[];
 }
 
-interface N5PixelResolution {
-  dimensions: number[];
-  unit: string;
+interface IDatasetView{
+  name: string
+  description: string
+  position: number[] | undefined
+  scale: number | undefined
+  orientation: number[] | undefined 
+  volumeNames: string[]
 }
 
-interface N5ArrayAttrs {
-    name: string
-    dimensions: number[]
-    dataType: string
-    pixelResolution: N5PixelResolution
-    offset?: number[]
+interface IDataset{
+  name: string
+  space: CoordinateSpace
+  volumes: Map<string, Volume>
+  description: DatasetDescription | undefined
+  thumbnailURL: string
+  views: DatasetView[]
 }
 
-interface NeuroglancerPrecomputedScaleAttrs {
-  chunk_sizes: number[];
-  encoding: string;
-  key: string;
-  resolution: number[];
-  size: number[];
-  voxel_offset: number[];
-  jpeg_quality?: number;
-}
-
-interface NeuroglancerPrecomputedAttrs {
-    at_type: string
-    data_type: string
-    type: string
-    scales: NeuroglancerPrecomputedScaleAttrs[]
-    num_channels: number
+export class DatasetView implements IDatasetView {
+  constructor(
+  public name: string,
+  public description: string,
+  public volumeNames: string[],
+  public orientation: number[] | undefined,
+  public position: number[] | undefined,
+  public scale: number | undefined){
+      this.name = name;
+      this.description = description;
+      this.position = position;
+      this.scale = scale;
+      this.volumeNames = volumeNames;
+      this.orientation = orientation;
+  }
 }
 
 export interface ContentTypeMetadata {
@@ -136,7 +138,7 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataT
       let cmin = shaderArgs.contrastLimits.min * (upper - lower);
       let cmax = shaderArgs.contrastLimits.max * (upper - lower);
         return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${Math.max(0, cmin - 2 * (cmax-cmin))}, ${Math.min(upper, cmax + 2 * (cmax - cmin))}])
-        #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertColormap? 1: 0})
+        #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertLUT? 1: 0})
         #uicontrol vec3 color color(default="${shaderArgs.color}")
         float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
           void main() {
@@ -152,46 +154,41 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataT
 
 // A single n-dimensional array
 // this constructor syntax can be shortened but I forget how
-export class Volume {
+export class Volume implements VolumeSource {
     constructor(
         public path: string,
         public name: string,
-        public datasetName: string,
         public dataType: string,
-        public dimensions: number[],
         public transform: SpatialTransform,
         public contentType: ContentType,
-        public containerType: VolumeStores,
+        public format: VolumeStores,
         public displaySettings: DisplaySettings,
         public description: string,
         public version: string,
         public tags: string[],
-        public subsource: MeshSpec | undefined
+        public subsources: MeshSource[]
     ) {
         this.path = path;
         this.name = name;
-        this.datasetName = datasetName;
         this.dataType = dataType;
-        this.dimensions = dimensions;
         this.transform = transform;
         this.contentType = contentType;
-        this.containerType = containerType;
+        this.format = format;
         this.displaySettings = displaySettings;
         this.description = description;
         this.version = version;
         this.tags = tags;
-        this.subsource = subsource;
+        this.subsources = subsources;
      }
 
     // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer
     // viewer state construction
 
+    
+
     toLayer(layerType: LayerTypes): Layer | undefined {
-        const srcURL = `${this.containerType}://${this.path}`;
-        let subsrcURL = undefined;
-        if ((this.subsource !== undefined) && (this.subsource !== null)) {
-          let subsrcURL = `${this.containerType}://${this.subsource.path}`;
-        }
+        const srcURL = `${this.format}://${this.path}`;
+        const subsrcURLs = this.subsources.map(v => `precomputed://${v.path}`);
          const inputDimensions: CoordinateSpace = {
             x: [1e-9 * this.transform.scale[this.transform.axes.indexOf('x')], "m"],
             y: [1e-9 * this.transform.scale[this.transform.axes.indexOf('y')], "m"],
@@ -215,7 +212,7 @@ export class Volume {
         if (layerType === 'image'){
           let shader: string | undefined = '';
           if (SEGMENTATION_DTYPES.includes(this.dataType)){
-              shader = makeShader(this.displaySettings, 'segmentation', this.datasetName);
+              shader = makeShader(this.displaySettings, 'segmentation', this.dataType);
           }
           else if (IMAGE_DTYPES.includes(this.dataType)) {
               shader = makeShader(this.displaySettings, 'em', this.dataType);
@@ -233,8 +230,10 @@ export class Volume {
                                 undefined);
         }
         else if (layerType === 'segmentation') {
-          if (subsrcURL !== undefined) {
-            layer = new SegmentationLayer('source', true, undefined, this.name, [source, subsrcURL]);
+          if (subsrcURLs !== undefined) {
+            const subsource: LayerDataSource = {url: subsrcURLs[0], CoordinateSpaceTransform: layerTransform};
+            //let mesh = new SingleMeshLayer(undefined, undefined, undefined, subsource, '' )
+            layer = new SegmentationLayer('source', true, undefined, this.name, [source, subsource], this.subsources[0].ids);
           }
           else {
             layer = new SegmentationLayer('source', true, undefined, this.name, source);
@@ -245,20 +244,20 @@ export class Volume {
 }
 
 // a collection of volumes, i.e. a collection of ndimensional arrays
-export class Dataset {
-    public key: string;
+export class Dataset implements IDataset {
+    public name: string;
     public space: CoordinateSpace;
     public volumes: Map<string, Volume>;
     public description: DatasetDescription | undefined
-    public thumbnailPath: string
+    public thumbnailURL: string
     public views: DatasetView[]
     constructor(key: string, space: CoordinateSpace, volumes: Map<string, Volume>, description: DatasetDescription,
     thumbnailPath: string, views: DatasetView[]) {
-        this.key = key;
+        this.name = key;
         this.space = space;
         this.volumes = volumes;
         this.description = description;
-        this.thumbnailPath = thumbnailPath;
+        this.thumbnailURL = thumbnailPath;
         this.views = views;
     }
 
@@ -312,11 +311,10 @@ async function getDatasetKeys(bucket: string): Promise<string[]> {
 }
 
 async function getDatasetIndex(
-  bucket: string,
-  datasetKey: string
+  URL: string,
+  dataset: string
 ): Promise<DatasetIndex> {
-  const bucketURL = bucketNameToURL(bucket);
-  const indexFile = `${bucketURL}/${datasetKey}/index.json`;
+  const indexFile = `${URL}/${dataset}/index.json`;
   return getObjectFromJSON(indexFile);
 }
 
@@ -333,18 +331,18 @@ async function getDescription(
 function reifyPath(outerPath: string, innerPath: string): string {
   // Check if the innerPath is already a URL; if so, return it:
   if (isUri(innerPath)) {
-    return innerPath;
+    return s3URItoURL(innerPath);
 }
   else {
     const absPath = new URL(outerPath);
     absPath.pathname = Path.resolve(absPath.pathname, innerPath);
-    return absPath.toString();
+    console.log(absPath.toString())
+    return absPath.toString()
   }
 
 }
 
 function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
-  console.log(volumeMeta)
   volumeMeta.path = reifyPath(outerPath, volumeMeta.path);
   // this is a shim until we add a defaultLayerType field to the volume metadata
   let ds = volumeMeta.displaySettings;
@@ -352,21 +350,19 @@ function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
   else (ds.defaultLayerType = 'image')
   volumeMeta.displaySettings = ds;
 
-  // this looks so stupid! there must be a better way to do this that doesn't enrage the
-  // linter
+  for (let subsource of volumeMeta.subsources) {subsource.path = reifyPath(outerPath, subsource.path)}
+
   return new Volume(volumeMeta.path,
                     volumeMeta.name,
-                    volumeMeta.datasetName,
                     volumeMeta.dataType,
-                    volumeMeta.dimensions,
                     volumeMeta.transform,
                     volumeMeta.contentType,
-                    volumeMeta.containerType,
+                    volumeMeta.format,
                     volumeMeta.displaySettings,
                     volumeMeta.description,
                     volumeMeta.version,
                     volumeMeta.tags,
-                    volumeMeta.subsource)
+                    volumeMeta.subsources)
 }
 
 export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {
@@ -375,18 +371,21 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
   // Get a list of volume metadata specifications, represented instances
   // of Map<string, VolumeMeta>
   const datasets: Map<string, Dataset> = new Map();
+  //const metadataURL = bucketNameToURL(bucket);
+  const metadataURL = "https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/master/metadata/datasets/";
   let ds = await Promise.all(
     datasetKeys.map(async key => {
       const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
       const description = await getDescription(bucket, key);
-      const thumbnailPath: string =  `${outerPath}/thumbnail.jpg`
-      const index = await getDatasetIndex(bucket, key);
+      const thumbnailURL: string =  `${outerPath}/thumbnail.jpg`
+      const index = await getDatasetIndex(metadataURL, key);
+      
       if (index !== undefined){
         try {
           const views: DatasetView[] = [];
           // make sure that the default view is at the beginning of the list
           for (let v of index.views) {
-            let vObj = new DatasetView(v.name, v.description, v.volumeKeys, v.position, v.scale);
+            let vObj = new DatasetView(v.name, v.description, v.volumeNames, v.position, undefined, v.scale);
             if (vObj.name === 'Default View'){
               views.unshift(vObj)
             }
@@ -395,10 +394,10 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
           const volumes: Map<string, Volume> = new Map();
           index.volumes.forEach(v => volumes.set(v.name, makeVolume(outerPath, v)));
           if (views.length === 0){
-            let defaultView = new DatasetView('Default view', '', Array.from(volumes.keys()), undefined, undefined);
+            let defaultView = new DatasetView('Default view', '', Array.from(volumes.keys()), undefined, undefined, undefined);
             views.push(defaultView)
           }
-          datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailPath, views));
+          datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailURL, views));
         }
         catch (error) {
           console.log(error)

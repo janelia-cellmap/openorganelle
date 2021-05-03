@@ -28,7 +28,7 @@ interface DatasetTileProps {
 export default function DatasetTile({ datasetKey }: DatasetTileProps) {
   const {appState, setAppState} = useContext(AppContext);
   const dataset: Dataset = appState.datasets.get(datasetKey)!;
-  const datasetLink = `/datasets/${dataset.key}`;
+  const datasetLink = `/datasets/${dataset.name}`;
   const classes = useStyles();
   return (
     <RouterLink to={datasetLink} className={classes.link}>
@@ -50,7 +50,7 @@ export default function DatasetTile({ datasetKey }: DatasetTileProps) {
             <CardActionArea>
               <CardMedia
                 style={{ height: 256, width: 256, borderRadius: "10%" }}
-                image={dataset.thumbnailPath}
+                image={dataset.thumbnailURL}
               />
             </CardActionArea>
           </Grid>
