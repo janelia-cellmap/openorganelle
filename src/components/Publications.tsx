@@ -44,7 +44,7 @@ export default function Publications() {
             Project Team.{" "}
           </i>
           <b>Automatic whole cell organelle segmentation in volumetric electron microscopy. </b>
-          bioRxiv (2020) <a href="https://doi.org/10.1101/2020.11.14.382143"> 10.1101/2020.11.14.382143</a>
+          bioRxiv (2020) <a href="https://doi.org/10.1101/2020.11.14.382143"> 10.1101/2020.11.14.382143</a> [<a href="https://github.com/janelia-cosem/heinrich-2021a">code</a>] [<a href="https://open.quiltdata.com/b/janelia-cosem-publications/tree/heinrich-2021a/">data</a>].
         </p>
       </Paper>
       <Typography variant="h3" gutterBottom>

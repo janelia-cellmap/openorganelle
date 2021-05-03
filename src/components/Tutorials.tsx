@@ -307,16 +307,13 @@ export default function Tutorials() {
               Data organization
             </Typography>
             <Typography gutterBottom>
-              Documentation of how data, metadata, and derived data are
-              organized for the COSEM project is on our
-              <a href="https://github.com/janelia-cosem/schemas/blob/master/README.md">
-                GitHub schema page
-              </a>
-              . Included on OpenOrganelle are the raw EM datasets, organelle
+              OpenOrganelle provides access to raw EM datasets, organelle
               predictions, refined segmentations, analysis, and correlative
               light microscopy. For an extensive list of available predictions,
-              segmentations, and analysis, please visit the{" "}
-              <Link to="/organelles">Organelles</Link> page.
+              segmentations, and analysis, please visit the{" "} <Link to="/organelles">Organelles</Link> page. For documentation of how data, metadata, and derived data are
+              organized for OpenOrganelle, see this <a href="https://github.com/janelia-cosem/schemas/blob/master/cloud/janelia-cosem/README.md">
+                document.
+              </a>
             </Typography>
             <Typography variant="h5" gutterBottom>
               How to open data in Fiji
@@ -408,7 +405,7 @@ export default function Tutorials() {
             </Typography>
 
             <Typography paragraph>
-              We welcome you to visit our GitHub repository,{" "}
+              We welcome you to visit our GitHub organization,{" "}
               <a href="https://github.com/janelia-cosem">janelia-cosem</a>, to
               access all of our code and software. More information about the
               software used and written for this project can be found on the{" "}
