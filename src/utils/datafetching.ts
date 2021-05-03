@@ -16,7 +16,7 @@ export function fetchAnalysisResults(cypher: string) {
     body: JSON.stringify({ statements: [{ statement: cypher }] })
   };
 
-  return fetch("http://vmdmz122.int.janelia.org:7474/db/graph.db/tx", options)
+  return fetch("http://cosem-db.janelia.org:7474/db/graph.db/tx", options)
     .then(response => response.json())
     .then(res => {
       if (res.results) {
