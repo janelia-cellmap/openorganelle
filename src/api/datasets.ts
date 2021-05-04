@@ -7,7 +7,6 @@ import {
   ImageLayer,
   LayerDataSource,
   SegmentationLayer,
-  ManagedLayer,
   Layer,
   SingleMeshLayer,
 } from "@janelia-cosem/neuroglancer-url-tools";

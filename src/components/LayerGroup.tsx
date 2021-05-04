@@ -3,7 +3,6 @@ import { Volume, ContentTypeMetadata, ContentType } from "../api/datasets";
 import { Checkbox, FormControlLabel, FormGroup, Switch } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
 import Typography from "@material-ui/core/Typography";
-import Tooltip from "@material-ui/core/Tooltip";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";

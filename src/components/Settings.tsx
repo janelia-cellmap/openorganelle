@@ -12,6 +12,9 @@ const useStyles = makeStyles(theme => ({
   },
   nglink: {
     minWidth: "25em"
+  },
+  version: {
+    float: "right"
   }
 }));
 
@@ -21,6 +24,7 @@ export default function Settings() {
 
   return (
     <div className="content">
+      <span className={classes.version}>v{process.env.REACT_APP_VERSION}</span>
       <Typography variant="h3" gutterBottom>
         Site settings
       </Typography>

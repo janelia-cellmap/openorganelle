@@ -29,7 +29,7 @@ export default function NeuroglancerLink({
   checkState,
   children
 }: NeuroglancerLinkProps) {
-  const {appState, } = useContext(AppContext);
+  const {appState} = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const webGL2Enabled = appState.webGL2Enabled;
 

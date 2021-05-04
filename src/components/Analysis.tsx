@@ -1,89 +1,66 @@
-import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import cypherBuilder from "../utils/cypherBuilder";
+import React from "react";
+import { useLocation } from "react-router-dom";
+import Card from "@material-ui/core/Card";
 
-const dataSets = [
-  { value: "jrc_hela-2", label: "Interphase HeLa cell" },
-  { value: "jrc_hela-3", label: "Interphase Hela cell" },
-  { value: "jrc_macrophage-2", label: "Macrophage cell" },
-  { value: "jrc_jurkat-1", label: "Immortalized T-Cells (Jurkat)" }
-];
+import AnalysisResults from "./AnalysisResults";
+import AnalysisForm from "./AnalysisForm";
+import AnalysisConnections from "./AnalysisConnections";
+import cypherBuilder, { connectionsCypher } from "../utils/cypherBuilder";
 
-const measurement = "";
-
-const dataSetItems = dataSets.map(dataset => (
-  <MenuItem key={dataset.value} value={dataset.value}>
-    {dataset.label}
-  </MenuItem>
-));
-
-
-const organelleNames = [
-  { value: "endosome", label: "Endosome" },
-  { value: "er", label: "ER" },
-  { value: "golgi", label: "Golgi" },
-  { value: "microtubule", label: "Microtubule" },
-  { value: "mitochondria", label: "Mitochondria" },
-  { value: "nucleus", label: "Nucleus" },
-  { value: "peripheral_er", label: "Peripheral ER" },
-  { value: "plasma_membrane", label: "Plasma Membrane" },
-  { value: "vesicle", label: "Vesicle" },
-]
-
-const organelleItems = organelleNames.map(organelle => (
-  <MenuItem key={organelle.value} value={organelle.value}>
-    {organelle.label}
-  </MenuItem>
-));
-
-const useStyles = makeStyles(theme => ({
-  formControl: {
-    margin: theme.spacing(1),
-    width: "100%"
-  }
-}));
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 export default function Analysis() {
-  const [dataset, setDataSet] = useState("");
-  const [organelles, setOrganelles] = useState([]);
-  const classes = useStyles();
+  const query = useQuery();
+  const intId = query.get("id");
+  const dataset = query.get("ds") || "";
 
-  return (
-    <div className="content">
-      <p>Analysis portal</p>
-      <FormControl variant="filled" className={classes.formControl}>
-        <InputLabel id="demo-simple-select-label">Dataset Selection</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={dataset}
-          onChange={(e: any) => setDataSet(e.target.value)}
-        >
-          {dataSetItems}
-        </Select>
-      </FormControl>
-      <FormControl variant="filled" className={classes.formControl}>
-        <InputLabel id="demo-simple-select-label">
-          Organelle Selection
-        </InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          multiple
-          value={organelles}
-          onChange={(e: any) => setOrganelles(e.target.value)}
-        >
-          {organelleItems}
-        </Select>
-      </FormControl>
+  if (intId) {
+    // TODO: when clicking on a node, the backend should load in all the
+    // nodes connected to that node with the following query
+    // MATCH (n) WHERE id(n) = 16256397 MATCH (n)-[r]-(c)  RETURN n, r, c
+    // This can then be displayed as a 3d graphic and table of data. The
+    // id needs to come from the url or the previous cypher query used
+    // to fetch the original data set.
+    const cypher = connectionsCypher(intId);
+    return (
+      <div className="content">
+        <AnalysisForm />
+        <AnalysisConnections cypher={cypher} datasetKey={dataset} />
+      </div>
+    );
+  } else {
+    const state = {
+      dataset,
+      organelleA: query.get("oa") || "",
+      organelleB: query.get("ob") || "",
+      measurements: query.getAll("m") || []
+    };
 
-      <p>execute a query</p>
-      {cypherBuilder({dataset, organelles, measurement})}
-    </div>
-  );
+    const cypher = cypherBuilder(state);
+    return (
+      <div className="content">
+        <AnalysisForm />
+        {cypher ? (
+          <>
+            {process.env.NODE_ENV !== "production" ? (
+              <Card style={{ padding: "1em", margin: "1em" }}>
+                <code>{cypher}</code>
+              </Card>
+            ) : (
+              ""
+            )}
+            <AnalysisResults
+              cypher={cypher}
+              organelleA={state.organelleA}
+              organelleB={state.organelleB}
+            />
+          </>
+        ) : (
+          <p> Please select a dataset, organelle and measurements from above</p>
+        )}
+      </div>
+    );
+  }
 }
