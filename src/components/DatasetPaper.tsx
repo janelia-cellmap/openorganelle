@@ -56,15 +56,15 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
   const volumeNames: string[] = [...dataset.volumes.keys()];
   
-  const datasetLink = `/datasets/${dataset.key}`;
-	const clipLink = `https://open.quiltdata.com/b/${appState.dataBucket}/tree/${dataset.key}/`;
+  const datasetLink = `/datasets/${dataset.name}`;
+	const clipLink = `https://open.quiltdata.com/b/${appState.dataBucket}/tree/${dataset.name}/`;
   
   const volumeCheckStateInit = new Map<string, VolumeCheckStates>(
     volumeNames.map(k => [k, {selected: false, layerType: undefined}])
   );
   // initialize the layer checkboxes by looking at the first dataset view
   for (let vn of volumeNames) {
-    let vkeys = dataset.views[0].volumeKeys;
+    let vkeys = dataset.views[0].volumeNames;
     if (vkeys.includes(vn)) {
       volumeCheckStateInit.set(vn, {...volumeCheckStateInit.get(vn), selected: true});
     }
@@ -98,7 +98,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     const newVolumeState = new Map(
       [...checkStates.volumeCheckState.entries()].map(([k, v]) => [k, {...v, selected: false}])
     );
-    views[newViewState.findIndex(v => v)].volumeKeys.map(k =>
+    views[newViewState.findIndex(v => v)].volumeNames.map(k =>
       newVolumeState.set(k, {...newVolumeState.get(k), selected: true})
     );
 
@@ -154,7 +154,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
               <CardActionArea>
                 <CardMedia
                   style={{ height: 128, width: 128, borderRadius: "10%" }}
-                  image={dataset.thumbnailPath}
+                  image={dataset.thumbnailURL}
                 />
               </CardActionArea>
             </NeuroglancerLink>
