@@ -113,16 +113,18 @@ export interface ContentTypeMetadata {
 } 
 
 function SpatialTransformToNeuroglancer(transform: SpatialTransform, outputDimensions: CoordinateSpace): CoordinateSpaceTransform {
+  
   const inputDimensions: CoordinateSpace = {
-    x: [1e-9 * transform.scale[transform.axes.indexOf('x')], "m"],
-    y: [1e-9 * transform.scale[transform.axes.indexOf('y')], "m"],
-    z: [1e-9 * transform.scale[transform.axes.indexOf('z')], "m"]
+    x: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('x')]), "m"],
+    y: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('y')]), "m"],
+    z: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('z')]), "m"]
 };
-  const layerTransform: CoordinateSpaceTransform = {matrix:
+
+const layerTransform: CoordinateSpaceTransform = {matrix:
     [
-        [1, 0, 0, transform.translate[transform.axes.indexOf('x')]],
-        [0, 1, 0, transform.translate[transform.axes.indexOf('y')]],
-        [0, 0, 1, transform.translate[transform.axes.indexOf('z')]]
+        [(transform.scale[transform.axes.indexOf('x')] < 0)? -1 : 1, 0, 0, transform.translate[transform.axes.indexOf('x')]],
+        [0, (transform.scale[transform.axes.indexOf('y')] < 0)? -1 : 1, 0, transform.translate[transform.axes.indexOf('y')]],
+        [0, 0, (transform.scale[transform.axes.indexOf('z')] < 0)? -1 : 1, transform.translate[transform.axes.indexOf('z')]]
     ],
     outputDimensions: outputDimensions,
     inputDimensions: inputDimensions}
