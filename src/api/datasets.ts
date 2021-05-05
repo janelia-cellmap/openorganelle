@@ -112,17 +112,19 @@ export interface ContentTypeMetadata {
   description: string
 } 
 
-function SpatialTransformToNeuroglancer(transform: SpatialTransform, outputDimensions: CoordinateSpace): CoordinateSpaceTransform {
+function SpatialTransformToNeuroglancer(transform: SpatialTransform, outputDimensions: CoordinateSpace, flipAxes: string[]): CoordinateSpaceTransform {
+  
   const inputDimensions: CoordinateSpace = {
-    x: [1e-9 * transform.scale[transform.axes.indexOf('x')], "m"],
-    y: [1e-9 * transform.scale[transform.axes.indexOf('y')], "m"],
-    z: [1e-9 * transform.scale[transform.axes.indexOf('z')], "m"]
+    x: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('x')]), "m"],
+    y: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('y')]), "m"],
+    z: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('z')]), "m"]
 };
-  const layerTransform: CoordinateSpaceTransform = {matrix:
+
+const layerTransform: CoordinateSpaceTransform = {matrix:
     [
-        [1, 0, 0, transform.translate[transform.axes.indexOf('x')]],
-        [0, 1, 0, transform.translate[transform.axes.indexOf('y')]],
-        [0, 0, 1, transform.translate[transform.axes.indexOf('z')]]
+        [(transform.scale[transform.axes.indexOf('x')] < 0)? -1 : 1, 0, 0, transform.translate[transform.axes.indexOf('x')]],
+        [0, (transform.scale[transform.axes.indexOf('y')] < 0)? -1 : 1, 0, transform.translate[transform.axes.indexOf('y')]],
+        [0, 0, (transform.scale[transform.axes.indexOf('z')] < 0)? -1 : 1, transform.translate[transform.axes.indexOf('z')]]
     ],
     outputDimensions: outputDimensions,
     inputDimensions: inputDimensions}
@@ -212,11 +214,11 @@ export class Volume implements VolumeSource {
 
         // need to update the layerdatasource object to have a transform property
         const source: LayerDataSource2 = {url: srcURL,
-                                         transform: SpatialTransformToNeuroglancer(this.transform, outputDimensions),
-                                        CoordinateSpaceTransform: SpatialTransformToNeuroglancer(this.transform, outputDimensions)};
+                                         transform: SpatialTransformToNeuroglancer(this.transform, outputDimensions, []),
+                                        CoordinateSpaceTransform: SpatialTransformToNeuroglancer(this.transform, outputDimensions, [])};
 
         const subsources = this.subsources.map(subsource => {
-          return {url: `precomputed://${subsource.path}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions)}
+          return {url: `precomputed://${subsource.path}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions, ['y']), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions, ['y'])}
         });
         let layer: Layer | undefined = undefined;
 
