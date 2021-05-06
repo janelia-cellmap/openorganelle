@@ -326,7 +326,7 @@ async function getDatasetIndex(
   URL: string,
   dataset: string
 ): Promise<DatasetIndex> {
-  const indexFile = `${URL}/${dataset}/index.json`;
+  const indexFile = Path.join(URL, dataset, 'index.json');
   return getObjectFromJSON(indexFile);
 }
 
