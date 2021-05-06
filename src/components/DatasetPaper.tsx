@@ -57,7 +57,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const volumeNames: string[] = [...dataset.volumes.keys()];
   
   const datasetLink = `/datasets/${dataset.name}`;
-	const clipLink = `https://open.quiltdata.com/b/${appState.dataBucket}/tree/${dataset.name}/`;
+	const bucketBrowseLink = `https://open.quiltdata.com/b/${appState.dataBucket}/tree/${dataset.name}/`;
+  const s3URL = `s3://${appState.dataBucket}/${dataset.name}/${dataset.name}.n5`;
   
   const volumeCheckStateInit = new Map<string, VolumeCheckStates>(
     volumeNames.map(k => [k, {selected: false, layerType: undefined}])
@@ -140,7 +141,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
         <Grid container spacing={2}>
           <Grid item xs={10}>
             <DatasetDescriptionFull
-							clipLink = {clipLink}
+              bucketBrowseLink = {bucketBrowseLink}
+							s3URL = {s3URL}
               datasetDescription={dataset.description}
               titleLink={datasetLink}
             />

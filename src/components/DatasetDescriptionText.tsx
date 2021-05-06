@@ -9,7 +9,8 @@ import { DatasetDescription, DescriptionSummary, DescriptionAbout, DescriptionAc
 
 type DescriptionTextProps = {
   titleLink: string;
-  clipLink?: string;
+  s3URL?: string;
+  bucketBrowseLink?: string;
   datasetDescription: DatasetDescription | undefined;
   storageLocation?: string;
 };
@@ -102,7 +103,7 @@ export function DatasetDescriptionFull(props: DescriptionTextProps) {
                         <p>
               <strong>Dataset location</strong>:{props.storageLocation}
             </p>
-            <ClipboardLink link={String(props.clipLink)} />
+            <ClipboardLink bucketBrowseLink={String(props.bucketBrowseLink)} s3URL={String(props.s3URL)} />
           </Grid>
         </Grid>
       </>

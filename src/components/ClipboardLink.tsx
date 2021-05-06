@@ -19,10 +19,11 @@ const useStyles: any = makeStyles((theme: Theme) =>
 );
 
 interface ClipBoardLinkProps {
-  link: string
+  bucketBrowseLink: string
+  s3URL: string
 }
 
-export default function ClipboardLink({ link }: ClipBoardLinkProps) {
+export default function ClipboardLink({ bucketBrowseLink, s3URL }: ClipBoardLinkProps) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
@@ -32,10 +33,10 @@ export default function ClipboardLink({ link }: ClipBoardLinkProps) {
 
   return (
     <>
-      <Button variant="contained" color="primary" href={link} target="_blank" rel= "noopener noreferrer" startIcon={<FolderOpen/>}> Browse </Button>
+      <Button variant="contained" color="primary" href={bucketBrowseLink} target="_blank" rel= "noopener noreferrer" startIcon={<FolderOpen/>}> Browse </Button>
       <IconButton
         onClick={() => {
-          navigator.clipboard.writeText(link);
+          navigator.clipboard.writeText(s3URL);
           setOpen(true);
         }}
       >
@@ -44,7 +45,7 @@ export default function ClipboardLink({ link }: ClipBoardLinkProps) {
       <IconButton
         color="primary"
         onClick={() => {
-          navigator.clipboard.writeText(link);
+          navigator.clipboard.writeText(s3URL);
           setOpen(true);
         }}
       >
