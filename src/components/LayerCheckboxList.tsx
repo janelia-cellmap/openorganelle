@@ -34,6 +34,15 @@ interface LayerCheckboxListProps {
   dataset: Dataset;
   checkState: Map<string, VolumeCheckStates>;
   handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  filter: string | undefined;
+}
+
+interface FilteredLayerListProps {
+  dataset: Dataset;
+  checkState: Map<string, VolumeCheckStates>;
+  handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   filter: string | undefined;
 }
@@ -43,7 +52,7 @@ interface LayerFilterProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLayerChange, filter}: LayerCheckboxListProps) {
+function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLayerChange, filter}: FilteredLayerListProps) {
   const classes = useStyles();
   const volumesListInit: Volume[] = []
   const [volumesList, setVolumes] = useState(volumesListInit);
@@ -79,13 +88,13 @@ function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLay
       layerTypeToggleLabel= "Enable 3D Rendering";
     }
     if (volumes !== undefined && volumes.length > 0) {
-      return <VolumeCheckboxCollection 
-              key={ct} 
-              volumes={volumes} 
-              checkState={checkState} 
-              handleVolumeChange={handleVolumeChange} 
-              contentType={ct} 
-              contentTypeInfo={contentTypeInfo} 
+      return <VolumeCheckboxCollection
+              key={ct}
+              volumes={volumes}
+              checkState={checkState}
+              handleVolumeChange={handleVolumeChange}
+              contentType={ct}
+              contentTypeInfo={contentTypeInfo}
               accordionExpanded={expanded}
               handleLayerChange={handleLayerChange}
               layerTypeToggleLabel={layerTypeToggleLabel}/>;
@@ -124,25 +133,20 @@ export default function LayerCheckboxList({
   checkState,
   handleVolumeChange,
   handleLayerChange,
+  handleFilterChange,
   filter,
 }: LayerCheckboxListProps) {
   if (filter === undefined) {filter = ""};
-  const [layerFilter, setLayerFilter] = useState(filter);
-/*
-  const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLayerFilter(event.target.value);
-  };
-  */
   return (
     <>
       <Typography variant="h6">2. Select layers for the view</Typography>
-      <LayerFilter value={layerFilter} onChange={handleLayerChange} />
+      <LayerFilter value={filter} onChange={handleFilterChange} />
       <FilteredLayersList
         dataset={dataset}
         checkState={checkState}
         handleVolumeChange={handleVolumeChange}
         handleLayerChange={handleLayerChange}
-        filter={layerFilter}
+        filter={filter}
       />
     </>
   );

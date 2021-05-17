@@ -53,6 +53,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const classes = useStyles();
   const {appState} = useContext(AppContext);
   const dataset: Dataset = appState.datasets.get(datasetKey)!;
+  const [layerFilter, setLayerFilter] = useState("");
 
   const volumeNames: string[] = [...dataset.volumes.keys()];
   
@@ -125,6 +126,11 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     setCheckStates({ ...checkStates, volumeCheckState: newVolumeCheckState});
   };
 
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLayerFilter(event.target.value);
+  };
+
+
   const clearLayers = () => {
     const newVolumeCheckState = new Map(
       [...checkStates.volumeCheckState.entries()].map(([k, v]) => [k, {selected: false}])
@@ -190,7 +196,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
               checkState={checkStates.volumeCheckState}
               handleVolumeChange={handleVolumeChange}
               handleLayerChange={handleLayerChange}
-              filter={""}
+              handleFilterChange={handleFilterChange}
+              filter={layerFilter}
             />
           </Grid>
         </Grid>
