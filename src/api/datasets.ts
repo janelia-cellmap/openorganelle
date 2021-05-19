@@ -144,6 +144,15 @@ contentTypeDescriptions.set('segmentation', {label: "Segmentation Layers", descr
 contentTypeDescriptions.set('prediction', {label: "Prediction Layers", description: "Raw distance transform inferences scaled from 0 to 255. A voxel value of 127 represent a predicted distance of 0 nm."});
 contentTypeDescriptions.set('analysis', {label: "Analysis Layers", description: "Results of applying various analysis routines on raw data, predictions, or segmentations."});
 
+export function inferLayerType(volumeName: string): string
+{
+  let result = 'segmentation';
+  if ((volumeName.indexOf('em-') > 0) || (volumeName.indexOf('_pred') > 0)) {
+    result='image';
+  }
+  return result
+}
+
 function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataType: string): string | undefined{
   let lower = 0;
   let upper = 0;
@@ -165,7 +174,7 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataT
         }`
       }
     case "segmentation":
-      return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${cmin}, ${cmax}])\n#uicontrol vec3 color color(default="${shaderArgs.color}")\nvoid main() {emitRGB(color * normalized());}`;
+      return '';
     default:
       return undefined;
               }
@@ -221,7 +230,7 @@ export class Volume implements VolumeSource {
           return {url: `precomputed://${subsource.path}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions)}
         });
         let layer: Layer | undefined = undefined;
-
+        
         if (layerType === 'image'){
           let shader: string | undefined = '';
           if (SEGMENTATION_DTYPES.includes(this.dataType)){
@@ -244,11 +253,40 @@ export class Volume implements VolumeSource {
         }
         else if (layerType === 'segmentation') {
           if (subsources.length > 0) {
-            console.log(this.subsources[0].transform)
-            layer = new SegmentationLayer('source', true, undefined, this.name, [source, ...subsources], this.subsources[0].ids);
+            layer = new SegmentationLayer('source', 
+                                          true, 
+                                          undefined, 
+                                          this.name, 
+                                          [source, ...subsources], 
+                                          this.subsources[0].ids,
+                                          undefined,
+                                          true,
+                                          undefined,
+                                          undefined,
+                                          undefined,
+                                          undefined,
+                                          undefined,
+                                          undefined,
+                                          undefined,
+                                          this.displaySettings.color);
           }
           else {
-            layer = new SegmentationLayer('source', true, undefined, this.name, source);
+            layer = new SegmentationLayer('source', 
+                                          true, 
+                                          undefined, 
+                                          this.name, 
+                                          source,
+                                          undefined,
+                                          undefined,
+                                          true,
+                                          undefined,
+                                          undefined,
+                                          undefined,
+                                          undefined,
+                                          undefined,
+                                          undefined,
+                                          undefined,
+                                          this.displaySettings.color);
           }
         }
         return layer
@@ -358,8 +396,7 @@ function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
   volumeMeta.path = reifyPath(outerPath, volumeMeta.path);
   // this is a shim until we add a defaultLayerType field to the volume metadata
   let ds = volumeMeta.displaySettings;
-  if (volumeMeta.dataType === 'uint64' && (volumeMeta.name.indexOf('_seg') === -1)) {ds.defaultLayerType = 'segmentation'}
-  else (ds.defaultLayerType = 'image')
+  ds.defaultLayerType = inferLayerType(volumeMeta.name) as LayerTypes;
   volumeMeta.displaySettings = ds;
 
   for (let subsource of volumeMeta.subsources) {subsource.path = reifyPath(outerPath, subsource.path)}

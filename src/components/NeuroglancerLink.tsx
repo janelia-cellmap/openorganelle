@@ -1,6 +1,6 @@
 import { Button } from "@material-ui/core";
 import React, { useContext } from "react";
-import { Dataset, DatasetView, LayerTypes, Volume } from "../api/datasets";
+import { Dataset, DatasetView, LayerTypes, Volume} from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
@@ -45,10 +45,7 @@ export default function NeuroglancerLink({
   
   const disabled = Boolean(local_view.volumeNames.length === 0);
   const layers = local_view.volumeNames.map(vk => {
-    let layerType = checkState.get(vk)?.layerType
-    if (layerType === undefined) {
-      layerType = dataset.volumes.get(vk)?.displaySettings.defaultLayerType;
-    }
+    let layerType = dataset.volumes.get(vk)?.displaySettings.defaultLayerType;
     let result = dataset.volumes.get(vk)!.toLayer(layerType as LayerTypes);
     return result;
   });

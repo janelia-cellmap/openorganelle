@@ -6,7 +6,6 @@ import Typography from "@material-ui/core/Typography";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { ToggleButton, ToggleButtonGroup } from "@material-ui/lab";
 import { VolumeCheckStates } from "./DatasetPaper";
 
 interface LayerTypeToggleProps {
@@ -28,16 +27,6 @@ interface VolumeCheckboxCollectionProps {
   handleLayerChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const LayerTypeSwitch = ({label, checked, contentType, handleLayerChange}: LayerTypeToggleProps) => {
-  return (
-    <FormGroup row>
-      <FormControlLabel
-        control={<Switch checked={checked} onChange={handleLayerChange} name={contentType} />}
-        label={label}
-      />
-    </FormGroup>
-  );
-}
 
 export default function VolumeCheckboxCollection({
   volumes,
@@ -46,8 +35,6 @@ export default function VolumeCheckboxCollection({
   contentType,
   contentTypeInfo,
   accordionExpanded,
-  layerTypeToggleLabel,
-  handleLayerChange
 }: VolumeCheckboxCollectionProps) {
   const [expanded, setExpanded] = useState(accordionExpanded);
   
@@ -73,13 +60,6 @@ export default function VolumeCheckboxCollection({
     );
   });
   
-  let layerTypeSwitch;
-  if (!(layerTypeToggleLabel === undefined) && !(handleLayerChange === undefined)) {
-    layerTypeSwitch = LayerTypeSwitch({label: layerTypeToggleLabel, checked: checkState.get(volumes[0].name)?.layerType === 'segmentation', contentType: (contentType as ContentType), handleLayerChange: handleLayerChange});
-  }
-  else {
-    layerTypeSwitch = undefined;
-  }
   
   return (
     <Accordion key={contentType} expanded={expanded} onChange={handleExpand}>
@@ -96,7 +76,6 @@ export default function VolumeCheckboxCollection({
       >
         {contentTypeInfo.description}
       </Typography>
-      {layerTypeSwitch}
       <AccordionDetails>
         <FormGroup>{checkBoxList}</FormGroup>
       </AccordionDetails>
