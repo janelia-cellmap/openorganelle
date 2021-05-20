@@ -83,10 +83,7 @@ function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLay
     let volumes = (volumeGroups.get(ct as ContentType) as Volume[]);
     let contentTypeInfo = contentTypeDescriptions.get(ct as ContentType)!;
     let expanded = (ct === 'em');
-    let layerTypeToggleLabel;
-    if (ct === 'segmentation') {
-      layerTypeToggleLabel= "Enable 3D Rendering";
-    }
+    
     if (volumes !== undefined && volumes.length > 0) {
       return <VolumeCheckboxCollection
               key={ct}
@@ -96,8 +93,7 @@ function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLay
               contentType={ct}
               contentTypeInfo={contentTypeInfo}
               accordionExpanded={expanded}
-              handleLayerChange={handleLayerChange}
-              layerTypeToggleLabel={layerTypeToggleLabel}/>;
+              handleLayerChange={handleLayerChange}/>;
     }
     return null;
   });
