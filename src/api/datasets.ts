@@ -230,7 +230,8 @@ export class Volume implements VolumeSource {
           return {url: `precomputed://${subsource.path}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions)}
         });
         let layer: Layer | undefined = undefined;
-        
+        // dvb: this is a hack until this gets fixed in metadata
+        const color = this.name === 'gt' ? undefined: this.displaySettings.color;
         if (layerType === 'image'){
           let shader: string | undefined = '';
           if (SEGMENTATION_DTYPES.includes(this.dataType)){
@@ -268,7 +269,7 @@ export class Volume implements VolumeSource {
                                           undefined,
                                           undefined,
                                           undefined,
-                                          this.displaySettings.color);
+                                          color);
           }
           else {
             layer = new SegmentationLayer('source', 
@@ -286,7 +287,7 @@ export class Volume implements VolumeSource {
                                           undefined,
                                           undefined,
                                           undefined,
-                                          this.displaySettings.color);
+                                          color);
           }
         }
         return layer
@@ -421,7 +422,7 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
   // of Map<string, VolumeMeta>
   const datasets: Map<string, Dataset> = new Map();
   //const metadataURL = bucketNameToURL(bucket);
-  const metadataURL = "https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/master/metadata/datasets/";
+  const metadataURL = "https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/gt_color_fix/metadata/datasets/";
   let ds = await Promise.all(
     datasetKeys.map(async key => {
       const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
