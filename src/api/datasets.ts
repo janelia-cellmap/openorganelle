@@ -421,7 +421,7 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
   // of Map<string, VolumeMeta>
   const datasets: Map<string, Dataset> = new Map();
   //const metadataURL = bucketNameToURL(bucket);
-  const metadataURL = "https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/gt_color_fix/metadata/datasets/";
+  const metadataURL = "https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/master/metadata/datasets/";
   let ds = await Promise.all(
     datasetKeys.map(async key => {
       const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
