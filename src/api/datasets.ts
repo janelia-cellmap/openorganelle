@@ -434,8 +434,7 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
           const views: DatasetView[] = [];
           // make sure that the default view is at the beginning of the list
           for (let v of index.views) {
-            let vObj = new DatasetView(v.name, v.description, v.volumeNames, v.orientation, v.position, v.scale);
-            if (vObj.name === 'Default View'){
+            let vObj = new DatasetView(v.name, v.description, v.volumeNames, v.orientation, v.position ?? undefined, v.scale);            if (vObj.name === 'Default View'){
               views.unshift(vObj)
             }
             else views.push(vObj)
