@@ -324,7 +324,6 @@ export class Dataset implements IDataset {
         const projectionScale = 65536;
         // the first layer is the selected layer; consider making this a kwarg
         const selectedLayer = {'layer': layers[0]!.name, 'visible': true};
-
         const vState = new ViewerState(
             outputDimensions,
             viewerPosition,
@@ -435,7 +434,7 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
           const views: DatasetView[] = [];
           // make sure that the default view is at the beginning of the list
           for (let v of index.views) {
-            let vObj = new DatasetView(v.name, v.description, v.volumeNames, v.position, undefined, v.scale);
+            let vObj = new DatasetView(v.name, v.description, v.volumeNames, v.orientation, v.position, v.scale);
             if (vObj.name === 'Default View'){
               views.unshift(vObj)
             }
