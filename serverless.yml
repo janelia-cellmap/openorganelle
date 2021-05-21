@@ -5,6 +5,7 @@ service: sle-openorganelle-client
 plugins:
   - serverless-finch
   - serverless-plugin-package-json
+  - serverless-deployment-bucket
 
 custom:
   stage: ${opt:stage, self:provider.stage}
@@ -23,7 +24,10 @@ provider:
   name: aws
   region: us-east-1
   stage: dev
-  tags: 
+  deploymentBucket:
+    name: janelia-serverless-deployments
+    blockPublicAccess: true
+  tags:
     PROJECT: cosem
     DEVELOPER: ${env:USER}
     VERSION: ${pkgjson:version}
