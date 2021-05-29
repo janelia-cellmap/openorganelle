@@ -13,7 +13,7 @@ import {
 import { s3ls, getObjectFromJSON, bucketNameToURL, s3URItoURL } from "./datasources";
 import * as Path from "path";
 
-import {DatasetDescription} from "./dataset_description";
+import {DatasetMetadata} from "./dataset_metadata";
 import {isUri} from "valid-url";
 import { LocalConvenienceStoreOutlined, Subscriptions } from "@material-ui/icons";
 
@@ -85,7 +85,7 @@ interface IDataset{
   name: string
   space: CoordinateSpace
   volumes: Map<string, Volume>
-  description: DatasetDescription | undefined
+  description: DatasetMetadata
   thumbnailURL: string
   views: DatasetView[]
 }
@@ -111,6 +111,7 @@ export interface ContentTypeMetadata {
   label: string
   description: string
 } 
+
 
 function SpatialTransformToNeuroglancer(transform: SpatialTransform, outputDimensions: CoordinateSpace): CoordinateSpaceTransform {
   
@@ -299,10 +300,10 @@ export class Dataset implements IDataset {
     public name: string;
     public space: CoordinateSpace;
     public volumes: Map<string, Volume>;
-    public description: DatasetDescription | undefined
+    public description: DatasetMetadata
     public thumbnailURL: string
     public views: DatasetView[]
-    constructor(key: string, space: CoordinateSpace, volumes: Map<string, Volume>, description: DatasetDescription,
+    constructor(key: string, space: CoordinateSpace, volumes: Map<string, Volume>, description: DatasetMetadata,
     thumbnailPath: string, views: DatasetView[]) {
         this.name = key;
         this.space = space;
@@ -371,9 +372,10 @@ async function getDatasetIndex(
 async function getDescription(
   bucket: string,
   key: string
-): Promise<DatasetDescription> {
+): Promise<DatasetMetadata> {
   const bucketURL = bucketNameToURL(bucket);
-  const descriptionURL = `${bucketURL}/${key}/README.json`;
+  // const descriptionURL = `${bucketURL}/${key}/README.json`;
+  const descriptionURL = `https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/dataset_metadata_rework/metadata/datasets/${key}/readme.json`;
   return getObjectFromJSON(descriptionURL);
 }
 
@@ -425,7 +427,13 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
   let ds = await Promise.all(
     datasetKeys.map(async key => {
       const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
-      const description = await getDescription(bucket, key);
+      const description_json = await getDescription(bucket, key);
+      const description = new DatasetMetadata(description_json.title, 
+                                              description_json.id, 
+                                              description_json.publications ?? [],
+                                              description_json.imaging ?? {}, 
+                                              description_json.sample ?? {},
+                                              description_json.DOI ?? {});
       const thumbnailURL: string =  `${outerPath}/thumbnail.jpg`
       const index = await getDatasetIndex(metadataURL, key);
       
