@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import { ContentType, Dataset, DatasetView, LayerTypes } from "../api/datasets";
+import { DatasetMetadata } from "../api/dataset_metadata";
 import { bucketNameToURL } from "../api/datasources";
 import { AppContext } from "../context/AppContext";
 import { DatasetDescriptionFull } from "./DatasetDescriptionText";
@@ -147,10 +148,10 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
         <Grid container spacing={2}>
           <Grid item xs={10}>
             <DatasetDescriptionFull
+              s3URL = {s3URL}
               bucketBrowseLink = {bucketBrowseLink}
-							s3URL = {s3URL}
-              datasetDescription={dataset.description}
-              titleLink={datasetLink}
+              storageLocation={s3URL}
+              datasetMetadata={dataset.description}
             />
           </Grid>
           <Grid item xs={2}>
