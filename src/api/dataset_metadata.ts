@@ -8,10 +8,10 @@ class UnitfulVector {
     this.unit = String(unit);
     this.values = new Map(Object.entries(values))
   }
-  string_repr(): string {
-    const val_array = [...this.values.values()].map(v => v.toFixed(2));
+  string_repr(decimals: number): string {
+    const val_array = [...this.values.values()].map(v => v.toFixed(decimals));
     const axis_array = [...this.values.keys()];
-    if (val_array.length == 0){return 'N/A'}
+    if (val_array.length === 0){return 'N/A'}
     else {
       return `${val_array.join(' x ')} (${axis_array.join(', ')})`
     }    

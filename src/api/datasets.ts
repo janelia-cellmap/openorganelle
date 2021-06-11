@@ -15,7 +15,6 @@ import * as Path from "path";
 
 import {DatasetMetadata} from "./dataset_metadata";
 import {isUri} from "valid-url";
-import { LocalConvenienceStoreOutlined, Subscriptions } from "@material-ui/icons";
 
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
@@ -373,7 +372,7 @@ async function getDescription(
   bucket: string,
   key: string
 ): Promise<DatasetMetadata> {
-  const bucketURL = bucketNameToURL(bucket);
+  // const bucketURL = bucketNameToURL(bucket);
   // const descriptionURL = `${bucketURL}/${key}/README.json`;
   const descriptionURL = `https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/dataset_metadata_rework/metadata/datasets/${key}/readme.json`;
   return getObjectFromJSON(descriptionURL);

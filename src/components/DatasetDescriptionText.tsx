@@ -4,7 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import ClipboardLink from "./ClipboardLink";
-import { DatasetMetadata, ImagingMetadata, DOIMetadata, SampleMetadata } from "../api/dataset_metadata";
+import { DatasetMetadata } from "../api/dataset_metadata";
 
 export interface DescriptionPreviewProps {
   datasetMetadata: DatasetMetadata
@@ -20,7 +20,6 @@ export interface DescriptionFullProps {
 
 
 interface DescriptionTextProps {
-  titleLink: string;
   s3URL?: string;
   bucketBrowseLink?: string;
   DatasetMetadata: DatasetMetadata;
@@ -35,9 +34,8 @@ const useStyles: any = makeStyles((theme: Theme) =>
   })
 );
 
-export function DatasetDescriptionPreview({datasetMetadata, titleLink}: DescriptionPreviewProps) {
+export function DatasetDescriptionPreview({datasetMetadata}: DescriptionPreviewProps) {
   const classes = useStyles();
-  const dimensions_string = [...datasetMetadata.imaging.dimensions.values.entries()]
   return (
       <Box>
         <Typography variant="h6" className={classes.title}>
@@ -45,8 +43,8 @@ export function DatasetDescriptionPreview({datasetMetadata, titleLink}: Descript
         </Typography>
         <p><strong>Acquisition date</strong>:{" "}{datasetMetadata.imaging.startDate}</p>
         <p><strong>Dataset ID</strong>:{" "}{datasetMetadata.id}</p>
-        <p><strong>Voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>:{" "}{datasetMetadata.imaging.gridSpacing.string_repr()}</p>
-        <p><strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}{datasetMetadata.imaging.dimensions.string_repr()}</p>
+        <p><strong>Voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>:{" "}{datasetMetadata.imaging.gridSpacing.string_repr(1)}</p>
+        <p><strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}{datasetMetadata.imaging.dimensions.string_repr(0)}</p>
       </Box>
     );
 }
@@ -62,13 +60,13 @@ export function DatasetDescriptionFull({s3URL, bucketBrowseLink, storageLocation
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={4}>
-          <p><strong>{'Sample'}</strong>:{" "}{datasetMetadata.sample.description}</p>
-          <p><strong>{'Protocol'}</strong>:{" "}{datasetMetadata.sample.protocol}</p>
-          <p><strong>{'Contributions'}</strong>:{" "}{datasetMetadata.sample.contributions}</p>
+          <p><strong>Sample</strong>:{" "}{datasetMetadata.sample.description}</p>
+          <p><strong>Protocol</strong>:{" "}{datasetMetadata.sample.protocol}</p>
+          <p><strong>Contributions</strong>:{" "}{datasetMetadata.sample.contributions}</p>
           </Grid>
           <Grid item xs={4}>
-          <p><strong>Final voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>:{" "}{datasetMetadata.imaging.gridSpacing.string_repr()}</p>
-          <p><strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}{datasetMetadata.imaging.dimensions.string_repr()}</p>
+          <p><strong>Final voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>:{" "}{datasetMetadata.imaging.gridSpacing.string_repr(2)}</p>
+          <p><strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}{datasetMetadata.imaging.dimensions.string_repr(0)}</p>
           <p><strong>Imaging duration (days)</strong>:{" "}{datasetMetadata.imaging.duration}</p>
           <p><strong>Imaging start date</strong>:{" "}{datasetMetadata.imaging.startDate}</p>
           <p><strong>Primary energy (EV)</strong>:{" "}{datasetMetadata.imaging.primaryEnergy}</p>
