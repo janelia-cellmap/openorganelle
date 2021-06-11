@@ -1,19 +1,30 @@
 import React from "react";
-import ReactHtmlParser from "react-html-parser";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import ClipboardLink from "./ClipboardLink";
-import { DatasetDescription, DescriptionSummary, DescriptionAbout, DescriptionAcquisition } from "../api/dataset_description";
+import { DatasetMetadata } from "../api/dataset_metadata";
 
-type DescriptionTextProps = {
+export interface DescriptionPreviewProps {
+  datasetMetadata: DatasetMetadata
   titleLink: string;
+}
+
+export interface DescriptionFullProps {
+  s3URL: string;
+  bucketBrowseLink: string;
+  storageLocation: string;
+  datasetMetadata: DatasetMetadata;
+}
+
+
+interface DescriptionTextProps {
   s3URL?: string;
   bucketBrowseLink?: string;
-  datasetDescription: DatasetDescription | undefined;
+  DatasetMetadata: DatasetMetadata;
   storageLocation?: string;
-};
+}
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,91 +34,56 @@ const useStyles: any = makeStyles((theme: Theme) =>
   })
 );
 
-export function DatasetDescriptionPreview(props: DescriptionTextProps) {
-  const description = props.datasetDescription;
+export function DatasetDescriptionPreview({datasetMetadata}: DescriptionPreviewProps) {
   const classes = useStyles();
-  if (description === undefined) {
-    return (
+  return (
       <Box>
         <Typography variant="h6" className={classes.title}>
-          {ReactHtmlParser("No description provided")}
+          {datasetMetadata.title}
         </Typography>
-      </Box>
-    );
-  } else
-    return (
-      <Box>
-        <Typography variant="h6" className={classes.title}>
-          {ReactHtmlParser(description.Title)}
-        </Typography>
-        {[...Object.keys(description.Summary)].map(value => (
-          <p key={value}>
-            <strong>{ReactHtmlParser(value)}</strong>:{" "}
-            {ReactHtmlParser(description.Summary[value as keyof DescriptionSummary])}
-          </p>
-        ))}
+        <p><strong>Acquisition date</strong>:{" "}{datasetMetadata.imaging.startDate}</p>
+        <p><strong>Dataset ID</strong>:{" "}{datasetMetadata.id}</p>
+        <p><strong>Voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>:{" "}{datasetMetadata.imaging.gridSpacing.string_repr(1)}</p>
+        <p><strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}{datasetMetadata.imaging.dimensions.string_repr(0)}</p>
       </Box>
     );
 }
 
-export function DatasetDescriptionFull(props: DescriptionTextProps) {
-  const description = props.datasetDescription;
+export function DatasetDescriptionFull({s3URL, bucketBrowseLink, storageLocation, datasetMetadata}: DescriptionFullProps ) {
   const classes = useStyles();
-
-  if (description === undefined) {
-    return (
-      <Box>
-        <Typography variant="h6" className={classes.title}>
-          {ReactHtmlParser("No description provided")}
-        </Typography>
-      </Box>
-    );
-  } else {
+  const EMDOI = datasetMetadata.DOI.filter(v => v.id === 'em');
+  const SegDOI = datasetMetadata.DOI.filter(v => v.id === 'seg');
     return (
       <>
         <Typography variant="h6" className={classes.title}>
-          {ReactHtmlParser(description.Title)}
+          {datasetMetadata.title}
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={4}>
-            {[...Object.keys(description["About this sample"])].map(value => (
-              <p key={value}>
-                <strong>{ReactHtmlParser(value)}</strong>:{" "}
-                {ReactHtmlParser(description["About this sample"][value as keyof DescriptionAbout])}
-              </p>
-            ))}
+          <p><strong>Sample</strong>:{" "}{datasetMetadata.sample.description}</p>
+          <p><strong>Protocol</strong>:{" "}{datasetMetadata.sample.protocol}</p>
+          <p><strong>Contributions</strong>:{" "}{datasetMetadata.sample.contributions}</p>
           </Grid>
           <Grid item xs={4}>
-            {[...Object.keys(description["Acquisition information"])].map(
-              value => (
-                <p key={value}>
-                  <strong>{ReactHtmlParser(value)}</strong>:{" "}
-                  {ReactHtmlParser(
-                    description["Acquisition information"][value as keyof DescriptionAcquisition]
-                  )}
-                </p>
-              )
-            )}
+          <p><strong>Final voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>:{" "}{datasetMetadata.imaging.gridSpacing.string_repr(2)}</p>
+          <p><strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}{datasetMetadata.imaging.dimensions.string_repr(0)}</p>
+          <p><strong>Imaging duration (days)</strong>:{" "}{datasetMetadata.imaging.duration}</p>
+          <p><strong>Imaging start date</strong>:{" "}{datasetMetadata.imaging.startDate}</p>
+          <p><strong>Primary energy (EV)</strong>:{" "}{datasetMetadata.imaging.primaryEnergy}</p>
+          <p><strong>Bias (V)</strong>:{" "}{datasetMetadata.imaging.biasVoltage}</p>
+          <p><strong>Imaging current (nA)</strong>:{" "}{datasetMetadata.imaging.current}</p>
+          <p><strong>Scanning speed (MHz)</strong>:{" "}{datasetMetadata.imaging.scanRate}</p>
           </Grid>
           <Grid item xs={4}>
-            {[...Object.keys(description["Dataset information"])].map(
-              value => (
-                <p key={value}>
-                  <strong>{ReactHtmlParser(value)}</strong>:{" "}
-                  {ReactHtmlParser(
-                    description["Dataset information"][value as keyof DatasetDescription]
-                  )}
-                </p>
-              )
-            )}
-                        <p>
-              <strong>Dataset location</strong>:{props.storageLocation}
-            </p>
-            <ClipboardLink bucketBrowseLink={String(props.bucketBrowseLink)} s3URL={String(props.s3URL)} />
+          <p><strong>EM DOI</strong>:{" "}{EMDOI.length > 0 ? EMDOI[0].DOI : 'N/A'}</p>
+          <p><strong>Segmentations DOI</strong>:{" "}{SegDOI.length > 0 ? SegDOI[0].DOI : 'N/A'}</p>
+          <p><strong>Dataset ID</strong>:{" "}{datasetMetadata.id}</p>
+          <p><strong>Publications</strong>:{" "}{datasetMetadata.publications.join('; ')}</p>
+          <p><strong>Dataset location</strong>:{" "}{storageLocation}</p>
+            <ClipboardLink bucketBrowseLink={String(bucketBrowseLink)} s3URL={String(s3URL)} />
           </Grid>
         </Grid>
       </>
     );
-  }
 }
 
