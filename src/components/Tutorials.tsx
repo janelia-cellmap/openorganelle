@@ -374,7 +374,7 @@ export default function Tutorials() {
               As all our datasets are stored publicly on AWS S3, it is possible to access the underlying files through any tool that can read from S3.
               We recommend using the AWS command line interface (AWS CLI). <br/>
               When run from the command line, this command lists the contents of our data bucket:              
-              <CodeBlock text="aws cli ls s3://janelia-cosem/" language="shell" showLineNumbers={false} theme={dracula}/> 
+              <CodeBlock text="aws cli ls s3://janelia-cosem/" language="" showLineNumbers={false} theme={dracula}/> 
               The AWS CLI can also copy data from S3 to local storage, but be advised that this may take a long time.
               Detailed instructions for using this tool can be found in the{" "}
               <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">user guide</a>.

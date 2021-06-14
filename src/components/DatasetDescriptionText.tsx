@@ -80,7 +80,7 @@ export function DatasetDescriptionFull({s3URL, bucketBrowseLink, storageLocation
           <p><strong>Dataset ID</strong>:{" "}{datasetMetadata.id}</p>
           <p><strong>Publications</strong>:{" "}{datasetMetadata.publications.join('; ')}</p>
           <p><strong>Dataset location</strong>:{" "}{storageLocation}</p>
-            <ClipboardLink bucketBrowseLink={String(bucketBrowseLink)} s3URL={String(s3URL)} />
+          <ClipboardLink bucketBrowseLink={String(bucketBrowseLink)} s3URL={String(s3URL)} />
           </Grid>
         </Grid>
       </>
