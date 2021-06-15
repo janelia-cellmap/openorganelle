@@ -309,7 +309,7 @@ export default function Tutorials() {
               Data organization
             </Typography>
             <Typography gutterBottom>
-              All our datasets are stored on AWS S3 
+              Our datasets are stored on AWS S3 
               using the <a href="https://github.com/saalfeldlab/n5">N5 format</a> For documentation of how data, metadata, and derived data are
               organized for OpenOrganelle, see this <a href="https://github.com/janelia-cosem/schemas/blob/master/cloud/janelia-cosem/README.md">
               page</a>. OpenOrganelle provides access to raw EM datasets, organelle
@@ -321,7 +321,11 @@ export default function Tutorials() {
               Direct data access
             </Typography>
             <Typography paragraph>
-            Because our datasets are so large  — 10 - 1000+ GB, with hundreds of thousands of files — we do not offer a browser-based tool for downloading data directly. 
+            When working with imaging datasets that greatly exceed the memory available on a single computer, 
+            best practice is to store the dataset in small chunks and use programs that leverage the chunked representation. 
+            This is the approach we recommend for the datasets displayed on OpenOrganelle.
+            Accordingly, we do not offer a browser-based tool for directly downloading entire datasets, 
+            as downloading hundreds of thousands of files totalling hundreds of gigabytes is not feasible in the web browser.
             Instead, we recommend the following methods for direct data access: 
             <ul>
             <li>
@@ -331,7 +335,7 @@ export default function Tutorials() {
               <a href="#python">Programmatic data access with Python</a>
             </li>
             <li>
-              <a href="#aws-cli">Download raw files with the AWS CLI</a>
+              <a href="#aws-cli">Raw file access with the AWS CLI</a>
             </li>
             </ul>
             </Typography>

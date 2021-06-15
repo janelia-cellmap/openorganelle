@@ -7,10 +7,9 @@ import FolderOpen from "@material-ui/icons/FolderOpen"
 import Tooltip from "@material-ui/core/Tooltip"
 import fijiIcon from "./fiji_icon.png";
 import { Button } from "@material-ui/core";
-import { GetApp } from "@material-ui/icons";
+import HelpIcon from '@material-ui/icons/Help';
 import { HashLink } from 'react-router-hash-link';
-import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
-import { MemoryRouter as Router } from 'react-router';
+import {LinkProps as RouterLinkProps } from 'react-router-dom';
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
     FileBrowser: {
@@ -44,11 +43,9 @@ export default function ClipboardLink({ bucketBrowseLink, s3URL }: ClipBoardLink
       <Tooltip title="Browse raw data on s3" aria-label="file browser link">
       <Button variant="contained" color="primary" href={bucketBrowseLink} target="_blank" rel= "noopener noreferrer" startIcon={<FolderOpen/>}> Browse files </Button>
       </Tooltip>
-      <Router>
       <Tooltip title="Learn how to access data" aria-label="data access link">
-      <Button variant="contained" color="primary" component={LinkBehavior} target="_blank" startIcon={<GetApp/>} rel= "noopener noreferrer"> Access data </Button>
+      <Button variant="contained" color="primary" component={LinkBehavior} startIcon={<HelpIcon/>} rel= "noopener noreferrer"> Access data </Button>
       </Tooltip>
-      </Router>
       <Tooltip title="Copy data URI to clipboard" aria-label="copy data URI to clipboard 1">
       <IconButton
         onClick={() => {
