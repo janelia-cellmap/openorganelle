@@ -147,7 +147,7 @@ contentTypeDescriptions.set('analysis', {label: "Analysis Layers", description: 
 export function inferLayerType(volumeName: string): string
 {
   let result = 'segmentation';
-  if ((volumeName.indexOf('em-') > 0) || (volumeName.indexOf('_pred') > 0)) {
+  if ((volumeName.indexOf('em-') > 0) || (volumeName.indexOf('_pred') > 0) || (volumeName.indexOf('_sim') > 0) || (volumeName.indexOf('_palm') > 0)) {
     result='image';
   }
   return result
