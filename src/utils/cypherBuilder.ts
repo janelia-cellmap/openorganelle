@@ -87,14 +87,25 @@ export default function cypherBuilder({
 
       const selected = contactType.split("_");
 
-      const contactMatch = `MATCH p=(organelleA:\`${dataset}|${selected[0]}\`)-[contact:\`${dataset}|${contactType}_contacts\`]->(organelleB:\`${dataset}|${selected[1]}\`)`;
+      let contactMatch = `MATCH p=(organelleB:\`${dataset}|${selected[0]}\`)-[contact:\`${dataset}|${contactType}_contacts\`]->(organelleA:\`${dataset}|${selected[1]}\`)`;
+      if (selected[0] === organelleA && selected[1] === organelleB) {
+        contactMatch = `MATCH p=(organelleA:\`${dataset}|${selected[0]}\`)-[contact:\`${dataset}|${contactType}_contacts\`]->(organelleB:\`${dataset}|${selected[1]}\`)`;
+      }
       const contactParameters = measurements.map((m: string) => {
         if (m === "ID") {
           return `contact.ID as contact_ID`;
         }
         return `contact.${m}`;
       });
-      contactParameters.push("organelleA.ID", "organelleB.ID", "id(organelleA) as intIdA", "id(organelleB) as intIdB");
+
+      // if the organelles are reversed, then we need to reverse the
+      // order in which the data columns are returned.
+      if (selected[0] === organelleA && selected[1] === organelleB) {
+        contactParameters.push("organelleA.ID", "organelleB.ID", "id(organelleA) as intIdA", "id(organelleB) as intIdB");
+      } else {
+        contactParameters.push("organelleB.ID", "organelleA.ID", "id(organelleB) as intIdB", "id(organelleA) as intIdA");
+      }
+
       const contactReturn = `RETURN ${contactParameters.join(", ")}`;
       const completeCypher = `${contactMatch} ${contactReturn} LIMIT 1000;`;
       query = completeCypher;
