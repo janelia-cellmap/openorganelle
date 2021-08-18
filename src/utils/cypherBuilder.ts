@@ -31,7 +31,7 @@ export const contactTypes = [
 
 // some of the connections start and end ids are not ordered correctly in the
 // database, so we need to switch the start and end ids to get data out.
-const swappedContacts = ["endo_er", "endo_golgi", "mito_pm","mt_nucleus", "mt_pm", "mt_vescile"]
+const swappedContacts = ["endo_er", "endo_golgi", "mito_pm","mt_nucleus", "mt_pm", "mt_vesicle"]
 
 export function getContacts(organelle: string): string[] {
   const contacts: string[] = [];
