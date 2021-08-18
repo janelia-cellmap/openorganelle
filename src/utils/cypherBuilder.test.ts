@@ -7,7 +7,7 @@ test("creates cypher for er volume", () => {
       organelleA: "er",
       measurements: ["volume"]
     })
-  ).toBe("MATCH(organelle:`jrc_hela-2|er`) RETURN organelle.volume, id(organelle) as intId;");
+  ).toBe("MATCH(organelle:`jrc_hela-2|er`) RETURN organelle.volume, id(organelle) as intId LIMIT 100000;");
 });
 
 test("creates cypher for er contact with golgi", () => {

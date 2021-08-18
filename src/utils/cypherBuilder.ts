@@ -68,7 +68,8 @@ export default function cypherBuilder({
     const isContactQuery =
       organelleA.length > 0 && organelleB && organelleB.length > 0;
     if (isContactQuery) {
-      // organelle order for the contact tag is important as there are only certain combinations
+      // organelle order for the contact tag is important as there are only
+      // certain combinations
       // eg: er_golgi, mito_mt, mt_nucleus
 
       // check organelles are in the allowed contacts
@@ -102,7 +103,7 @@ export default function cypherBuilder({
         .map((m: string) => `organelle.${m}`)
         .join(", ");
 
-      query = `MATCH(organelle:\`${dataset}|${organelleA}\`) RETURN ${returnParameters}, id(organelle) as intIdi LIMIT 100000;`;
+      query = `MATCH(organelle:\`${dataset}|${organelleA}\`) RETURN ${returnParameters}, id(organelle) as intId LIMIT 100000;`;
     }
   }
   return query;
