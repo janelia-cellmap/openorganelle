@@ -19,7 +19,6 @@ export const contactTypes = [
   "er_ribo",
   "er_vesicle",
   "er-periph_mito",
-  "er-periph_mt",
   "er-periph_ribo",
   "mt_nucleus",
   "mt_pm",
