@@ -75,7 +75,7 @@ test("gets correct contacts for nucleus", () => {
 test("gets correct contacts for golgi", () => {
   expect(
     getContacts("golgi").sort()
-  ).toEqual(["endo", "er"]);
+  ).toEqual(["endo", "er", "mt", "vesicle"]);
 });
 
 test("creates cypher for mito contact with er", () => {
