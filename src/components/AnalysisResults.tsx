@@ -39,7 +39,8 @@ function setHeaderName(columnName: string, organelles: any[]) {
 function formatColumnHeader(columnName: string, organelles: any[]) {
   return {
     accessor: columnName.replace(".", "_"),
-    Header: setHeaderName(columnName, organelles)
+    Header: setHeaderName(columnName, organelles),
+    sortType: columnName === 'contact.planarity' ? 'basic' : 'alphanumeric'
   };
 }
 
