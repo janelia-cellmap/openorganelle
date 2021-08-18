@@ -29,6 +29,10 @@ export const contactTypes = [
   "mt_vesicle"
 ];
 
+// some of the connections start and end ids are not ordered correctly in the
+// database, so we need to switch the start and end ids to get data out.
+const swappedContacts = ["endo_er", "endo_golgi", "mito_pm","mt_nucleus", "mt_pm", "mt_vescile"]
+
 export function getContacts(organelle: string): string[] {
   const contacts: string[] = [];
   // filter contact types for any that match 'organelle'
@@ -89,7 +93,11 @@ export default function cypherBuilder({
         );
       }
 
-      const selected = contactType.split("_");
+      let selected = contactType.split("_");
+
+      if (swappedContacts.includes(contactType)) {
+        selected = selected.reverse()
+      }
 
       let contactMatch = `MATCH p=(organelleB:\`${dataset}|${selected[0]}\`)-[contact:\`${dataset}|${contactType}_contacts\`]->(organelleA:\`${dataset}|${selected[1]}\`)`;
       if (selected[0] === organelleA && selected[1] === organelleB) {
