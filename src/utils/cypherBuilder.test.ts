@@ -63,7 +63,7 @@ test("gets correct contacts for er", () => {
 test("gets correct contacts for er-periph", () => {
   expect(
     getContacts("er-periph").sort()
-  ).toEqual(["mito", "mt", "ribo"]);
+  ).toEqual(["mito", "ribo"]);
 });
 
 test("gets correct contacts for nucleus", () => {
