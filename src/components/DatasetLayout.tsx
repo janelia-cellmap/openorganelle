@@ -5,11 +5,11 @@ import React, {
 
 import Pagination from "@material-ui/lab/Pagination";
 import Typography from "@material-ui/core/Typography";
-import { Dataset} from "../api/datasets";
+import { Dataset } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import DatasetTile from "./DatasetTile";
 
-export default function DatasetList() {
+export default function DatasetLayout() {
   const {appState} = useContext(AppContext);
   const [currentPage, setCurrentPage] = useState(1);
   const datasetsPerPage = 10;

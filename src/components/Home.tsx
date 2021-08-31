@@ -5,7 +5,7 @@ import Code from "./Code";
 import Tutorials from "./Tutorials";
 import Publications from "./Publications";
 import Organelles from "./Organelles";
-import DatasetList from "./DatasetList";
+import DatasetLayout from "./DatasetLayout";
 import DatasetDetails from "./DatasetDetails";
 import "./Home.css";
 import { AppContext } from "../context/AppContext";
@@ -30,7 +30,7 @@ export default function Home() {
           <Route path="/tutorials" component={Tutorials} />
           <Route path="/publications" component={Publications} />
           <Route path="/organelles" component={Organelles} />
-          <Route path="/" exact component={DatasetList} />
+          <Route path="/" exact component={DatasetLayout} />
           <Route path="/datasets/:slug" component={DatasetDetails} />
         </Switch>
       </Container>
