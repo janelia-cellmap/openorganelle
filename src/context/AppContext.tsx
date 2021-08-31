@@ -10,11 +10,13 @@ export interface ContextProps {
   datasetsLoading: boolean,
   datasets: Map<string, Dataset>,
   datasetGrid: boolean,
+  [key: string]: any
 }
 
 interface AppContext {
   appState: ContextProps
   setAppState: (appState: ContextProps) => null | void
+  setPermanent: (action: any) => null | void
 }
 
 const contextDefault: ContextProps = {
@@ -26,17 +28,38 @@ const contextDefault: ContextProps = {
   datasetGrid: true
 }
 
+const allowedPermanent = ['datasetGrid'];
+
+const localStorageProps = JSON.parse(localStorage.getItem("appState") || "{}");
+
+const combinedState = {...contextDefault, ...localStorageProps};
+
 const AppContext = React.createContext<AppContext>({
-  appState: contextDefault,
+  appState: combinedState,
   setAppState: () => null,
+  setPermanent: () => null,
 });
 
 const AppProvider = (props: any) => {
-
-  const [appState, setAppState] = useState<ContextProps>(contextDefault);
+  const [appState, setAppState] = useState<ContextProps>(combinedState);
   const { children } = props;
+
+  const setPermanent = (action: any) => {
+    const filteredState = Object.keys(appState)
+      .filter(key => allowedPermanent.includes(key))
+      .reduce((obj, key) => {
+        return {
+          ...obj,
+          [key]: appState[key]
+        }
+      }, {});
+    const updatedState = { ...filteredState, ...action};
+    localStorage.setItem("appState", JSON.stringify(updatedState));
+    setAppState({ ...appState, ...action });
+  }
+
   return (
-    <AppContext.Provider value={{appState, setAppState}}>
+    <AppContext.Provider value={{appState, setAppState, setPermanent}}>
       {children}
     </AppContext.Provider>
   );

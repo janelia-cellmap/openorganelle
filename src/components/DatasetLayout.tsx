@@ -14,7 +14,7 @@ import { AppContext } from "../context/AppContext";
 import DatasetTile from "./DatasetTile";
 
 export default function DatasetLayout() {
-  const {appState, setAppState} = useContext(AppContext);
+  const {appState, setPermanent} = useContext(AppContext);
   const [currentPage, setCurrentPage] = useState(1);
 
   const { datasetGrid: compact } = appState;
@@ -50,7 +50,7 @@ export default function DatasetLayout() {
     });
 
   const handleCompactChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAppState({ ...appState, datasetGrid: event.target.checked });
+    setPermanent({ datasetGrid: event.target.checked });
   }
 
   return (
