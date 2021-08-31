@@ -14,9 +14,10 @@ import { AppContext } from "../context/AppContext";
 import DatasetTile from "./DatasetTile";
 
 export default function DatasetLayout() {
-  const {appState} = useContext(AppContext);
+  const {appState, setAppState} = useContext(AppContext);
   const [currentPage, setCurrentPage] = useState(1);
-  const [compact, setCompact] = useState(true);
+
+  const { datasetGrid: compact } = appState;
   const datasetsPerPage = compact ? 12 : 10;
 
   const datasets: Map<string, Dataset> = appState.datasets;
@@ -49,7 +50,7 @@ export default function DatasetLayout() {
     });
 
   const handleCompactChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCompact(event.target.checked);
+    setAppState({ ...appState, datasetGrid: event.target.checked });
   }
 
   return (

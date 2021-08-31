@@ -8,7 +8,8 @@ export interface ContextProps {
   dataBucket: string,
   webGL2Enabled: boolean,
   datasetsLoading: boolean,
-  datasets: Map<string, Dataset>
+  datasets: Map<string, Dataset>,
+  datasetGrid: boolean,
 }
 
 interface AppContext {
@@ -21,15 +22,16 @@ const contextDefault: ContextProps = {
   dataBucket: 'janelia-cosem',
   webGL2Enabled: checkWebGL2(),
   datasetsLoading: false,
-  datasets: new Map()
+  datasets: new Map(),
+  datasetGrid: true
 }
 
-export const AppContext = React.createContext<AppContext>({
+const AppContext = React.createContext<AppContext>({
   appState: contextDefault,
   setAppState: () => null,
 });
 
-export const AppProvider = (props: any) => {
+const AppProvider = (props: any) => {
 
   const [appState, setAppState] = useState<ContextProps>(contextDefault);
   const { children } = props;
@@ -43,3 +45,5 @@ export const AppProvider = (props: any) => {
 AppProvider.propTypes = {
   children: PropTypes.object.isRequired
 }
+
+export { AppContext, AppProvider };
