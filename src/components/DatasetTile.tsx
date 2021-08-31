@@ -6,7 +6,6 @@ import { Grid, CardMedia, CardActionArea } from "@material-ui/core";
 import { AppContext } from "../context/AppContext";
 import { Dataset } from "../api/datasets";
 import {DatasetDescriptionPreview} from "./DatasetDescriptionText";
-import { DatasetMetadata } from "../api/dataset_metadata";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({

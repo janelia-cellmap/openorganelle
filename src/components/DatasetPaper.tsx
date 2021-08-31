@@ -10,8 +10,6 @@ import {
 } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import { ContentType, Dataset, DatasetView, LayerTypes } from "../api/datasets";
-import { DatasetMetadata } from "../api/dataset_metadata";
-import { bucketNameToURL } from "../api/datasources";
 import { AppContext } from "../context/AppContext";
 import { DatasetDescriptionFull } from "./DatasetDescriptionText";
 import DatasetViewList from "./DatasetViewList";
@@ -57,11 +55,10 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const [layerFilter, setLayerFilter] = useState("");
 
   const volumeNames: string[] = [...dataset.volumes.keys()];
-  
-  const datasetLink = `/datasets/${dataset.name}`;
+
 	const bucketBrowseLink = `https://open.quiltdata.com/b/${appState.dataBucket}/tree/${dataset.name}/`;
   const s3URL = `s3://${appState.dataBucket}/${dataset.name}/${dataset.name}.n5`;
-  
+
   const volumeCheckStateInit = new Map<string, VolumeCheckStates>(
     volumeNames.map(k => [k, {selected: false, layerType: undefined}])
   );

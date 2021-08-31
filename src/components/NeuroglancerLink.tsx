@@ -4,7 +4,7 @@ import { Dataset, DatasetView, LayerTypes, Volume} from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
-import { ImageLayer, Layer, SegmentationLayer } from "@janelia-cosem/neuroglancer-url-tools";
+import { ImageLayer, SegmentationLayer } from "@janelia-cosem/neuroglancer-url-tools";
 
 interface VolumeCheckStates {
   selected: boolean
@@ -42,7 +42,7 @@ export default function NeuroglancerLink({
   });
 
   let ngLink = "";
-  
+
   const disabled = Boolean(local_view.volumeNames.length === 0);
   const layers = local_view.volumeNames.map(vk => {
     let layerType = dataset.volumes.get(vk)?.displaySettings.defaultLayerType;
