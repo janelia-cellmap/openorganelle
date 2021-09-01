@@ -53,14 +53,17 @@ export default function DatasetTile({
 }: DatasetTileProps) {
   const { appState } = useContext(AppContext);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [elevation, setElevation] = React.useState<number>(1);
   const dataset: Dataset = appState.datasets.get(datasetKey)!;
   const datasetLink = `/datasets/${dataset.name}`;
   const classes = useStyles();
 
   const handleMouseOver = (event: React.MouseEvent<HTMLElement>) => {
+    setElevation(10);
     setAnchorEl(event.currentTarget);
   };
   const handleMouseOut = () => {
+    setElevation(1);
     setAnchorEl(null);
   };
 
@@ -71,7 +74,9 @@ export default function DatasetTile({
       // remove variant and add raised prop for more dramatic outline
       <>
         <Card
-          variant="outlined"
+          // variant="outlined"
+          raised
+          elevation={elevation}
           className={classes.compact}
           onMouseOver={handleMouseOver}
           onMouseOut={handleMouseOut}
