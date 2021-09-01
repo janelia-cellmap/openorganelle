@@ -78,7 +78,7 @@ export default function DatasetTile({
         >
           <CardActionArea component={RouterLink} to={datasetLink}>
             <CardMedia style={{ height: 256 }} image={dataset.thumbnailURL} />
-            <CardContent style={{ whiteSpace: "nowrap" }}>
+            <CardContent style={{ whiteSpace: "nowrap", padding: "0 1em" }}>
               <Box component="p" textOverflow="ellipsis" overflow="hidden">
                 {dataset.description.title}
               </Box>
