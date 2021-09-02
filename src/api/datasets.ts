@@ -372,9 +372,7 @@ async function getDescription(
   bucket: string,
   key: string
 ): Promise<DatasetMetadata> {
-  // const bucketURL = bucketNameToURL(bucket);
-  // const descriptionURL = `${bucketURL}/${key}/README.json`;
-  const descriptionURL = `https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/master/metadata/datasets/${key}/readme.json`;
+  const descriptionURL = `https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/hela-2-migration/metadata/datasets/${key}/readme.json`;
   return getObjectFromJSON(descriptionURL);
 }
 
