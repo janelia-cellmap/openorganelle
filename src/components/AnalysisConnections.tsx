@@ -1,6 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "react-query";
+import Card from "@material-ui/core/Card";
 
 import AnalysisDataTable from "./AnalysisDataTable";
 import AnalysisConnectionsGraphic from "./AnalysisConnectionsGraphic";
@@ -90,7 +91,13 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
 
   return (
     <>
-      <p>Connections for {cypher}</p>
+      {process.env.NODE_ENV !== "production" ? (
+        <Card style={{ padding: "1em", margin: "1em" }}>
+          <code>{cypher}</code>
+        </Card>
+      ) : (
+        ""
+      )}
       <AnalysisDataTable data={dataRows} columns={columns} />
       <AnalysisConnectionsGraphic data={dataRows} />
       <NeuroglancerLink

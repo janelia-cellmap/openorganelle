@@ -17,7 +17,7 @@ const headerNames: headerLookup = {
   "organelle.planarity": "Planarity (0-1)",
   "organelleA.ID": "Organelle ID",
   "organelleB.ID": "Connected Organelle ID",
-  "contact.volume": "Volume (nm^2)",
+  "contact.volume": "Volume (nm^3)",
   contact_ID: "Contact ID",
   "contact.surfaceArea": "Surface Area (nm^2)",
   "contact.planarity": "Planarity (0-1)"
@@ -39,7 +39,8 @@ function setHeaderName(columnName: string, organelles: any[]) {
 function formatColumnHeader(columnName: string, organelles: any[]) {
   return {
     accessor: columnName.replace(".", "_"),
-    Header: setHeaderName(columnName, organelles)
+    Header: setHeaderName(columnName, organelles),
+    sortType: columnName === 'contact.planarity' ? 'basic' : 'alphanumeric'
   };
 }
 

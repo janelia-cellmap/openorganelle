@@ -7,8 +7,7 @@ import {
   ImageLayer,
   LayerDataSource,
   SegmentationLayer,
-  Layer,
-  SingleMeshLayer,
+  Layer
 } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, getObjectFromJSON, bucketNameToURL, s3URItoURL } from "./datasources";
 import * as Path from "path";
@@ -45,7 +44,7 @@ interface DatasetIndex {
 
 interface DataSource {
   name: string
-  path: string  
+  path: string
   format: DataFormats
   transform: SpatialTransform
   description: string
@@ -76,7 +75,7 @@ interface IDatasetView{
   description: string
   position: number[] | undefined
   scale: number | undefined
-  orientation: number[] | undefined 
+  orientation: number[] | undefined
   volumeNames: string[]
 }
 
@@ -109,11 +108,11 @@ export class DatasetView implements IDatasetView {
 export interface ContentTypeMetadata {
   label: string
   description: string
-} 
+}
 
 
 function SpatialTransformToNeuroglancer(transform: SpatialTransform, outputDimensions: CoordinateSpace): CoordinateSpaceTransform {
-  
+
   const inputDimensions: CoordinateSpace = {
     x: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('x')]), "m"],
     y: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('y')]), "m"],
@@ -154,15 +153,13 @@ export function inferLayerType(volumeName: string): string
 }
 
 function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataType: string): string | undefined{
-  let lower = 0;
-  let upper = 0;
-  let cmin = 0;
-  let cmax = 0;
-    switch (contentType) {
+  switch (contentType) {
     case 'em':{
+      let lower = 0;
+      let upper = 0;
       if (dataType === 'uint8') {lower = 0; upper = 255}
       else if (dataType === 'uint16') {lower = 0; upper = 65535}
-      const interval = upper-lower;
+      const interval = upper - lower;
       let cmin = shaderArgs.contrastLimits.start * interval;
       let cmax = shaderArgs.contrastLimits.end * interval;
         return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${Math.max(0, cmin - 2 * (cmax-cmin))}, ${Math.min(upper, cmax + 2 * (cmax - cmin))}])
@@ -177,7 +174,7 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataT
       return '';
     default:
       return undefined;
-              }
+  }
 }
 
 interface LayerDataSource2 extends LayerDataSource {
@@ -216,7 +213,7 @@ export class Volume implements VolumeSource {
     // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer
     // viewer state construction
 
-    
+
 
     toLayer(layerType: LayerTypes): Layer | undefined {
         const srcURL = `${this.format}://${this.path}`;
@@ -254,11 +251,11 @@ export class Volume implements VolumeSource {
         }
         else if (layerType === 'segmentation') {
           if (subsources.length > 0) {
-            layer = new SegmentationLayer('source', 
-                                          true, 
-                                          undefined, 
-                                          this.name, 
-                                          [source, ...subsources], 
+            layer = new SegmentationLayer('source',
+                                          true,
+                                          undefined,
+                                          this.name,
+                                          [source, ...subsources],
                                           this.subsources[0].ids,
                                           undefined,
                                           true,
@@ -272,10 +269,10 @@ export class Volume implements VolumeSource {
                                           color);
           }
           else {
-            layer = new SegmentationLayer('source', 
-                                          true, 
-                                          undefined, 
-                                          this.name, 
+            layer = new SegmentationLayer('source',
+                                          true,
+                                          undefined,
+                                          this.name,
                                           source,
                                           undefined,
                                           undefined,
@@ -312,8 +309,8 @@ export class Dataset implements IDataset {
         this.views = views;
     }
 
-    makeNeuroglancerViewerState(layers: SegmentationLayer[] | ImageLayer[], 
-                                 viewerPosition: number[] | undefined, 
+    makeNeuroglancerViewerState(layers: SegmentationLayer[] | ImageLayer[],
+                                 viewerPosition: number[] | undefined,
                                  crossSectionScale: number | undefined,
                                  ){
         // hack to post-hoc adjust alpha if there is only 1 layer selected
@@ -351,7 +348,7 @@ export class Dataset implements IDataset {
         return encodeFragment(urlSafeStringify(vState));
     }
   }
-  
+
 async function getDatasetKeys(bucket: string): Promise<string[]> {
     // get all the folders in the bucket
     let datasetKeys = (await s3ls(bucket, '', '/', '', false)).folders;
@@ -421,19 +418,19 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
   const datasets: Map<string, Dataset> = new Map();
   //const metadataURL = bucketNameToURL(bucket);
   const metadataURL = "https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/master/metadata/datasets/";
-  let ds = await Promise.all(
+  await Promise.all(
     datasetKeys.map(async key => {
       const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
       const description_json = await getDescription(bucket, key);
-      const description = new DatasetMetadata(description_json.title, 
-                                              description_json.id, 
+      const description = new DatasetMetadata(description_json.title,
+                                              description_json.id,
                                               description_json.publications ?? [],
-                                              description_json.imaging ?? {}, 
+                                              description_json.imaging ?? {},
                                               description_json.sample ?? {},
                                               description_json.DOI ?? {});
       const thumbnailURL: string =  `${outerPath}/thumbnail.jpg`
       const index = await getDatasetIndex(metadataURL, key);
-      
+
       if (index !== undefined){
         try {
           const views: DatasetView[] = [];

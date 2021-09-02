@@ -15,16 +15,23 @@ export const contactTypes = [
   "er_golgi",
   "er_mito",
   "er_mt",
+  "er-periph_mito",
+  "er-periph_ribo",
   "er_pm",
   "er_ribo",
   "er_vesicle",
-  "er-periph_mito",
-  "er-periph_mt",
-  "er-periph_ribo",
+  "golgi_mt",
+  "golgi_vesicle",
+  "mito_mt",
+  "mito_pm",
   "mt_nucleus",
   "mt_pm",
   "mt_vesicle"
 ];
+
+// some of the connections start and end ids are not ordered correctly in the
+// database, so we need to switch the start and end ids to get data out.
+const swappedContacts = ["endo_er", "endo_golgi", "mito_pm","mt_nucleus", "mt_pm", "mt_vesicle"]
 
 export function getContacts(organelle: string): string[] {
   const contacts: string[] = [];
@@ -69,7 +76,8 @@ export default function cypherBuilder({
     const isContactQuery =
       organelleA.length > 0 && organelleB && organelleB.length > 0;
     if (isContactQuery) {
-      // organelle order for the contact tag is important as there are only certain combinations
+      // organelle order for the contact tag is important as there are only
+      // certain combinations
       // eg: er_golgi, mito_mt, mt_nucleus
 
       // check organelles are in the allowed contacts
@@ -85,16 +93,31 @@ export default function cypherBuilder({
         );
       }
 
-      const selected = contactType.split("_");
+      let selected = contactType.split("_");
 
-      const contactMatch = `MATCH p=(organelleA:\`${dataset}|${selected[0]}\`)-[contact:\`${dataset}|${contactType}_contacts\`]->(organelleB:\`${dataset}|${selected[1]}\`)`;
+      if (swappedContacts.includes(contactType)) {
+        selected = selected.reverse()
+      }
+
+      let contactMatch = `MATCH p=(organelleB:\`${dataset}|${selected[0]}\`)-[contact:\`${dataset}|${contactType}_contacts\`]->(organelleA:\`${dataset}|${selected[1]}\`)`;
+      if (selected[0] === organelleA && selected[1] === organelleB) {
+        contactMatch = `MATCH p=(organelleA:\`${dataset}|${selected[0]}\`)-[contact:\`${dataset}|${contactType}_contacts\`]->(organelleB:\`${dataset}|${selected[1]}\`)`;
+      }
       const contactParameters = measurements.map((m: string) => {
         if (m === "ID") {
           return `contact.ID as contact_ID`;
         }
         return `contact.${m}`;
       });
-      contactParameters.push("organelleA.ID", "organelleB.ID", "id(organelleA) as intIdA", "id(organelleB) as intIdB");
+
+      // if the organelles are reversed, then we need to reverse the
+      // order in which the data columns are returned.
+      if (selected[0] === organelleA && selected[1] === organelleB) {
+        contactParameters.push("organelleA.ID", "organelleB.ID", "id(organelleA) as intIdA", "id(organelleB) as intIdB");
+      } else {
+        contactParameters.push("organelleB.ID", "organelleA.ID", "id(organelleB) as intIdB", "id(organelleA) as intIdA");
+      }
+
       const contactReturn = `RETURN ${contactParameters.join(", ")}`;
       const completeCypher = `${contactMatch} ${contactReturn} LIMIT 1000;`;
       query = completeCypher;
@@ -103,7 +126,7 @@ export default function cypherBuilder({
         .map((m: string) => `organelle.${m}`)
         .join(", ");
 
-      query = `MATCH(organelle:\`${dataset}|${organelleA}\`) RETURN ${returnParameters}, id(organelle) as intIdi LIMIT 100000;`;
+      query = `MATCH(organelle:\`${dataset}|${organelleA}\`) RETURN ${returnParameters}, id(organelle) as intId LIMIT 100000;`;
     }
   }
   return query;

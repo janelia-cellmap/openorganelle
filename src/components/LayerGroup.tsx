@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Volume, ContentTypeMetadata, ContentType } from "../api/datasets";
-import { Checkbox, FormControlLabel, FormGroup, Switch } from "@material-ui/core";
+import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
 import Typography from "@material-ui/core/Typography";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
@@ -37,7 +37,7 @@ export default function VolumeCheckboxCollection({
   accordionExpanded,
 }: VolumeCheckboxCollectionProps) {
   const [expanded, setExpanded] = useState(accordionExpanded);
-  
+
   const handleExpand = () => {
     setExpanded(!expanded);
   };
@@ -59,8 +59,7 @@ export default function VolumeCheckboxCollection({
       />
     );
   });
-  
-  
+
   return (
     <Accordion key={contentType} expanded={expanded} onChange={handleExpand}>
       <AccordionSummary
