@@ -6,10 +6,15 @@ import Grid from "@material-ui/core/Grid";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
+import Button from "@material-ui/core/Button";
+import FilterListIcon from '@material-ui/icons/FilterList';
+
 import { Dataset } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
+import sortFunctions from "../utils/sortingFunctions";
 import DatasetTile from "./DatasetTile";
 import { useQueryString } from "../utils/customHooks";
+import DatasetFilters from "./DatasetFilters";
 
 export default function DatasetLayout() {
   const query = useQueryString();
@@ -25,7 +30,7 @@ export default function DatasetLayout() {
   const rangeStart = (page - 1) * datasetsPerPage;
   const rangeEnd = rangeStart + datasetsPerPage;
   const totalPages = Math.ceil(datasets.size / datasetsPerPage);
-  const datasetKeys = Array.from(datasets.keys());
+
 
   function setCurrentPage(page: number) {
     query.set("page", page.toString());
@@ -36,24 +41,23 @@ export default function DatasetLayout() {
   }
 
   // sort by number of volumes; this will break when the metadata changes to putting volumes in an array
-  const datasetKeysSorted = datasetKeys.sort(
-    (a, b) =>
-      Array.from(datasets.get(b)!.volumes.keys()).length -
-      Array.from(datasets.get(a)!.volumes.keys()).length
-  );
-  const displayedDatasets = datasetKeysSorted
+  const datasetsSorted = [...datasets].sort(sortFunctions[appState.sortBy].func)
+
+  console.log(datasetsSorted);
+
+  const displayedDatasets = datasetsSorted
     .slice(rangeStart, rangeEnd)
-    .map((k, i) => {
+    .map((dataset, i) => {
       if (compact) {
         return (
           <DatasetTile
-            datasetKey={k}
+            dataset={dataset}
             compact={compact}
-            key={`${k}_${rangeStart}_${i}`}
+            key={`${dataset[0]}_${rangeStart}_${i}`}
           />
         );
       }
-      return <DatasetTile datasetKey={k} key={`${k}_${rangeStart}_${i}`} />;
+      return <DatasetTile dataset={dataset} key={`${dataset[0]}_${rangeStart}_${i}`} />;
     });
 
   const handleCompactChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +67,9 @@ export default function DatasetLayout() {
   if (datasets.size < 1) {
     return <p>Loading...</p>;
   }
+  const handleFilterToggle = () => {
+    setPermanent({ showFilters: !appState.showFilters });
+  };
 
   return (
     <div>
@@ -71,7 +78,7 @@ export default function DatasetLayout() {
         {datasets.size}
       </Typography>
       <Grid container spacing={1}>
-        <Grid item sm={10} xs={12}>
+        <Grid item sm={8} xs={12}>
           {datasets.size > datasetsPerPage && (
             <Pagination
               count={totalPages}
@@ -79,6 +86,9 @@ export default function DatasetLayout() {
               onChange={(e, value) => setCurrentPage(value)}
             />
           )}
+        </Grid>
+        <Grid item sm={2} xs={12}>
+          <Button variant="outlined" color="primary" onClick={handleFilterToggle} startIcon={<FilterListIcon />} >Filter / Sort</Button>
         </Grid>
         <Grid item sm={2} xs={12}>
           <FormGroup row>
@@ -95,6 +105,11 @@ export default function DatasetLayout() {
             />
           </FormGroup>
         </Grid>
+        {appState.showFilters ? (
+        <Grid item xs={12}>
+          <DatasetFilters/>
+        </Grid>
+        ):""}
         <Grid item xs={12}>
           <Grid container spacing={1}>
             {displayedDatasets}
