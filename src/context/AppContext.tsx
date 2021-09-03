@@ -10,6 +10,8 @@ export interface ContextProps {
   datasetsLoading: boolean,
   datasets: Map<string, Dataset>,
   datasetGrid: boolean,
+  showFilters: boolean,
+  sortBy: string,
   [key: string]: any
 }
 
@@ -25,7 +27,9 @@ const contextDefault: ContextProps = {
   webGL2Enabled: checkWebGL2(),
   datasetsLoading: false,
   datasets: new Map(),
-  datasetGrid: true
+  datasetGrid: true,
+  showFilters: false,
+  sortBy: 'name'
 }
 
 const allowedPermanent = ['datasetGrid'];
