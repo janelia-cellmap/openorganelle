@@ -43,8 +43,6 @@ export default function DatasetLayout() {
   // sort by number of volumes; this will break when the metadata changes to putting volumes in an array
   const datasetsSorted = [...datasets].sort(sortFunctions[appState.sortBy].func)
 
-  console.log(datasetsSorted);
-
   const displayedDatasets = datasetsSorted
     .slice(rangeStart, rangeEnd)
     .map((dataset, i) => {
