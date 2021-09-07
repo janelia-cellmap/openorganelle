@@ -31,16 +31,16 @@ export default function DatasetFilters() {
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
   const tags = [
-    { title: 'Tag1', value: 't1' },
-    { title: 'Tag2', value: 't2' },
-    { title: 'Tag3', value: 't3' },
-    { title: 'Tag4', value: 't4' },
-    { title: 'Tag5', value: 't5' },
-    { title: 'bigTag5', value: 't5' },
-    { title: 'littleTag5', value: 't5' },
-    { title: 'anotherTag5', value: 't5' },
-    { title: 'bestTag5', value: 't5' },
-    { title: 'awesomeTag5', value: 't5' },
+    { title: 'Tag1', value: 't1', category: 'cat1' },
+    { title: 'Tag2', value: 't2', category: 'cat1' },
+    { title: 'Tag3', value: 't3', category: 'cat1' },
+    { title: 'Tag4', value: 't4', category: 'cat2' },
+    { title: 'Tag5', value: 't5', category: 'cat2' },
+    { title: 'bigTag5', value: 't5', category: 'cat2' },
+    { title: 'littleTag5', value: 't5', category: 'cat3' },
+    { title: 'anotherTag5', value: 't5', category: 'cat3' },
+    { title: 'bestTag5', value: 't5', category: 'cat3' },
+    { title: 'awesomeTag5', value: 't5', category: 'cat4' },
   ];
 
   return (
@@ -65,6 +65,7 @@ export default function DatasetFilters() {
           id="dataset-filters"
           options={tags}
           disableCloseOnSelect
+          groupBy={(option) => option.category}
           getOptionLabel={option => option.title}
           renderOption={(option, { selected }) => (
             <React.Fragment>
