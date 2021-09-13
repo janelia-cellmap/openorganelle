@@ -312,11 +312,11 @@ export class Dataset implements IDataset {
     makeNeuroglancerViewerState(layers: SegmentationLayer[] | ImageLayer[],
                                  viewerPosition: number[] | undefined,
                                  crossSectionScale: number | undefined,
+                                 crossSectionOrientation: number[] | undefined
                                  ){
         // hack to post-hoc adjust alpha if there is only 1 layer selected
         if (layers.length  === 1 && layers[0] instanceof ImageLayer) {layers[0].opacity = 1.0}
-        const projectionOrientation = undefined;
-        const crossSectionOrientation = undefined;
+        const projectionOrientation = crossSectionOrientation;
         crossSectionScale = crossSectionScale? crossSectionScale : 50;
         const projectionScale = 65536;
         // the first layer is the selected layer; consider making this a kwarg
@@ -417,7 +417,7 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
   // of Map<string, VolumeMeta>
   const datasets: Map<string, Dataset> = new Map();
   //const metadataURL = bucketNameToURL(bucket);
-  const metadataURL = "https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/master/metadata/datasets/";
+  const metadataURL = "https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/hela-2-migration/metadata/datasets/";
   await Promise.all(
     datasetKeys.map(async key => {
       const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
