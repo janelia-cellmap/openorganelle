@@ -8,12 +8,15 @@ export interface ContextProps {
   dataBucket: string,
   webGL2Enabled: boolean,
   datasetsLoading: boolean,
-  datasets: Map<string, Dataset>
+  datasets: Map<string, Dataset>,
+  datasetGrid: boolean,
+  [key: string]: any
 }
 
 interface AppContext {
   appState: ContextProps
   setAppState: (appState: ContextProps) => null | void
+  setPermanent: (action: any) => null | void
 }
 
 const contextDefault: ContextProps = {
@@ -21,20 +24,42 @@ const contextDefault: ContextProps = {
   dataBucket: 'janelia-cosem',
   webGL2Enabled: checkWebGL2(),
   datasetsLoading: false,
-  datasets: new Map()
+  datasets: new Map(),
+  datasetGrid: true
 }
 
-export const AppContext = React.createContext<AppContext>({
-  appState: contextDefault,
+const allowedPermanent = ['datasetGrid'];
+
+const localStorageProps = JSON.parse(localStorage.getItem("appState") || "{}");
+
+const combinedState = {...contextDefault, ...localStorageProps};
+
+const AppContext = React.createContext<AppContext>({
+  appState: combinedState,
   setAppState: () => null,
+  setPermanent: () => null,
 });
 
-export const AppProvider = (props: any) => {
-
-  const [appState, setAppState] = useState<ContextProps>(contextDefault);
+const AppProvider = (props: any) => {
+  const [appState, setAppState] = useState<ContextProps>(combinedState);
   const { children } = props;
+
+  const setPermanent = (action: any) => {
+    const filteredState = Object.keys(appState)
+      .filter(key => allowedPermanent.includes(key))
+      .reduce((obj, key) => {
+        return {
+          ...obj,
+          [key]: appState[key]
+        }
+      }, {});
+    const updatedState = { ...filteredState, ...action};
+    localStorage.setItem("appState", JSON.stringify(updatedState));
+    setAppState({ ...appState, ...action });
+  }
+
   return (
-    <AppContext.Provider value={{appState, setAppState}}>
+    <AppContext.Provider value={{appState, setAppState, setPermanent}}>
       {children}
     </AppContext.Provider>
   );
@@ -43,3 +68,5 @@ export const AppProvider = (props: any) => {
 AppProvider.propTypes = {
   children: PropTypes.object.isRequired
 }
+
+export { AppContext, AppProvider };
