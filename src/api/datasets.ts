@@ -398,13 +398,12 @@ function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
 }
 
 export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {
+  const datasets: Map<string, Dataset> = new Map();
+  const metadataSources: Map<string, GithubDatasetMetadataSource> = new Map();
+  
   // get the keys to the datasets
   const datasetKeys: string[] = await getDatasetKeys(bucket);
-  // Get a list of volume metadata specifications, represented instances
-  // of Map<string, VolumeMeta>
-  const datasets: Map<string, Dataset> = new Map();
 
-  const metadataSources: Map<string, GithubDatasetMetadataSource> = new Map();
   for (let key of datasetKeys) {
     const url = new URL(metadataEndpoint);
     url.pathname += key
@@ -414,6 +413,8 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
   await Promise.all(
     datasetKeys.map(async key => {
       const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
+      // non-undefined assertion is OK because we know that all the keys 
+      // are in there
       const metadataSource = metadataSources.get(key)!;
       const description = await metadataSource.GetMetadata();
       const thumbnailURL = await metadataSource.GetThumbnailURL();
