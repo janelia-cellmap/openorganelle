@@ -9,14 +9,16 @@ import {
   SegmentationLayer,
   Layer
 } from "@janelia-cosem/neuroglancer-url-tools";
-import { s3ls, getObjectFromJSON, bucketNameToURL, s3URItoURL } from "./datasources";
+import { s3ls, bucketNameToURL, s3URItoURL } from "./datasources";
 import * as Path from "path";
-
+import { AppContext } from "../context/AppContext";
 import {DatasetMetadata, GithubDatasetMetadataSource} from "./dataset_metadata";
 import {isUri} from "valid-url";
+import { useContext } from "react";
 
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
+const metadataEndpoint = 'https://github.com/janelia-cosem/fibsem-metadata/blob/hela-2-migration/metadata/datasets/';
 export type DataFormats = "n5" | "zarr" | "precomputed" | "neuroglancer_legacy_mesh"
 export type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
 export type VolumeStores = "n5" | "precomputed" | "zarr";
@@ -357,21 +359,6 @@ async function getDatasetKeys(bucket: string): Promise<string[]> {
     return datasetKeys
 }
 
-async function getDatasetIndex(
-  URL: string,
-  dataset: string
-): Promise<DatasetIndex> {
-  const indexFile = `${URL}${Path.join(dataset, 'index.json')}`;
-  return getObjectFromJSON(indexFile);
-}
-
-async function getDescription(
-  bucket: string,
-  key: string
-): Promise<DatasetMetadata> {
-  const descriptionURL = `https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/hela-2-migration/metadata/datasets/${key}/readme.json`;
-  return getObjectFromJSON(descriptionURL);
-}
 
 // This function will disappear when the dataset metadata starts providing full URLs
 function reifyPath(outerPath: string, innerPath: string): string {
@@ -416,11 +403,10 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
   // Get a list of volume metadata specifications, represented instances
   // of Map<string, VolumeMeta>
   const datasets: Map<string, Dataset> = new Map();
-  //const metadataURL = bucketNameToURL(bucket);
-  const metadataURL = "https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/hela-2-migration/metadata/datasets/";
+
   const metadataSources: Map<string, GithubDatasetMetadataSource> = new Map();
   for (let key of datasetKeys) {
-    const url = new URL(metadataURL.toString())
+    const url = new URL(metadataEndpoint);
     url.pathname += key
     metadataSources.set(key, new GithubDatasetMetadataSource(url.toString()))
   }

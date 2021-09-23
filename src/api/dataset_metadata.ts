@@ -32,11 +32,6 @@ interface iDatasetMetadata{
   DOI: iDOIMetadata[]
 }
 
-type TypedJSONResponse<T> = {
-  data?: T 
-  errors?: Array<{message: string}>
-}
-
 abstract class DatasetMetadataSource {
   url: URL
   constructor(url: string) {
