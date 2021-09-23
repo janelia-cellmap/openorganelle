@@ -12,7 +12,7 @@ import {
 import { s3ls, getObjectFromJSON, bucketNameToURL, s3URItoURL } from "./datasources";
 import * as Path from "path";
 
-import {DatasetMetadata} from "./dataset_metadata";
+import {DatasetMetadata, GithubDatasetMetadataSource} from "./dataset_metadata";
 import {isUri} from "valid-url";
 
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
@@ -36,7 +36,7 @@ interface DisplaySettings {
   defaultLayerType: LayerTypes
 }
 
-interface DatasetIndex {
+export interface DatasetIndex {
   name: string;
   volumes: Volume[];
   views: DatasetView[]
@@ -418,6 +418,13 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
   const datasets: Map<string, Dataset> = new Map();
   //const metadataURL = bucketNameToURL(bucket);
   const metadataURL = "https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/hela-2-migration/metadata/datasets/";
+  const metadataSources: Map<string, GithubDatasetMetadataSource> = new Map();
+  for (let key of datasetKeys) {
+    const url = new URL(metadataURL.toString())
+    url.pathname += key
+    metadataSources.set(key, new GithubDatasetMetadataSource(url.toString()))
+  }
+
   await Promise.all(
     datasetKeys.map(async key => {
       const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
@@ -428,9 +435,18 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
                                               description_json.imaging ?? {},
                                               description_json.sample ?? {},
                                               description_json.DOI ?? {});
-      const thumbnailURL: string =  `${outerPath}/thumbnail.jpg`
-      const index = await getDatasetIndex(metadataURL, key);
-
+      //const thumbnailURL: string =  `${outerPath}/thumbnail.jpg`
+      //const index = await getDatasetIndex(metadataURL, key);
+      const metadataSource = metadataSources.get(key)!;
+      const thumbnailURL = metadataSource.GetThumbnailURL().toString();
+      let index: DatasetIndex | undefined = undefined;
+      try {
+        index = await metadataSource.GetIndex();
+      }
+      catch(error) {
+        console.log(`There was a problem loading the dataset index for ${key}. This dataset will not be displayed.`)
+        index = undefined;
+      }
       if (index !== undefined){
         try {
           const views: DatasetView[] = [];

@@ -1,3 +1,109 @@
+import {DatasetIndex} from './datasets'
+
+interface iImagingMetadata {
+  startDate: string
+  duration: string
+  biasVoltage: Number
+  scanRate: Number
+  current: Number
+  primaryEnergy: Number
+  id: string
+  dimensions: UnitfulVector
+  gridSpacing: UnitfulVector
+}
+
+interface iSampleMetadata {
+  description: string
+  protocol: string
+  contributions: string
+}
+
+interface iDOIMetadata {
+  id: string
+  DOI: string
+}
+
+interface iDatasetMetadata{
+  title: string
+  id: string
+  publications: string[]
+  imaging: iImagingMetadata
+  sample: iSampleMetadata
+  DOI: iDOIMetadata[]
+}
+
+type TypedJSONResponse<T> = {
+  data?: T 
+  errors?: Array<{message: string}>
+}
+
+abstract class DatasetMetadataSource {
+  url: URL
+  constructor(url: string) {
+    this.url = new URL(url);
+  }
+  abstract GetThumbnailURL(): void
+  abstract GetMetadata(): void
+  abstract GetIndex(): void
+}
+
+async function getObjectFromJSON<T>(url: URL): Promise<T> {
+   const response = await fetch(url.toString())
+   const metadata = response.json();
+   
+   if (response.ok){
+     if (metadata) {
+       return metadata
+     }
+     else{
+       return Promise.reject(new Error(`Could not access "${url.toString()}"`))
+     }
+   }
+   else {
+     const error = new Error(`Could not access "${url.toString()}"`)
+     return Promise.reject(error)
+   }
+  }
+
+
+export class GithubDatasetMetadataSource extends DatasetMetadataSource {
+  constructor(url: string){
+    super(url);
+  }
+
+  GetThumbnailURL(): URL{
+    let rawified = this.rawifyURL(this.url);
+    rawified.pathname += '/thumbnail.jpg'
+    return rawified;
+  }
+
+ async GetMetadata(): Promise<iDatasetMetadata> {
+   let rawified = this.rawifyURL(this.url);
+   rawified.pathname += '/readme.json';
+   const metadata = await getObjectFromJSON<iDatasetMetadata>(rawified);
+   return metadata
+ }
+
+ async GetIndex(): Promise<DatasetIndex> {
+  let rawified = this.rawifyURL(this.url);
+  rawified.pathname += '/index.json';
+  const metadata = await getObjectFromJSON<DatasetIndex>(rawified);
+  return metadata
+}
+
+rawifyURL(url: URL): URL{
+  // map https://github.com/$user/$repo/blob/$branch/path to
+  // https://raw.githubusercontent.com/$user/$repo/$branch/path
+
+  // replace github.com with raw.githubusercontent
+  let result: URL = new URL(url.toString());
+  result.hostname = 'raw.githubusercontent.com';
+  result.pathname = result.pathname.replace('/blob', '');
+  return result;
+}
+
+}
+
 class UnitfulVector {
   unit: string;
   values: Map<string, number>;
@@ -18,7 +124,7 @@ class UnitfulVector {
   }
 }
 
-export class ImagingMetadata {
+export class ImagingMetadata implements iImagingMetadata{
   startDate: string
   duration: string
   biasVoltage: Number
@@ -63,7 +169,7 @@ export class ImagingMetadata {
   }
 }
 
-export class SampleMetadata {
+export class SampleMetadata implements iSampleMetadata{
   description: string
   protocol: string
   contributions: string
@@ -79,7 +185,7 @@ export class SampleMetadata {
   }
 }
 
-export class DOIMetadata {
+export class DOIMetadata implements iDOIMetadata{
   id: string 
   DOI: string
   constructor(
@@ -92,14 +198,16 @@ export class DOIMetadata {
   }
 }
 
-export class DatasetMetadata
+
+
+export class DatasetMetadata implements iDatasetMetadata
 {
   title: string
   id: string
   publications: string[]
-  imaging: ImagingMetadata
-  sample: SampleMetadata
-  DOI: DOIMetadata[]
+  imaging: iImagingMetadata
+  sample: iSampleMetadata
+  DOI: iDOIMetadata[]
 constructor(
   title: any,
   id: any,
