@@ -11,14 +11,11 @@ import {
 } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, bucketNameToURL, s3URItoURL } from "./datasources";
 import * as Path from "path";
-import { AppContext } from "../context/AppContext";
 import {DatasetMetadata, GithubDatasetMetadataSource} from "./dataset_metadata";
 import {isUri} from "valid-url";
-import { useContext } from "react";
 
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
 const SEGMENTATION_DTYPES = ['uint64'];
-const metadataEndpoint = 'https://github.com/janelia-cosem/fibsem-metadata/blob/hela-2-migration/metadata/datasets/';
 export type DataFormats = "n5" | "zarr" | "precomputed" | "neuroglancer_legacy_mesh"
 export type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
 export type VolumeStores = "n5" | "precomputed" | "zarr";
@@ -184,7 +181,6 @@ interface LayerDataSource2 extends LayerDataSource {
 }
 
 // A single n-dimensional array
-// this constructor syntax can be shortened but I forget how
 export class Volume implements VolumeSource {
     constructor(
         public path: string,
@@ -198,24 +194,10 @@ export class Volume implements VolumeSource {
         public version: string,
         public tags: string[],
         public subsources: MeshSource[]
-    ) {
-        this.path = path;
-        this.name = name;
-        this.dataType = dataType;
-        this.transform = transform;
-        this.contentType = contentType;
-        this.format = format;
-        this.displaySettings = displaySettings;
-        this.description = description;
-        this.version = version;
-        this.tags = tags;
-        this.subsources = subsources;
-     }
+    ) {}
 
     // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer
     // viewer state construction
-
-
 
     toLayer(layerType: LayerTypes): Layer | undefined {
         const srcURL = `${this.format}://${this.path}`;
@@ -397,7 +379,7 @@ function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
                     volumeMeta.subsources)
 }
 
-export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {
+export async function makeDatasets(bucket: string, metadataEndpoint: string): Promise<Map<string, Dataset>> {
   const datasets: Map<string, Dataset> = new Map();
   const metadataSources: Map<string, GithubDatasetMetadataSource> = new Map();
   

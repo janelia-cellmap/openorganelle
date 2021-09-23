@@ -1,6 +1,6 @@
 import {DatasetIndex} from './datasets'
 
-interface iImagingMetadata {
+interface IImagingMetadata {
   startDate: string
   duration: string
   biasVoltage: Number
@@ -12,24 +12,24 @@ interface iImagingMetadata {
   gridSpacing: UnitfulVector
 }
 
-interface iSampleMetadata {
+interface ISampleMetadata {
   description: string
   protocol: string
   contributions: string
 }
 
-interface iDOIMetadata {
+interface IDOIMetadata {
   id: string
   DOI: string
 }
 
-interface iDatasetMetadata{
+interface IDatasetMetadata{
   title: string
   id: string
   publications: string[]
-  imaging: iImagingMetadata
-  sample: iSampleMetadata
-  DOI: iDOIMetadata[]
+  imaging: IImagingMetadata
+  sample: ISampleMetadata
+  DOI: IDOIMetadata[]
 }
 
 abstract class DatasetMetadataSource {
@@ -72,12 +72,12 @@ export class GithubDatasetMetadataSource extends DatasetMetadataSource {
     return rawified;
   }
 
- async GetMetadata(): Promise<iDatasetMetadata | undefined> {
+ async GetMetadata(): Promise<IDatasetMetadata | undefined> {
    let rawified = this.rawifyURL(this.url);
    rawified.pathname += '/readme.json';
    let metadata;
    try {
-   const metadata_json = await getObjectFromJSON<iDatasetMetadata>(rawified);
+   const metadata_json = await getObjectFromJSON<IDatasetMetadata>(rawified);
    metadata = DatasetMetadata.fromJSON(metadata_json);
    }
    catch(error)
@@ -135,7 +135,7 @@ class UnitfulVector {
   }
 }
 
-export class ImagingMetadata implements iImagingMetadata{
+export class ImagingMetadata implements IImagingMetadata{
   startDate: string
   duration: string
   biasVoltage: Number
@@ -180,7 +180,7 @@ export class ImagingMetadata implements iImagingMetadata{
   }
 }
 
-export class SampleMetadata implements iSampleMetadata{
+export class SampleMetadata implements ISampleMetadata{
   description: string
   protocol: string
   contributions: string
@@ -196,7 +196,7 @@ export class SampleMetadata implements iSampleMetadata{
   }
 }
 
-export class DOIMetadata implements iDOIMetadata{
+export class DOIMetadata implements IDOIMetadata{
   id: string 
   DOI: string
   constructor(
@@ -211,14 +211,14 @@ export class DOIMetadata implements iDOIMetadata{
 
 
 
-export class DatasetMetadata implements iDatasetMetadata
+export class DatasetMetadata implements IDatasetMetadata
 {
   title: string
   id: string
   publications: string[]
-  imaging: iImagingMetadata
-  sample: iSampleMetadata
-  DOI: iDOIMetadata[]
+  imaging: IImagingMetadata
+  sample: ISampleMetadata
+  DOI: IDOIMetadata[]
 constructor(
   title: any,
   id: any,
@@ -255,7 +255,7 @@ constructor(
   else {this.publications = []}
 }
 
- static fromJSON(json: iDatasetMetadata) {
+ static fromJSON(json: IDatasetMetadata) {
   return new DatasetMetadata(json.title, json.id, json.publications, json.imaging, json.sample, json.DOI)
 }
 }
