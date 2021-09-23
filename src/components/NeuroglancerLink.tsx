@@ -53,7 +53,8 @@ export default function NeuroglancerLink({
     ngLink = `${neuroglancerAddress}${dataset.makeNeuroglancerViewerState(
       layers as SegmentationLayer[] | ImageLayer[],
       local_view.position,
-      local_view.scale)}`;
+      local_view.scale,
+      local_view.orientation)}`;
   }
 
   if (children) {

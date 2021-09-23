@@ -1,3 +1,120 @@
+import {DatasetIndex} from './datasets'
+
+interface IImagingMetadata {
+  startDate: string
+  duration: string
+  biasVoltage: Number
+  scanRate: Number
+  current: Number
+  primaryEnergy: Number
+  id: string
+  dimensions: UnitfulVector
+  gridSpacing: UnitfulVector
+}
+
+interface ISampleMetadata {
+  description: string
+  protocol: string
+  contributions: string
+}
+
+interface IDOIMetadata {
+  id: string
+  DOI: string
+}
+
+interface IDatasetMetadata{
+  title: string
+  id: string
+  publications: string[]
+  imaging: IImagingMetadata
+  sample: ISampleMetadata
+  DOI: IDOIMetadata[]
+}
+
+abstract class DatasetMetadataSource {
+  url: URL
+  constructor(url: string) {
+    this.url = new URL(url);
+  }
+  abstract GetThumbnailURL(): void
+  abstract GetMetadata(): void
+  abstract GetIndex(): void
+}
+
+async function getObjectFromJSON<T>(url: URL): Promise<T> {
+   const response = await fetch(url.toString())
+   const metadata = response.json();
+   
+   if (response.ok){
+     if (metadata) {
+       return metadata
+     }
+     else{
+       return Promise.reject(new Error(`Could not access "${url.toString()}"`))
+     }
+   }
+   else {
+     const error = new Error(`Could not access "${url.toString()}"`)
+     return Promise.reject(error)
+   }
+  }
+
+
+export class GithubDatasetMetadataSource extends DatasetMetadataSource {
+  constructor(url: string){
+    super(url);
+  }
+
+  async GetThumbnailURL(): Promise<URL>{
+    let rawified = this.rawifyURL(this.url);
+    rawified.pathname += '/thumbnail.jpg'
+    return rawified;
+  }
+
+ async GetMetadata(): Promise<IDatasetMetadata | undefined> {
+   let rawified = this.rawifyURL(this.url);
+   rawified.pathname += '/readme.json';
+   let metadata;
+   try {
+   const metadata_json = await getObjectFromJSON<IDatasetMetadata>(rawified);
+   metadata = DatasetMetadata.fromJSON(metadata_json);
+   }
+   catch(error)
+    {
+      console.log(`Could not generate metadata from ${rawified.toString()}`)  
+    }   
+   return metadata
+ }
+ 
+ async GetIndex(): Promise<DatasetIndex | undefined> {
+  let rawified = this.rawifyURL(this.url);
+  rawified.pathname += '/index.json';
+  let index;
+  try {
+    index = await getObjectFromJSON<DatasetIndex>(rawified);
+  }
+  catch (error) {
+    console.log(`Could not generate index from ${rawified.toString()}`)
+    index = undefined;
+  }
+
+  return index
+}
+
+rawifyURL(url: URL): URL{
+  // map https://github.com/$user/$repo/blob/$branch/path to
+  // https://raw.githubusercontent.com/$user/$repo/$branch/path
+
+  // replace github.com with raw.githubusercontent
+  let result: URL = new URL(url.toString());
+  result.hostname = 'raw.githubusercontent.com';
+  result.pathname = result.pathname.replace('/blob', '');
+  return result;
+}
+
+}
+
 class UnitfulVector {
   unit: string;
   values: Map<string, number>;
@@ -18,7 +135,7 @@ class UnitfulVector {
   }
 }
 
-export class ImagingMetadata {
+export class ImagingMetadata implements IImagingMetadata{
   startDate: string
   duration: string
   biasVoltage: Number
@@ -63,7 +180,7 @@ export class ImagingMetadata {
   }
 }
 
-export class SampleMetadata {
+export class SampleMetadata implements ISampleMetadata{
   description: string
   protocol: string
   contributions: string
@@ -79,7 +196,7 @@ export class SampleMetadata {
   }
 }
 
-export class DOIMetadata {
+export class DOIMetadata implements IDOIMetadata{
   id: string 
   DOI: string
   constructor(
@@ -92,14 +209,16 @@ export class DOIMetadata {
   }
 }
 
-export class DatasetMetadata
+
+
+export class DatasetMetadata implements IDatasetMetadata
 {
   title: string
   id: string
   publications: string[]
-  imaging: ImagingMetadata
-  sample: SampleMetadata
-  DOI: DOIMetadata[]
+  imaging: IImagingMetadata
+  sample: ISampleMetadata
+  DOI: IDOIMetadata[]
 constructor(
   title: any,
   id: any,
@@ -134,5 +253,9 @@ constructor(
   this.publications = publications.map(String);
   }
   else {this.publications = []}
+}
+
+ static fromJSON(json: IDatasetMetadata) {
+  return new DatasetMetadata(json.title, json.id, json.publications, json.imaging, json.sample, json.DOI)
 }
 }
