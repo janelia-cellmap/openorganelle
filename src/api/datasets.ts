@@ -428,42 +428,31 @@ export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>
   await Promise.all(
     datasetKeys.map(async key => {
       const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
-      const description_json = await getDescription(bucket, key);
-      const description = new DatasetMetadata(description_json.title,
-                                              description_json.id,
-                                              description_json.publications ?? [],
-                                              description_json.imaging ?? {},
-                                              description_json.sample ?? {},
-                                              description_json.DOI ?? {});
-      //const thumbnailURL: string =  `${outerPath}/thumbnail.jpg`
-      //const index = await getDatasetIndex(metadataURL, key);
       const metadataSource = metadataSources.get(key)!;
-      const thumbnailURL = metadataSource.GetThumbnailURL().toString();
-      let index: DatasetIndex | undefined = undefined;
-      try {
-        index = await metadataSource.GetIndex();
-      }
-      catch(error) {
-        console.log(`There was a problem loading the dataset index for ${key}. This dataset will not be displayed.`)
-        index = undefined;
-      }
-      if (index !== undefined){
+      const description = await metadataSource.GetMetadata();
+      const thumbnailURL = await metadataSource.GetThumbnailURL();
+      const index = await metadataSource.GetIndex();
+      
+      if (index !== undefined && description !== undefined){
         try {
           const views: DatasetView[] = [];
           // make sure that the default view is at the beginning of the list
           for (let v of index.views) {
-            let vObj = new DatasetView(v.name, v.description, v.volumeNames, v.orientation, v.position ?? undefined, v.scale);            if (vObj.name === 'Default View'){
+            let vObj = new DatasetView(v.name, v.description, v.volumeNames, v.orientation, v.position ?? undefined, v.scale);
+            if (vObj.name === 'Default View'){
               views.unshift(vObj)
             }
             else views.push(vObj)
           }
           const volumes: Map<string, Volume> = new Map();
           index.volumes.forEach(v => volumes.set(v.name, makeVolume(outerPath, v)));
+          
           if (views.length === 0){
             let defaultView = new DatasetView('Default view', '', Array.from(volumes.keys()), undefined, undefined, undefined);
             views.push(defaultView)
           }
-          datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailURL, views));
+
+          datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailURL.toString(), views));
         }
         catch (error) {
           console.log(error)

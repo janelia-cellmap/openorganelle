@@ -71,24 +71,40 @@ export class GithubDatasetMetadataSource extends DatasetMetadataSource {
     super(url);
   }
 
-  GetThumbnailURL(): URL{
+  async GetThumbnailURL(): Promise<URL>{
     let rawified = this.rawifyURL(this.url);
     rawified.pathname += '/thumbnail.jpg'
     return rawified;
   }
 
- async GetMetadata(): Promise<iDatasetMetadata> {
+ async GetMetadata(): Promise<iDatasetMetadata | undefined> {
    let rawified = this.rawifyURL(this.url);
    rawified.pathname += '/readme.json';
-   const metadata = await getObjectFromJSON<iDatasetMetadata>(rawified);
+   let metadata;
+   try {
+   const metadata_json = await getObjectFromJSON<iDatasetMetadata>(rawified);
+   metadata = DatasetMetadata.fromJSON(metadata_json);
+   }
+   catch(error)
+    {
+      console.log(`Could not generate metadata from ${rawified.toString()}`)  
+    }   
    return metadata
  }
-
- async GetIndex(): Promise<DatasetIndex> {
+ 
+ async GetIndex(): Promise<DatasetIndex | undefined> {
   let rawified = this.rawifyURL(this.url);
   rawified.pathname += '/index.json';
-  const metadata = await getObjectFromJSON<DatasetIndex>(rawified);
-  return metadata
+  let index;
+  try {
+    index = await getObjectFromJSON<DatasetIndex>(rawified);
+  }
+  catch (error) {
+    console.log(`Could not generate index from ${rawified.toString()}`)
+    index = undefined;
+  }
+
+  return index
 }
 
 rawifyURL(url: URL): URL{
@@ -242,5 +258,9 @@ constructor(
   this.publications = publications.map(String);
   }
   else {this.publications = []}
+}
+
+ static fromJSON(json: iDatasetMetadata) {
+  return new DatasetMetadata(json.title, json.id, json.publications, json.imaging, json.sample, json.DOI)
 }
 }
