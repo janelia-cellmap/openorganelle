@@ -14,7 +14,7 @@ import { useQueryString } from "../utils/customHooks";
 export default function DatasetLayout() {
   const query = useQueryString();
   const history = useHistory();
-  const page = parseInt(query.get("page") || '1');
+  const page = parseInt(query.get("page") || "1");
   const { appState, setPermanent } = useContext(AppContext);
 
   const { datasetGrid: compact } = appState;
@@ -59,6 +59,10 @@ export default function DatasetLayout() {
   const handleCompactChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPermanent({ datasetGrid: event.target.checked });
   };
+
+  if (datasets.size < 1) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div>
