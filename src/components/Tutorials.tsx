@@ -477,6 +477,9 @@ export default function Tutorials() {
               </a>
               .
             </Typography>
+            <Typography paragraph>
+              For more help or options accessing or downloading data please reach out to <a href="mailto:cosemdata@janelia.hhmi.org">cosemdata@janelia.hhmi.org</a>
+            </Typography>
           </Paper>
 
           <p className="anchor" id="sharing" />
