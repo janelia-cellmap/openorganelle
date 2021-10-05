@@ -1,18 +1,14 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
 import Card from "@material-ui/core/Card";
 
 import AnalysisResults from "./AnalysisResults";
 import AnalysisForm from "./AnalysisForm";
 import AnalysisConnections from "./AnalysisConnections";
 import cypherBuilder, { connectionsCypher } from "../utils/cypherBuilder";
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
+import { useQueryString } from "../utils/customHooks";
 
 export default function Analysis() {
-  const query = useQuery();
+  const query = useQueryString();
   const intId = query.get("id");
   const dataset = query.get("ds") || "";
 

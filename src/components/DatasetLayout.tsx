@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-
+import React, { useContext } from "react";
+import { useHistory } from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -9,20 +9,31 @@ import Switch from "@material-ui/core/Switch";
 import { Dataset } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import DatasetTile from "./DatasetTile";
+import { useQueryString } from "../utils/customHooks";
 
 export default function DatasetLayout() {
+  const query = useQueryString();
+  const history = useHistory();
+  const page = parseInt(query.get("page") || '1');
   const { appState, setPermanent } = useContext(AppContext);
-  const [currentPage, setCurrentPage] = useState(1);
 
   const { datasetGrid: compact } = appState;
   const datasetsPerPage = compact ? 12 : 10;
 
   const datasets: Map<string, Dataset> = appState.datasets;
 
-  const rangeStart = (currentPage - 1) * datasetsPerPage;
+  const rangeStart = (page - 1) * datasetsPerPage;
   const rangeEnd = rangeStart + datasetsPerPage;
   const totalPages = Math.ceil(datasets.size / datasetsPerPage);
   const datasetKeys = Array.from(datasets.keys());
+
+  function setCurrentPage(page: number) {
+    query.set("page", page.toString());
+    history.push({
+      pathname: "",
+      search: query.toString()
+    });
+  }
 
   // sort by number of volumes; this will break when the metadata changes to putting volumes in an array
   const datasetKeysSorted = datasetKeys.sort(
@@ -60,7 +71,7 @@ export default function DatasetLayout() {
           {datasets.size > datasetsPerPage && (
             <Pagination
               count={totalPages}
-              page={currentPage}
+              page={page}
               onChange={(e, value) => setCurrentPage(value)}
             />
           )}
@@ -89,7 +100,7 @@ export default function DatasetLayout() {
           {datasets.size > datasetsPerPage && (
             <Pagination
               count={totalPages}
-              page={currentPage}
+              page={page}
               onChange={(e, value) => setCurrentPage(value)}
             />
           )}
