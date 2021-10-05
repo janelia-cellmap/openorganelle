@@ -309,24 +309,24 @@ export default function Tutorials() {
               Data organization
             </Typography>
             <Typography gutterBottom>
-              Our datasets are stored on AWS S3 
+              Our datasets are stored on AWS S3
               using the <a href="https://github.com/saalfeldlab/n5">N5 format</a> For documentation of how data, metadata, and derived data are
               organized for OpenOrganelle, see this <a href="https://github.com/janelia-cosem/schemas/blob/master/cloud/janelia-cosem/README.md">
               page</a>. OpenOrganelle provides access to raw EM datasets, organelle
               predictions, refined segmentations, analyses, and correlative
               light microscopy. For an extensive list of available prediction,
-              segmentation, and analysis volumes, please visit the{" "} <Link to="/organelles">Organelles</Link> page. 
+              segmentation, and analysis volumes, please visit the{" "} <Link to="/organelles">Organelles</Link> page.
             </Typography>
             <Typography variant="h5" gutterBottom>
               Direct data access
             </Typography>
             <Typography paragraph>
-            When working with imaging datasets that greatly exceed the memory available on a single computer, 
-            best practice is to store the dataset in small chunks and use programs that leverage the chunked representation. 
+            When working with imaging datasets that greatly exceed the memory available on a single computer,
+            best practice is to store the dataset in small chunks and use programs that leverage the chunked representation.
             This is the approach we recommend for the datasets displayed on OpenOrganelle.
-            Accordingly, we do not offer a browser-based tool for directly downloading entire datasets, 
+            Accordingly, we do not offer a browser-based tool for directly downloading entire datasets,
             as downloading hundreds of thousands of files totalling hundreds of gigabytes is not feasible in the web browser.
-            Instead, we recommend the following methods for direct data access: 
+            Instead, we recommend the following methods for direct data access:
             <ul>
             <li>
               <a href="#fiji">Opening data with Fiji</a>
@@ -344,21 +344,21 @@ export default function Tutorials() {
               How to open data in Fiji
             </Typography>
             <Typography paragraph>
-              Fiji is a popular tool for image processing; download it here <a href="https://imagej.net/software/fiji/">here</a>. 
-              Several Fiji plugins can be used access OpenOrganelle datasets. To open a dataset with a Fiji-based tool, you will need the URI for a dataset (i.e., the location of the data in cloud storage). Clicking on the Fiji
-              icon{" "} <img className="fiji_icon" src={fijiIcon} alt="blue fiji logo"/> copies the dataset URI to the clipboard, which can be pasted in the Fiji app.   
+              Fiji is a popular tool for image processing; download it here <a href="https://imagej.net/software/fiji/">here</a>.
+              Several Fiji plugins can be used access OpenOrganelle datasets. To open a dataset with a Fiji-based tool, you will need the URL for a dataset (i.e., the location of the data in cloud storage). Clicking on the Fiji
+              icon{" "} <img className="fiji_icon" src={fijiIcon} alt="blue fiji logo"/> copies the dataset URL to the clipboard, which can be pasted in the Fiji app.
               <ul>
               <li>
               The BigDataViewer plugin allows interactive 3D visualization of our datasets. This plugin can be accessed by selecting the <Box fontFamily="Monospace" display="inline">Plugins</Box> dropdown menu, then
-              selecting <Box fontFamily="Monospace" display="inline">BigDataViewer</Box>, and finally <Box fontFamily="Monospace" display="inline">N5 Viewer</Box>. Paste the URI for the dataset of interest in the text entry field of the plugin. For detailed instructions refer to the N5 Viewer
+              selecting <Box fontFamily="Monospace" display="inline">BigDataViewer</Box>, and finally <Box fontFamily="Monospace" display="inline">N5 Viewer</Box>. Paste the URL for the dataset of interest in the text entry field of the plugin. For detailed instructions refer to the N5 Viewer
               <a href="https://github.com/saalfeldlab/n5-viewer"> documentation</a>. Note that this plugin does not allow directly saving full volumes to disk (but you can crop out a subregion of the data for saving).
               </li>
               <li>
               To open the datasets in Fiji and make use of all of the Fiji
-              tools (e.g., saving to disk), select the <Box fontFamily="Monospace" display="inline"> File</Box> dropdown menu, then  <Box fontFamily="Monospace" display="inline"> Import</Box>, then <Box fontFamily="Monospace" display="inline">N5</Box>, and paste the URI for the dataset of interest in the text entry field. For instructions on opening
+              tools (e.g., saving to disk), select the <Box fontFamily="Monospace" display="inline"> File</Box> dropdown menu, then  <Box fontFamily="Monospace" display="inline"> Import</Box>, then <Box fontFamily="Monospace" display="inline">N5</Box>, and paste the URL for the dataset of interest in the text entry field. For instructions on opening
               our datasets in Fiji please refer to this{" "}
               <a href="https://github.com/saalfeldlab/n5-ij">documentation</a>. Be advised that this method causes Fiji to load an entire image volume into memory, which will fail for large image volumes. Additionally,
-              this option currently does not generate a representation of data that supports interactive 3D visualization. 
+              this option currently does not generate a representation of data that supports interactive 3D visualization.
               </li>
               </ul>
             </Typography>
@@ -367,18 +367,18 @@ export default function Tutorials() {
               How to open data with Python
             </Typography>
             <Typography paragraph>
-              We maintain <a href="https://github.com/janelia-cosem/fibsem-tools"><Box fontFamily="Monospace" display="inline"> fibsem_tools</Box></a>, a Python library for accessing large volumetric data on AWS S3. As in the Fiji examples, 
-              the Python library addresses datasets through their URI. See the <Box fontFamily="Monospace" display="inline"> fibsem_tools</Box> <a href="https://github.com/janelia-cosem/fibsem-tools#usage">documentation</a> for code examples. 
+              We maintain <a href="https://github.com/janelia-cosem/fibsem-tools"><Box fontFamily="Monospace" display="inline"> fibsem_tools</Box></a>, a Python library for accessing large volumetric data on AWS S3. As in the Fiji examples,
+              the Python library addresses datasets through their URL. See the <Box fontFamily="Monospace" display="inline"> fibsem_tools</Box> <a href="https://github.com/janelia-cosem/fibsem-tools#usage">documentation</a> for code examples.
             </Typography>
             <p className="anchor" id="aws-cli" />
             <Typography variant="h6" gutterBottom>
               How to access raw data files with the AWS CLI
-            </Typography>            
+            </Typography>
             <Typography paragraph>
               As all our datasets are stored publicly on AWS S3, it is possible to access the underlying files through any tool that can read from S3.
               We recommend using the AWS command line interface (AWS CLI). <br/>
-              When run from the command line, this command lists the contents of our data bucket:              
-              <CodeBlock text="aws cli ls s3://janelia-cosem/" language="" showLineNumbers={false} theme={dracula}/> 
+              When run from the command line, this command lists the contents of our data bucket:
+              <CodeBlock text="aws cli ls s3://janelia-cosem/" language="" showLineNumbers={false} theme={dracula}/>
               The AWS CLI can also copy data from S3 to local storage, but be advised that this may take a long time.
               Detailed instructions for using this tool can be found in the{" "}
               <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">user guide</a>.
