@@ -17,7 +17,7 @@ export default function Home() {
   // Update the global datasets var when Home renders for the first time
   useEffect(() => {
     setAppState({ ...appState, datasetsLoading: true });
-    makeDatasets(appState.dataBucket).then(ds =>
+    makeDatasets(appState.dataBucket, appState.metadataEndpoint).then(ds =>
       setAppState({ ...appState, datasets: ds, datasetsLoading: false })
     );
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

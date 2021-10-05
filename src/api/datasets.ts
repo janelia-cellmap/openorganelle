@@ -9,10 +9,9 @@ import {
   SegmentationLayer,
   Layer
 } from "@janelia-cosem/neuroglancer-url-tools";
-import { s3ls, getObjectFromJSON, bucketNameToURL, s3URItoURL } from "./datasources";
+import { s3ls, bucketNameToURL, s3URItoURL } from "./datasources";
 import * as Path from "path";
-
-import {DatasetMetadata} from "./dataset_metadata";
+import {DatasetMetadata, GithubDatasetMetadataSource} from "./dataset_metadata";
 import {isUri} from "valid-url";
 
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
@@ -36,7 +35,7 @@ interface DisplaySettings {
   defaultLayerType: LayerTypes
 }
 
-interface DatasetIndex {
+export interface DatasetIndex {
   name: string;
   volumes: Volume[];
   views: DatasetView[]
@@ -182,7 +181,6 @@ interface LayerDataSource2 extends LayerDataSource {
 }
 
 // A single n-dimensional array
-// this constructor syntax can be shortened but I forget how
 export class Volume implements VolumeSource {
     constructor(
         public path: string,
@@ -196,24 +194,10 @@ export class Volume implements VolumeSource {
         public version: string,
         public tags: string[],
         public subsources: MeshSource[]
-    ) {
-        this.path = path;
-        this.name = name;
-        this.dataType = dataType;
-        this.transform = transform;
-        this.contentType = contentType;
-        this.format = format;
-        this.displaySettings = displaySettings;
-        this.description = description;
-        this.version = version;
-        this.tags = tags;
-        this.subsources = subsources;
-     }
+    ) {}
 
     // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer
     // viewer state construction
-
-
 
     toLayer(layerType: LayerTypes): Layer | undefined {
         const srcURL = `${this.format}://${this.path}`;
@@ -312,11 +296,11 @@ export class Dataset implements IDataset {
     makeNeuroglancerViewerState(layers: SegmentationLayer[] | ImageLayer[],
                                  viewerPosition: number[] | undefined,
                                  crossSectionScale: number | undefined,
+                                 crossSectionOrientation: number[] | undefined
                                  ){
         // hack to post-hoc adjust alpha if there is only 1 layer selected
         if (layers.length  === 1 && layers[0] instanceof ImageLayer) {layers[0].opacity = 1.0}
-        const projectionOrientation = undefined;
-        const crossSectionOrientation = undefined;
+        const projectionOrientation = crossSectionOrientation;
         crossSectionScale = crossSectionScale? crossSectionScale : 50;
         const projectionScale = 65536;
         // the first layer is the selected layer; consider making this a kwarg
@@ -357,23 +341,6 @@ async function getDatasetKeys(bucket: string): Promise<string[]> {
     return datasetKeys
 }
 
-async function getDatasetIndex(
-  URL: string,
-  dataset: string
-): Promise<DatasetIndex> {
-  const indexFile = `${URL}${Path.join(dataset, 'index.json')}`;
-  return getObjectFromJSON(indexFile);
-}
-
-async function getDescription(
-  bucket: string,
-  key: string
-): Promise<DatasetMetadata> {
-  // const bucketURL = bucketNameToURL(bucket);
-  // const descriptionURL = `${bucketURL}/${key}/README.json`;
-  const descriptionURL = `https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/master/metadata/datasets/${key}/readme.json`;
-  return getObjectFromJSON(descriptionURL);
-}
 
 // This function will disappear when the dataset metadata starts providing full URLs
 function reifyPath(outerPath: string, innerPath: string): string {
@@ -412,44 +379,49 @@ function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
                     volumeMeta.subsources)
 }
 
-export async function makeDatasets(bucket: string): Promise<Map<string, Dataset>> {
+export async function makeDatasets(bucket: string, metadataEndpoint: string): Promise<Map<string, Dataset>> {
+  const datasets: Map<string, Dataset> = new Map();
+  const metadataSources: Map<string, GithubDatasetMetadataSource> = new Map();
+  
   // get the keys to the datasets
   const datasetKeys: string[] = await getDatasetKeys(bucket);
-  // Get a list of volume metadata specifications, represented instances
-  // of Map<string, VolumeMeta>
-  const datasets: Map<string, Dataset> = new Map();
-  //const metadataURL = bucketNameToURL(bucket);
-  const metadataURL = "https://raw.githubusercontent.com/janelia-cosem/fibsem-metadata/master/metadata/datasets/";
+
+  for (let key of datasetKeys) {
+    const url = new URL(metadataEndpoint);
+    url.pathname += key
+    metadataSources.set(key, new GithubDatasetMetadataSource(url.toString()))
+  }
+
   await Promise.all(
     datasetKeys.map(async key => {
       const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
-      const description_json = await getDescription(bucket, key);
-      const description = new DatasetMetadata(description_json.title,
-                                              description_json.id,
-                                              description_json.publications ?? [],
-                                              description_json.imaging ?? {},
-                                              description_json.sample ?? {},
-                                              description_json.DOI ?? {});
-      const thumbnailURL: string =  `${outerPath}/thumbnail.jpg`
-      const index = await getDatasetIndex(metadataURL, key);
-
-      if (index !== undefined){
+      // non-undefined assertion is OK because we know that all the keys 
+      // are in there
+      const metadataSource = metadataSources.get(key)!;
+      const description = await metadataSource.GetMetadata();
+      const thumbnailURL = await metadataSource.GetThumbnailURL();
+      const index = await metadataSource.GetIndex();
+      
+      if (index !== undefined && description !== undefined){
         try {
           const views: DatasetView[] = [];
           // make sure that the default view is at the beginning of the list
           for (let v of index.views) {
-            let vObj = new DatasetView(v.name, v.description, v.volumeNames, v.orientation, v.position ?? undefined, v.scale);            if (vObj.name === 'Default View'){
+            let vObj = new DatasetView(v.name, v.description, v.volumeNames, v.orientation, v.position ?? undefined, v.scale);
+            if (vObj.name === 'Default View'){
               views.unshift(vObj)
             }
             else views.push(vObj)
           }
           const volumes: Map<string, Volume> = new Map();
           index.volumes.forEach(v => volumes.set(v.name, makeVolume(outerPath, v)));
+          
           if (views.length === 0){
             let defaultView = new DatasetView('Default view', '', Array.from(volumes.keys()), undefined, undefined, undefined);
             views.push(defaultView)
           }
-          datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailURL, views));
+
+          datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailURL.toString(), views));
         }
         catch (error) {
           console.log(error)

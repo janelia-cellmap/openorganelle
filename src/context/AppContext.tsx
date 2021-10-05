@@ -5,6 +5,7 @@ import { Dataset} from "../api/datasets";
 
 export interface ContextProps {
   neuroglancerAddress: string,
+  metadataEndpoint: string,
   dataBucket: string,
   webGL2Enabled: boolean,
   datasetsLoading: boolean,
@@ -21,7 +22,8 @@ interface AppContext {
 
 const contextDefault: ContextProps = {
   neuroglancerAddress: "https://neuroglancer-demo.appspot.com/#!",
-  dataBucket: 'janelia-cosem',
+  metadataEndpoint: 'https://github.com/janelia-cosem/fibsem-metadata/blob/master/metadata/datasets/',
+  dataBucket: 'janelia-cosem-datasets',
   webGL2Enabled: checkWebGL2(),
   datasetsLoading: false,
   datasets: new Map(),
