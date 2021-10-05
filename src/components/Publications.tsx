@@ -27,13 +27,62 @@ export default function Publications() {
             Ritter, Huxley K. Hoffman, Shin-ya Takemura, Zhiyuan Lu, H. Amalia
             Pasolli, Nirmala Iyer, Jeeyun Chung, Davis Bennett, Aubrey V.
             Weigel, Tobias C. Walther, Robert V. Farese, Jr., Schuyler B. van
+            Engelenburg, Ira Mellman, Michele Solimena, Harald F. Hess.
+          </i>
+          <b>
+            An open-access volume electron microscopy atlas of whole cells and
+            tissues.
+          </b>{" "}
+          Nature. Published online (2021).{" "}
+          <a href="https://doi.org/10.1038/s41586-021-03992-4">
+            10.1038/s41586-021-03992-4
+          </a>
+          . [
+          <a href="https://www.biorxiv.org/content/10.1101/2020.11.13.382457v1">
+            preprint
+          </a>
+          ]
+        </p>
+        <p>
+          <i>
+            Larissa Heinrich, Davis Bennett, David Ackerman, Woohyun Park, John
+            Bogovic, Nils Eckstein, Alyson Petruncio, Jody Clements, Song Pang,
+            C. Shan Xu, Jan Funke, Wyatt Korff, Harald F. Hess, Jennifer
+            Lippincott-Schwartz, Stephan Saalfeld, Aubrey V. Weigel, COSEM
+            Project Team.
+          </i>
+          <b>
+            {" "}
+            Whole-cell organelle segmentation in volume electron microscopy.
+          </b>{" "}
+          Nature. Published online (2021).{" "}
+          <a href="https://doi.org/10.1038/s41586-021-03977-3">
+            10.1038/s41586-021-03977-3
+          </a>
+          . [<a href="https://doi.org/10.1101/2020.11.14.382143">preprint</a>] [
+          <a href="https://github.com/janelia-cosem/heinrich-2021a">code</a>] [
+          <a href="https://open.quiltdata.com/b/janelia-cosem-publications/tree/heinrich-2021a/">
+            data
+          </a>
+          ]
+        </p>
+        {/*(<p>
+          <i>
+            C. Shan Xu, Song Pang, Gleb Shtengel, Andreas Müller, Alex T.
+            Ritter, Huxley K. Hoffman, Shin-ya Takemura, Zhiyuan Lu, H. Amalia
+            Pasolli, Nirmala Iyer, Jeeyun Chung, Davis Bennett, Aubrey V.
+            Weigel, Tobias C. Walther, Robert V. Farese, Jr., Schuyler B. van
             Engelenburg, Ira Mellman, Michele Solimena, Harald F. Hess.{" "}
           </i>
           <b>
             Isotropic 3D electron microscopy reference library of whole cells
             and tissues.
           </b>{" "}
-          bioRxiv (2020) <a href="https://www.biorxiv.org/content/10.1101/2020.11.13.382457v1">10.1101/2020.11.13.382457</a>.
+          bioRxiv (2020){" "}
+          <a href="https://www.biorxiv.org/content/10.1101/2020.11.13.382457v1">
+            10.1101/2020.11.13.382457
+          </a>
+          .
         </p>
         <p>
           <i>
@@ -43,9 +92,21 @@ export default function Publications() {
             Lippincott-Schwartz, Stephan Saalfeld, Aubrey V. Weigel, COSEM
             Project Team.{" "}
           </i>
-          <b>Automatic whole cell organelle segmentation in volumetric electron microscopy. </b>
-          bioRxiv (2020) <a href="https://doi.org/10.1101/2020.11.14.382143"> 10.1101/2020.11.14.382143</a> [<a href="https://github.com/janelia-cosem/heinrich-2021a">code</a>] [<a href="https://open.quiltdata.com/b/janelia-cosem-publications/tree/heinrich-2021a/">data</a>].
-        </p>
+          <b>
+            Automatic whole cell organelle segmentation in volumetric electron
+            microscopy.{" "}
+          </b>
+          bioRxiv (2020){" "}
+          <a href="https://doi.org/10.1101/2020.11.14.382143">
+            {" "}
+            10.1101/2020.11.14.382143
+          </a>{" "}
+          [<a href="https://github.com/janelia-cosem/heinrich-2021a">code</a>] [
+          <a href="https://open.quiltdata.com/b/janelia-cosem-publications/tree/heinrich-2021a/">
+            data
+          </a>
+          ].
+        </p>)*/}
       </Paper>
       <Typography variant="h3" gutterBottom>
         Related Work
