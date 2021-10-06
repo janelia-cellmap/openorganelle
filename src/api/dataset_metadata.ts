@@ -1,21 +1,29 @@
 import {DatasetIndex} from './datasets'
 
+type softwareAvailability = "open" | "partial" | "closed"
+
+
 interface IImagingMetadata {
+  id: string
+  institution: string
+  gridSpacing: UnitfulVector
+  dimensions: UnitfulVector
   startDate: string
   duration: string
   biasVoltage: Number
   scanRate: Number
   current: Number
   primaryEnergy: Number
-  id: string
-  dimensions: UnitfulVector
-  gridSpacing: UnitfulVector
 }
 
 interface ISampleMetadata {
   description: string
   protocol: string
   contributions: string
+  organism: string[]
+  type: string[]
+  subtype: string[]
+  treatment: string[]
 }
 
 interface IDOIMetadata {
@@ -26,10 +34,12 @@ interface IDOIMetadata {
 interface IDatasetMetadata{
   title: string
   id: string
-  publications: string[]
   imaging: IImagingMetadata
   sample: ISampleMetadata
+  institution: string[]
+  softwareAvailability: softwareAvailability
   DOI: IDOIMetadata[]
+  publications: string[]
 }
 
 abstract class DatasetMetadataSource {
@@ -82,7 +92,7 @@ export class GithubDatasetMetadataSource extends DatasetMetadataSource {
    }
    catch(error)
     {
-      console.log(`Could not generate metadata from ${rawified.toString()}`)  
+      console.log(`Could not generate metadata from ${rawified.toString()} due to ${error}`)  
     }   
    return metadata
  }
@@ -95,7 +105,7 @@ export class GithubDatasetMetadataSource extends DatasetMetadataSource {
     index = await getObjectFromJSON<DatasetIndex>(rawified);
   }
   catch (error) {
-    console.log(`Could not generate index from ${rawified.toString()}`)
+    console.log(`Could not generate index from ${rawified.toString()} due to ${error}`)
     index = undefined;
   }
 
@@ -136,27 +146,30 @@ class UnitfulVector {
 }
 
 export class ImagingMetadata implements IImagingMetadata{
+  id: string
+  institution: string
+  gridSpacing: UnitfulVector
+  dimensions: UnitfulVector
   startDate: string
   duration: string
   biasVoltage: Number
   scanRate: Number
   current: Number
   primaryEnergy: Number
-  id: string
-  dimensions: UnitfulVector
-  gridSpacing: UnitfulVector
   constructor(
-  startDate: any,
-  duration: any,
-  biasVoltage: any,
-  scanRate: any,
-  current: any,
-  primaryEnergy: any,
-  id: any,
-  dimensions: any,
-  gridSpacing: any
+    id: any,
+    institution: any,
+    gridSpacing: any,
+    dimensions: any,
+    startDate: any,
+    duration: any,
+    biasVoltage: any,
+    scanRate: any,
+    current: any,
+    primaryEnergy: any
   )
   {
+    this.institution = institution;
     this.startDate = String(startDate);
     this.duration = String(duration);
     this.biasVoltage = Number(biasVoltage);
@@ -184,15 +197,27 @@ export class SampleMetadata implements ISampleMetadata{
   description: string
   protocol: string
   contributions: string
+  organism: string[]
+  type: string[]
+  subtype: string[]
+  treatment: string[]
   constructor(
     description: any,
     protocol: any,
-    contributions: any)
+    contributions: any,
+    organism: any,
+    type: any,
+    subtype: any,
+    treatment: any)
   {
+    console.log(organism)
     this.description = String(description);
     this.protocol = String(protocol);
     this.contributions = String(contributions);
-
+    this.organism = organism ? Array.from(organism).map(String) : [];
+    this.type = type? Array.from(type).map(String): [];
+    this.subtype = subtype? Array.from(subtype).map(String): [];
+    this.treatment = treatment? Array.from(treatment).map(String): [];
   }
 }
 
@@ -215,33 +240,45 @@ export class DatasetMetadata implements IDatasetMetadata
 {
   title: string
   id: string
-  publications: string[]
   imaging: IImagingMetadata
   sample: ISampleMetadata
+  institution: string[]
+  softwareAvailability: softwareAvailability
   DOI: IDOIMetadata[]
+  publications: string[]
 constructor(
   title: any,
   id: any,
+  imaging: IImagingMetadata,
+  sample: ISampleMetadata,
+  institution: any,
+  softwareAvailability: any,
+  DOI: any,
   publications: any,
-  imaging: any,
-  sample: any,
-  DOI: any
 ){
   this.title = String(title);
   this.id = String(id);
-  this.imaging = new ImagingMetadata(imaging.startDate, 
+  this.institution = Array.from(institution).map(String);
+  this.softwareAvailability = softwareAvailability
+  this.imaging = new ImagingMetadata(imaging.id, 
+                                     imaging.institution,
+                                     imaging.gridSpacing,
+                                     imaging.dimensions,
+                                     imaging.startDate, 
                                      imaging.duration, 
                                      imaging.biasVoltage, 
                                      imaging.scanRate, 
                                      imaging.current,
                                      imaging.primaryEnergy,
-                                     imaging.id, 
-                                     imaging.dimensions,
-                                     imaging.gridSpacing);
+                                     );
 
   this.sample = new SampleMetadata(sample.description, 
                                    sample.protocol, 
-                                   sample.contributions);
+                                   sample.contributions,
+                                   sample.organism,
+                                   sample.type,
+                                   sample.subtype,
+                                   sample.treatment);
   
   if (Array.isArray(DOI)){
     this.DOI = DOI.map(v => new DOIMetadata(v.id, v.DOI));
@@ -256,6 +293,13 @@ constructor(
 }
 
  static fromJSON(json: IDatasetMetadata) {
-  return new DatasetMetadata(json.title, json.id, json.publications, json.imaging, json.sample, json.DOI)
+  return new DatasetMetadata(json.title, 
+                             json.id,
+                             json.imaging, 
+                             json.sample, 
+                             json.institution,
+                             json.softwareAvailability,
+                             json.DOI,
+                             json.publications)
 }
 }

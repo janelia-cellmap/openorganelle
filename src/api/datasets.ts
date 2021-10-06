@@ -428,7 +428,8 @@ export async function makeDatasets(bucket: string, metadataEndpoint: string): Pr
         }
       }
       else {
-        console.log(`Could not load index.json from ${outerPath}`)
+        if (index === undefined) {console.log(`Failed to parse index.json from ${metadataSource.url}`)}
+        if (description === undefined) {console.log(`Failed to parse readme.json from ${metadataSource.url}`)}
       }
     })
   );
