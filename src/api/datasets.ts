@@ -11,7 +11,7 @@ import {
 } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, bucketNameToURL, s3URItoURL } from "./datasources";
 import * as Path from "path";
-import {DatasetMetadata, GithubDatasetMetadataSource} from "./dataset_metadata";
+import {DatasetMetadata, GithubDatasetMetadataSource, SampleMetadata} from "./dataset_metadata";
 import {isUri} from "valid-url";
 
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
@@ -78,6 +78,25 @@ interface IDatasetView{
   volumeNames: string[]
 }
 
+interface Titled<T>{
+  title: string
+  values: T
+}
+
+interface ITags{
+  softwareAvailability: Titled<string>
+  datasetInstitution: Titled<string[]>
+  volumes: Titled<string[]>
+  organism: Titled<string[]>
+  type: Titled<string[]>
+  subtype: Titled<string[]>
+  treatment: Titled<string[]>
+  acquisitionInstitution: Titled<string>
+  voxelSizeLateral: Titled<number | undefined>
+  voxelSizeAxial: Titled<number | undefined>
+}
+
+
 interface IDataset{
   name: string
   space: CoordinateSpace
@@ -85,6 +104,7 @@ interface IDataset{
   description: DatasetMetadata
   thumbnailURL: string
   views: DatasetView[]
+  tags: ITags
 }
 
 export class DatasetView implements IDatasetView {
@@ -108,7 +128,6 @@ export interface ContentTypeMetadata {
   label: string
   description: string
 }
-
 
 function SpatialTransformToNeuroglancer(transform: SpatialTransform, outputDimensions: CoordinateSpace): CoordinateSpaceTransform {
 
@@ -283,14 +302,20 @@ export class Dataset implements IDataset {
     public description: DatasetMetadata
     public thumbnailURL: string
     public views: DatasetView[]
-    constructor(key: string, space: CoordinateSpace, volumes: Map<string, Volume>, description: DatasetMetadata,
-    thumbnailPath: string, views: DatasetView[]) {
-        this.name = key;
+    public tags: ITags
+    constructor(name: string, 
+                space: CoordinateSpace, 
+                volumes: Map<string, Volume>, 
+                description: DatasetMetadata,
+                thumbnailPath: string, 
+                views: DatasetView[]) {
+        this.name = name;
         this.space = space;
         this.volumes = volumes;
         this.description = description;
         this.thumbnailURL = thumbnailPath;
         this.views = views;
+        this.tags = this.makeTags();
     }
 
     makeNeuroglancerViewerState(layers: SegmentationLayer[] | ImageLayer[],
@@ -330,6 +355,24 @@ export class Dataset implements IDataset {
             undefined
         );
         return encodeFragment(urlSafeStringify(vState));
+    }
+    makeTags(): ITags{
+      let tags: any = {};
+      const descr = this.description;
+      let latvox = undefined;
+      tags['acquisitionInstitution'] = {title: 'Acquisition Institution', values: descr.imaging.institution};
+      tags['datasetInstitution'] = {title: 'Contributing Institutions', values: descr.institution};
+      tags['organism'] = {title: 'Sample: organism(s)', values: descr.sample.organism};
+      tags['type'] = {title: 'Sample: type(s)', values: descr.sample.type};
+      tags['subtype'] = {title: 'Sample: subtype', values: descr.sample.treatment};
+      tags['treatment'] = {title: 'Sample: treatment', values: descr.sample.treatment};
+      tags['voxelSizeAxial'] = {title: 'Axial voxel size', values: descr.imaging.gridSpacing.values.get('z')};
+      if ((descr.imaging.gridSpacing.values.get('y') !== undefined) || (descr.imaging.gridSpacing.values.get('x') !== undefined)) {
+       latvox =  Math.min(descr.imaging.gridSpacing.values.get('y')!, descr.imaging.gridSpacing.values.get('x')!);
+      }
+      tags['voxelSizeLateral'] = {title: 'Lateral voxel size', values: latvox};
+      tags['softwareAvailability'] = {title: 'Software Availability', values: descr.softwareAvailability};
+      return tags
     }
   }
 
