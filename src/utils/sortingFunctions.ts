@@ -1,8 +1,7 @@
-import { Dataset } from "../api/datasets";
+import { Dataset, titled } from "../api/datasets";
 
-interface sortOption {
+interface sortOption extends titled{
   func: (a: [string, Dataset], b: [string, Dataset]) => number;
-  display: string;
 }
 
 interface sortOptions {
@@ -19,19 +18,19 @@ const sortFunctions: sortOptions = {
         numeric: true,
         sensitivity: "base"
       }),
-    display: "Dataset Name"
+    title: "Dataset Name"
   },
   size: {
     func: (a: [string, Dataset], b: [string, Dataset]) =>
       [...b[1].volumes.keys()].length - [...a[1].volumes.keys()].length,
-    display: "Dataset Size"
+    title: "Dataset Size"
   },
   collected: {
     // datasets.description.imaging.startDate
     func: (a: [string, Dataset], b: [string, Dataset]) =>
       new Date(b[1].description.imaging.startDate).getTime() -
       new Date(a[1].description.imaging.startDate).getTime(),
-    display: "Date Collected"
+    title: "Date Collected"
   }
 };
 
