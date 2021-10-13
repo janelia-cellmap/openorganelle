@@ -21,6 +21,10 @@ export type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
 export type VolumeStores = "n5" | "precomputed" | "zarr";
 export type ContentType = "em" | "segmentation" | "prediction" | "analysis";
 
+export interface titled {
+  title: string
+}
+
 interface ContrastLimits {
   start: number
   end: number
@@ -78,24 +82,40 @@ interface IDatasetView{
   volumeNames: string[]
 }
 
-interface Titled<T>{
-  title: string
-  values: T
+type TagCategories = "Software Availability" | 
+"Contributing institution" | 
+"Volumes" | 
+"Sample: Organism" | 
+"Sample: Type" |
+"Sample: Subtype" |
+"Sample: Treatment" | 
+"Acquisition institution" |
+"Lateral voxel size" |
+"Axial voxel size"
+
+export interface ITag{
+  value: string
+  category: TagCategories
 }
 
-interface ITags{
-  softwareAvailability: Titled<string>
-  datasetInstitution: Titled<string[]>
-  volumes: Titled<string[]>
-  organism: Titled<string[]>
-  type: Titled<string[]>
-  subtype: Titled<string[]>
-  treatment: Titled<string[]>
-  acquisitionInstitution: Titled<string>
-  voxelSizeLateral: Titled<number | undefined>
-  voxelSizeAxial: Titled<number | undefined>
+export class OSet<T>{
+  public map: Map<string, T>
+  constructor(){
+    this.map = new Map();
+  }
+  add(element: T) {
+    this.map.set(JSON.stringify(element), element)
+  }
+  has(element: T): boolean {
+    return (JSON.stringify(element) in this.map.keys())
+  }
+  delete(element: T): boolean {
+    return this.map.delete(JSON.stringify(element))
+  }
+  [Symbol.iterator](){
+    return this.map[Symbol.iterator]()
+  } 
 }
-
 
 interface IDataset{
   name: string
@@ -104,7 +124,7 @@ interface IDataset{
   description: DatasetMetadata
   thumbnailURL: string
   views: DatasetView[]
-  tags: ITags
+  tags: OSet<ITag>
 }
 
 export class DatasetView implements IDatasetView {
@@ -302,7 +322,7 @@ export class Dataset implements IDataset {
     public description: DatasetMetadata
     public thumbnailURL: string
     public views: DatasetView[]
-    public tags: ITags
+    public tags: OSet<ITag>
     constructor(name: string, 
                 space: CoordinateSpace, 
                 volumes: Map<string, Volume>, 
@@ -356,25 +376,39 @@ export class Dataset implements IDataset {
         );
         return encodeFragment(urlSafeStringify(vState));
     }
-    makeTags(): ITags{
-      let tags: any = {};
+    makeTags(): OSet<ITag>
+    {
+      const tags: OSet<ITag> = new OSet();
       const descr = this.description;
       let latvox = undefined;
-      tags['acquisitionInstitution'] = {title: 'Acquisition Institution', values: descr.imaging.institution};
-      tags['datasetInstitution'] = {title: 'Contributing Institutions', values: descr.institution};
-      tags['organism'] = {title: 'Sample: organism(s)', values: descr.sample.organism};
-      tags['type'] = {title: 'Sample: type(s)', values: descr.sample.type};
-      tags['subtype'] = {title: 'Sample: subtype', values: descr.sample.treatment};
-      tags['treatment'] = {title: 'Sample: treatment', values: descr.sample.treatment};
-      tags['voxelSizeAxial'] = {title: 'Axial voxel size', values: descr.imaging.gridSpacing.values.get('z')};
+      tags.add({value: descr.imaging.institution, category: 'Acquisition institution'});
+
+      for (let val of descr.institution) {
+        tags.add({value: val, category: 'Contributing institution'})}
+      for (let val of descr.sample.organism) {
+        tags.add({value: val, category: 'Sample: Organism'})
+      }
+      for (let val of descr.sample.type) {
+        tags.add({value: val, category: 'Sample: Type'})
+      }
+      for (let val of descr.sample.subtype) {
+        tags.add({value: val, category: 'Sample: Subtype'})
+          }
+      for (let val of descr.sample.treatment) {
+        tags.add({value: val, category: 'Sample: Treatment'})
+      }
+      const axvox = descr.imaging.gridSpacing.values.get('z')
+      if (axvox !== undefined) {
+        tags.add({value: axvox.toString(), category: 'Axial voxel size'});
+      }
       if ((descr.imaging.gridSpacing.values.get('y') !== undefined) || (descr.imaging.gridSpacing.values.get('x') !== undefined)) {
        latvox =  Math.min(descr.imaging.gridSpacing.values.get('y')!, descr.imaging.gridSpacing.values.get('x')!);
+       tags.add({value: latvox.toString(), category: 'Lateral voxel size'});
       }
-      tags['voxelSizeLateral'] = {title: 'Lateral voxel size', values: latvox};
-      tags['softwareAvailability'] = {title: 'Software Availability', values: descr.softwareAvailability};
+      tags.add({value: descr.softwareAvailability, category: 'Software Availability'});
       return tags
-    }
   }
+}
 
 async function getDatasetKeys(bucket: string): Promise<string[]> {
     // get all the folders in the bucket
