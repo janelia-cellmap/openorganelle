@@ -14,6 +14,8 @@ import CheckBoxIcon from "@material-ui/icons/CheckBox";
 
 import { AppContext } from "../context/AppContext";
 import sortFunctions from "../utils/sortingFunctions";
+import { Dataset, ITag, OSet} from "../api/datasets";
+import { stableValueHash } from "react-query/types/core/utils";
 
 export default function DatasetFilters() {
   const { appState, setPermanent } = useContext(AppContext);
@@ -23,26 +25,28 @@ export default function DatasetFilters() {
 
   const options = Object.keys(sortFunctions).map(option => (
     <MenuItem key={option} value={option}>
-      {sortFunctions[option].display}
+      {sortFunctions[option].title}
     </MenuItem>
   ));
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
+  const tags: ITag[] = [];
+  const tagSet: OSet<ITag> = new OSet();
+  for (let dataset of appState.datasets.values()) {
+    for (let tag of dataset.tags.map.values())
+      {
+        tagSet.add(tag);
+      }
+  }
 
-  const tags = [
-    { title: 'Tag1', value: 't1', category: 'cat1' },
-    { title: 'Tag2', value: 't2', category: 'cat1' },
-    { title: 'Tag3', value: 't3', category: 'cat1' },
-    { title: 'Tag4', value: 't4', category: 'cat2' },
-    { title: 'Tag5', value: 't5', category: 'cat2' },
-    { title: 'bigTag5', value: 't5', category: 'cat2' },
-    { title: 'littleTag5', value: 't5', category: 'cat3' },
-    { title: 'anotherTag5', value: 't5', category: 'cat3' },
-    { title: 'bestTag5', value: 't5', category: 'cat3' },
-    { title: 'awesomeTag5', value: 't5', category: 'cat4' },
-  ];
-
+  tags.push(...Array.from(tagSet.map.values()));
+  tags.sort((a, b) => {
+    if (a.category < b.category) {return -1}
+    if (a.category > b.category) {return 1}
+    return 0
+  }) 
+  console.log(tags)
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} sm={6}>
@@ -66,7 +70,7 @@ export default function DatasetFilters() {
           options={tags}
           disableCloseOnSelect
           groupBy={(option) => option.category}
-          getOptionLabel={option => option.title}
+          getOptionLabel={option => option.value}
           renderOption={(option, { selected }) => (
             <React.Fragment>
               <Checkbox
@@ -75,7 +79,7 @@ export default function DatasetFilters() {
                 style={{ marginRight: 8 }}
                 checked={selected}
               />
-              {option.title}
+              {option.value}
             </React.Fragment>
           )}
           style={{ width: 500 }}
