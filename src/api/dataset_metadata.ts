@@ -210,7 +210,6 @@ export class SampleMetadata implements ISampleMetadata{
     subtype: any,
     treatment: any)
   {
-    console.log(organism)
     this.description = String(description);
     this.protocol = String(protocol);
     this.contributions = String(contributions);
