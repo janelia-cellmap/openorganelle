@@ -29,7 +29,6 @@ export default function DatasetLayout() {
 
   const rangeStart = (page - 1) * datasetsPerPage;
   const rangeEnd = rangeStart + datasetsPerPage;
-  const totalPages = Math.ceil(datasets.size / datasetsPerPage);
 
 
   function setCurrentPage(page: number) {
@@ -55,8 +54,8 @@ export default function DatasetLayout() {
     }
     return true;
   });
-  console.log(datasetsFiltered);
 
+  const totalPages = Math.ceil(datasetsFiltered.length / datasetsPerPage);
   // sort by number of volumes; this will break when the metadata changes to putting volumes in an array
   const datasetsSorted = datasetsFiltered.sort(sortFunctions[appState.sortBy].func)
 
@@ -89,7 +88,7 @@ export default function DatasetLayout() {
   return (
     <div>
       <Typography variant="h5">
-        Datasets {rangeStart + 1} to {Math.min(rangeEnd, datasets.size)} of{" "}
+        Datasets {rangeStart + 1} to {Math.min(rangeEnd, datasetsFiltered.length)} of{" "}
         {datasets.size}
       </Typography>
       <Grid container spacing={1}>
