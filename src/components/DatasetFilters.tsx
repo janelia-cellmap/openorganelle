@@ -18,9 +18,14 @@ import { Dataset, ITag, OSet} from "../api/datasets";
 import { stableValueHash } from "react-query/types/core/utils";
 
 export default function DatasetFilters() {
-  const { appState, setPermanent } = useContext(AppContext);
+  const { appState, setPermanent, setAppState } = useContext(AppContext);
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setPermanent({ sortBy: event.target.value as string });
+  };
+
+  const handleFilterChange = (event: React.ChangeEvent<{}>, value: Array<ITag> | undefined, reason: string) => {
+    setAppState({...appState, datasetFilter: value});
+    console.log({event, value, reason});
   };
 
   const options = Object.keys(sortFunctions).map(option => (
@@ -45,8 +50,8 @@ export default function DatasetFilters() {
     if (a.category < b.category) {return -1}
     if (a.category > b.category) {return 1}
     return 0
-  }) 
-  console.log(tags)
+  });
+
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} sm={6}>
@@ -69,6 +74,8 @@ export default function DatasetFilters() {
           id="dataset-filters"
           options={tags}
           disableCloseOnSelect
+          value={appState.datasetFilter}
+          onChange={handleFilterChange}
           groupBy={(option) => option.category}
           getOptionLabel={option => option.value}
           renderOption={(option, { selected }) => (

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {checkWebGL2} from "../api/util"
-import { Dataset} from "../api/datasets";
+import { Dataset, ITag} from "../api/datasets";
 
 export interface ContextProps {
   neuroglancerAddress: string,
@@ -13,6 +13,7 @@ export interface ContextProps {
   datasetGrid: boolean,
   showFilters: boolean,
   sortBy: string,
+  datasetFilter: Array<ITag> | undefined,
   [key: string]: any
 }
 
@@ -30,6 +31,7 @@ const contextDefault: ContextProps = {
   datasetsLoading: false,
   datasets: new Map(),
   datasetGrid: true,
+  datasetFilter: [],
   showFilters: false,
   sortBy: 'name'
 }
