@@ -33,7 +33,7 @@ const contextDefault: ContextProps = {
   datasetGrid: true,
   datasetFilter: [],
   showFilters: false,
-  sortBy: 'name'
+  sortBy: 'size'
 }
 
 const allowedPermanent = ['datasetGrid'];
