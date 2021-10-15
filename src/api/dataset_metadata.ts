@@ -55,7 +55,7 @@ abstract class DatasetMetadataSource {
 async function getObjectFromJSON<T>(url: URL): Promise<T> {
    const response = await fetch(url.toString())
    const metadata = response.json();
-   
+
    if (response.ok){
      if (metadata) {
        return metadata
@@ -92,11 +92,11 @@ export class GithubDatasetMetadataSource extends DatasetMetadataSource {
    }
    catch(error)
     {
-      console.log(`Could not generate metadata from ${rawified.toString()} due to ${error}`)  
-    }   
+      console.log(`Could not generate metadata from ${rawified.toString()} due to ${error}`)
+    }
    return metadata
  }
- 
+
  async GetIndex(): Promise<DatasetIndex | undefined> {
   let rawified = this.rawifyURL(this.url);
   rawified.pathname += '/index.json';
@@ -141,7 +141,7 @@ class UnitfulVector {
     if (val_array.length === 0){return 'N/A'}
     else {
       return `${val_array.join(' x ')} (${axis_array.join(', ')})`
-    }    
+    }
   }
 }
 
@@ -177,7 +177,7 @@ export class ImagingMetadata implements IImagingMetadata{
     this.current  = Number(current);
     this.primaryEnergy  = Number(primaryEnergy);
     this.id = String(id);
-    
+
     let _dimensions = dimensions;
     if (dimensions === undefined) {
     _dimensions = {unit: undefined, values: new Map()}
@@ -187,8 +187,8 @@ export class ImagingMetadata implements IImagingMetadata{
     if (gridSpacing === undefined) {
     _gridSpacing = {unit: undefined, values: new Map()}
     }
-    
-    this.dimensions = new UnitfulVector(_dimensions.unit, _dimensions.values);    
+
+    this.dimensions = new UnitfulVector(_dimensions.unit, _dimensions.values);
     this.gridSpacing = new UnitfulVector(_gridSpacing.unit, _gridSpacing.values);
   }
 }
@@ -221,7 +221,7 @@ export class SampleMetadata implements ISampleMetadata{
 }
 
 export class DOIMetadata implements IDOIMetadata{
-  id: string 
+  id: string
   DOI: string
   constructor(
     id: any,
@@ -259,26 +259,26 @@ constructor(
   this.id = String(id);
   this.institution = Array.from(institution).map(String);
   this.softwareAvailability = softwareAvailability
-  this.imaging = new ImagingMetadata(imaging.id, 
+  this.imaging = new ImagingMetadata(imaging.id,
                                      imaging.institution,
                                      imaging.gridSpacing,
                                      imaging.dimensions,
-                                     imaging.startDate, 
-                                     imaging.duration, 
-                                     imaging.biasVoltage, 
-                                     imaging.scanRate, 
+                                     imaging.startDate,
+                                     imaging.duration,
+                                     imaging.biasVoltage,
+                                     imaging.scanRate,
                                      imaging.current,
                                      imaging.primaryEnergy,
                                      );
 
-  this.sample = new SampleMetadata(sample.description, 
-                                   sample.protocol, 
+  this.sample = new SampleMetadata(sample.description,
+                                   sample.protocol,
                                    sample.contributions,
                                    sample.organism,
                                    sample.type,
                                    sample.subtype,
                                    sample.treatment);
-  
+
   if (Array.isArray(DOI)){
     this.DOI = DOI.map(v => new DOIMetadata(v.id, v.DOI));
   }
@@ -292,10 +292,10 @@ constructor(
 }
 
  static fromJSON(json: IDatasetMetadata) {
-  return new DatasetMetadata(json.title, 
+  return new DatasetMetadata(json.title,
                              json.id,
-                             json.imaging, 
-                             json.sample, 
+                             json.imaging,
+                             json.sample,
                              json.institution,
                              json.softwareAvailability,
                              json.DOI,

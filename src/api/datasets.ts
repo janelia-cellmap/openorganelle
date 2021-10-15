@@ -11,7 +11,7 @@ import {
 } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, bucketNameToURL, s3URItoURL } from "./datasources";
 import * as Path from "path";
-import {DatasetMetadata, GithubDatasetMetadataSource, SampleMetadata} from "./dataset_metadata";
+import {DatasetMetadata, GithubDatasetMetadataSource} from "./dataset_metadata";
 import {isUri} from "valid-url";
 
 const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
