@@ -10,6 +10,9 @@ const useStyles = makeStyles(theme => ({
   settings: {
     margin: "1em"
   },
+  metadataSource: {
+    minWidth: "55em"
+  },
   nglink: {
     minWidth: "25em"
   },
@@ -28,7 +31,8 @@ export default function Settings() {
       <Typography variant="h3" gutterBottom>
         Site settings
       </Typography>
-      <Grid container spacing={3}>
+      <Grid container 
+            spacing={3}>
         <Grid item xs={12}>
           <TextField
             id="bucket-name"
@@ -47,6 +51,17 @@ export default function Settings() {
             value={appState.neuroglancerAddress}
             onChange={e =>
               setAppState({ ...appState, neuroglancerAddress: e.target.value })
+            }
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            className={classes.metadataSource}
+            id="metadataSource"
+            label="Metadata Source"
+            value={appState.metadataEndpoint}
+            onChange={e =>
+              setAppState({ ...appState, metadataEndpoint: e.target.value })
             }
           />
         </Grid>
