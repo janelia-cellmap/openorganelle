@@ -14,12 +14,11 @@ import * as Path from "path";
 import {DatasetMetadata, GithubDatasetMetadataSource} from "./dataset_metadata";
 import {isUri} from "valid-url";
 
-const IMAGE_DTYPES = ['int8', 'uint8', 'uint16'];
-const SEGMENTATION_DTYPES = ['uint64'];
 export type DataFormats = "n5" | "zarr" | "precomputed" | "neuroglancer_legacy_mesh"
 export type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
 export type VolumeStores = "n5" | "precomputed" | "zarr";
 export type ContentType = "em" | "segmentation" | "prediction" | "analysis";
+export type SampleType = "scalar" | "label"
 
 export interface titled {
   title: string
@@ -62,6 +61,8 @@ interface MeshSource extends DataSource {
 interface VolumeSource extends DataSource{
   dataType: string
   contentType: ContentType
+  sampleType: SampleType
+  format: VolumeStores
   displaySettings: DisplaySettings
   subsources: MeshSource[]
 }
@@ -181,26 +182,15 @@ contentTypeDescriptions.set('segmentation', {label: "Segmentation Layers", descr
 contentTypeDescriptions.set('prediction', {label: "Prediction Layers", description: "Raw distance transform inferences scaled from 0 to 255. A voxel value of 127 represent a predicted distance of 0 nm."});
 contentTypeDescriptions.set('analysis', {label: "Analysis Layers", description: "Results of applying various analysis routines on raw data, predictions, or segmentations."});
 
-export function inferLayerType(volumeName: string): string
-{
-  let result = 'segmentation';
-  if ((volumeName.indexOf('em-') > 0) || (volumeName.indexOf('_pred') > 0) || (volumeName.indexOf('_sim') > 0) || (volumeName.indexOf('_palm') > 0)) {
-    result='image';
-  }
-  return result
-}
 
-function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataType: string): string | undefined{
-  switch (contentType) {
-    case 'em':{
-      let lower = 0;
-      let upper = 0;
-      if (dataType === 'uint8') {lower = 0; upper = 255}
-      else if (dataType === 'uint16') {lower = 0; upper = 65535}
-      const interval = upper - lower;
-      let cmin = shaderArgs.contrastLimits.start * interval;
-      let cmax = shaderArgs.contrastLimits.end * interval;
-        return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${Math.max(0, cmin - 2 * (cmax-cmin))}, ${Math.min(upper, cmax + 2 * (cmax - cmin))}])
+function makeShader(shaderArgs: DisplaySettings, sampleType: SampleType): string | undefined{
+  switch (sampleType) {
+    case 'scalar':{
+      let lower = shaderArgs.contrastLimits.min;
+      let upper = shaderArgs.contrastLimits.max;
+      let cmin = shaderArgs.contrastLimits.start;
+      let cmax = shaderArgs.contrastLimits.end;
+        return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${lower}, ${upper}])
         #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertLUT? 1: 0})
         #uicontrol vec3 color color(default="${shaderArgs.color}")
         float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
@@ -208,7 +198,7 @@ function makeShader(shaderArgs: DisplaySettings, contentType: ContentType, dataT
           emitRGB(color * inverter(normalized(), invertColormap));
         }`
       }
-    case "segmentation":
+    case "label":
       return '';
     default:
       return undefined;
@@ -227,6 +217,7 @@ export class Volume implements VolumeSource {
         public dataType: string,
         public transform: SpatialTransform,
         public contentType: ContentType,
+        public sampleType: SampleType,
         public format: VolumeStores,
         public displaySettings: DisplaySettings,
         public description: string,
@@ -253,14 +244,8 @@ export class Volume implements VolumeSource {
         // dvb: this is a hack until this gets fixed in metadata
         const color = this.name === 'gt' ? undefined: this.displaySettings.color;
         if (layerType === 'image'){
-          let shader: string | undefined = '';
-          if (SEGMENTATION_DTYPES.includes(this.dataType)){
-              shader = makeShader(this.displaySettings, 'segmentation', this.dataType);
-          }
-          else if (IMAGE_DTYPES.includes(this.dataType)) {
-              shader = makeShader(this.displaySettings, 'em', this.dataType);
-          }
-          else {shader = undefined}
+          let shader: string | undefined = undefined;
+          shader = makeShader(this.displaySettings, this.sampleType);
           layer = new ImageLayer('rendering',
                                 undefined,
                                 undefined,
@@ -434,11 +419,14 @@ function reifyPath(outerPath: string, innerPath: string): string {
 
 }
 
-function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
+function makeVolume(outerPath: string, volumeMeta: VolumeSource): Volume {
   volumeMeta.path = reifyPath(outerPath, volumeMeta.path);
   // this is a shim until we add a defaultLayerType field to the volume metadata
   let ds = volumeMeta.displaySettings;
-  ds.defaultLayerType = inferLayerType(volumeMeta.name) as LayerTypes;
+  ds.defaultLayerType = "image"
+  if (volumeMeta.sampleType === 'label') {
+    ds.defaultLayerType = "segmentation";
+  }
   volumeMeta.displaySettings = ds;
 
   for (let subsource of volumeMeta.subsources) {subsource.path = reifyPath(outerPath, subsource.path)}
@@ -448,6 +436,7 @@ function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
                     volumeMeta.dataType,
                     volumeMeta.transform,
                     volumeMeta.contentType,
+                    volumeMeta.sampleType,
                     volumeMeta.format,
                     volumeMeta.displaySettings,
                     volumeMeta.description,
