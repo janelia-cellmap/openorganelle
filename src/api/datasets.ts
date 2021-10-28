@@ -241,8 +241,7 @@ export class Volume implements VolumeSource {
           return {url: `precomputed://${subsource.path}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions)}
         });
         let layer: Layer | undefined = undefined;
-        // dvb: this is a hack until this gets fixed in metadata
-        const color = this.name === 'gt' ? undefined: this.displaySettings.color;
+        const color = this.displaySettings.color ?? undefined;
         if (layerType === 'image'){
           let shader: string | undefined = undefined;
           shader = makeShader(this.displaySettings, this.sampleType);
