@@ -43,7 +43,7 @@ export function DatasetDescriptionPreview({datasetMetadata}: DescriptionPreviewP
         </Typography>
         <p><strong>Acquisition date</strong>:{" "}{datasetMetadata.imaging.startDate}</p>
         <p><strong>Dataset ID</strong>:{" "}{datasetMetadata.id}</p>
-        <p><strong>Voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>:{" "}{datasetMetadata.imaging.gridSpacing.string_repr(1)}</p>
+        <p><strong>Voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>:{" "}{datasetMetadata.imaging.gridSpacing.string_repr(2)}</p>
         <p><strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}{datasetMetadata.imaging.dimensions.string_repr(0)}</p>
       </Box>
     );

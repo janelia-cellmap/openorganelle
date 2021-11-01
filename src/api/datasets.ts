@@ -82,6 +82,7 @@ interface IDatasetView{
   volumeNames: string[]
 }
 
+<<<<<<< HEAD
 type TagCategories = "Software Availability" | 
 "Contributing institution" | 
 "Volumes" | 
@@ -89,6 +90,15 @@ type TagCategories = "Software Availability" |
 "Sample: Type" |
 "Sample: Subtype" |
 "Sample: Treatment" | 
+=======
+type TagCategories = "Software Availability" |
+"Contributing institution" |
+"Volumes" |
+"Sample: Organism" |
+"Sample: Type" |
+"Sample: Subtype" |
+"Sample: Treatment" |
+>>>>>>> cb0a4f6596b88f22f089f2b834b3c2ac0fe0056d
 "Acquisition institution" |
 "Lateral voxel size" |
 "Axial voxel size"
@@ -107,14 +117,22 @@ export class OSet<T>{
     this.map.set(JSON.stringify(element), element)
   }
   has(element: T): boolean {
+<<<<<<< HEAD
     return (JSON.stringify(element) in this.map.keys())
+=======
+    return [...this.map.keys()].includes(JSON.stringify(element))
+>>>>>>> cb0a4f6596b88f22f089f2b834b3c2ac0fe0056d
   }
   delete(element: T): boolean {
     return this.map.delete(JSON.stringify(element))
   }
   [Symbol.iterator](){
     return this.map[Symbol.iterator]()
+<<<<<<< HEAD
   } 
+=======
+  }
+>>>>>>> cb0a4f6596b88f22f089f2b834b3c2ac0fe0056d
 }
 
 interface IDataset{
@@ -323,11 +341,19 @@ export class Dataset implements IDataset {
     public thumbnailURL: string
     public views: DatasetView[]
     public tags: OSet<ITag>
+<<<<<<< HEAD
     constructor(name: string, 
                 space: CoordinateSpace, 
                 volumes: Map<string, Volume>, 
                 description: DatasetMetadata,
                 thumbnailPath: string, 
+=======
+    constructor(name: string,
+                space: CoordinateSpace,
+                volumes: Map<string, Volume>,
+                description: DatasetMetadata,
+                thumbnailPath: string,
+>>>>>>> cb0a4f6596b88f22f089f2b834b3c2ac0fe0056d
                 views: DatasetView[]) {
         this.name = name;
         this.space = space;
@@ -459,7 +485,7 @@ function makeVolume(outerPath: string, volumeMeta: Volume): Volume {
 export async function makeDatasets(bucket: string, metadataEndpoint: string): Promise<Map<string, Dataset>> {
   const datasets: Map<string, Dataset> = new Map();
   const metadataSources: Map<string, GithubDatasetMetadataSource> = new Map();
-  
+
   // get the keys to the datasets
   const datasetKeys: string[] = await getDatasetKeys(bucket);
 
@@ -472,13 +498,13 @@ export async function makeDatasets(bucket: string, metadataEndpoint: string): Pr
   await Promise.all(
     datasetKeys.map(async key => {
       const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
-      // non-undefined assertion is OK because we know that all the keys 
+      // non-undefined assertion is OK because we know that all the keys
       // are in there
       const metadataSource = metadataSources.get(key)!;
       const description = await metadataSource.GetMetadata();
       const thumbnailURL = await metadataSource.GetThumbnailURL();
       const index = await metadataSource.GetIndex();
-      
+
       if (index !== undefined && description !== undefined){
         try {
           const views: DatasetView[] = [];
@@ -492,7 +518,7 @@ export async function makeDatasets(bucket: string, metadataEndpoint: string): Pr
           }
           const volumes: Map<string, Volume> = new Map();
           index.volumes.forEach(v => volumes.set(v.name, makeVolume(outerPath, v)));
-          
+
           if (views.length === 0){
             let defaultView = new DatasetView('Default view', '', Array.from(volumes.keys()), undefined, undefined, undefined);
             views.push(defaultView)

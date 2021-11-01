@@ -40,8 +40,29 @@ export default function DatasetLayout() {
     });
   }
 
+  const datasetsFiltered = [...datasets].filter(dataset => {
+    // if any tag in appState.datasetFilter is missing from the
+    // tags in the dataset, then we don't have a match, so
+    // return false.
+    if (appState.datasetFilter) {
+      for (let tag of appState.datasetFilter) {
+        console.log({tag, dataset});
+        if (!dataset[1].tags.has(tag)) {
+          console.log('no match');
+          return false;
+        }
+      }
+    }
+    return true;
+  });
+  console.log(datasetsFiltered);
+
   // sort by number of volumes; this will break when the metadata changes to putting volumes in an array
+<<<<<<< HEAD
   const datasetsSorted = [...datasets].sort(sortFunctions[appState.sortBy].func)
+=======
+  const datasetsSorted = datasetsFiltered.sort(sortFunctions[appState.sortBy].func)
+>>>>>>> cb0a4f6596b88f22f089f2b834b3c2ac0fe0056d
 
   const displayedDatasets = datasetsSorted
     .slice(rangeStart, rangeEnd)
