@@ -19,7 +19,7 @@ export type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
 export type VolumeStores = "n5" | "precomputed" | "zarr";
 export type ContentType = "em" | "segmentation" | "prediction" | "analysis";
 export type SampleType = "scalar" | "label"
-
+const resolutionTagThreshold = 6;
 export interface titled {
   title: string
 }
@@ -383,7 +383,13 @@ export class Dataset implements IDataset {
       }
       const axvox = descr.imaging.gridSpacing.values.get('z')
       if (axvox !== undefined) {
-        tags.add({value: axvox.toString(), category: 'Axial voxel size'});
+        let value = ''
+        if (axvox <= resolutionTagThreshold)
+        {value = `<= ${resolutionTagThreshold} nm`}
+        else {
+          {value = `> ${resolutionTagThreshold} nm`}
+        }
+        tags.add({value: value, category: 'Axial voxel size'});
       }
       if ((descr.imaging.gridSpacing.values.get('y') !== undefined) || (descr.imaging.gridSpacing.values.get('x') !== undefined)) {
        latvox =  Math.min(descr.imaging.gridSpacing.values.get('y')!, descr.imaging.gridSpacing.values.get('x')!);
