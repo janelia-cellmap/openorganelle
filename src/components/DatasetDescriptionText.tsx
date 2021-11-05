@@ -43,8 +43,8 @@ export function DatasetDescriptionPreview({datasetMetadata}: DescriptionPreviewP
         </Typography>
         <p><strong>Acquisition date</strong>:{" "}{datasetMetadata.imaging.startDate}</p>
         <p><strong>Dataset ID</strong>:{" "}{datasetMetadata.id}</p>
-        <p><strong>Voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>:{" "}{datasetMetadata.imaging.gridSpacing.string_repr(1)}</p>
-        <p><strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}{datasetMetadata.imaging.dimensions.string_repr(0)}</p>
+        <p><strong>Voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>:{" "}{datasetMetadata.imaging.gridSpacing.toString()}</p>
+        <p><strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}{datasetMetadata.imaging.dimensions.toString()}</p>
       </Box>
     );
 }
@@ -65,8 +65,8 @@ export function DatasetDescriptionFull({s3URL, bucketBrowseLink, storageLocation
           <p><strong>Contributions</strong>:{" "}{datasetMetadata.sample.contributions}</p>
           </Grid>
           <Grid item xs={4}>
-          <p><strong>Final voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>:{" "}{datasetMetadata.imaging.gridSpacing.string_repr(2)}</p>
-          <p><strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}{datasetMetadata.imaging.dimensions.string_repr(0)}</p>
+          <p><strong>Final voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>:{" "}{datasetMetadata.imaging.gridSpacing.toString()}</p>
+          <p><strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}{datasetMetadata.imaging.dimensions.toString()}</p>
           <p><strong>Imaging duration (days)</strong>:{" "}{datasetMetadata.imaging.duration}</p>
           <p><strong>Imaging start date</strong>:{" "}{datasetMetadata.imaging.startDate}</p>
           <p><strong>Primary energy (EV)</strong>:{" "}{datasetMetadata.imaging.primaryEnergy}</p>

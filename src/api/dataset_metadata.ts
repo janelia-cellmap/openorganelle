@@ -1,46 +1,10 @@
 import {DatasetIndex} from './datasets'
-
-type softwareAvailability = "open" | "partial" | "closed"
-
-
-interface IImagingMetadata {
-  id: string
-  institution: string
-  gridSpacing: UnitfulVector
-  dimensions: UnitfulVector
-  startDate: string
-  duration: string
-  biasVoltage: Number
-  scanRate: Number
-  current: Number
-  primaryEnergy: Number
-}
-
-interface ISampleMetadata {
-  description: string
-  protocol: string
-  contributions: string
-  organism: string[]
-  type: string[]
-  subtype: string[]
-  treatment: string[]
-}
-
-interface IDOIMetadata {
-  id: string
-  DOI: string
-}
-
-interface IDatasetMetadata{
-  title: string
-  id: string
-  imaging: IImagingMetadata
-  sample: ISampleMetadata
-  institution: string[]
-  softwareAvailability: softwareAvailability
-  DOI: IDOIMetadata[]
-  publications: string[]
-}
+import {DatasetMetadata as IDatasetMetadata, 
+       FIBSEMImagingMetadata as IImagingMetadata,
+      UnitfulVector as IUnitfulVector,
+    SampleMetadata as ISampleMetadata,
+  SoftwareAvailability as ISoftwareAvailability,
+DOI as IDOIMetadata} from './manifest'
 
 abstract class DatasetMetadataSource {
   url: URL
@@ -125,19 +89,20 @@ rawifyURL(url: URL): URL{
 
 }
 
-class UnitfulVector {
+class UnitfulVector implements IUnitfulVector{
   unit: string;
-  values: Map<string, number>;
+  values: Record<string, number>;
   constructor(
     unit: any,
-    values: any
+    values: Record<string, number>
   ){
     this.unit = String(unit);
-    this.values = new Map(Object.entries(values))
+    this.values = values
   }
-  string_repr(decimals: number): string {
-    const val_array = [...this.values.values()].map(v => v.toFixed(decimals));
-    const axis_array = [...this.values.keys()];
+  toString(): string {
+    const decimals = 2;
+    const val_array = [...Object.values(this.values)].map(v => v.toFixed(decimals));
+    const axis_array = [...Object.keys(this.values)];
     if (val_array.length === 0){return 'N/A'}
     else {
       return `${val_array.join(' x ')} (${axis_array.join(', ')})`
@@ -151,11 +116,11 @@ export class ImagingMetadata implements IImagingMetadata{
   gridSpacing: UnitfulVector
   dimensions: UnitfulVector
   startDate: string
-  duration: string
-  biasVoltage: Number
-  scanRate: Number
-  current: Number
-  primaryEnergy: Number
+  duration: number
+  biasVoltage: number
+  scanRate: number
+  current: number
+  primaryEnergy: number
   constructor(
     id: any,
     institution: any,
@@ -171,7 +136,7 @@ export class ImagingMetadata implements IImagingMetadata{
   {
     this.institution = institution;
     this.startDate = String(startDate);
-    this.duration = String(duration);
+    this.duration = Number(duration);
     this.biasVoltage = Number(biasVoltage);
     this.scanRate = Number(scanRate);
     this.current  = Number(current);
@@ -242,7 +207,7 @@ export class DatasetMetadata implements IDatasetMetadata
   imaging: IImagingMetadata
   sample: ISampleMetadata
   institution: string[]
-  softwareAvailability: softwareAvailability
+  softwareAvailability: ISoftwareAvailability
   DOI: IDOIMetadata[]
   publications: string[]
 constructor(
@@ -251,7 +216,7 @@ constructor(
   imaging: IImagingMetadata,
   sample: ISampleMetadata,
   institution: any,
-  softwareAvailability: any,
+  softwareAvailability: ISoftwareAvailability,
   DOI: any,
   publications: any,
 ){

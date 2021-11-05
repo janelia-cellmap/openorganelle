@@ -381,7 +381,7 @@ export class Dataset implements IDataset {
       for (let val of descr.sample.treatment) {
         tags.add({value: val, category: 'Sample: Treatment'})
       }
-      const axvox = descr.imaging.gridSpacing.values.get('z')
+      const axvox = descr.imaging.gridSpacing.values.z
       if (axvox !== undefined) {
         let value = ''
         if (axvox <= resolutionTagThreshold)
@@ -391,8 +391,8 @@ export class Dataset implements IDataset {
         }
         tags.add({value: value, category: 'Axial voxel size'});
       }
-      if ((descr.imaging.gridSpacing.values.get('y') !== undefined) || (descr.imaging.gridSpacing.values.get('x') !== undefined)) {
-       latvox =  Math.min(descr.imaging.gridSpacing.values.get('y')!, descr.imaging.gridSpacing.values.get('x')!);
+      if ((descr.imaging.gridSpacing.values.y !== undefined) || (descr.imaging.gridSpacing.values.x !== undefined)) {
+       latvox =  Math.min(descr.imaging.gridSpacing.values.y, descr.imaging.gridSpacing.values.x!);
        tags.add({value: latvox.toString(), category: 'Lateral voxel size'});
       }
       tags.add({value: descr.softwareAvailability, category: 'Software Availability'});
