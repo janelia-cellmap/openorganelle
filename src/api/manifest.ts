@@ -35,7 +35,7 @@ export type Doi = DOI[];
 export type Publications = string[];
 export type Name1 = string;
 export type Description1 = string;
-export type Uri = string;
+export type Url = string;
 /**
  * An enumeration.
  */
@@ -60,7 +60,7 @@ export type Color = string;
 export type Invertlut = boolean;
 export type Name2 = string;
 export type Description2 = string;
-export type Uri1 = string;
+export type Url1 = string;
 /**
  * Strings representing supported mesh formats
  */
@@ -136,7 +136,7 @@ export interface DOI {
 export interface VolumeSource {
   name: Name1;
   description: Description1;
-  URI: Uri;
+  url: Url;
   format: ArrayContainerTypeEnum;
   transform: SpatialTransform;
   sampleType: SampleTypeEnum;
@@ -152,7 +152,6 @@ export interface SpatialTransform {
   units: Units;
   translate: Translate;
   scale: Scale;
-  [k: string]: unknown;
 }
 /**
  * Metadata for display settings
@@ -171,7 +170,7 @@ export interface ContrastLimits {
 export interface MeshSource {
   name: Name2;
   description: Description2;
-  URI: Uri1;
+  url: Url1;
   format: MeshTypeEnum;
   transform: SpatialTransform;
   ids: Ids;
@@ -183,5 +182,4 @@ export interface DatasetView {
   scale?: Scale1;
   orientation?: Orientation;
   volumeNames: Volumenames;
-  [k: string]: unknown;
 }

@@ -1,19 +1,23 @@
-import {DatasetIndex} from './datasets'
-import {DatasetMetadata as IDatasetMetadata, 
+import {DatasetMetadata as IDatasetMetadata,
+        DatasetView as IDatasetView,
+        DatasetManifest as IDatasetManifest, 
        FIBSEMImagingMetadata as IImagingMetadata,
       UnitfulVector as IUnitfulVector,
     SampleMetadata as ISampleMetadata,
   SoftwareAvailability as ISoftwareAvailability,
+  VolumeSource as IVolumeSource,
 DOI as IDOIMetadata} from './manifest'
+import { Index } from './index'
 
-abstract class DatasetMetadataSource {
+
+interface DatasetAPILeaf{
+  thumbnail: URL
+  manifest: DatasetManifest}
+}
+
+interface DatasetAPI {
   url: URL
-  constructor(url: string) {
-    this.url = new URL(url);
-  }
-  abstract GetThumbnailURL(): void
-  abstract GetMetadata(): void
-  abstract GetIndex(): void
+  datasets: Map<string, Promise<DatasetAPILeaf?>
 }
 
 async function getObjectFromJSON<T>(url: URL): Promise<T> {
@@ -35,47 +39,28 @@ async function getObjectFromJSON<T>(url: URL): Promise<T> {
   }
 
 
-export class GithubDatasetMetadataSource extends DatasetMetadataSource {
+export class GithubDatasetAPI implements DatasetAPI {
+  url: URL
+  index: Index
+  datasets: Map<string, Promise<DatasetAPILeaf>> 
   constructor(url: string){
-    super(url);
+    this.url = this.rawifyURL(new URL(url));
+    const index_url = new URL(this.url.toString() + "/index.json");
+    this.index = await getObjectFromJSON<Index>(index_url)
+    this.datasets = new Map();
+    for (const key in this.index.datasets){
+            this.datasets.set(key, this.makeLeaf(key));
+          }
   }
-
-  async GetThumbnailURL(): Promise<URL>{
-    let rawified = this.rawifyURL(this.url);
-    rawified.pathname += '/thumbnail.jpg'
-    return rawified;
-  }
-
- async GetMetadata(): Promise<IDatasetMetadata | undefined> {
-   let rawified = this.rawifyURL(this.url);
-   rawified.pathname += '/readme.json';
-   let metadata;
-   try {
-   const metadata_json = await getObjectFromJSON<IDatasetMetadata>(rawified);
-   metadata = DatasetMetadata.fromJSON(metadata_json);
-   }
-   catch(error)
-    {
-      console.log(`Could not generate metadata from ${rawified.toString()} due to ${error}`)
+    async makeLeaf(key: string){
+      let datasetURL = new URL(this.url.toString() + "/" + this.index.datasets[key])
+      let thumbnailURL = new URL(datasetURL + '/' + "thumbnail.jpg")
+      let manifest = await getObjectFromJSON<DatasetManifest>(new URL(datasetURL.toString() + "/manifest.json"));
+      let leaf = {thumbnail: thumbnailURL,
+                  manifest: manifest};
+      return leaf
     }
-   return metadata
- }
-
- async GetIndex(): Promise<DatasetIndex | undefined> {
-  let rawified = this.rawifyURL(this.url);
-  rawified.pathname += '/index.json';
-  let index;
-  try {
-    index = await getObjectFromJSON<DatasetIndex>(rawified);
-  }
-  catch (error) {
-    console.log(`Could not generate index from ${rawified.toString()} due to ${error}`)
-    index = undefined;
-  }
-
-  return index
-}
-
+  
 rawifyURL(url: URL): URL{
   // map https://github.com/$user/$repo/blob/$branch/path to
   // https://raw.githubusercontent.com/$user/$repo/$branch/path
@@ -198,6 +183,29 @@ export class DOIMetadata implements IDOIMetadata{
   }
 }
 
+export class DatasetManifest implements IDatasetManifest
+{
+  name: string
+  metadata: IDatasetMetadata
+  volumes: IVolumeSource[]
+  views: IDatasetView[]
+  constructor(name: string, 
+              metadata: IDatasetMetadata,
+              volumes: IVolumeSource[],
+              views: IDatasetView[]){
+                this.name = name;
+                this.metadata = metadata;
+                this.volumes = volumes;
+                this.views = views;
+              }
+  static fromJSON(json: IDatasetManifest){
+    return new DatasetManifest(json.name,
+                              json.metadata, 
+                              json.volumes, 
+                              json.views);
+
+  }
+}
 
 
 export class DatasetMetadata implements IDatasetMetadata

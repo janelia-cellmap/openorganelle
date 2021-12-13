@@ -11,76 +11,23 @@ import {
 } from "@janelia-cosem/neuroglancer-url-tools";
 import { s3ls, bucketNameToURL, s3URItoURL } from "./datasources";
 import * as Path from "path";
-import {DatasetMetadata, GithubDatasetMetadataSource} from "./dataset_metadata";
+import {DatasetMetadata, GithubDatasetAPI} from "./dataset_metadata";
+import { DisplaySettings, 
+         ContentTypeEnum as ContentType, 
+         SampleTypeEnum as SampleType,
+         SpatialTransform, 
+         VolumeSource,
+         DatasetView as IDatasetView, 
+         MeshSource } from "./manifest";
 import {isUri} from "valid-url";
 
 export type DataFormats = "n5" | "zarr" | "precomputed" | "neuroglancer_legacy_mesh"
 export type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
 export type VolumeStores = "n5" | "precomputed" | "zarr";
-export type ContentType = "em" | "segmentation" | "prediction" | "analysis";
-export type SampleType = "scalar" | "label"
+
 const resolutionTagThreshold = 6;
 export interface titled {
   title: string
-}
-
-interface ContrastLimits {
-  start: number
-  end: number
-  min: number
-  max: number
-}
-
-interface DisplaySettings {
-  contrastLimits: ContrastLimits;
-  invertLUT: boolean;
-  color: string;
-  defaultLayerType: LayerTypes
-}
-
-export interface DatasetIndex {
-  name: string;
-  volumes: Volume[];
-  views: DatasetView[]
-}
-
-interface DataSource {
-  name: string
-  path: string
-  format: DataFormats
-  transform: SpatialTransform
-  description: string
-  version: string
-  tags: string[]
-}
-
-interface MeshSource extends DataSource {
-  ids?: number[]
-}
-
-interface VolumeSource extends DataSource{
-  dataType: string
-  contentType: ContentType
-  sampleType: SampleType
-  format: VolumeStores
-  displaySettings: DisplaySettings
-  subsources: MeshSource[]
-}
-
-interface SpatialTransform {
-  axes: string[];
-  units: string[];
-  translate: number[];
-  scale: number[];
-}
-
-interface IDatasetView{
-  name: string
-  description: string
-  position: number[] | undefined
-  scale: number | undefined
-  orientation: number[] | undefined
-  volumeNames: string[]
 }
 
 type TagCategories = "Software Availability" |
@@ -175,7 +122,7 @@ const nm: [number, string] = [1e-9, "m"];
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
 const outputDimensions: CoordinateSpace = { x: nm, y: nm, z: nm };
 
-export const contentTypeDescriptions = new Map<string, ContentTypeMetadata>();
+export const contentTypeDescriptions = new Map<ContentType, ContentTypeMetadata>();
 contentTypeDescriptions.set('em', {label: "EM Layers", description: "Raw FIB-SEM data."});
 contentTypeDescriptions.set('lm', {label: "LM Layers", description: "Light microscopy data."});
 contentTypeDescriptions.set('segmentation', {label: "Segmentation Layers", description: "Predictions that have undergone refinements such as thresholding, smoothing, size filtering, and connected component analysis. Double Left Click a segmentation to turn on/off a 3D rendering."});
@@ -212,17 +159,14 @@ interface LayerDataSource2 extends LayerDataSource {
 // A single n-dimensional array
 export class Volume implements VolumeSource {
     constructor(
-        public path: string,
+        public url: string,
         public name: string,
-        public dataType: string,
         public transform: SpatialTransform,
         public contentType: ContentType,
         public sampleType: SampleType,
         public format: VolumeStores,
         public displaySettings: DisplaySettings,
         public description: string,
-        public version: string,
-        public tags: string[],
         public subsources: MeshSource[]
     ) {}
 
@@ -230,7 +174,7 @@ export class Volume implements VolumeSource {
     // viewer state construction
 
     toLayer(layerType: LayerTypes): Layer | undefined {
-        const srcURL = `${this.format}://${this.path}`;
+        const srcURL = `${this.format}://${this.url}`;
 
         // need to update the layerdatasource object to have a transform property
         const source: LayerDataSource2 = {url: srcURL,
@@ -238,7 +182,7 @@ export class Volume implements VolumeSource {
                                         CoordinateSpaceTransform: SpatialTransformToNeuroglancer(this.transform, outputDimensions)};
 
         const subsources = this.subsources.map(subsource => {
-          return {url: `precomputed://${subsource.path}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions)}
+          return {url: `precomputed://${subsource.url}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions)}
         });
         let layer: Layer | undefined = undefined;
         const color = this.displaySettings.color ?? undefined;
@@ -400,107 +344,49 @@ export class Dataset implements IDataset {
   }
 }
 
-async function getDatasetKeys(bucket: string): Promise<string[]> {
-    // get all the folders in the bucket
-    let datasetKeys = (await s3ls(bucket, '', '/', '', false)).folders;
-    //remove trailing "/" character
-    datasetKeys = datasetKeys.map((k) => k.replace(/\/$/, ""));
-    return datasetKeys
-}
 
-
-// This function will disappear when the dataset metadata starts providing full URLs
-function reifyPath(outerPath: string, innerPath: string): string {
-  // Check if the innerPath is already a URL; if so, return it:
-  if (isUri(innerPath)) {
-    return s3URItoURL(innerPath);
-}
-  else {
-    const absPath = new URL(outerPath);
-    absPath.pathname = Path.resolve(absPath.pathname, innerPath);
-    console.log(absPath.toString())
-    return absPath.toString()
-  }
-
-}
-
-function makeVolume(outerPath: string, volumeMeta: VolumeSource): Volume {
-  volumeMeta.path = reifyPath(outerPath, volumeMeta.path);
-  // this is a shim until we add a defaultLayerType field to the volume metadata
-  let ds = volumeMeta.displaySettings;
-  ds.defaultLayerType = "image"
-  if (volumeMeta.sampleType === 'label') {
-    ds.defaultLayerType = "segmentation";
-  }
-  volumeMeta.displaySettings = ds;
-
-  for (let subsource of volumeMeta.subsources) {subsource.path = reifyPath(outerPath, subsource.path)}
-
-  return new Volume(volumeMeta.path,
+function makeVolume(volumeMeta: VolumeSource): Volume {
+  return new Volume(volumeMeta.url,
                     volumeMeta.name,
-                    volumeMeta.dataType,
                     volumeMeta.transform,
                     volumeMeta.contentType,
                     volumeMeta.sampleType,
                     volumeMeta.format,
                     volumeMeta.displaySettings,
                     volumeMeta.description,
-                    volumeMeta.version,
-                    volumeMeta.tags,
                     volumeMeta.subsources)
 }
 
-export async function makeDatasets(bucket: string, metadataEndpoint: string): Promise<Map<string, Dataset>> {
+export async function makeDatasets(metadataEndpoint: string): Promise<Map<string, Dataset>> {
+  const API = new GithubDatasetAPI(metadataEndpoint);
   const datasets: Map<string, Dataset> = new Map();
-  const metadataSources: Map<string, GithubDatasetMetadataSource> = new Map();
-
-  // get the keys to the datasets
-  const datasetKeys: string[] = await getDatasetKeys(bucket);
-
-  for (let key of datasetKeys) {
-    const url = new URL(metadataEndpoint);
-    url.pathname += key
-    metadataSources.set(key, new GithubDatasetMetadataSource(url.toString()))
-  }
-
+  
   await Promise.all(
-    datasetKeys.map(async key => {
-      const outerPath: string = `${bucketNameToURL(bucket)}/${key}`;
-      // non-undefined assertion is OK because we know that all the keys
-      // are in there
-      const metadataSource = metadataSources.get(key)!;
-      const description = await metadataSource.GetMetadata();
-      const thumbnailURL = await metadataSource.GetThumbnailURL();
-      const index = await metadataSource.GetIndex();
+    [...API.datasets.keys()].map(async key => {
+      let {thumbnail, manifest} = await API.datasets.get(key)!;
 
-      if (index !== undefined && description !== undefined){
-        try {
-          const views: DatasetView[] = [];
-          // make sure that the default view is at the beginning of the list
-          for (let v of index.views) {
-            let vObj = new DatasetView(v.name, v.description, v.volumeNames, v.orientation, v.position ?? undefined, v.scale);
-            if (vObj.name === 'Default View'){
-              views.unshift(vObj)
-            }
-            else views.push(vObj)
+      try {
+        const views: DatasetView[] = [];
+        // make sure that the default view is at the beginning of the list
+        for (let v of manifest.views) {
+          let vObj = new DatasetView(v.name, v.description, v.volumeNames, v.orientation, v.position, v.scale);
+          if (vObj.name === 'Default View'){
+            views.unshift(vObj)
           }
-          const volumes: Map<string, Volume> = new Map();
-          index.volumes.forEach(v => volumes.set(v.name, makeVolume(outerPath, v)));
-
-          if (views.length === 0){
-            let defaultView = new DatasetView('Default view', '', Array.from(volumes.keys()), undefined, undefined, undefined);
-            views.push(defaultView)
-          }
-
-          datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnailURL.toString(), views));
+          else views.push(vObj)
         }
-        catch (error) {
-          console.log(error)
+        const volumes: Map<string, Volume> = new Map();
+        manifest.volumes.forEach(v => volumes.set(v.name, makeVolume(v)));
+
+        if (views.length === 0){
+          let defaultView = new DatasetView('Default view', '', Array.from(volumes.keys()), undefined, undefined, undefined);
+          views.push(defaultView)
         }
+
+        datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnail.toString(), views));
       }
-      else {
-        if (index === undefined) {console.log(`Failed to parse index.json from ${metadataSource.url}`)}
-        if (description === undefined) {console.log(`Failed to parse readme.json from ${metadataSource.url}`)}
+      catch (error) {
+        console.log(error)
       }
     })
   );
