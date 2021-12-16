@@ -393,7 +393,6 @@ export async function makeDatasets(metadataEndpoint: string): Promise<Map<string
                              manifest.metadata,
                              thumbnail.toString(),
                              manifest.views))
-  console.log(dataset_key);
   }
   return datasets;
 }
