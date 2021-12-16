@@ -12,12 +12,12 @@ import { Index } from './index'
 
 interface DatasetAPILeaf{
   thumbnail: URL
-  manifest: DatasetManifest}
+  manifest: IDatasetManifest
 }
 
 interface DatasetAPI {
   url: URL
-  datasets: Map<string, Promise<DatasetAPILeaf?>
+  get(key: String): Promise<DatasetAPILeaf>
 }
 
 async function getObjectFromJSON<T>(url: URL): Promise<T> {
@@ -41,21 +41,16 @@ async function getObjectFromJSON<T>(url: URL): Promise<T> {
 
 export class GithubDatasetAPI implements DatasetAPI {
   url: URL
-  index: Index
-  datasets: Map<string, Promise<DatasetAPILeaf>> 
+  index: Promise<Index>
   constructor(url: string){
     this.url = this.rawifyURL(new URL(url));
     const index_url = new URL(this.url.toString() + "/index.json");
-    this.index = await getObjectFromJSON<Index>(index_url)
-    this.datasets = new Map();
-    for (const key in this.index.datasets){
-            this.datasets.set(key, this.makeLeaf(key));
-          }
+    this.index = getObjectFromJSON<Index>(index_url)
   }
-    async makeLeaf(key: string){
-      let datasetURL = new URL(this.url.toString() + "/" + this.index.datasets[key])
+    async get(key: string){
+      let datasetURL = new URL(this.url.toString() + "/" + key)
       let thumbnailURL = new URL(datasetURL + '/' + "thumbnail.jpg")
-      let manifest = await getObjectFromJSON<DatasetManifest>(new URL(datasetURL.toString() + "/manifest.json"));
+      let manifest = await getObjectFromJSON<IDatasetManifest>(new URL(datasetURL.toString() + "/manifest.json"));
       let leaf = {thumbnail: thumbnailURL,
                   manifest: manifest};
       return leaf
@@ -182,31 +177,6 @@ export class DOIMetadata implements IDOIMetadata{
     this.DOI = String(DOI)
   }
 }
-
-export class DatasetManifest implements IDatasetManifest
-{
-  name: string
-  metadata: IDatasetMetadata
-  volumes: IVolumeSource[]
-  views: IDatasetView[]
-  constructor(name: string, 
-              metadata: IDatasetMetadata,
-              volumes: IVolumeSource[],
-              views: IDatasetView[]){
-                this.name = name;
-                this.metadata = metadata;
-                this.volumes = volumes;
-                this.views = views;
-              }
-  static fromJSON(json: IDatasetManifest){
-    return new DatasetManifest(json.name,
-                              json.metadata, 
-                              json.volumes, 
-                              json.views);
-
-  }
-}
-
 
 export class DatasetMetadata implements IDatasetMetadata
 {

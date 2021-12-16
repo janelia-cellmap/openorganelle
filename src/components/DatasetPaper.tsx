@@ -9,7 +9,8 @@ import {
   Theme
 } from "@material-ui/core";
 import React, { useContext, useState } from "react";
-import { ContentType, Dataset, DatasetView, LayerTypes } from "../api/datasets";
+import {ContentTypeEnum as ContentType, DatasetView} from "../api/manifest";
+import { Dataset, LayerTypes } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import { DatasetDescriptionFull } from "./DatasetDescriptionText";
 import DatasetViewList from "./DatasetViewList";

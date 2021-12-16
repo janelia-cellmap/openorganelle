@@ -32,7 +32,7 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
   // Update the global datasets var when Home renders for the first time
   useEffect(() => {
     setAppState({ ...appState, datasetsLoading: true });
-    makeDatasets(appState.dataBucket, appState.metadataEndpoint).then(ds =>
+    makeDatasets(appState.metadataEndpoint).then(ds =>
       setAppState({ ...appState, datasets: ds, datasetsLoading: false })
     );
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

@@ -10,7 +10,8 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
-import { ContentType, contentTypeDescriptions, Dataset, Volume } from "../api/datasets";
+import {ContentTypeEnum as ContentType} from "../api/manifest";
+import {contentTypeDescriptions, Dataset, Volume } from "../api/datasets";
 import VolumeCheckboxCollection from "./LayerGroup";
 import { VolumeCheckStates } from "./DatasetPaper";
 

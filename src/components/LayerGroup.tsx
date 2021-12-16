@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Volume, ContentTypeMetadata, ContentType } from "../api/datasets";
+import {ContentTypeEnum as ContentType} from "../api/manifest"
+import { Volume, ContentTypeMetadata } from "../api/datasets";
 import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
 import Typography from "@material-ui/core/Typography";

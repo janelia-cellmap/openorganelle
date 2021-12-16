@@ -9,8 +9,7 @@ import {
   SegmentationLayer,
   Layer
 } from "@janelia-cosem/neuroglancer-url-tools";
-import { s3ls, bucketNameToURL, s3URItoURL } from "./datasources";
-import * as Path from "path";
+import { Index } from ".";
 import {DatasetMetadata, GithubDatasetAPI} from "./dataset_metadata";
 import { DisplaySettings, 
          ContentTypeEnum as ContentType, 
@@ -18,8 +17,8 @@ import { DisplaySettings,
          SpatialTransform, 
          VolumeSource,
          DatasetView as IDatasetView, 
-         MeshSource } from "./manifest";
-import {isUri} from "valid-url";
+         MeshSource,
+        DatasetManifest } from "./manifest";
 
 export type DataFormats = "n5" | "zarr" | "precomputed" | "neuroglancer_legacy_mesh"
 export type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
@@ -68,7 +67,7 @@ export class OSet<T>{
 interface IDataset{
   name: string
   space: CoordinateSpace
-  volumes: Map<string, Volume>
+  volumes: Map<string, VolumeSource>
   description: DatasetMetadata
   thumbnailURL: string
   views: DatasetView[]
@@ -80,14 +79,14 @@ export class DatasetView implements IDatasetView {
   public name: string,
   public description: string,
   public volumeNames: string[],
-  public orientation: number[] | undefined,
-  public position: number[] | undefined,
-  public scale: number | undefined){
+  public orientation?: number[],
+  public position?: number[],
+  public scale?: number){
       this.name = name;
       this.description = description;
+      this.volumeNames = volumeNames;
       this.position = position;
       this.scale = scale;
-      this.volumeNames = volumeNames;
       this.orientation = orientation;
   }
 }
@@ -152,93 +151,111 @@ function makeShader(shaderArgs: DisplaySettings, sampleType: SampleType): string
   }
 }
 
+
+export function makeLayer(volume: VolumeSource, layerType: LayerTypes): Layer | undefined {
+  const srcURL = `${volume.format}://${volume.url}`;
+
+  // need to update the layerdatasource object to have a transform property
+  const source: LayerDataSource2 = {url: srcURL,
+                                   transform: SpatialTransformToNeuroglancer(volume.transform, outputDimensions),
+                                  CoordinateSpaceTransform: SpatialTransformToNeuroglancer(volume.transform, outputDimensions)};
+  
+  const subsources = volume.subsources.map(subsource => {
+    return {url: `precomputed://${subsource.url}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions)}
+  });
+  let layer: Layer | undefined = undefined;
+  const color = volume.displaySettings.color ?? undefined;
+  if (layerType === 'image'){
+    let shader: string | undefined = undefined;
+    shader = makeShader(volume.displaySettings, volume.sampleType);
+    layer = new ImageLayer('rendering',
+                          undefined,
+                          undefined,
+                          volume.name,
+                          source,
+                          0.75,
+                          'additive',
+                          shader,
+                          undefined,
+                          undefined);
+  }
+  else if (layerType === 'segmentation') {
+    if (subsources.length > 0) {
+      layer = new SegmentationLayer('source',
+                                    true,
+                                    undefined,
+                                    volume.name,
+                                    [source, ...subsources],
+                                    volume.subsources[0].ids,
+                                    undefined,
+                                    true,
+                                    undefined,
+                                    undefined,
+                                    undefined,
+                                    undefined,
+                                    undefined,
+                                    undefined,
+                                    undefined,
+                                    color);
+    }
+    else {
+      layer = new SegmentationLayer('source',
+                                    true,
+                                    undefined,
+                                    volume.name,
+                                    source,
+                                    undefined,
+                                    undefined,
+                                    true,
+                                    undefined,
+                                    undefined,
+                                    undefined,
+                                    undefined,
+                                    undefined,
+                                    undefined,
+                                    undefined,
+                                    color);
+    }
+  }
+  return layer
+}
+
 interface LayerDataSource2 extends LayerDataSource {
   transform: any
 }
 
 // A single n-dimensional array
 export class Volume implements VolumeSource {
+  url: string;
+  name: string;
+  transform: SpatialTransform;
+  contentType: ContentType;
+  sampleType: SampleType;
+  format: VolumeStores;
+  displaySettings: DisplaySettings;
+  description: string;
+  subsources: MeshSource[];
     constructor(
-        public url: string,
-        public name: string,
-        public transform: SpatialTransform,
-        public contentType: ContentType,
-        public sampleType: SampleType,
-        public format: VolumeStores,
-        public displaySettings: DisplaySettings,
-        public description: string,
-        public subsources: MeshSource[]
-    ) {}
-
-    // todo: remove handling of spatial metadata, or at least don't pass it on to the neuroglancer
-    // viewer state construction
-
-    toLayer(layerType: LayerTypes): Layer | undefined {
-        const srcURL = `${this.format}://${this.url}`;
-
-        // need to update the layerdatasource object to have a transform property
-        const source: LayerDataSource2 = {url: srcURL,
-                                         transform: SpatialTransformToNeuroglancer(this.transform, outputDimensions),
-                                        CoordinateSpaceTransform: SpatialTransformToNeuroglancer(this.transform, outputDimensions)};
-
-        const subsources = this.subsources.map(subsource => {
-          return {url: `precomputed://${subsource.url}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions)}
-        });
-        let layer: Layer | undefined = undefined;
-        const color = this.displaySettings.color ?? undefined;
-        if (layerType === 'image'){
-          let shader: string | undefined = undefined;
-          shader = makeShader(this.displaySettings, this.sampleType);
-          layer = new ImageLayer('rendering',
-                                undefined,
-                                undefined,
-                                this.name,
-                                source,
-                                0.75,
-                                'additive',
-                                shader,
-                                undefined,
-                                undefined);
-        }
-        else if (layerType === 'segmentation') {
-          if (subsources.length > 0) {
-            layer = new SegmentationLayer('source',
-                                          true,
-                                          undefined,
-                                          this.name,
-                                          [source, ...subsources],
-                                          this.subsources[0].ids,
-                                          undefined,
-                                          true,
-                                          undefined,
-                                          undefined,
-                                          undefined,
-                                          undefined,
-                                          undefined,
-                                          undefined,
-                                          undefined,
-                                          color);
-          }
-          else {
-            layer = new SegmentationLayer('source',
-                                          true,
-                                          undefined,
-                                          this.name,
-                                          source,
-                                          undefined,
-                                          undefined,
-                                          true,
-                                          undefined,
-                                          undefined,
-                                          undefined,
-                                          undefined,
-                                          undefined,
-                                          undefined,
-                                          undefined,
-                                          color);
-          }
-        }
-        return layer
+        url: string,
+        name: string,
+        transform: SpatialTransform,
+        contentType: ContentType,
+        sampleType: SampleType,
+        format: VolumeStores,
+        displaySettings: DisplaySettings,
+        description: string,
+        subsources: MeshSource[] | undefined
+    ) {
+      this.url = url;
+      this.name = name;
+      this.contentType = contentType;
+      this.transform=transform;
+      this.contentType=contentType;
+      this.sampleType=sampleType;
+      this.format=format;
+      this.displaySettings=displaySettings;
+      this.description=description;
+      this.subsources = subsources? subsources : []
     }
 }
 
@@ -246,23 +263,34 @@ export class Volume implements VolumeSource {
 export class Dataset implements IDataset {
     public name: string;
     public space: CoordinateSpace;
-    public volumes: Map<string, Volume>;
+    public volumes: Map<string, VolumeSource>;
     public description: DatasetMetadata
     public thumbnailURL: string
     public views: DatasetView[]
     public tags: OSet<ITag>
     constructor(name: string,
                 space: CoordinateSpace,
-                volumes: Map<string, Volume>,
+                volumes: Map<string, VolumeSource>,
                 description: DatasetMetadata,
-                thumbnailPath: string,
+                thumbnailURL: string,
                 views: DatasetView[]) {
         this.name = name;
         this.space = space;
         this.volumes = volumes;
         this.description = description;
-        this.thumbnailURL = thumbnailPath;
-        this.views = views;
+        this.thumbnailURL = thumbnailURL;
+        this.views = [];
+        if (views.length === 0) {
+          this.views = [new DatasetView("Default view", 
+                                        "The default view of the data",
+                                        [...this.volumes.keys()], 
+                                        [0,1,0,0], 
+                                        undefined, 
+                                        undefined)]
+        }
+        else {
+          this.views = [...views];
+        }
         this.tags = this.makeTags();
     }
 
@@ -344,51 +372,28 @@ export class Dataset implements IDataset {
   }
 }
 
-
-function makeVolume(volumeMeta: VolumeSource): Volume {
-  return new Volume(volumeMeta.url,
-                    volumeMeta.name,
-                    volumeMeta.transform,
-                    volumeMeta.contentType,
-                    volumeMeta.sampleType,
-                    volumeMeta.format,
-                    volumeMeta.displaySettings,
-                    volumeMeta.description,
-                    volumeMeta.subsources)
-}
-
 export async function makeDatasets(metadataEndpoint: string): Promise<Map<string, Dataset>> {
   const API = new GithubDatasetAPI(metadataEndpoint);
   const datasets: Map<string, Dataset> = new Map();
-  
-  await Promise.all(
-    [...API.datasets.keys()].map(async key => {
-      let {thumbnail, manifest} = await API.datasets.get(key)!;
+  let index: Index | undefined;
 
-      try {
-        const views: DatasetView[] = [];
-        // make sure that the default view is at the beginning of the list
-        for (let v of manifest.views) {
-          let vObj = new DatasetView(v.name, v.description, v.volumeNames, v.orientation, v.position, v.scale);
-          if (vObj.name === 'Default View'){
-            views.unshift(vObj)
-          }
-          else views.push(vObj)
-        }
-        const volumes: Map<string, Volume> = new Map();
-        manifest.volumes.forEach(v => volumes.set(v.name, makeVolume(v)));
+  try {
+    index = await API.index;
+  }
+  catch (error) {
+    console.log(error)
+    return datasets;
+  }
 
-        if (views.length === 0){
-          let defaultView = new DatasetView('Default view', '', Array.from(volumes.keys()), undefined, undefined, undefined);
-          views.push(defaultView)
-        }
-
-        datasets.set(key, new Dataset(key, outputDimensions, volumes, description, thumbnail.toString(), views));
-      }
-      catch (error) {
-        console.log(error)
-      }
-    })
-  );
+  for (const dataset_key in index.datasets){
+    let {thumbnail, manifest} = await API.get(dataset_key)!;
+    datasets.set(dataset_key, new Dataset(dataset_key,
+                             outputDimensions, 
+                             new Map([...Object.entries(manifest.sources)]),
+                             manifest.metadata,
+                             thumbnail.toString(),
+                             manifest.views))
+  console.log(dataset_key);
+  }
   return datasets;
 }

@@ -39,7 +39,7 @@ export type Url = string;
 /**
  * An enumeration.
  */
-export type ArrayContainerTypeEnum = "n5" | "zarr" | "precomputed" | "mrc" | "hdf5" | "tif";
+export type ArrayContainerTypeEnum = "n5" | "zarr" | "precomputed";
 export type Axes = string[];
 export type Units = string[];
 export type Translate = number[];
@@ -67,7 +67,6 @@ export type Url1 = string;
 export type MeshTypeEnum = "neuroglancer_legacy_mesh" | "neuroglancer_multilod_draco";
 export type Ids = number[];
 export type Subsources = MeshSource[];
-export type Volumes = VolumeSource[];
 export type Name3 = string;
 export type Description3 = string;
 export type Position = number[];
@@ -79,7 +78,7 @@ export type Views = DatasetView[];
 export interface DatasetManifest {
   name: Name;
   metadata: DatasetMetadata;
-  volumes: Volumes;
+  sources: Sources;
   views: Views;
 }
 /**
@@ -133,6 +132,9 @@ export interface DOI {
   id: Id2;
   DOI: Doi1;
 }
+export interface Sources {
+  [k: string]: VolumeSource;
+}
 export interface VolumeSource {
   name: Name1;
   description: Description1;
@@ -142,7 +144,7 @@ export interface VolumeSource {
   sampleType: SampleTypeEnum;
   contentType: ContentTypeEnum;
   displaySettings: DisplaySettings;
-  subsources?: Subsources;
+  subsources: Subsources;
 }
 /**
  * Representation of an N-dimensional scaling + translation transform for labelled axes with units.
