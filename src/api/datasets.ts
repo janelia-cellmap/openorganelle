@@ -17,8 +17,7 @@ import { DisplaySettings,
          SpatialTransform, 
          VolumeSource,
          DatasetView as IDatasetView, 
-         MeshSource,
-        DatasetManifest } from "./manifest";
+         MeshSource } from "./manifest";
 
 export type DataFormats = "n5" | "zarr" | "precomputed" | "neuroglancer_legacy_mesh"
 export type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
@@ -27,6 +26,10 @@ export type VolumeStores = "n5" | "precomputed" | "zarr";
 const resolutionTagThreshold = 6;
 export interface titled {
   title: string
+}
+
+type Complete<T> = {
+  [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>> ? T[P] : (T[P] | undefined);
 }
 
 type TagCategories = "Software Availability" |
@@ -74,20 +77,26 @@ interface IDataset{
   tags: OSet<ITag>
 }
 
+const DefaultView: IDatasetView = {name: "Default view", 
+                    description: "The default view of the data", 
+                    volumeNames: [], 
+                    orientation: [0, 1, 0, 0], 
+                    position: undefined, 
+                    scale: undefined};
 export class DatasetView implements IDatasetView {
-  constructor(
-  public name: string,
-  public description: string,
-  public volumeNames: string[],
-  public orientation?: number[],
-  public position?: number[],
-  public scale?: number){
-      this.name = name;
-      this.description = description;
-      this.volumeNames = volumeNames;
-      this.position = position;
-      this.scale = scale;
-      this.orientation = orientation;
+  name: string;
+  description: string;
+  volumeNames: string[];
+  position?: number[];
+  scale?: number;
+  orientation?: number[];
+  constructor(blob: IDatasetView = DefaultView){
+      this.name = blob.name;
+      this.description = blob.description;
+      this.volumeNames = blob.volumeNames;
+      this.position = blob.position ?? undefined;
+      this.scale = blob.scale ?? undefined;
+      this.orientation = blob.orientation ?? undefined;
   }
 }
 
@@ -281,15 +290,10 @@ export class Dataset implements IDataset {
         this.thumbnailURL = thumbnailURL;
         this.views = [];
         if (views.length === 0) {
-          this.views = [new DatasetView("Default view", 
-                                        "The default view of the data",
-                                        [...this.volumes.keys()], 
-                                        [0,1,0,0], 
-                                        undefined, 
-                                        undefined)]
+          this.views = [new DatasetView()]
         }
         else {
-          this.views = [...views];
+          this.views = views.map(v => new DatasetView(v));
         }
         this.tags = this.makeTags();
     }
@@ -374,25 +378,28 @@ export class Dataset implements IDataset {
 
 export async function makeDatasets(metadataEndpoint: string): Promise<Map<string, Dataset>> {
   const API = new GithubDatasetAPI(metadataEndpoint);
-  const datasets: Map<string, Dataset> = new Map();
-  let index: Index | undefined;
+  let datasets: Map<string, Dataset> = new Map();
+  let index: Index;
 
   try {
     index = await API.index;
   }
   catch (error) {
-    console.log(error)
+    console.log(`It was not possible to load an index of the datasets due to the following error: ${error}`)
     return datasets;
   }
 
-  for (const dataset_key in index.datasets){
+  const entries: [string, Dataset][] = await Promise.all([...Object.keys(index.datasets)].map(async dataset_key => {
     let {thumbnail, manifest} = await API.get(dataset_key)!;
-    datasets.set(dataset_key, new Dataset(dataset_key,
-                             outputDimensions, 
-                             new Map([...Object.entries(manifest.sources)]),
-                             manifest.metadata,
-                             thumbnail.toString(),
-                             manifest.views))
-  }
-  return datasets;
+    const result: [string, Dataset] = [dataset_key, new Dataset(dataset_key,
+      outputDimensions, 
+      new Map([...Object.entries(manifest.sources)]),
+      manifest.metadata,
+      thumbnail.toString(),
+      manifest.views)];
+    return result
+  }))
+
+datasets = new Map<string, Dataset>(entries);
+return datasets;
 }

@@ -69,10 +69,10 @@ export type Ids = number[];
 export type Subsources = MeshSource[];
 export type Name3 = string;
 export type Description3 = string;
+export type Volumenames = string[];
 export type Position = number[];
 export type Scale1 = number;
 export type Orientation = number[];
-export type Volumenames = string[];
 export type Views = DatasetView[];
 
 export interface DatasetManifest {
@@ -180,8 +180,8 @@ export interface MeshSource {
 export interface DatasetView {
   name: Name3;
   description: Description3;
+  volumeNames: Volumenames;
   position?: Position;
   scale?: Scale1;
   orientation?: Orientation;
-  volumeNames: Volumenames;
 }
