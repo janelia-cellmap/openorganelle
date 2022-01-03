@@ -79,21 +79,21 @@ interface IDataset{
 
 const DefaultView: IDatasetView = {name: "Default view", 
                     description: "The default view of the data", 
-                    volumeNames: [], 
+                    sources: [], 
                     orientation: [0, 1, 0, 0], 
                     position: undefined, 
                     scale: undefined};
 export class DatasetView implements IDatasetView {
   name: string;
   description: string;
-  volumeNames: string[];
+  sources: string[];
   position?: number[];
   scale?: number;
   orientation?: number[];
   constructor(blob: IDatasetView = DefaultView){
       this.name = blob.name;
       this.description = blob.description;
-      this.volumeNames = blob.volumeNames;
+      this.sources = blob.sources;
       this.position = blob.position ?? undefined;
       this.scale = blob.scale ?? undefined;
       this.orientation = blob.orientation ?? undefined;
@@ -363,7 +363,7 @@ export class Dataset implements IDataset {
         if (axvox <= resolutionTagThreshold)
         {value = `<= ${resolutionTagThreshold} nm`}
         else {
-          {value = `> ${resolutionTagThreshold} nm`}
+          value = `> ${resolutionTagThreshold} nm`
         }
         tags.add({value: value, category: 'Axial voxel size'});
       }

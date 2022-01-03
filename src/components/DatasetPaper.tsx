@@ -65,7 +65,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   );
   // initialize the layer checkboxes by looking at the first dataset view
   for (let vn of volumeNames) {
-    let vkeys = dataset.views[0].volumeNames;
+    let vkeys = dataset.views[0].sources;
     if (vkeys.includes(vn)) {
       volumeCheckStateInit.set(vn, {...volumeCheckStateInit.get(vn), selected: true});
     }
@@ -99,7 +99,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     const newVolumeState = new Map(
       [...checkStates.volumeCheckState.entries()].map(([k, v]) => [k, {...v, selected: false}])
     );
-    views[newViewState.findIndex(v => v)].volumeNames.map(k =>
+    views[newViewState.findIndex(v => v)].sources.map(k =>
       newVolumeState.set(k, {...newVolumeState.get(k), selected: true})
     );
 

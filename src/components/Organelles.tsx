@@ -39,7 +39,7 @@ const tableData = [
       new DatasetView(
         {name: "",
         description: "",
-        volumeNames: ["fibsem-uint8"],
+        sources: ["fibsem-uint8"],
         orientation: undefined,
         position: [24834.125, 1468.32226562, 14897.5],
         scale: 6.834771272276192
@@ -48,7 +48,7 @@ const tableData = [
       new DatasetView({
         name: "",
         description: "",
-        volumeNames: ["fibsem-uint8"],
+        sources: ["fibsem-uint8"],
         orientation: undefined,
         position: [28310.619140625, 962.44360352, 10741.5],
         scale: 2.671353019658504
@@ -56,7 +56,7 @@ const tableData = [
       new DatasetView({
         name: "",
         description: "",
-        volumeNames: ["fibsem-uint8"],
+        sources: ["fibsem-uint8"],
         orientation: undefined,
         position: [5523.84423828125, 5789.76855469, 15452.810546875],
         scale: 3.6039231119383004
@@ -64,7 +64,7 @@ const tableData = [
       new DatasetView({
        name: "",
         description: "",
-        volumeNames: ["fibsem-uint8"],
+        sources: ["fibsem-uint8"],
         orientation: undefined,
         position: [21723.33984375, 3200.5, 20980.5],
         scale: 5.430455441247891
@@ -87,7 +87,7 @@ const tableData = [
       new DatasetView({
         name: "",
         description: "",
-        volumeNames: ["fibsem-uint8"],
+        sources: ["fibsem-uint8"],
         orientation: undefined,
         position: [25878.65625, 3357.13305664, 16238.5],
         scale: 11.045498897968907
@@ -95,7 +95,7 @@ const tableData = [
       new DatasetView({
        name: "",
         description: "",
-        volumeNames: ["fibsem-uint8"],
+        sources: ["fibsem-uint8"],
         orientation: undefined,
         position: [20657.3203125, 1713.79736328, 19444.5],
         scale: 7.940871305346032
@@ -103,7 +103,7 @@ const tableData = [
       new DatasetView({
        name: "",
         description: "",
-        volumeNames: ["fibsem-uint8"],
+        sources: ["fibsem-uint8"],
         orientation: undefined,
         position: [18039.82421875, 5265.18310547, 18075.4453125],
         scale: 7.3670916293080895
@@ -111,7 +111,7 @@ const tableData = [
       new DatasetView({
        name: "",
         description: "",
-        volumeNames: ["fibsem-uint8"],
+        sources: ["fibsem-uint8"],
         orientation: undefined,
         position: [13386.9228515625, 2698.18066406, 18624.5],
         scale: 6.8347712722761855
@@ -127,7 +127,7 @@ const tableData = [
       new DatasetView({
        name: "",
         description: "",
-        volumeNames: ["fibsem-uint8"],
+        sources: ["fibsem-uint8"],
         orientation: undefined,
         position: [16978.822265625, 3478.24902344, 12897.5],
         scale: 0.9203723205358448
@@ -135,7 +135,7 @@ const tableData = [
       new DatasetView({
         name: "",
        description: "",
-        volumeNames: ["fibsem-uint8"],
+        sources: ["fibsem-uint8"],
         orientation: undefined,
         position: [27499.412109375, 1683.5, 18988.5],
         scale: 0.7203795921556103
@@ -143,7 +143,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [17931.806640625, 5950.28173828, 6054.5],
        scale: 0.9871068435746017
@@ -151,7 +151,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [15266.125, 3146.50537109, 18645.5],
        scale: 0.5444511834277151
@@ -167,7 +167,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [23998.06640625, 3474.69238281, 13858.5],
        scale: 3.428157707713824
@@ -175,7 +175,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [25696.5, 2175.60620117, 10395.5],
        scale: 2.1641398950982564
@@ -183,7 +183,7 @@ const tableData = [
       new DatasetView({
        name: "",
         description: "",
-        volumeNames: ["fibsem-uint8"],
+        sources: ["fibsem-uint8"],
         orientation: undefined,
         position: [9010.77734375, 3489.72070312, 21761.5],
         scale: 2.142606343351916
@@ -191,7 +191,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [14548.23046875, 2014.20703125, 21364.5],
        scale: 6.001581425572742
@@ -207,7 +207,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [35298.2265625, 1650.76318359, 16247.5],
        scale: 1.9003213537587145
@@ -215,7 +215,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [11177.7099609375, 917.94506836, 19451.5],
        scale: 1.7367629472369266
@@ -223,7 +223,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [13333.87109375, 5353.5, 18122.5],
        scale: 2.2078584209846404
@@ -231,7 +231,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [28972.162109375, 2337.99316406, 18413.04296875],
        scale: 2.089705204245983
@@ -247,7 +247,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [37011.81640625, 2337.63061523, 9993.68359375],
        scale: 2.489353418393179
@@ -255,7 +255,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [13708.41796875, 801.31689453, 19057.5],
        scale: 3.0710606957499955
@@ -263,7 +263,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [10793.9921875, 4420.38964844, 21908.5],
        scale: 3.2447003551933493
@@ -271,7 +271,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [28965.1953125, 2486.55664062, 17615.0],
        scale: 2.309481419083985
@@ -301,7 +301,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [11121.8115234375, 3096.53588867, 12878.5],
        scale: 2.69668436501776
@@ -309,7 +309,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [39109.76953125, 1038.4909668, 18720.5],
        scale: 2.1749876914651223
@@ -317,7 +317,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [17141.326171875, 3168.71875, 22145.427734375],
        scale: 1.6603410040994775
@@ -325,7 +325,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [19509.19140625, 5320.70239258, 17616.5],
        scale: 2.1968466811703515
@@ -342,7 +342,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [12469.8427734375, 5269.27416992, 12902.5],
        scale: 5.766256051903022
@@ -350,7 +350,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [31238.453125, 3168.52783203, 18988.5],
        scale: 9.747618564959009
@@ -358,7 +358,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [24350.47265625, 7878.56103516, 21720.86328125],
        scale: 11.212430236526277
@@ -366,7 +366,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [7863.55078125, 3954.9440918, 18645.5],
        scale: 5.512526265224186
@@ -382,7 +382,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [23662.580078125, 1164.5, 13858.5],
        scale: 3.394046968588006
@@ -390,7 +390,7 @@ const tableData = [
       new DatasetView({
        name: "",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation: undefined,
         position: [31688.9375, 1541.73828125, 10175.521484375],
         scale: 5.269961228093141
@@ -398,7 +398,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [11630.6279296875, 3264.52539062, 21721.5],
        scale: 3.148804967400616
@@ -406,7 +406,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [19560.31640625, 3969.76147461, 21354.75390625],
        scale: 2.0897052042459654
@@ -423,7 +423,7 @@ const tableData = [
       new DatasetView({
        name: "",
         description: "",
-        volumeNames: ["fibsem-uint8"],
+        sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [20307.119140625, 1169.5, 20728.369140625],
        scale: 1.816702428866956
@@ -431,7 +431,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [16203.3857421875, 2216.5, 10311.6865234375],
        scale: 2.539641693244882
@@ -439,7 +439,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [9503.7900390625, 3487.5, 23822.5],
        scale: 3.071060695749866
@@ -447,7 +447,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [16734.732421875, 1403.5, 28098.5],
        scale: 2.552371700207675
@@ -464,7 +464,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [22366.880859375, 1472.72314453, 15095.5],
        scale: 1.1700225304605227
@@ -472,7 +472,7 @@ const tableData = [
       new DatasetView({
        name: "",
        description: "",
-       volumeNames: ["fibsem-uint8"],
+       sources: ["fibsem-uint8"],
        orientation: undefined,
        position: [23603.00390625, 3359.39880371, 10612.5],
        scale: 2.4769377164221504
@@ -480,7 +480,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[2547.55810546875, 4914.5, 23793.65625],
         scale:1.816702428866914
@@ -488,7 +488,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[8844.8916015625, 1501.5, 26958.734375],
         scale:4.043145610335109
@@ -505,7 +505,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[25586.943359375, 2288.62158203, 23615.8984375],
         scale:1.5872818189033555
@@ -513,7 +513,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[13792.28515625, 1377.53588867, 25946.884765625],
         scale:0.8976482469751267
@@ -521,7 +521,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[27828.396484375, 2335.96386719, 20560.5],
         scale:0.9724107372692137
@@ -529,7 +529,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[22084.671875, 3295.87939453, 20421.5],
         scale:1.2116983922845241
@@ -547,7 +547,7 @@ const tableData = [
       new DatasetView({
        name: "",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[9410.2998046875, 2285.18066406, 14102.7353515625],
         scale:3.19639306033529
@@ -555,7 +555,7 @@ const tableData = [
       new DatasetView({
        name: "",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[18499.74609375, 1444.45556641, 25864.5],
         scale:2.4893534183931534
@@ -563,7 +563,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[29079.966796875, 3833.37988281, 20637.408203125],
         scale:2.980297135446793
@@ -571,7 +571,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[21079.42578125, 4805.59375, 19289.5],
         scale:3.5149419332613245
@@ -601,7 +601,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[17247.474609375, 958.34228516, 14103.5],
         scale:1.1877051565652172
@@ -609,7 +609,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[21501.451171875, 802.11279297, 23836.5],
         scale:1.3324548668177507
@@ -617,7 +617,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[15925.193359375, 5419.46533203, 21139.2109375],
         scale:1.643820335075574
@@ -625,7 +625,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
        orientation: undefined,
         position:[22633.294921875, 3962.75927734, 10932.5],
         scale:1.5480916911588005
@@ -648,7 +648,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[22141.791015625, 5167.29907227, 16684.5],
         scale:1.2300108683819138
@@ -656,7 +656,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[21347.55859375, 776.5, 23604.87890625],
         scale:1.3324548668177507
@@ -664,7 +664,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[18031.2109375, 6287.5, 18419.5],
         scale:1.248600102113731
@@ -672,7 +672,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[19199.5, 4856.47216797, 12785.5],
         scale:0.7025933566522808
@@ -689,7 +689,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[19707.3828125, 3363.71386719, 14673.0693359375],
         scale:4.76845811077735
@@ -697,7 +697,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[24608.8359375, 1941.02392578, 18936.087890625],
         scale:7.553590441818405
@@ -705,7 +705,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[10253.5244140625, 5160.5, 18631.701171875],
         scale:3.640143141371554
@@ -713,7 +713,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[15892.5966796875, 2742.59667969, 12932.759765625],
         scale:5.737496729863766
@@ -743,7 +743,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[23906.234375, 2988.21435547, 14617.5],
         scale:17.064887765049217
@@ -751,7 +751,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[21988.5, 1963.40222168, 16180.466796875],
         scale:11.905768200734133
@@ -759,7 +759,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[19402.25390625, 3960.81103516, 18437.5],
         scale:7.59145297147106
@@ -767,7 +767,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[17277.40234375, 3218.35595703, 14914.5966796875],
         scale:17.58459096890281
@@ -783,7 +783,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[14104.39453125, 4262.57592773, 14857.5],
         scale:2.4278910635004314
@@ -791,7 +791,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[35387.3203125, 2040.93847656, 16180.466796875],
         scale:2.4893534183931507
@@ -799,7 +799,7 @@ const tableData = [
       new DatasetView({
        name: "",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[14141.5, 4449.41259766, 22384.5],
        scale: 3.7322938037215394
@@ -807,7 +807,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[27586.201171875, 3758.46875, 14920.5],
         scale:3.71367891071658
@@ -823,7 +823,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[5525.28515625, 1184.81933594, 15501.5],
         scale:1.1641870187448156
@@ -831,7 +831,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[32975.51953125, 1882.84301758, 17141.5],
         scale:0.44799330334393583
@@ -839,7 +839,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[7973.5419921875, 2063.87207031, 23764.01953125],
         scale:0.7460393034533427
@@ -847,7 +847,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[15090.810546875, 2900.88818359, 25429.46484375],
         scale:1.0222673018968507
@@ -863,7 +863,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
        orientation: undefined,
         position:[2161.434814453125, 897.5, 15614.5],
         scale:1.2423726831244588
@@ -871,7 +871,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[11943.3740234375, 1629.5, 17449.267578125],
        scale: 2.1641398950982507
@@ -879,7 +879,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[19722.681640625, 3205.71484375, 26305.5],
         scale:1.2548587361706176
@@ -887,7 +887,7 @@ const tableData = [
       new DatasetView({
         name:"",
         description:"",
-        volumeNames:["fibsem-uint8"],
+        sources:["fibsem-uint8"],
         orientation:undefined,
         position:[29875.16015625, 2073.25341797, 20979.5],
         scale:0.8754852327896856
@@ -962,7 +962,7 @@ export default function Organelles() {
   const tableRows = tableData.map((row) => {
     const neuroglancer_urls = row.examples.map((v, idx) => {
       let dataset = datasets.get(demo_dataset_names[idx])!;
-      let layers = v.volumeNames.map(vk => {
+      let layers = v.sources.map(vk => {
         let result = makeLayer(dataset.volumes.get(vk)!, "image");
         return result;
       }); 

@@ -1,11 +1,9 @@
 import {DatasetMetadata as IDatasetMetadata,
-        DatasetView as IDatasetView,
         DatasetManifest as IDatasetManifest, 
        FIBSEMImagingMetadata as IImagingMetadata,
       UnitfulVector as IUnitfulVector,
     SampleMetadata as ISampleMetadata,
   SoftwareAvailability as ISoftwareAvailability,
-  VolumeSource as IVolumeSource,
 DOI as IDOIMetadata} from './manifest'
 import { Index } from './index'
 
@@ -49,7 +47,7 @@ export class GithubDatasetAPI implements DatasetAPI {
   }
     async get(key: string){
       let datasetURL = new URL(this.url.toString() + "/" + key)
-      let thumbnailURL = new URL(datasetURL + '/' + "thumbnail.jpg")
+      let thumbnailURL = new URL(datasetURL + "/thumbnail.jpg")
       let manifest = await getObjectFromJSON<IDatasetManifest>(new URL(datasetURL.toString() + "/manifest.json"));
       let leaf = {thumbnail: thumbnailURL,
                   manifest: manifest};
