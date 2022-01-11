@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import {ContentTypeEnum as ContentType, DatasetView} from "../api/manifest";
-import { Dataset, LayerTypes } from "../api/datasets";
+import { Dataset, LayerTypes, makeQuiltURL } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import { DatasetDescriptionFull } from "./DatasetDescriptionText";
 import DatasetViewList from "./DatasetViewList";
@@ -56,10 +56,11 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const [layerFilter, setLayerFilter] = useState("");
 
   const sources: string[] = [...dataset.volumes.keys()];
-
-	const bucketBrowseLink = `https://open.quiltdata.com/b/${appState.dataBucket}/tree/${dataset.name}/`;
-  const s3URL = `s3://${appState.dataBucket}/${dataset.name}/${dataset.name}.n5`;
-
+  // remove this when we don't have data on s3 anymore
+  const bucket = 'janelia-cosem-datasets'
+  const prefix = dataset.name
+	const bucketBrowseLink = makeQuiltURL(bucket, prefix);
+  const s3URL = `s3://${bucket}/${prefix}/${dataset.name}.n5`
   const volumeCheckStateInit = new Map<string, VolumeCheckStates>(
     sources.map(k => [k, {selected: false, layerType: undefined}])
   );

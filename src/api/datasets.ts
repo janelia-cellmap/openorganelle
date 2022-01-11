@@ -105,6 +105,15 @@ export interface ContentTypeMetadata {
   description: string
 }
 
+export function makeQuiltURL(bucket: string, prefix: string): string {
+  return `https://open.quiltdata.com/b/${bucket}/tree/${prefix}/`
+}
+
+export function isS3(url: string): boolean {
+  return url.startsWith('s3://')
+}
+
+
 function SpatialTransformToNeuroglancer(transform: SpatialTransform, outputDimensions: CoordinateSpace): CoordinateSpaceTransform {
 
   const inputDimensions: CoordinateSpace = {
