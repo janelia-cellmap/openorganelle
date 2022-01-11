@@ -35,16 +35,6 @@ export default function Settings() {
             spacing={3}>
         <Grid item xs={12}>
           <TextField
-            id="bucket-name"
-            label="AWS Bucket"
-            value={appState.dataBucket}
-            onChange={e =>
-              setAppState({ ...appState, dataBucket: e.target.value })
-            }
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
             className={classes.nglink}
             id="ngLink"
             label="Neuroglancer address"
