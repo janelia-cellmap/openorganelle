@@ -19,7 +19,6 @@
     "@types/react-table": "^7.0.29",
     "@types/url-parse": "^1.4.3",
     "@types/valid-url": "^1.0.3",
-    "aws-sdk": "^2.758.0",
     "json-schema-to-typescript": "^10.1.5",
     "node-fetch": "^2.6.1",
     "path": "^0.12.7",
