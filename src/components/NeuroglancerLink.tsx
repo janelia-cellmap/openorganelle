@@ -1,6 +1,6 @@
 import { Button } from "@material-ui/core";
 import React, { useContext } from "react";
-import { Dataset, DatasetView, LayerTypes, Volume} from "../api/datasets";
+import { Dataset, DatasetView, LayerTypes, makeLayer, Volume} from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
@@ -34,19 +34,23 @@ export default function NeuroglancerLink({
   const webGL2Enabled = appState.webGL2Enabled;
 
   const local_view = { ...view };
-  local_view.volumeNames = [];
+  local_view.sources = [];
   dataset.volumes.forEach((value: Volume, key: string) => {
     if (checkState.get(key)?.selected) {
-      local_view.volumeNames.push(key);
+      local_view.sources.push(key);
     }
   });
 
   let ngLink = "";
 
-  const disabled = Boolean(local_view.volumeNames.length === 0);
-  const layers = local_view.volumeNames.map(vk => {
-    let layerType = dataset.volumes.get(vk)?.displaySettings.defaultLayerType;
-    let result = dataset.volumes.get(vk)!.toLayer(layerType as LayerTypes);
+  const disabled = Boolean(local_view.sources.length === 0);
+  const layers = local_view.sources.map(vk => {
+    let layerType = "segmentation"
+    let sampleType = dataset.volumes.get(vk)?.sampleType;
+    if (sampleType === "scalar") {
+      layerType = "image";
+    }
+    let result = makeLayer(dataset.volumes.get(vk)!, layerType as LayerTypes);
     return result;
   });
   if (!disabled) {

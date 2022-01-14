@@ -9,7 +9,8 @@ import {
   Theme
 } from "@material-ui/core";
 import React, { useContext, useState } from "react";
-import { ContentType, Dataset, DatasetView, LayerTypes } from "../api/datasets";
+import {ContentTypeEnum as ContentType, DatasetView} from "../api/manifest";
+import { Dataset, LayerTypes, makeQuiltURL } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import { DatasetDescriptionFull } from "./DatasetDescriptionText";
 import DatasetViewList from "./DatasetViewList";
@@ -54,17 +55,18 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const dataset: Dataset = appState.datasets.get(datasetKey)!;
   const [layerFilter, setLayerFilter] = useState("");
 
-  const volumeNames: string[] = [...dataset.volumes.keys()];
-
-	const bucketBrowseLink = `https://open.quiltdata.com/b/${appState.dataBucket}/tree/${dataset.name}/`;
-  const s3URL = `s3://${appState.dataBucket}/${dataset.name}/${dataset.name}.n5`;
-
+  const sources: string[] = [...dataset.volumes.keys()];
+  // remove this when we don't have data on s3 anymore
+  const bucket = 'janelia-cosem-datasets'
+  const prefix = dataset.name
+	const bucketBrowseLink = makeQuiltURL(bucket, prefix);
+  const s3URL = `s3://${bucket}/${prefix}/${dataset.name}.n5`
   const volumeCheckStateInit = new Map<string, VolumeCheckStates>(
-    volumeNames.map(k => [k, {selected: false, layerType: undefined}])
+    sources.map(k => [k, {selected: false, layerType: undefined}])
   );
   // initialize the layer checkboxes by looking at the first dataset view
-  for (let vn of volumeNames) {
-    let vkeys = dataset.views[0].volumeNames;
+  for (let vn of sources) {
+    let vkeys = dataset.views[0].sources;
     if (vkeys.includes(vn)) {
       volumeCheckStateInit.set(vn, {...volumeCheckStateInit.get(vn), selected: true});
     }
@@ -98,7 +100,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     const newVolumeState = new Map(
       [...checkStates.volumeCheckState.entries()].map(([k, v]) => [k, {...v, selected: false}])
     );
-    views[newViewState.findIndex(v => v)].volumeNames.map(k =>
+    views[newViewState.findIndex(v => v)].sources.map(k =>
       newVolumeState.set(k, {...newVolumeState.get(k), selected: true})
     );
 

@@ -1,55 +1,21 @@
-import {DatasetIndex} from './datasets'
+import {DatasetMetadata as IDatasetMetadata,
+        DatasetManifest as IDatasetManifest, 
+       FIBSEMImagingMetadata as IImagingMetadata,
+      UnitfulVector as IUnitfulVector,
+    SampleMetadata as ISampleMetadata,
+  SoftwareAvailability as ISoftwareAvailability,
+DOI as IDOIMetadata} from './manifest'
+import { Index } from './index'
 
-type softwareAvailability = "open" | "partial" | "closed"
 
-
-interface IImagingMetadata {
-  id: string
-  institution: string
-  gridSpacing: UnitfulVector
-  dimensions: UnitfulVector
-  startDate: string
-  duration: string
-  biasVoltage: Number
-  scanRate: Number
-  current: Number
-  primaryEnergy: Number
+interface DatasetAPILeaf{
+  thumbnail: URL
+  manifest: IDatasetManifest
 }
 
-interface ISampleMetadata {
-  description: string
-  protocol: string
-  contributions: string
-  organism: string[]
-  type: string[]
-  subtype: string[]
-  treatment: string[]
-}
-
-interface IDOIMetadata {
-  id: string
-  DOI: string
-}
-
-interface IDatasetMetadata{
-  title: string
-  id: string
-  imaging: IImagingMetadata
-  sample: ISampleMetadata
-  institution: string[]
-  softwareAvailability: softwareAvailability
-  DOI: IDOIMetadata[]
-  publications: string[]
-}
-
-abstract class DatasetMetadataSource {
+interface DatasetAPI {
   url: URL
-  constructor(url: string) {
-    this.url = new URL(url);
-  }
-  abstract GetThumbnailURL(): void
-  abstract GetMetadata(): void
-  abstract GetIndex(): void
+  get(key: String): Promise<DatasetAPILeaf>
 }
 
 async function getObjectFromJSON<T>(url: URL): Promise<T> {
@@ -71,47 +37,23 @@ async function getObjectFromJSON<T>(url: URL): Promise<T> {
   }
 
 
-export class GithubDatasetMetadataSource extends DatasetMetadataSource {
+export class GithubDatasetAPI implements DatasetAPI {
+  url: URL
+  index: Promise<Index>
   constructor(url: string){
-    super(url);
+    this.url = this.rawifyURL(new URL(url));
+    const index_url = new URL(this.url.toString() + "/index.json");
+    this.index = getObjectFromJSON<Index>(index_url)
   }
-
-  async GetThumbnailURL(): Promise<URL>{
-    let rawified = this.rawifyURL(this.url);
-    rawified.pathname += '/thumbnail.jpg'
-    return rawified;
-  }
-
- async GetMetadata(): Promise<IDatasetMetadata | undefined> {
-   let rawified = this.rawifyURL(this.url);
-   rawified.pathname += '/readme.json';
-   let metadata;
-   try {
-   const metadata_json = await getObjectFromJSON<IDatasetMetadata>(rawified);
-   metadata = DatasetMetadata.fromJSON(metadata_json);
-   }
-   catch(error)
-    {
-      console.log(`Could not generate metadata from ${rawified.toString()} due to ${error}`)
+    async get(key: string){
+      let datasetURL = new URL(this.url.toString() + "/" + key)
+      let thumbnailURL = new URL(datasetURL + "/thumbnail.jpg")
+      let manifest = await getObjectFromJSON<IDatasetManifest>(new URL(datasetURL.toString() + "/manifest.json"));
+      let leaf = {thumbnail: thumbnailURL,
+                  manifest: manifest};
+      return leaf
     }
-   return metadata
- }
-
- async GetIndex(): Promise<DatasetIndex | undefined> {
-  let rawified = this.rawifyURL(this.url);
-  rawified.pathname += '/index.json';
-  let index;
-  try {
-    index = await getObjectFromJSON<DatasetIndex>(rawified);
-  }
-  catch (error) {
-    console.log(`Could not generate index from ${rawified.toString()} due to ${error}`)
-    index = undefined;
-  }
-
-  return index
-}
-
+  
 rawifyURL(url: URL): URL{
   // map https://github.com/$user/$repo/blob/$branch/path to
   // https://raw.githubusercontent.com/$user/$repo/$branch/path
@@ -125,19 +67,20 @@ rawifyURL(url: URL): URL{
 
 }
 
-class UnitfulVector {
+class UnitfulVector implements IUnitfulVector{
   unit: string;
-  values: Map<string, number>;
+  values: Record<string, number>;
   constructor(
     unit: any,
-    values: any
+    values: Record<string, number>
   ){
     this.unit = String(unit);
-    this.values = new Map(Object.entries(values))
+    this.values = values
   }
-  string_repr(decimals: number): string {
-    const val_array = [...this.values.values()].map(v => v.toFixed(decimals));
-    const axis_array = [...this.values.keys()];
+  toString(): string {
+    const decimals = 2;
+    const val_array = [...Object.values(this.values)].map(v => v.toFixed(decimals));
+    const axis_array = [...Object.keys(this.values)];
     if (val_array.length === 0){return 'N/A'}
     else {
       return `${val_array.join(' x ')} (${axis_array.join(', ')})`
@@ -151,11 +94,11 @@ export class ImagingMetadata implements IImagingMetadata{
   gridSpacing: UnitfulVector
   dimensions: UnitfulVector
   startDate: string
-  duration: string
-  biasVoltage: Number
-  scanRate: Number
-  current: Number
-  primaryEnergy: Number
+  duration: number
+  biasVoltage: number
+  scanRate: number
+  current: number
+  primaryEnergy: number
   constructor(
     id: any,
     institution: any,
@@ -171,7 +114,7 @@ export class ImagingMetadata implements IImagingMetadata{
   {
     this.institution = institution;
     this.startDate = String(startDate);
-    this.duration = String(duration);
+    this.duration = Number(duration);
     this.biasVoltage = Number(biasVoltage);
     this.scanRate = Number(scanRate);
     this.current  = Number(current);
@@ -233,8 +176,6 @@ export class DOIMetadata implements IDOIMetadata{
   }
 }
 
-
-
 export class DatasetMetadata implements IDatasetMetadata
 {
   title: string
@@ -242,7 +183,7 @@ export class DatasetMetadata implements IDatasetMetadata
   imaging: IImagingMetadata
   sample: ISampleMetadata
   institution: string[]
-  softwareAvailability: softwareAvailability
+  softwareAvailability: ISoftwareAvailability
   DOI: IDOIMetadata[]
   publications: string[]
 constructor(
@@ -251,7 +192,7 @@ constructor(
   imaging: IImagingMetadata,
   sample: ISampleMetadata,
   institution: any,
-  softwareAvailability: any,
+  softwareAvailability: ISoftwareAvailability,
   DOI: any,
   publications: any,
 ){
