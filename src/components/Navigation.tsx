@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { NavLink, Link } from "react-router-dom";
+import { HashLink } from "react-router-hash-link";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -67,14 +68,16 @@ const useStyles: any = makeStyles((theme: Theme) =>
       display: "block",
       marginTop: 0
     },
+    navListLink: {
+      borderRight: "1px solid rgba(255,255,255,0.2)"
+    },
     navListItem: {
       color: "#ccc",
       borderBottom: "8px solid transparent",
       display: "inline-block",
       padding: "12px 0 2px 0",
-      marginRight: "0.8em",
       textAlign: "center",
-      minWidth: "5em"
+      margin: "0 0.8rem"
     },
     homeLink: {
       color: "#fff",
@@ -114,6 +117,12 @@ export default function Navigation() {
               About
             </Typography>
           </Link>
+          <Link className={classes.link} to="/tutorials">
+            <Typography variant="h6" color="inherit" noWrap>
+              Help
+            </Typography>
+          </Link>
+
           <Link className={classes.link} to="/settings">
             <SettingsIcon />
           </Link>
@@ -139,21 +148,24 @@ export default function Navigation() {
           <NavLink exact to="/" className={classes.navListLink}>
             <li className={classes.navListItem}>Datasets</li>
           </NavLink>
-          <NavLink to="/tutorials">
+          <NavLink to="/tutorials" className={classes.navListLink}>
             <li className={classes.navListItem}>Tutorials</li>
           </NavLink>
-          <NavLink to="/organelles">
+          <NavLink to="/organelles" className={classes.navListLink}>
             <li className={classes.navListItem}>Organelles</li>
           </NavLink>
-          <NavLink to="/code">
+          <NavLink to="/code" className={classes.navListLink}>
             <li className={classes.navListItem}>Code</li>
           </NavLink>
-          <NavLink to="/publications">
+          <NavLink to="/publications" className={classes.navListLink}>
             <li className={classes.navListItem}>Publications</li>
           </NavLink>
-          <NavLink to="/measurements">
+          <NavLink to="/measurements" className={classes.navListLink}>
             <li className={classes.navListItem}>Measurements</li>
           </NavLink>
+          <HashLink to="/tutorials#data_access">
+            <li className={classes.navListItem}>Data Access</li>
+          </HashLink>
         </ul>
       </div>
     </>
