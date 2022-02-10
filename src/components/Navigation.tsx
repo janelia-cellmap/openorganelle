@@ -163,9 +163,12 @@ export default function Navigation() {
           <NavLink to="/measurements" className={classes.navListLink}>
             <li className={classes.navListItem}>Measurements</li>
           </NavLink>
-          <HashLink to="/tutorials#data_access">
+          <HashLink to="/tutorials#data_access" className={classes.navListLink}>
             <li className={classes.navListItem}>Data Access</li>
           </HashLink>
+          <NavLink to="/faq">
+            <li className={classes.navListItem}>FAQs</li>
+          </NavLink>
         </ul>
       </div>
     </>

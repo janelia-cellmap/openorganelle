@@ -12,6 +12,7 @@ const Analysis = lazy(() => import("./components/Analysis"));
 const TermsOfUse = lazy(() => import("./components/TermsOfUse"));
 const About = lazy(() => import("./components/About"));
 const Home = lazy(() => import("./components/Home"));
+const Faq = lazy(() => import("./components/Faq"));
 
 const theme = createMuiTheme({
   palette: {
@@ -46,6 +47,9 @@ function App() {
                 </Route>
                 <Route path="/terms_of_use">
                   <TermsOfUse />
+                </Route>
+                <Route path="/faq">
+                  <Faq />
                 </Route>
                 <Route path="">
                   <Home />
