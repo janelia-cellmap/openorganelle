@@ -1,19 +1,28 @@
 import { Button } from "@material-ui/core";
 import React, { useContext } from "react";
-import { Dataset, DatasetView, LayerTypes, makeLayer, Volume} from "../api/datasets";
+import {
+  Dataset,
+  DatasetView,
+  LayerTypes,
+  makeLayer,
+  Volume
+} from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
-import { ImageLayer, SegmentationLayer } from "@janelia-cosem/neuroglancer-url-tools";
+import {
+  ImageLayer,
+  SegmentationLayer
+} from "@janelia-cosem/neuroglancer-url-tools";
 
 interface VolumeCheckStates {
-  selected: boolean
-  layerType?: LayerTypes
+  selected: boolean;
+  layerType?: LayerTypes;
 }
 
 interface VolumeCheckStates {
-  selected: boolean
-  layerType?: LayerTypes
+  selected: boolean;
+  layerType?: LayerTypes;
 }
 
 type NeuroglancerLinkProps = {
@@ -29,7 +38,7 @@ export default function NeuroglancerLink({
   checkState,
   children
 }: NeuroglancerLinkProps) {
-  const {appState} = useContext(AppContext);
+  const { appState } = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const webGL2Enabled = appState.webGL2Enabled;
 
@@ -45,7 +54,7 @@ export default function NeuroglancerLink({
 
   const disabled = Boolean(local_view.sources.length === 0);
   const layers = local_view.sources.map(vk => {
-    let layerType = "segmentation"
+    let layerType = "segmentation";
     let sampleType = dataset.volumes.get(vk)?.sampleType;
     if (sampleType === "scalar") {
       layerType = "image";
@@ -58,24 +67,18 @@ export default function NeuroglancerLink({
       layers as SegmentationLayer[] | ImageLayer[],
       local_view.position,
       local_view.scale,
-      local_view.orientation)}`;
+      local_view.orientation
+    )}`;
   }
 
   if (children) {
-    return <>
-    {React.Children.map(children, child => {
-      const updatedProps = {
-        disabled,
-        href: ngLink,
-        target: "_blank",
-        rel: "noopener noreferrer"
-      };
-      if (React.isValidElement(child)) {
-        return React.cloneElement(child, updatedProps);
-      }
-      return child;
-    })}
-    </>;
+    return (
+      <>
+        {React.Children.map(children, child => {
+          return (<a href={ngLink} target="_blank" rel="noopener noreferrer">{child}</a>);
+        })}
+      </>
+    );
   } else {
     return (
       <>
