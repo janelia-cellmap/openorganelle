@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import Skeleton from "@material-ui/lab/Skeleton";
-import { Paper, Grid, Divider } from "@material-ui/core";
+import { Paper, Grid } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import { AppContext } from "../context/AppContext";
 import DatasetPaper from "./DatasetPaper";

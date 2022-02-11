@@ -2,8 +2,6 @@ import {
   Paper,
   Button,
   Grid,
-  CardActionArea,
-  CardMedia,
   createStyles,
   makeStyles,
   Theme
@@ -171,6 +169,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     });
   };
 
+	const thumbnailAlt = `2D rendering of ${dataset.description}`;
+
   return (
     <Grid container>
       <Grid item md={8}>
@@ -182,6 +182,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
               view={dataset.views[checkStates.viewCheckState.findIndex(a => a)]}
             >
               <img
+								alt={thumbnailAlt}
                 src={dataset.thumbnailURL}
                 className={classes.datasetthumbnail}
               />
