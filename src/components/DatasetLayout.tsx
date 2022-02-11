@@ -43,15 +43,33 @@ export default function DatasetLayout() {
     // if any tag in appState.datasetFilter is missing from the
     // tags in the dataset, then we don't have a match, so
     // return false.
-    if (appState.datasetFilter) {
+    // TODO: need to change the filtering so that each category can match if any
+    // of the selected filters in that category are matched and not just if all
+    // of them are.
+    if (appState.datasetFilter && appState.datasetFilter.length > 0) {
+      // set up a lookup hash to keep track of categories that have a positive hit
+      const filterCategories: Record<string, boolean> = {};
+      // loop over each of the selected filters
       for (let tag of appState.datasetFilter) {
-        console.log({tag, dataset});
-        if (!dataset[1].tags.has(tag)) {
-          console.log('no match');
-          return false;
+        // if the dataset has the filter tag, then set the matching category to true
+        if (dataset[1].tags.has(tag)) {
+          filterCategories[tag.category] = true;
+        } else {
+          // If the category hasn't been seen yet or doesn't already have a positive hit
+          // from another filter, then set it to false.
+          if (!filterCategories[tag.category] || filterCategories[tag.category] !== true) {
+            filterCategories[tag.category] = false;
+          }
         }
       }
+      // now that all the filters have been checked, throw out the dataset if it doesn't
+      // have at least one positive match to a filter tag.
+      var hasFalseKeys = Object.keys(filterCategories).some(k => !filterCategories[k]);
+      if (hasFalseKeys) {
+        return false;
+      }
     }
+    // by default, keep the data set in the filtered list.
     return true;
   });
 
