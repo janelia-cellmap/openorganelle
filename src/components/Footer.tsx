@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import MailOutlineIcon from '@material-ui/icons/MailOutline';
 
 import cosemLogo from "../COSEM_logo_invert_transparent.png";
 import fibsemLogo from "../fibsem_logo.png";
@@ -21,10 +23,9 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(2)
   },
   footer: {
-    padding: "1em 0 0.5em 0",
+    padding: "1em 1em 0.5em 1em",
     background: "#333",
     color: "#fff",
-    textAlign: "center",
     flexShrink: 0
   },
   hessLink: {
@@ -32,12 +33,20 @@ const useStyles = makeStyles(theme => ({
     fontWeight: "bold",
     fontSize: "1.3em",
     marginLeft: "1em",
-    textDecoration: "none",
+    textDecoration: "none"
   },
   linkContainer: {
-    display: 'flex',
-    justifyContent: 'center', /* align horizontal */
-    alignItems: 'center' /* align vertical */
+    display: "flex",
+    justifyContent: "center" /* align horizontal */,
+    alignItems: "center" /* align vertical */
+  },
+  footerMiddle: {
+    textAlign: "center"
+  },
+  mailLink: {
+    display: "flex",
+    alignItems: "center",
+    color: "#fff"
   }
 }));
 
@@ -45,32 +54,47 @@ export default function Footer() {
   const classes = useStyles();
   return (
     <footer className={classes.footer}>
-      <div className={classes.linkContainer}>
-        <a
-          href={cosemURL}
-          className={classes.link}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src={cosemLogo} alt="COSEM" className={classes.cosemLogo} />
-        </a>
-        <a href={fibsemURL} target="_blank" rel="noopener noreferrer">
-          <img
-            src={fibsemLogo}
-            alt="FIB-SEM Technology"
-            className={classes.cosemLogo}
-          />
-        </a>
-        <a
-            href={hessURL}
-            className={classes.hessLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+      <Grid container spacing={2}>
+        <Grid item md={3}>
+          <p>Contact us</p>
+          <a href="mailto:cosemdata@janelia.hhmi.org" className={classes.mailLink}>
+            <MailOutlineIcon style={{marginRight: "1rem"}}/> cosemdata@janelia.hhmi.org
+          </a>
+        </Grid>
+        <Grid item md={6} className={classes.footerMiddle}>
+          <div className={classes.linkContainer}>
+            <a
+              href={cosemURL}
+              className={classes.link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img src={cosemLogo} alt="COSEM" className={classes.cosemLogo} />
+            </a>
+            <a href={fibsemURL} target="_blank" rel="noopener noreferrer">
+              <img
+                src={fibsemLogo}
+                alt="FIB-SEM Technology"
+                className={classes.cosemLogo}
+              />
+            </a>
+            <a
+              href={hessURL}
+              className={classes.hessLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Hess Lab
-        </a>
-      </div>
-      <p>&copy; 2020 HHMI - <Link style={{color: "#fff"}} to="/terms_of_use">Terms of Use</Link></p>
+            </a>
+          </div>
+          <p>
+            &copy; 2020 HHMI -{" "}
+            <Link style={{ color: "#fff" }} to="/terms_of_use">
+              Terms of Use
+            </Link>
+          </p>
+        </Grid>
+      </Grid>
     </footer>
   );
 }
