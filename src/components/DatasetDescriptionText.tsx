@@ -4,7 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import { DatasetMetadata } from "../api/dataset_metadata";
-import { UnitfulVector } from "../api/manifest";
+import { Hyperlink, UnitfulVector } from "../api/manifest";
 
 export interface DescriptionPreviewProps {
   datasetMetadata: DatasetMetadata;
@@ -30,6 +30,25 @@ const useStyles: any = makeStyles((theme: Theme) =>
     }
   })
 );
+
+interface HyperlinkListProps {
+  links: Array<string | Hyperlink>
+}
+
+function HyperlinkList({links}: HyperlinkListProps) {
+  return (<ul>{links.map((link, idx) => {
+    let key = "publicationList" + idx;
+    let result: React.ReactFragment;
+    if (typeof(link) == 'string'){
+      result = <li key={key}>{link}</li>
+    }
+    else {
+      result = <li key={key}><a href={link.href}>{link.title}</a></li>
+    }
+    return result
+    
+})}</ul>)
+} 
 
 function StringifyUnitfulVector(vec: UnitfulVector, decimals: number): string {
   const val_array = [...Object.values(vec.values)].map(v =>
@@ -133,7 +152,7 @@ export function DatasetAcquisition({
           </p>
           <p>
             <strong>Publications</strong>:{" "}
-            {datasetMetadata.publications.join("; ")}
+            <HyperlinkList links={datasetMetadata.publications}/>
           </p>
           <p>
             <strong>Dataset location</strong>: {storageLocation}

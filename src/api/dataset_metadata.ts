@@ -4,7 +4,7 @@ import {DatasetMetadata as IDatasetMetadata,
       UnitfulVector as IUnitfulVector,
     SampleMetadata as ISampleMetadata,
   SoftwareAvailability as ISoftwareAvailability,
-DOI as IDOIMetadata} from './manifest'
+DOI as IDOIMetadata, Hyperlink} from './manifest'
 import { Index } from './index'
 
 
@@ -185,7 +185,7 @@ export class DatasetMetadata implements IDatasetMetadata
   institution: string[]
   softwareAvailability: ISoftwareAvailability
   DOI: IDOIMetadata[]
-  publications: string[]
+  publications: Array<string | Hyperlink>
 constructor(
   title: any,
   id: any,
@@ -226,10 +226,7 @@ constructor(
   else{
     this.DOI = [];
   }
-  if (Array.isArray(publications)){
-  this.publications = publications.map(String);
-  }
-  else {this.publications = []}
+  this.publications = publications;
 }
 
  static fromJSON(json: IDatasetMetadata) {
