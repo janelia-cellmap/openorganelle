@@ -184,7 +184,7 @@ export class DatasetMetadata implements IDatasetMetadata
   sample: ISampleMetadata
   institution: string[]
   softwareAvailability: ISoftwareAvailability
-  DOI: IDOIMetadata[]
+  DOI: Array<IDOIMetadata | Hyperlink>
   publications: Array<string | Hyperlink>
 constructor(
   title: any,

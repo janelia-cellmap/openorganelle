@@ -35,19 +35,21 @@ interface HyperlinkListProps {
   links: Array<string | Hyperlink>
 }
 
-function doiToHyperlink(d: Hyperlink): Hyperlink;
-function doiToHyperlink(d: DOI): Hyperlink;
+function isHyperlinkOrDOI(val: DOI | Hyperlink): val is Hyperlink {
+  return (val as Hyperlink).href !== undefined;
+} 
 
 function doiToHyperlink(d: Hyperlink | DOI): Hyperlink{
-  if (d.hasOwnProperty("id")) {
+  if (!isHyperlinkOrDOI(d)) {
     let d_ = d as DOI
     return {href: d_.DOI, title: d_.id}
   }
   else {
-    let d_ = d as Hyperlink;
-    return d_
+    return d as Hyperlink;
   }
 }
+
+
 
 export function HyperlinkList({links}: HyperlinkListProps) {
   return (<ul>{links.map((link, idx) => {
@@ -108,8 +110,6 @@ export function DatasetAcquisition({
   datasetMetadata
 }: DescriptionFullProps) {
   const classes = useStyles();
-  const EMDOI = datasetMetadata.DOI.filter(v => v.id === "em");
-  const SegDOI = datasetMetadata.DOI.filter(v => v.id === "seg");
   return (
     <>
       <Typography variant="h6" className={classes.title}>
@@ -117,6 +117,9 @@ export function DatasetAcquisition({
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={6}>
+        <p>
+            <strong>Dataset ID</strong>: {datasetMetadata.id}
+          </p>
           <p>
             <strong>
               Final voxel size ({datasetMetadata.imaging.gridSpacing.unit})
@@ -148,29 +151,22 @@ export function DatasetAcquisition({
             <strong>Imaging current (nA)</strong>:{" "}
             {datasetMetadata.imaging.current}
           </p>
-        </Grid>
-        <Grid item xs={6}>
-          <p>
-            <strong>Dataset ID</strong>: {datasetMetadata.id}
-          </p>
           <p>
             <strong>Scanning speed (MHz)</strong>:{" "}
             {datasetMetadata.imaging.scanRate}
+          </p>
+        </Grid>
+        <Grid item xs={6}>
+          <p>
+            <strong>Dataset location</strong>: {storageLocation}
           </p>
           <p>
             <strong>DOI</strong>:{" "}
             <HyperlinkList links={datasetMetadata.DOI.map(doiToHyperlink)}/>
           </p>
           <p>
-            <strong>Dataset location</strong>: {storageLocation}
-          </p>
-
-          <p>
             <strong>Publications</strong>:{" "}
             <HyperlinkList links={datasetMetadata.publications}/>
-          </p>
-          <p>
-            <strong>Dataset location</strong>: {storageLocation}
           </p>
         </Grid>
       </Grid>

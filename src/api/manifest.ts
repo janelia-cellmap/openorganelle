@@ -29,11 +29,11 @@ export type Institution1 = string[];
  * An enumeration.
  */
 export type SoftwareAvailability = "open" | "partially open" | "closed";
-export type Id2 = string;
-export type Doi1 = string;
-export type Doi = DOI[];
 export type Href = string;
 export type Title1 = string;
+export type Id2 = string;
+export type Doi1 = string;
+export type Doi = (Hyperlink | DOI)[];
 export type Publications = (Hyperlink | string)[];
 export type Name1 = string;
 export type Description1 = string;
@@ -130,13 +130,13 @@ export interface SampleMetadata {
   subtype: Subtype;
   treatment: Treatment;
 }
-export interface DOI {
-  id: Id2;
-  DOI: Doi1;
-}
 export interface Hyperlink {
   href: Href;
   title: Title1;
+}
+export interface DOI {
+  id: Id2;
+  DOI: Doi1;
 }
 export interface Sources {
   [k: string]: VolumeSource;
