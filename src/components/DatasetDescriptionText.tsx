@@ -3,8 +3,8 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { DatasetMetadata } from "../api/dataset_metadata";
-import { Hyperlink, UnitfulVector } from "../api/manifest";
+import { DatasetMetadata} from "../api/dataset_metadata";
+import { Hyperlink, UnitfulVector, DOI } from "../api/manifest";
 
 export interface DescriptionPreviewProps {
   datasetMetadata: DatasetMetadata;
@@ -35,7 +35,21 @@ interface HyperlinkListProps {
   links: Array<string | Hyperlink>
 }
 
-function HyperlinkList({links}: HyperlinkListProps) {
+function doiToHyperlink(d: Hyperlink): Hyperlink;
+function doiToHyperlink(d: DOI): Hyperlink;
+
+function doiToHyperlink(d: Hyperlink | DOI): Hyperlink{
+  if (d.hasOwnProperty("id")) {
+    let d_ = d as DOI
+    return {href: d_.DOI, title: d_.id}
+  }
+  else {
+    let d_ = d as Hyperlink;
+    return d_
+  }
+}
+
+export function HyperlinkList({links}: HyperlinkListProps) {
   return (<ul>{links.map((link, idx) => {
     let key = "publicationList" + idx;
     let result: React.ReactFragment;
@@ -137,19 +151,20 @@ export function DatasetAcquisition({
         </Grid>
         <Grid item xs={6}>
           <p>
+            <strong>Dataset ID</strong>: {datasetMetadata.id}
+          </p>
+          <p>
             <strong>Scanning speed (MHz)</strong>:{" "}
             {datasetMetadata.imaging.scanRate}
           </p>
           <p>
-            <strong>EM DOI</strong>: {EMDOI.length > 0 ? EMDOI[0].DOI : "N/A"}
+            <strong>DOI</strong>:{" "}
+            <HyperlinkList links={datasetMetadata.DOI.map(doiToHyperlink)}/>
           </p>
           <p>
-            <strong>Segmentations DOI</strong>:{" "}
-            {SegDOI.length > 0 ? SegDOI[0].DOI : "N/A"}
+            <strong>Dataset location</strong>: {storageLocation}
           </p>
-          <p>
-            <strong>Dataset ID</strong>: {datasetMetadata.id}
-          </p>
+
           <p>
             <strong>Publications</strong>:{" "}
             <HyperlinkList links={datasetMetadata.publications}/>
