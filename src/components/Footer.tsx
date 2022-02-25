@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import MailOutlineIcon from '@material-ui/icons/MailOutline';
+import { makeStyles } from "tss-react/mui";
+import Grid from "@mui/material/Grid";
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
 
 import cosemLogo from "../COSEM_logo_invert_transparent.png";
 import fibsemLogo from "../fibsem_logo.png";
@@ -11,7 +11,7 @@ const cosemURL = "https://www.janelia.org/project-team/cosem";
 const hessURL = "https://www.janelia.org/lab/hess-lab";
 const fibsemURL = "https://www.janelia.org/project-team/fib-sem-technology";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(theme => ({
   link: {
     color: theme.palette.primary.contrastText,
     textDecoration: "none",
@@ -51,7 +51,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function Footer() {
-  const classes = useStyles();
+  const {classes} = useStyles();
   return (
     <footer className={classes.footer}>
       <Grid container spacing={2}>

@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { Route, Switch } from "react-router-dom";
-import Container from "@material-ui/core/Container";
+import Container from "@mui/material/Container";
 import Code from "./Code";
 import Tutorials from "./Tutorials";
 import Publications from "./Publications";

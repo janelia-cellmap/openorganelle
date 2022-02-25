@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
-import Pagination from "@material-ui/lab/Pagination";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
-import Button from "@material-ui/core/Button";
-import FilterListIcon from '@material-ui/icons/FilterList';
+import Pagination from "@mui/material/Pagination";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import Button from "@mui/material/Button";
+import FilterListIcon from '@mui/icons-material/FilterList';
 
 import { Dataset } from "../api/datasets";
 import { AppContext } from "../context/AppContext";

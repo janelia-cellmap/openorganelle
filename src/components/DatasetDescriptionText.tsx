@@ -1,10 +1,12 @@
 import React from "react";
-import Box from "@material-ui/core/Box";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import { makeStyles } from "tss-react/mui";
 import { DatasetMetadata} from "../api/dataset_metadata";
 import { Hyperlink, UnitfulVector, DOI } from "../api/manifest";
+import { Accordion, AccordionSummary } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export interface DescriptionPreviewProps {
   datasetMetadata: DatasetMetadata;
@@ -23,8 +25,8 @@ export interface DescriptionFullProps {
   datasetMetadata: DatasetMetadata;
 }
 
-const useStyles: any = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles: any = makeStyles()((theme) =>
+  ({
     title: {
       color: theme.palette.primary.main
     }
@@ -48,7 +50,6 @@ function doiToHyperlink(d: Hyperlink | DOI): Hyperlink{
     return d as Hyperlink;
   }
 }
-
 
 
 export function HyperlinkList({links}: HyperlinkListProps) {
@@ -109,14 +110,27 @@ export function DatasetAcquisition({
   storageLocation,
   datasetMetadata
 }: DescriptionFullProps) {
+  const [expanded, setExpanded] = React.useState<string | false>(false);
+  const handleChange =
+    (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : false);
+    };
   const classes = useStyles();
   return (
     <>
-      <Typography variant="h6" className={classes.title}>
-        Acquisition details
-      </Typography>
       <Grid container spacing={2}>
         <Grid item xs={6}>
+        <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography variant="h6" className={classes.title}>
+        Acquisition details
+      </Typography>
+
+          </AccordionSummary>
         <p>
             <strong>Dataset ID</strong>: {datasetMetadata.id}
           </p>
@@ -155,10 +169,11 @@ export function DatasetAcquisition({
             <strong>Scanning speed (MHz)</strong>:{" "}
             {datasetMetadata.imaging.scanRate}
           </p>
+          </Accordion>
         </Grid>
         <Grid item xs={6}>
           <p>
-            <strong>Dataset location</strong>: {storageLocation}
+            <strong>Dataset URI</strong>: {storageLocation}
           </p>
           <p>
             <strong>DOI</strong>:{" "}

@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import { makeStyles } from "tss-react/mui";
 
 import { AppContext } from "../context/AppContext";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()(() => ({
   settings: {
     margin: "1em"
   },
@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function Settings() {
-  const classes = useStyles();
+  const {classes} = useStyles();
   const {appState, setAppState} = useContext(AppContext);
 
   return (

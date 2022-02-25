@@ -1,19 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import { makeStyles } from "tss-react/mui";
 
 import ng_contrast from "./ng_contrast.png";
 import ng_resolution from "./ng_resolution.png";
 import fijiIcon from "./fiji_icon.png";
 import "./Tutorials.css";
-import { Box } from "@material-ui/core";
+import { Box } from "@mui/material";
 import { CodeBlock, dracula } from "react-code-blocks";
 
-const useStyles: any = makeStyles(() =>
-  createStyles({
+const useStyles = makeStyles()((theme) =>
+  ({
     section: {
       padding: "1em",
       marginTop: "1em"
@@ -22,7 +22,7 @@ const useStyles: any = makeStyles(() =>
 );
 
 export default function Tutorials() {
-  const classes = useStyles();
+  const {classes} = useStyles();
   return (
     <Grid container spacing={3} className="tutorials">
       <Grid item md={3}>
@@ -422,14 +422,48 @@ export default function Tutorials() {
               How to open data with Python
             </Typography>
             <Typography paragraph>
-              We maintain{" "}
+              To programatically access generic data stored on s3 from Python, we 
+              recommend the package fsspec. For efficient access to image data, we 
+              recommend combining fsspec with the zarr-python library and the 
+              parallelization library Dask, all of which can be installed via pip:
+              <CodeBlock
+                text={`$ pip install "fsspec[s3]" "zarr" "dask"`} 
+                language=""
+                showLineNumbers={false}
+                theme={dracula}
+              />
+              Or conda:
+              <CodeBlock
+                text={`$ conda install -c conda-forge s3fs fsspec zarr dask`} 
+                language=""
+                showLineNumbers={false}
+                theme={dracula}
+              />
+              The following example demonstrates browsing an s3 bucket with fsspec, then accessing data via zarr and dask.
+              <CodeBlock
+                text={">>> import fsspec, zarr\n" +
+                      ">>> import dask.array as da # we import dask to help us manage parallel access to the big dataset\n" +
+                      ">>> group = zarr.open(zarr.N5FSStore('s3://janelia-cosem-datasets/jrc_hela-2/jrc_hela-2.n5', anon=True)) # access the root of the n5 container\n" + 
+                      ">>> zdata = group['em/fibsem-uint16/s0'] # s0 is the the full-resolution data for this particular volume\n" + 
+                      ">>> zdata\n" +
+                      "<zarr.core.Array '/em/fibsem-uint16/s0' (6368, 1600, 12000) uint16>\n" +
+                      ">>> ddata = da.from_array(zdata, chunks=zdata.chunks)\n" +
+                      ">>> ddata\n" +
+                      "dask.array<array, shape=(6368, 1600, 12000), dtype=uint16, chunksize=(64, 64, 64), chunktype=numpy.ndarray>\n" +
+                      ">>> result = ddata[0].compute() # get the first slice of the data as a numpy array\n"} 
+                language="python"
+                showLineNumbers={false}
+                theme={dracula}
+              />
+              <br></br>
+              For convenience, all of the above functionality is contained in python library we maintain({" "}
               <a href="https://github.com/janelia-cosem/fibsem-tools">
                 <Box fontFamily="Monospace" display="inline">
                   {" "}
                   fibsem_tools
                 </Box>
               </a>
-              , a Python library for accessing large volumetric data on AWS S3.
+              ).
               As in the Fiji examples, the Python library addresses datasets
               through their URL. See the{" "}
               <Box fontFamily="Monospace" display="inline">
@@ -453,7 +487,7 @@ export default function Tutorials() {
               When run from the command line, this command lists the contents of
               our data bucket:
               <CodeBlock
-                text="aws cli ls s3://janelia-cosem/"
+                text="$ aws cli ls s3://janelia-cosem/"
                 language=""
                 showLineNumbers={false}
                 theme={dracula}

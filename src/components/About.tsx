@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import { makeStyles } from "tss-react/mui";
 
-const useStyles: any = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles: any = makeStyles()(() =>
+  ({
     section: {
       padding: "1em",
       margin: "1em 0 2em 0"
@@ -14,7 +14,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 );
 
 export default function About() {
-  const classes = useStyles();
+  const {classes} = useStyles();
   return (
     <div className="content">
       <Typography

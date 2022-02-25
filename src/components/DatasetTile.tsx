@@ -1,8 +1,7 @@
 import React from "react";
-import Paper from "@material-ui/core/Paper";
+import Paper from "@mui/material/Paper";
 import { Link as RouterLink } from "react-router-dom";
-
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { makeStyles } from "tss-react/mui";
 import {
   Box,
   Grid,
@@ -10,14 +9,14 @@ import {
   CardMedia,
   CardActionArea,
   Card
-} from "@material-ui/core";
-import Popper from "@material-ui/core/Popper";
+} from "@mui/material";
+import Popper from "@mui/material/Popper";
 
 import { Dataset } from "../api/datasets";
 import { DatasetDescriptionPreview } from "./DatasetDescriptionText";
 
-const useStyles: any = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) =>
+  ({
     paper: {
       padding: theme.spacing(2),
       textAlign: "left",
@@ -54,7 +53,7 @@ export default function DatasetTile({
   const [elevation, setElevation] = React.useState<number>(1);
   const [,datasetMeta] = dataset;
   const datasetLink = `/datasets/${datasetMeta.name}`;
-  const classes = useStyles();
+  const {classes} = useStyles();
 
   const handleMouseOver = (event: React.MouseEvent<HTMLElement>) => {
     setElevation(10);
@@ -92,19 +91,17 @@ export default function DatasetTile({
           open={open}
           anchorEl={anchorEl}
           placement="top"
-          modifiers={{
-            flip: {
-              enabled: true
+          modifiers={[
+            {
+              name:"flip", enabled: true
             },
-            offset: {
-              enabled: true,
-              offset: "0,10"
+            {
+              name: "offset", enabled: true, options: {offset: "0,10"}
             },
-            preventOverflow: {
-              enabled: true,
-              boundariesElement: "scrollParent"
+            {
+              name: "preventOverflow", enabled: true, options: {boundariesElement: "scrollParent"}
             }
-          }}
+          ]}
         >
           <div className={classes.popper}>
             <DatasetDescriptionPreview
@@ -123,8 +120,6 @@ export default function DatasetTile({
         <Grid
           container
           spacing={2}
-          direction="row"
-          justify="space-around"
           alignItems="stretch"
         >
           <Grid item xs={4}>

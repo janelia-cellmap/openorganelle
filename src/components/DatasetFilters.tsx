@@ -1,16 +1,16 @@
 import React, { useContext } from "react";
 
-import Grid from "@material-ui/core/Grid";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
+import Grid from "@mui/material/Grid";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 
-import Checkbox from "@material-ui/core/Checkbox";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import Checkbox from "@mui/material/Checkbox";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 
 import { AppContext } from "../context/AppContext";
 import sortFunctions from "../utils/sortingFunctions";
@@ -18,8 +18,8 @@ import { ITag, OSet} from "../api/datasets";
 
 export default function DatasetFilters() {
   const { appState, setPermanent, setAppState } = useContext(AppContext);
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setPermanent({ sortBy: event.target.value as string });
+  const handleChange = (event: SelectChangeEvent, value: unknown) => {
+    setPermanent({ sortBy: value as string });
   };
 
   const handleFilterChange = (event: React.ChangeEvent<{}>, value: Array<ITag> | undefined, reason: string) => {
@@ -77,17 +77,17 @@ export default function DatasetFilters() {
           onChange={handleFilterChange}
           groupBy={(option) => option.category}
           getOptionLabel={option => option.value}
-          renderOption={(option, { selected }) => (
-            <React.Fragment>
-              <Checkbox
+          renderOption={(props, option, {selected}) => {return (
+            <li {...props}>
+                <Checkbox
                 icon={icon}
                 checkedIcon={checkedIcon}
                 style={{ marginRight: 8 }}
                 checked={selected}
               />
               {option.value}
-            </React.Fragment>
-          )}
+            </li>
+          )}}
           style={{ width: 500 }}
           renderInput={params => (
             <TextField

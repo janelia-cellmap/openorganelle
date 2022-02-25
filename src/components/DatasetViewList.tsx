@@ -1,17 +1,18 @@
 import React from "react";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "tss-react/mui";
+import { createStyles } from "@mui/styles";
+import Typography from "@mui/material/Typography";
 import {
   ListItemIcon,
   ListItemText,
   Radio
-} from "@material-ui/core";
+} from "@mui/material";
 import { DatasetView } from "../api/datasets";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) =>
+  ({
     root: {
       width: "100%",
       backgroundColor: theme.palette.background.paper,
@@ -35,7 +36,7 @@ export default function DatasetViewList({
   checkState,
   handleToggle
 }: DatasetViewListProps) {
-  const classes = useStyles();
+  const {classes} = useStyles();
 
   return (
     <>

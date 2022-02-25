@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
-import Skeleton from "@material-ui/lab/Skeleton";
-import { Paper, Grid } from "@material-ui/core";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import Skeleton from "@mui/material/Skeleton";
+import { Paper, Grid } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 import { AppContext } from "../context/AppContext";
 import DatasetPaper from "./DatasetPaper";
 
-const useStyles: any = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles: any = makeStyles()((theme) =>
+  ({
     paper: {
       padding: theme.spacing(2),
       textAlign: "left",
@@ -22,7 +22,7 @@ interface DatasetDetailsProps {
 }
 
 export default function DatasetDetails({ url }: DatasetDetailsProps) {
-  const classes = useStyles();
+  const {classes} = useStyles();
   let { slug }: { slug: string } = useParams();
   const { appState } = useContext(AppContext);
   if (appState.datasetsLoading) {
@@ -34,7 +34,7 @@ export default function DatasetDetails({ url }: DatasetDetailsProps) {
             <Skeleton />
             <Skeleton />
             <Skeleton />
-            <Skeleton variant="rect" height={40} />
+            <Skeleton variant="rectangular" height={40} />
           </Paper>
         </Grid>
         <Grid item md={4}>

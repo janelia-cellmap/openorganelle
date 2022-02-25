@@ -1,17 +1,18 @@
 import React, { useState } from "react";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import Snackbar from "@material-ui/core/Snackbar";
-import FolderOpen from "@material-ui/icons/FolderOpen";
-import Typography from "@material-ui/core/Typography";
-import Tooltip from "@material-ui/core/Tooltip";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import { makeStyles } from "tss-react/mui";
+import Snackbar from "@mui/material/Snackbar";
+import FolderOpen from "@mui/icons-material/FolderOpen";
+import Typography from "@mui/material/Typography";
+import Tooltip from "@mui/material/Tooltip";
 import fijiIcon from "./fiji_icon.png";
-import { Button } from "@material-ui/core";
-import HelpIcon from "@material-ui/icons/Help";
+import { Button } from "@mui/material";
+import HelpIcon from "@mui/icons-material/Help";
 import { HashLink } from "react-router-hash-link";
 import { LinkProps as RouterLinkProps } from "react-router-dom";
-const useStyles: any = makeStyles((theme: Theme) =>
-  createStyles({
+
+const useStyles = makeStyles()((theme) =>
+  ({
     FileBrowser: {
       height: "1em"
     },
@@ -37,7 +38,7 @@ export default function ClipboardLink({
   bucketBrowseLink,
   s3URL
 }: ClipBoardLinkProps) {
-  const classes = useStyles();
+  const {classes} = useStyles();
   const [open, setOpen] = useState(false);
 
   const handleClose = () => {

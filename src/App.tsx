@@ -4,7 +4,7 @@ import Footer from "./components/Footer";
 import Settings from "./components/Settings";
 import { AppProvider } from "./context/AppContext";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { createTheme, ThemeProvider} from "@mui/material/styles";
 
 import "./App.css";
 
@@ -13,7 +13,7 @@ const TermsOfUse = lazy(() => import("./components/TermsOfUse"));
 const About = lazy(() => import("./components/About"));
 const Home = lazy(() => import("./components/Home"));
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: {
       main: "#5084AC"

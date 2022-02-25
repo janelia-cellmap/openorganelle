@@ -1,19 +1,19 @@
 import React, { useContext } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import SettingsIcon from "@material-ui/icons/Settings";
-import { Grid } from "@material-ui/core";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import { makeStyles } from 'tss-react/mui'
+import SettingsIcon from "@mui/icons-material/Settings";
+import { Grid } from "@mui/material";
 import { AppContext } from "../context/AppContext";
 import janeliaLogo from "../janelia_logo.png";
 import { WebGL2CompatibilityWarning } from "./WebGL2Compatibility";
 import banner from "./cosem_banner.jpg";
 
-const useStyles: any = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles: any = makeStyles()((theme) =>
+  {return {
     link: {
       color: theme.palette.primary.contrastText,
       textDecoration: "none",
@@ -83,7 +83,8 @@ const useStyles: any = makeStyles((theme: Theme) =>
       color: "#fff",
       textDecoration: "none"
     }
-  })
+  }
+}
 );
 
 export default function Navigation() {

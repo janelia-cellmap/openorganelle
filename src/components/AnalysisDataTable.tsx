@@ -1,16 +1,16 @@
 import React from "react";
 import { useTable, useSortBy, usePagination } from "react-table";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import { makeStyles } from "tss-react/mui";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) =>
+  ({
     select: {
       border: `1px solid ${theme.palette.primary.main}80`,
       color: theme.palette.primary.main,
@@ -56,15 +56,15 @@ export default function AnalysisDataTable({
     usePagination
   );
 
-  const classes = useStyles();
+  const {classes} = useStyles();
 
   return (
     <>
       <Table size="small" {...getTableProps()}>
         <TableHead>
-          {headerGroups.map(headerGroup => (
+          {headerGroups.map((headerGroup) => (
             <TableRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
+              {headerGroup.headers.map((column) => (
                 // Add the sorting props to control sorting. For this example
                 // we can add them into the header props
                 <TableCell

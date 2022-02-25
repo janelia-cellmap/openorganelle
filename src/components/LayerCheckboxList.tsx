@@ -1,22 +1,20 @@
 import {
-  createStyles,
   FormControl,
-  makeStyles,
-  Theme,
   Typography
-} from "@material-ui/core";
-import InputLabel from "@material-ui/core/InputLabel";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import SearchIcon from "@material-ui/icons/Search";
+} from "@mui/material";
+import { makeStyles } from "tss-react/mui";
+import InputLabel from "@mui/material/InputLabel";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 import React, { useState, useEffect } from "react";
 import {ContentTypeEnum as ContentType} from "../api/manifest";
 import {contentTypeDescriptions, Dataset, Volume } from "../api/datasets";
 import VolumeCheckboxCollection from "./LayerGroup";
 import { VolumeCheckStates } from "./DatasetPaper";
 
-const useStyles: any = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles: any = makeStyles()((theme) =>
+  {return {
     root: {
       flexGrow: 1
     },
@@ -28,7 +26,8 @@ const useStyles: any = makeStyles((theme: Theme) =>
       height: "400px",
       overflow: "scroll"
     }
-  })
+  }
+}
 );
 
 interface LayerCheckboxListProps {
@@ -111,7 +110,6 @@ function LayerFilter({ value, onChange } : LayerFilterProps) {
       </InputLabel>
       <OutlinedInput
         id="input-with-icon-adornment"
-        labelWidth={250}
         value={value}
         onChange={onChange}
         startAdornment={

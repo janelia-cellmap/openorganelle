@@ -1,4 +1,4 @@
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 import React, { useContext } from "react";
 import {
   Dataset,
@@ -8,8 +8,8 @@ import {
   Volume
 } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
-import LaunchIcon from "@material-ui/icons/Launch";
-import WarningIcon from "@material-ui/icons/Warning";
+import LaunchIcon from "@mui/icons-material/Launch";
+import WarningIcon from "@mui/icons-material/Warning";
 import {
   ImageLayer,
   SegmentationLayer

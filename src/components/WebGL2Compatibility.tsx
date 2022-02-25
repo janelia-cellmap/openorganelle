@@ -1,19 +1,21 @@
 import React, {FunctionComponent} from "react";
-import WarningIcon from "@material-ui/icons/Warning"
-import { Grid, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import WarningIcon from "@mui/icons-material/Warning"
+import { Grid, Typography } from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()((theme) =>
+  ({
     warning: {
-      color: theme.palette.warning.light
-    },
-  }));
+      color: theme.palette.warning.main
+    }
+  })
+);
 
 
 export const WebGL2CompatibilityWarning: FunctionComponent<any> = (props) => {
-    const classes = useStyles();
-    
-    return <Grid container alignItems="center" spacing={2}>
+    const {classes} = useStyles();    
+    return <div>
+      <Grid container alignItems="center" spacing={2}>
       <Grid item>
         <WarningIcon/> 
       </Grid>
@@ -23,5 +25,6 @@ export const WebGL2CompatibilityWarning: FunctionComponent<any> = (props) => {
       </Typography>
       </Grid>
       </Grid>
+      </div>
      
   }

@@ -1,7 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "react-query";
-import Card from "@material-ui/core/Card";
+import Card from "@mui/material/Card";
 
 import AnalysisDataTable from "./AnalysisDataTable";
 import AnalysisConnectionsGraphic from "./AnalysisConnectionsGraphic";

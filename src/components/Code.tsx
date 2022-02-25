@@ -1,10 +1,11 @@
 import React from "react";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import { makeStyles } from "tss-react/mui";
 
-const useStyles: any = makeStyles((theme: Theme) =>
-  createStyles({
+
+const useStyles = makeStyles()(() =>
+  ({
     section: {
       padding: "1em",
       marginTop: "1em"
@@ -13,7 +14,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 );
 
 export default function Code() {
-  const classes = useStyles();
+  const {classes} = useStyles();
   return (
     <div style={{ maxWidth: "54em", marginLeft: "auto", marginRight: "auto" }}>
       <Typography variant="h3" gutterBottom>

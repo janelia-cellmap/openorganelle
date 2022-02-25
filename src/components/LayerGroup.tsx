@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import {ContentTypeEnum as ContentType} from "../api/manifest"
 import { Volume, ContentTypeMetadata } from "../api/datasets";
-import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
-import Accordion from "@material-ui/core/Accordion";
-import Typography from "@material-ui/core/Typography";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
+import Accordion from "@mui/material/Accordion";
+import Typography from "@mui/material/Typography";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { VolumeCheckStates } from "./DatasetPaper";
 
 interface LayerTypeToggleProps {

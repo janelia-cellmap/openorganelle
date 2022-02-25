@@ -1,22 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import Button from "@material-ui/core/Button";
-import MenuItem from "@material-ui/core/MenuItem";
+import { makeStyles } from "tss-react/mui";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Button from "@mui/material/Button";
+import MenuItem from "@mui/material/MenuItem";
 
 import { getContacts } from "../utils/cypherBuilder";
 import { organelleNames } from "../utils/organelles";
 import { useQueryString } from "../utils/customHooks";
 
+const useStyles = makeStyles()(() => ({
+  formControl: {
+    width: "100%"
+  }
+}));
+/*
 const useStyles = makeStyles(theme => ({
   formControl: {
     margin: theme.spacing(1),
     width: "100%"
   }
 }));
+*/
 
 const dataSets = [
   { value: "jrc_hela-2", label: "Interphase HeLa cell (jrc_hela-2)" },
@@ -46,7 +53,7 @@ const organelleItems = organelleNames.map(organelle => (
 const initialOrganelleBoptions: any[] = [];
 
 export default function AnalysisForm() {
-  const classes = useStyles();
+  const {classes} = useStyles();
   const query = useQueryString();
   const history = useHistory();
 
@@ -121,16 +128,16 @@ export default function AnalysisForm() {
     }
   }, [organelleA]);
 
-  const handleDataSetChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    setDataset(e.target.value as string);
+  const handleDataSetChange = (e: SelectChangeEvent, value: unknown) => {
+    setDataset(value as string);
     // if the new value is macrophage, then clear length from selected measurements
-    if (e.target.value === "jrc_macrophage-2") {
+    if (value === "jrc_macrophage-2") {
       setMeasurements(selected => selected.filter(item => item !== "length"));
     }
   };
 
   const handleOrganelleChange = (
-    e: React.ChangeEvent<{ value: unknown }>,
+    e: SelectChangeEvent,
     organelleType: string
   ) => {
 
@@ -166,9 +173,9 @@ export default function AnalysisForm() {
   };
 
   const handleMeasurementChange = (
-    e: React.ChangeEvent<{ value: unknown }>
+    e: SelectChangeEvent
   ) => {
-    setMeasurements(e.target.value as string[]);
+    setMeasurements([e.target.value as string]);
   };
 
   const handleSubmit = () => {
@@ -212,7 +219,7 @@ export default function AnalysisForm() {
           labelId="organelleALabel"
           id="organelleA"
           value={organelleA}
-          onChange={e => handleOrganelleChange(e, "a")}
+          onChange={(e: SelectChangeEvent) => handleOrganelleChange(e, "a")}
         >
           {organelleItems}
         </Select>
@@ -226,7 +233,7 @@ export default function AnalysisForm() {
           labelId="organelleBLabel"
           id="organelleB"
           value={organelleB}
-          onChange={e => handleOrganelleChange(e, "b")}
+          onChange={(e: SelectChangeEvent) => handleOrganelleChange(e, "b")}
         >
           {organelleBoptions}
         </Select>
@@ -240,7 +247,7 @@ export default function AnalysisForm() {
           labelId="measurementLabel"
           id="measurement"
           multiple
-          value={measurements}
+          value={measurements as any}
           onChange={handleMeasurementChange}
         >
           {measurementItems}

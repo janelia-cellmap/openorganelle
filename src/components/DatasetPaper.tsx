@@ -2,10 +2,8 @@ import {
   Paper,
   Button,
   Grid,
-  createStyles,
-  makeStyles,
-  Theme
-} from "@material-ui/core";
+} from "@mui/material";
+import { makeStyles } from "tss-react/mui";
 import React, { useContext, useState } from "react";
 import { ContentTypeEnum as ContentType, DatasetView } from "../api/manifest";
 import { Dataset, LayerTypes, makeQuiltURL } from "../api/datasets";
@@ -28,8 +26,8 @@ export interface VolumeCheckStates {
   layerType?: LayerTypes;
 }
 
-const useStyles: any = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles()((theme) =>
+  ({
     root: {
       flexGrow: 1
     },
@@ -58,7 +56,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 );
 
 export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
-  const classes = useStyles();
+  const {classes} = useStyles();
   const { appState } = useContext(AppContext);
   const dataset: Dataset = appState.datasets.get(datasetKey)!;
   const [layerFilter, setLayerFilter] = useState("");
@@ -110,7 +108,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   };
 
   const handleViewChange = (index: number, views: DatasetView[]) => () => {
-    const newViewState = checkStates.viewCheckState.map(v => false);
+    const newViewState = checkStates.viewCheckState.map(() => false);
     newViewState[index] = true;
 
     const newVolumeState = new Map(
@@ -158,7 +156,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
   const clearLayers = () => {
     const newVolumeCheckState = new Map(
-      [...checkStates.volumeCheckState.entries()].map(([k, v]) => [
+      [...checkStates.volumeCheckState.entries()].map(([k]) => [
         k,
         { selected: false }
       ])
