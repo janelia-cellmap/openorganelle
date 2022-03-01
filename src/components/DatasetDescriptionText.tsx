@@ -4,7 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import { DatasetMetadata } from "../api/dataset_metadata";
-import { UnitfulVector } from "../api/manifest";
+import { DOI, Hyperlink, UnitfulVector } from "../api/manifest";
 
 export interface DescriptionPreviewProps {
   datasetMetadata: DatasetMetadata;
@@ -30,6 +30,42 @@ const useStyles: any = makeStyles((theme: Theme) =>
     }
   })
 );
+
+
+
+interface HyperlinkListProps {
+  links: Array<string | Hyperlink>
+}
+
+function isHyperlinkOrDOI(val: DOI | Hyperlink): val is Hyperlink {
+  return (val as Hyperlink).href !== undefined;
+} 
+
+function doiToHyperlink(d: Hyperlink | DOI): Hyperlink{
+  if (!isHyperlinkOrDOI(d)) {
+    let d_ = d as DOI
+    return {href: "https://doi.org/" + d_.DOI, title: d_.id}
+  }
+  else {
+    return d as Hyperlink;
+  }
+}
+
+
+export function HyperlinkList({links}: HyperlinkListProps) {
+  return (<ul>{links.map((link, idx) => {
+    let key = "publicationList" + idx;
+    let result: React.ReactFragment;
+    if (typeof(link) == 'string'){
+      result = <li key={key}>{link}</li>
+    }
+    else {
+      result = <li key={key}><a href={link.href}>{link.title}</a></li>
+    }
+    return result
+    
+})}</ul>)
+} 
 
 function StringifyUnitfulVector(vec: UnitfulVector, decimals: number): string {
   const val_array = [...Object.values(vec.values)].map(v =>
@@ -75,8 +111,7 @@ export function DatasetAcquisition({
   datasetMetadata
 }: DescriptionFullProps) {
   const classes = useStyles();
-  const EMDOI = datasetMetadata.DOI.filter(v => v.id === "em");
-  const SegDOI = datasetMetadata.DOI.filter(v => v.id === "seg");
+
   return (
     <>
       <Typography variant="h6" className={classes.title}>
@@ -122,18 +157,15 @@ export function DatasetAcquisition({
             {datasetMetadata.imaging.scanRate}
           </p>
           <p>
-            <strong>EM DOI</strong>: {EMDOI.length > 0 ? EMDOI[0].DOI : "N/A"}
-          </p>
-          <p>
-            <strong>Segmentations DOI</strong>:{" "}
-            {SegDOI.length > 0 ? SegDOI[0].DOI : "N/A"}
-          </p>
-          <p>
             <strong>Dataset ID</strong>: {datasetMetadata.id}
           </p>
           <p>
+            <strong>DOI</strong>:{" "}
+            <HyperlinkList links={datasetMetadata.DOI.map(doiToHyperlink)}/>
+          </p>
+          <p>
             <strong>Publications</strong>:{" "}
-            {datasetMetadata.publications.join("; ")}
+            <HyperlinkList links={datasetMetadata.publications}/>
           </p>
           <p>
             <strong>Dataset location</strong>: {storageLocation}
