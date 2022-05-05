@@ -1,6 +1,6 @@
 {
   "name": "data-portal",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "private": true,
   "dependencies": {
     "@janelia-cosem/neuroglancer-url-tools": "^1.1.4",
