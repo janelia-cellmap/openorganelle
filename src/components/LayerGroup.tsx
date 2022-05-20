@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {ContentTypeEnum as ContentType} from "../api/manifest"
-import { Volume, ContentTypeMetadata } from "../api/datasets";
+import { } from "../api/datasets";
 import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
 import Typography from "@material-ui/core/Typography";
@@ -8,6 +8,7 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { VolumeCheckStates } from "./DatasetPaper";
+import { IVolume, NameDescription } from "../api/datasets2";
 
 interface LayerTypeToggleProps {
   label: string
@@ -17,11 +18,11 @@ interface LayerTypeToggleProps {
 }
 
 interface VolumeCheckboxCollectionProps {
-  volumes: Volume[]
+  volumes: IVolume[]
   checkState: Map<string, VolumeCheckStates>
   handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   contentType: string,
-  contentTypeInfo: ContentTypeMetadata,
+  contentTypeInfo: NameDescription,
   accordionExpanded: boolean
   layerTypeToggleLabel?: string,
   layerTypeToggleChecked?: boolean
@@ -43,7 +44,7 @@ export default function VolumeCheckboxCollection({
     setExpanded(!expanded);
   };
 
-  const checkBoxList = volumes?.map((volume: Volume) => {
+  const checkBoxList = volumes?.map((volume: IVolume) => {
     return (
       <FormControlLabel
         control={
@@ -68,7 +69,7 @@ export default function VolumeCheckboxCollection({
         aria-controls="content"
         id="panel1bh-header"
       >
-      <Typography>{contentTypeInfo.label}</Typography>
+      <Typography>{contentTypeInfo.name}</Typography>
       </AccordionSummary>
       <Typography
         variant="body2"

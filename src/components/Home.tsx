@@ -9,7 +9,7 @@ import DatasetLayout from "./DatasetLayout";
 import DatasetDetails from "./DatasetDetails";
 import "./Home.css";
 import { AppContext } from "../context/AppContext";
-import { makeDatasets } from "../api/datasets";
+import { makeDatasets } from "../api/datasets2";
 
 export default function Home() {
   const {appState, setAppState} = useContext(AppContext);

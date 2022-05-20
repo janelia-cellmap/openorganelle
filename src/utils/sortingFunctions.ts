@@ -1,7 +1,8 @@
 import { Dataset, titled } from "../api/datasets";
+import { IFoob } from "../api/datasets2";
 
 interface sortOption extends titled{
-  func: (a: [string, Dataset], b: [string, Dataset]) => number;
+  func: (a: IFoob, b: IFoob) => number;
 }
 
 interface sortOptions {
@@ -13,23 +14,23 @@ interface sortOptions {
 
 const sortFunctions: sortOptions = {
   name: {
-    func: (a: [string, Dataset], b: [string, Dataset]) =>
-      a[1].description.title.localeCompare(b[1].description.title, undefined, {
+    func: (a: IFoob, b: IFoob) =>
+      a.name.localeCompare(b.name, undefined, {
         numeric: true,
         sensitivity: "base"
       }),
     title: "Dataset Name"
   },
   size: {
-    func: (a: [string, Dataset], b: [string, Dataset]) =>
-      [...b[1].volumes.keys()].length - [...a[1].volumes.keys()].length,
+    func: (a: IFoob, b: IFoob) =>
+      b.volumes.length - a.volumes.length,
     title: "Dataset Size"
   },
   collected: {
     // datasets.description.imaging.startDate
-    func: (a: [string, Dataset], b: [string, Dataset]) =>
-      new Date(b[1].description.imaging.startDate).getTime() -
-      new Date(a[1].description.imaging.startDate).getTime(),
+    func: (a: IFoob, b: IFoob) =>
+      new Date(b.acquisition!.start_date!).getTime() -
+      new Date(a.acquisition!.start_date!).getTime(),
     title: "Date Collected"
   }
 };

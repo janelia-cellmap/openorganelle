@@ -10,10 +10,9 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
-import {ContentTypeEnum as ContentType} from "../api/manifest";
-import {contentTypeDescriptions, Dataset, Volume } from "../api/datasets";
 import VolumeCheckboxCollection from "./LayerGroup";
 import { VolumeCheckStates } from "./DatasetPaper";
+import { IFoob, IVolume, ContentType, contentTypeDescriptions } from "../api/datasets2";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,7 +31,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 );
 
 interface LayerCheckboxListProps {
-  dataset: Dataset;
+  dataset: IFoob;
   checkState: Map<string, VolumeCheckStates>;
   handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -41,7 +40,7 @@ interface LayerCheckboxListProps {
 }
 
 interface FilteredLayerListProps {
-  dataset: Dataset;
+  dataset: IFoob;
   checkState: Map<string, VolumeCheckStates>;
   handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -55,13 +54,13 @@ interface LayerFilterProps {
 
 function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLayerChange, filter}: FilteredLayerListProps) {
   const classes = useStyles();
-  const volumesListInit: Volume[] = []
+  const volumesListInit: IVolume[] = []
   const [volumesList, setVolumes] = useState(volumesListInit);
-  const volumeGroups: Map<ContentType, Volume[]> = new Map();
+  const volumeGroups: Map<ContentType, IVolume[]> = new Map();
 
   useEffect(() => {
     // filter volumes based on filter string
-    let filteredVolumes = Array.from(dataset.volumes.values());
+    let filteredVolumes = dataset.volumes;
     if (filter) {
       // TODO: make this case insensitive
       filteredVolumes = filteredVolumes.filter(v =>
@@ -73,15 +72,15 @@ function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLay
       filteredVolumes);
   }, [dataset, filter]);
 
-  volumesList.forEach((v: Volume) => {
-    if (volumeGroups.get(v.contentType) === undefined) {
-      volumeGroups.set(v.contentType, []);
+  volumesList.forEach((v) => {
+    if (volumeGroups.get(v.content_type) === undefined) {
+      volumeGroups.set(v.content_type, []);
     }
-    volumeGroups.get(v.contentType)!.push(v);
+    volumeGroups.get(v.content_type)!.push(v);
   });
 
   const checkboxLists = Array.from(contentTypeDescriptions.keys()).map((ct) => {
-    let volumes = (volumeGroups.get(ct as ContentType) as Volume[]);
+    let volumes = (volumeGroups.get(ct as ContentType) as IVolume[]);
     let contentTypeInfo = contentTypeDescriptions.get(ct as ContentType)!;
     let expanded = (ct === 'em');
     

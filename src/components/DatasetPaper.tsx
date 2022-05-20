@@ -18,6 +18,7 @@ import DatasetViewList from "./DatasetViewList";
 import LayerCheckboxList from "./LayerCheckboxList";
 import NeuroglancerLink from "./NeuroglancerLink";
 import ClipboardLink from "./ClipboardLink";
+import { IView } from "../api/datasets2";
 
 type DatasetPaperProps = {
   datasetKey: string;
@@ -60,21 +61,21 @@ const useStyles: any = makeStyles((theme: Theme) =>
 export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const classes = useStyles();
   const { appState } = useContext(AppContext);
-  const dataset: Dataset = appState.datasets.get(datasetKey)!;
+  const dataset = appState.datasets.get(datasetKey)!;
   const [layerFilter, setLayerFilter] = useState("");
 
-  const sources: string[] = [...dataset.volumes.keys()];
+  const volume_names = dataset.volumes.map(d => d.name);
   // remove this when we don't have data on s3 anymore
   const bucket = "janelia-cosem-datasets";
   const prefix = dataset.name;
   const bucketBrowseLink = makeQuiltURL(bucket, prefix);
   const s3URL = `s3://${bucket}/${prefix}/${dataset.name}.n5`;
   const volumeCheckStateInit = new Map<string, VolumeCheckStates>(
-    sources.map(k => [k, { selected: false, layerType: undefined }])
+    volume_names.map(k => [k, { selected: false, layerType: undefined }])
   );
   // initialize the layer checkboxes by looking at the first dataset view
-  for (let vn of sources) {
-    let vkeys = dataset.views[0].sources;
+  for (let vn of volume_names) {
+    let vkeys = dataset.views[0].source_names;
     if (vkeys.includes(vn)) {
       volumeCheckStateInit.set(vn, {
         ...volumeCheckStateInit.get(vn),
@@ -109,7 +110,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     }
   };
 
-  const handleViewChange = (index: number, views: DatasetView[]) => () => {
+  const handleViewChange = (index: number, views: IView[]) => () => {
     const newViewState = checkStates.viewCheckState.map(v => false);
     newViewState[index] = true;
 
@@ -119,7 +120,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
         { ...v, selected: false }
       ])
     );
-    views[newViewState.findIndex(v => v)].sources.map(k =>
+    views[newViewState.findIndex(v => v)].source_names.map(k =>
       newVolumeState.set(k, { ...newVolumeState.get(k), selected: true })
     );
 
@@ -138,7 +139,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
       let val = newVolumeCheckState.get(k);
       if (
         !(val === undefined) &&
-        dataset.volumes.get(k)?.contentType === contentType
+        dataset.volume_map.get(k)?.content_type === contentType
       ) {
         if (event.target.checked) {
           newLayerType = "segmentation" as LayerTypes;
@@ -175,7 +176,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     <Grid container>
       <Grid item md={8}>
         <Paper className={classes.paper} variant="outlined">
-          <DatasetDescriptionSummary datasetMetadata={dataset.description}>
+          <DatasetDescriptionSummary dataset={dataset}>
             <NeuroglancerLink
               dataset={dataset}
               checkState={checkStates.volumeCheckState}
@@ -241,7 +242,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             s3URL={s3URL}
             bucketBrowseLink={bucketBrowseLink}
             storageLocation={s3URL}
-            datasetMetadata={dataset.description}
+            dataset={dataset}
           />
         </Paper>
       </Grid>

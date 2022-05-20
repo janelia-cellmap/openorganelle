@@ -9,7 +9,6 @@ import Switch from "@material-ui/core/Switch";
 import Button from "@material-ui/core/Button";
 import FilterListIcon from '@material-ui/icons/FilterList';
 
-import { Dataset } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import sortFunctions from "../utils/sortingFunctions";
 import DatasetTile from "./DatasetTile";
@@ -25,7 +24,7 @@ export default function DatasetLayout() {
   const { datasetGrid: compact } = appState;
   const datasetsPerPage = compact ? 12 : 10;
 
-  const datasets: Map<string, Dataset> = appState.datasets;
+  const datasets = appState.datasets;
 
   const rangeStart = (page - 1) * datasetsPerPage;
   const rangeEnd = rangeStart + datasetsPerPage;
@@ -39,7 +38,7 @@ export default function DatasetLayout() {
     });
   }
 
-  const datasetsFiltered = [...datasets].filter(dataset => {
+  const datasetsFiltered = [...datasets.values()].filter(dataset => {
     // if any tag in appState.datasetFilter is missing from the
     // tags in the dataset, then we don't have a match, so
     // return false.
@@ -52,7 +51,7 @@ export default function DatasetLayout() {
       // loop over each of the selected filters
       for (let tag of appState.datasetFilter) {
         // if the dataset has the filter tag, then set the matching category to true
-        if (dataset[1].tags.has(tag)) {
+        if (dataset.tags.has(tag)) {
           filterCategories[tag.category] = true;
         } else {
           // If the category hasn't been seen yet or doesn't already have a positive hit
@@ -85,11 +84,11 @@ export default function DatasetLayout() {
           <DatasetTile
             dataset={dataset}
             compact={compact}
-            key={`${dataset[0]}_${rangeStart}_${i}`}
+            key={`${dataset.name}_${rangeStart}_${i}`}
           />
         );
       }
-      return <DatasetTile dataset={dataset} key={`${dataset[0]}_${rangeStart}_${i}`} />;
+      return <DatasetTile dataset={dataset} key={`${dataset.name}_${rangeStart}_${i}`} />;
     });
 
   const handleCompactChange = (event: React.ChangeEvent<HTMLInputElement>) => {

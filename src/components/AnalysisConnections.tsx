@@ -7,7 +7,7 @@ import AnalysisDataTable from "./AnalysisDataTable";
 import AnalysisConnectionsGraphic from "./AnalysisConnectionsGraphic";
 import NeuroglancerLink from "./NeuroglancerLink";
 
-import { Dataset, makeDatasets } from "../api/datasets";
+import { makeDatasets } from "../api/datasets2";
 import { AppContext } from "../context/AppContext";
 import { fetchAnalysisResults, queryResponse } from "../utils/datafetching";
 import { useQueryString } from "../utils/customHooks";
@@ -15,6 +15,7 @@ import {
   convertLabelToOrganelle,
   convertLabelToOrganelleAbbreviation
 } from "../utils/organelles";
+
 
 interface ACProps {
   cypher: string;
@@ -37,7 +38,7 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
     );
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const dataset: Dataset = appState.datasets.get(datasetKey)!;
+  const dataset = appState.datasets.get(datasetKey)!;
 
   const queryString = useQueryString();
 

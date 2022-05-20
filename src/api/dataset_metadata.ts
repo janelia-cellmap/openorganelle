@@ -22,7 +22,7 @@ interface DatasetAPI {
   get(key: String): Promise<DatasetAPILeaf>
 }
 
-async function getObjectFromJSON<T>(url: URL): Promise<T> {
+export async function getObjectFromJSON<T>(url: URL): Promise<T> {
   const response = await fetch(url.toString())
   const metadata = response.json();
 

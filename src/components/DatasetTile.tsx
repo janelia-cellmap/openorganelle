@@ -15,6 +15,7 @@ import Popper from "@material-ui/core/Popper";
 
 import { Dataset } from "../api/datasets";
 import { DatasetDescriptionPreview } from "./DatasetDescriptionText";
+import { IFoob } from "../api/datasets2";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,7 +43,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 );
 
 interface DatasetTileProps {
-  dataset: [string, Dataset];
+  dataset: IFoob;
   compact?: boolean;
 }
 
@@ -52,8 +53,7 @@ export default function DatasetTile({
 }: DatasetTileProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [elevation, setElevation] = React.useState<number>(1);
-  const [,datasetMeta] = dataset;
-  const datasetLink = `/datasets/${datasetMeta.name}`;
+  const datasetLink = `/datasets/${dataset.name}`;
   const classes = useStyles();
 
   const handleMouseOver = (event: React.MouseEvent<HTMLElement>) => {
@@ -80,10 +80,10 @@ export default function DatasetTile({
           onMouseOut={handleMouseOut}
         >
           <CardActionArea component={RouterLink} to={datasetLink}>
-            <CardMedia style={{ height: 256 }} image={datasetMeta.thumbnailURL} />
+            <CardMedia style={{ height: 256 }} image={dataset.thumbnailURL} />
             <CardContent style={{ whiteSpace: "nowrap", padding: "0 1em" }}>
               <Box component="p" textOverflow="ellipsis" overflow="hidden">
-                {datasetMeta.description.title}
+                {dataset.sample!.description}
               </Box>
             </CardContent>
           </CardActionArea>
@@ -108,7 +108,7 @@ export default function DatasetTile({
         >
           <div className={classes.popper}>
             <DatasetDescriptionPreview
-              datasetMetadata={datasetMeta.description}
+              dataset={dataset}
               titleLink={datasetLink}
             />
           </div>
@@ -129,7 +129,7 @@ export default function DatasetTile({
         >
           <Grid item xs={4}>
             <DatasetDescriptionPreview
-              datasetMetadata={datasetMeta.description}
+              dataset={dataset}
               titleLink={datasetLink}
             />
           </Grid>
@@ -137,7 +137,7 @@ export default function DatasetTile({
             <CardActionArea>
               <CardMedia
                 style={{ height: 256, width: 256, borderRadius: "10%" }}
-                image={datasetMeta.thumbnailURL}
+                image={dataset.thumbnailURL}
               />
             </CardActionArea>
           </Grid>

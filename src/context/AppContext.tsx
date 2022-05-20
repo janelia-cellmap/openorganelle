@@ -2,13 +2,17 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {checkWebGL2} from "../api/util"
 import { Dataset, ITag} from "../api/datasets";
+import {components} from "../api/schema"
+import { IFoob } from "../api/datasets2";
+
+type IDataset = components["schemas"]["Dataset"]
 
 export interface ContextProps {
   neuroglancerAddress: string,
   metadataEndpoint: string,
   webGL2Enabled: boolean,
   datasetsLoading: boolean,
-  datasets: Map<string, Dataset>,
+  datasets: Map<string, IFoob>,
   datasetGrid: boolean,
   showFilters: boolean,
   sortBy: string,

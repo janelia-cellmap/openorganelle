@@ -15,6 +15,12 @@ import {
   SegmentationLayer
 } from "@janelia-cosem/neuroglancer-url-tools";
 
+import {components} from "../api/schema"
+import { IFoob } from "../api/datasets2";
+
+type IDataset = components["schemas"]["Dataset"]
+type IView = components["schemas"]["View"]
+
 interface VolumeCheckStates {
   selected: boolean;
   layerType?: LayerTypes;
@@ -26,8 +32,8 @@ interface VolumeCheckStates {
 }
 
 type NeuroglancerLinkProps = {
-  dataset: Dataset;
-  view: DatasetView;
+  dataset: IFoob;
+  view: IView;
   checkState: Map<string, VolumeCheckStates>;
   children?: React.ReactNode;
 };
@@ -43,27 +49,27 @@ export default function NeuroglancerLink({
   const webGL2Enabled = appState.webGL2Enabled;
 
   const local_view = { ...view };
-  local_view.sources = [];
-  dataset.volumes.forEach((value: Volume, key: string) => {
+  local_view.source_names = [];
+  dataset.volume_map.forEach((value, key) => {
     if (checkState.get(key)?.selected) {
-      local_view.sources.push(key);
+      local_view.source_names.push(key);
     }
   });
 
   let ngLink = "";
 
-  const disabled = Boolean(local_view.sources.length === 0);
-  const layers = local_view.sources.map(vk => {
+  const disabled = Boolean(local_view.source_names.length === 0);
+  const layers = local_view.source_names.map(vk => {
     let layerType = "segmentation";
-    let sampleType = dataset.volumes.get(vk)?.sampleType;
+    let sampleType = dataset.volume_map.get(vk)?.sample_type;
     if (sampleType === "scalar") {
       layerType = "image";
     }
-    let result = makeLayer(dataset.volumes.get(vk)!, layerType as LayerTypes);
+    let result = makeLayer(dataset.volume_map.get(vk)!, layerType as LayerTypes);
     return result;
   });
   if (!disabled) {
-    ngLink = `${neuroglancerAddress}${dataset.makeNeuroglancerViewerState(
+    ngLink = `${neuroglancerAddress}${makeNeuroglancerViewerState(
       layers as SegmentationLayer[] | ImageLayer[],
       local_view.position,
       local_view.scale,

@@ -5,22 +5,26 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import { DatasetMetadata } from "../api/dataset_metadata";
 import { DOI, Hyperlink, UnitfulVector } from "../api/manifest";
+import { IFoob } from "../api/datasets2";
+import {components} from "../api/schema"
+
+type IPublication = components["schemas"]["Publication"]
 
 export interface DescriptionPreviewProps {
-  datasetMetadata: DatasetMetadata;
+  dataset: IFoob;
   titleLink: string;
 }
 
 export interface DescriptionSummaryProps {
   children: any;
-  datasetMetadata: DatasetMetadata;
+  dataset: IFoob;
 }
 
 export interface DescriptionFullProps {
   s3URL: string;
   bucketBrowseLink: string;
   storageLocation: string;
-  datasetMetadata: DatasetMetadata;
+  dataset: IFoob;
 }
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -34,7 +38,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 
 
 interface HyperlinkListProps {
-  links: Array<string | Hyperlink>
+  links: Array<IPublication>
 }
 
 function isHyperlinkOrDOI(val: DOI | Hyperlink): val is Hyperlink {
@@ -56,12 +60,7 @@ export function HyperlinkList({links}: HyperlinkListProps) {
   return (<ul>{links.map((link, idx) => {
     let key = "publicationList" + idx;
     let result: React.ReactFragment;
-    if (typeof(link) == 'string'){
-      result = <li key={key}>{link}</li>
-    }
-    else {
-      result = <li key={key}><a href={link.href}>{link.title}</a></li>
-    }
+    result = <li key={key}><a href={link.url}>{link.name}</a></li>
     return result
     
 })}</ul>)
@@ -80,27 +79,27 @@ function StringifyUnitfulVector(vec: UnitfulVector, decimals: number): string {
 }
 
 export function DatasetDescriptionPreview({
-  datasetMetadata
+  dataset
 }: DescriptionPreviewProps) {
   const classes = useStyles();
   return (
     <Box>
       <Typography variant="h6" className={classes.title}>
-        {datasetMetadata.title}
+        {dataset.name}
       </Typography>
       <p>
-        <strong>Acquisition date</strong>: {datasetMetadata.imaging.startDate}
+        <strong>Acquisition date</strong>: {dataset.acquisition!.start_date}
       </p>
       <p>
-        <strong>Dataset ID</strong>: {datasetMetadata.id}
+        <strong>Dataset ID</strong>: {dataset.acquisition!.name}
       </p>
       <p>
-        <strong>Voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>
-        : {StringifyUnitfulVector(datasetMetadata.imaging.gridSpacing, 1)}
+        <strong>Voxel size ({dataset.acquisition!.grid_spacing.unit})</strong>
+        : {StringifyUnitfulVector(dataset.acquisition!.grid_spacing, 1)}
       </p>
       <p>
-        <strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}
-        {StringifyUnitfulVector(datasetMetadata.imaging.dimensions, 1)}
+        <strong>Dimensions ({dataset.acquisition!.dimensions.unit})</strong>:{" "}
+        {StringifyUnitfulVector(dataset.acquisition!.dimensions, 1)}
       </p>
     </Box>
   );
@@ -108,7 +107,7 @@ export function DatasetDescriptionPreview({
 
 export function DatasetAcquisition({
   storageLocation,
-  datasetMetadata
+  dataset
 }: DescriptionFullProps) {
   const classes = useStyles();
 
@@ -121,51 +120,51 @@ export function DatasetAcquisition({
         <Grid item xs={6}>
           <p>
             <strong>
-              Final voxel size ({datasetMetadata.imaging.gridSpacing.unit})
+              Final voxel size ({dataset.acquisition!.grid_spacing.unit})
             </strong>
-            : {StringifyUnitfulVector(datasetMetadata.imaging.gridSpacing, 1)}
+            : {StringifyUnitfulVector(dataset.acquisition!.grid_spacing, 1)}
           </p>
           <p>
             <strong>
-              Dimensions ({datasetMetadata.imaging.dimensions.unit})
+              Dimensions ({dataset.acquisition!.dimensions.unit})
             </strong>
-            : {StringifyUnitfulVector(datasetMetadata.imaging.dimensions, 0)}
+            : {StringifyUnitfulVector(dataset.acquisition!.dimensions, 0)}
           </p>
           <p>
             <strong>Imaging duration (days)</strong>:{" "}
-            {datasetMetadata.imaging.duration}
+            {dataset.acquisition!.duration_days}
           </p>
           <p>
             <strong>Imaging start date</strong>:{" "}
-            {datasetMetadata.imaging.startDate}
+            {dataset.acquisition!.start_date}
           </p>
           <p>
             <strong>Primary energy (EV)</strong>:{" "}
-            {datasetMetadata.imaging.primaryEnergy}
+            {dataset.acquisition!.primary_energy}
           </p>
           <p>
-            <strong>Bias (V)</strong>: {datasetMetadata.imaging.biasVoltage}
+            <strong>Bias (V)</strong>: {dataset.acquisition!.bias_voltage}
           </p>
           <p>
             <strong>Imaging current (nA)</strong>:{" "}
-            {datasetMetadata.imaging.current}
+            {dataset.acquisition!.current}
           </p>
         </Grid>
         <Grid item xs={6}>
           <p>
             <strong>Scanning speed (MHz)</strong>:{" "}
-            {datasetMetadata.imaging.scanRate}
+            {dataset.acquisition!.scan_rate}
           </p>
           <p>
-            <strong>Dataset ID</strong>: {datasetMetadata.id}
+            <strong>Dataset ID</strong>: {dataset.acquisition!.name}
           </p>
           <p>
             <strong>DOI</strong>:{" "}
-            <HyperlinkList links={datasetMetadata.DOI.map(doiToHyperlink)}/>
+            <HyperlinkList links={dataset.publications}/>
           </p>
           <p>
             <strong>Publications</strong>:{" "}
-            <HyperlinkList links={datasetMetadata.publications}/>
+            <HyperlinkList links={dataset.publications}/>
           </p>
           <p>
             <strong>Dataset location</strong>: {storageLocation}
@@ -177,7 +176,7 @@ export function DatasetAcquisition({
 }
 
 export function DatasetDescriptionSummary({
-  datasetMetadata,
+  dataset,
   children
 }: DescriptionSummaryProps) {
   const classes = useStyles();
@@ -185,16 +184,16 @@ export function DatasetDescriptionSummary({
     <>
       {children}
       <Typography variant="h6" className={classes.title}>
-        {datasetMetadata.title}
+        {dataset.name}
       </Typography>
       <p>
-        <strong>Sample</strong>: {datasetMetadata.sample.description}
+        <strong>Sample</strong>: {dataset.sample!.description}
       </p>
       <p>
-        <strong>Protocol</strong>: {datasetMetadata.sample.protocol}
+        <strong>Protocol</strong>: {dataset.sample!.protocol}
       </p>
       <p>
-        <strong>Contributions</strong>: {datasetMetadata.sample.contributions}
+        <strong>Contributions</strong>: {dataset.sample!.contributions}
       </p>
     </>
   );

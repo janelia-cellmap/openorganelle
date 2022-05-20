@@ -137,12 +137,12 @@ const layerTransform: CoordinateSpaceTransform = {matrix:
 const nm: [number, string] = [1e-9, "m"];
 
 // this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
-const outputDimensions: CoordinateSpace = { x: nm, y: nm, z: nm };
+const outputDimensions = { x: nm, y: nm, z: nm };
 
 export const contentTypeDescriptions = new Map<ContentType, ContentTypeMetadata>();
 contentTypeDescriptions.set('em', {label: "EM Layers", description: "Raw FIB-SEM data."});
 contentTypeDescriptions.set('lm', {label: "LM Layers", description: "Light microscopy data."});
-contentTypeDescriptions.set('segmentation', {label: "Segmentation Layers", description: "Predictions that have undergone refinements such as thresholding, smoothing, size filtering, and connected component analysis. Double Left Click a segmentation to turn on/off a 3D rendering."});
+contentTypeDescriptions.set('segmentation', {label: "Segmentation Layers", description: "Predictions that have undergone refinements such as thresholding, smoothing, size filtering, and connected component analysis. In neuroglancer, left click twice on a segmentation to turn on/off a 3D rendering."});
 contentTypeDescriptions.set('prediction', {label: "Prediction Layers", description: "Raw distance transform inferences scaled from 0 to 255. A voxel value of 127 represent a predicted distance of 0 nm."});
 contentTypeDescriptions.set('analysis', {label: "Analysis Layers", description: "Results of applying various analysis routines on raw data, predictions, or segmentations."});
 
