@@ -1,22 +1,13 @@
 import { Button } from "@material-ui/core";
 import React, { useContext } from "react";
-import {
-  Dataset,
-  DatasetView,
-  LayerTypes,
-  makeLayer,
-  Volume
-} from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
-import {
-  ImageLayer,
-  SegmentationLayer
-} from "@janelia-cosem/neuroglancer-url-tools";
+import { SegmentationLayer, ImageLayer } from "../api/neuroglancer";
 
 import {components} from "../api/schema"
-import { IFoob } from "../api/datasets2";
+import { IFoob, makeNeuroglancerViewerState, makeLayer } from "../api/datasets2";
+import { LayerTypes } from "../api/datasets";
 
 type IDataset = components["schemas"]["Dataset"]
 type IView = components["schemas"]["View"]
@@ -47,7 +38,7 @@ export default function NeuroglancerLink({
   const { appState } = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const webGL2Enabled = appState.webGL2Enabled;
-
+  
   const local_view = { ...view };
   local_view.source_names = [];
   dataset.volume_map.forEach((value, key) => {

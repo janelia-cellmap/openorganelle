@@ -7,8 +7,8 @@ import {
   Theme
 } from "@material-ui/core";
 import React, { useContext, useState } from "react";
-import { ContentTypeEnum as ContentType, DatasetView } from "../api/manifest";
-import { Dataset, LayerTypes, makeQuiltURL } from "../api/datasets";
+import { ContentTypeEnum as ContentType } from "../api/manifest";
+import { LayerTypes, makeQuiltURL } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import {
   DatasetAcquisition,

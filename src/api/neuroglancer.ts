@@ -24,7 +24,7 @@ export type Gpumemorylimit = number;
 export type Systemmemorylimit = number;
 export type Concurrentdownloads = number;
 export type Prefetch = boolean;
-export type Source = (string | LayerDataSource)[] | string | LayerDataSource;
+export type Source = string | LayerDataSource | (string | LayerDataSource)[];
 export type Url = string;
 export type Sourcerank = number;
 export type Matrix = number[][];
@@ -86,7 +86,7 @@ export type Channel = number[];
 export type Opacity = number;
 export type Blend = string;
 export type Crosssectionrenderscale = number;
-export type Source1 = (string | LayerDataSource)[] | string | LayerDataSource;
+export type Source1 = string | LayerDataSource | (string | LayerDataSource)[];
 export type Name1 = string;
 export type Visible2 = boolean;
 export type Tab2 = string;
@@ -94,7 +94,7 @@ export type Type1 = "segmentation";
 export type Layerposition1 = number;
 export type Panels1 = LayerSidePanelState[];
 export type Pick1 = boolean;
-export type Segments = string[];
+export type Segments = (string | number)[];
 export type Hidesegmentzero = boolean;
 export type Selectedalpha = number;
 export type Notselectedalpha = number;
@@ -122,7 +122,7 @@ export type Segmentdefaultcolor = string;
 export type Linkedsegmentationgroup = string;
 export type Linkedsegmentationcolorgroup = string | false;
 export type Annotationcolor = string;
-export type Source2 = (string | LayerDataSource)[] | string | LayerDataSource;
+export type Source2 = string | LayerDataSource | (string | LayerDataSource)[];
 export type Name2 = string;
 export type Visible3 = boolean;
 export type Tab3 = string;
@@ -169,7 +169,7 @@ export type Shadercontrols2 =
   | {
       [k: string]: number;
     };
-export type Source3 = (string | LayerDataSource)[] | string | LayerDataSource;
+export type Source3 = string | LayerDataSource | (string | LayerDataSource)[];
 export type Name3 = string;
 export type Visible4 = boolean;
 export type Tab4 = string;
@@ -180,7 +180,7 @@ export type Pick3 = boolean;
 export type Vertexattributesources = string[];
 export type Shader3 = string;
 export type Vertexattributenames = string[];
-export type Source4 = (string | LayerDataSource)[] | string | LayerDataSource;
+export type Source4 = string | LayerDataSource | (string | LayerDataSource)[];
 export type Name4 = string;
 export type Visible5 = boolean;
 export type Tab5 = string;
@@ -295,7 +295,7 @@ export interface ImageLayer {
 export interface LayerDataSource {
   url: Url;
   transform?: CoordinateSpaceTransform;
-  subsources: Subsources;
+  subsources?: Subsources;
   enableDefaultSubsources?: Enabledefaultsubsources;
 }
 export interface CoordinateSpaceTransform {

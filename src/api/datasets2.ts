@@ -1,6 +1,6 @@
 import { components } from "./schema"
 import { getObjectFromJSON } from "./dataset_metadata"
-import { ITag, OSet } from "./datasets";
+import { ITag, LayerTypes, OSet } from "./datasets";
 import { encodeFragment, urlSafeStringify } from "@janelia-cosem/neuroglancer-url-tools";
 import { SegmentationLayer, ImageLayer, Outputdimensions as CoordinateSpace, CoordinateSpaceTransform } from "./neuroglancer";
 
@@ -148,7 +148,7 @@ export function makeNeuroglancerViewerState(layers: SegmentationLayer[] | ImageL
 }
 
 export function makeLayer(volume: IVolume,
-    layerType: "image" | "segmentation"): ImageLayer | SegmentationLayer {
+    layerType: LayerTypes): ImageLayer | SegmentationLayer {
     const srcURL = `${volume.format}://${volume.url}`;
 
     const source = {
@@ -161,59 +161,24 @@ export function makeLayer(volume: IVolume,
         return { url: `precomputed://${subsource.url}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions) }
     });
     let shader: string | undefined = undefined;
-    let layer: ImageLayer | SegmentationLayer | undefined = undefined;
+    let layer: ImageLayer | SegmentationLayer;
     const color = volume.display_settings.color ?? undefined;
-    if (layerType === 'image') {
-        
-        shader = makeShader(volume.displaySettings, volume.sampleType);
-        layer = new ImageLayer('rendering',
-            undefined,
-            undefined,
-            volume.name,
-            source,
-            0.75,
-            'additive',
-            shader,
-            undefined,
-            undefined);
+    if (layerType === 'image') {    
+        shader = makeShader(volume.display_settings, volume.sample_type);
+        layer = {type: 'image', tab: 'rendering',
+            name: volume.name,
+            source: source,
+            opacity: 0.75,
+            blend: 'additive',
+            shader: shader}
     }
-    else if (layerType === 'segmentation') {
-        if (subsources.length > 0) {
-            layer = new SegmentationLayer('source',
-                true,
-                undefined,
-                volume.name,
-                [source, ...subsources],
-                volume.subsources[0].ids,
-                undefined,
-                true,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                color);
-        }
-        else {
-            layer = new SegmentationLayer('source',
-                true,
-                undefined,
-                volume.name,
-                source,
-                undefined,
-                undefined,
-                true,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                color);
-        }
+    else  {
+            layer = {type: 'segmentation', tab: 'source',
+                pick: true,
+                name: volume.name,
+                source: [source, ...subsources],
+                hideSegmentZero: true,
+                segmentDefaultColor: color};
     }
     return layer
 }
@@ -242,6 +207,7 @@ export async function makeDatasets(metadataEndpoint: string): Promise<Map<string
             tags: makeTags(dataset, resolutionTagThreshold),
             thumbnailURL: ''
         });
+        console.log(dataset.views)
     }
     return result
 }
