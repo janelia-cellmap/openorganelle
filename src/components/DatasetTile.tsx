@@ -13,7 +13,6 @@ import {
 } from "@material-ui/core";
 import Popper from "@material-ui/core/Popper";
 
-import { Dataset } from "../api/datasets";
 import { DatasetDescriptionPreview } from "./DatasetDescriptionText";
 import { IFoob } from "../api/datasets2";
 

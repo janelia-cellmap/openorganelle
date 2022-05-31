@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {checkWebGL2} from "../api/util"
-import { Dataset, ITag} from "../api/datasets";
+import { ITag} from "../api/datasets";
 import {components} from "../api/schema"
 import { IFoob } from "../api/datasets2";
 

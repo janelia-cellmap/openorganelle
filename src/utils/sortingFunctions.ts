@@ -1,4 +1,4 @@
-import { Dataset, titled } from "../api/datasets";
+import { titled } from "../api/datasets";
 import { IFoob } from "../api/datasets2";
 
 interface sortOption extends titled{

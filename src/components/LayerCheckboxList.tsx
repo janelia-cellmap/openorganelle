@@ -80,7 +80,7 @@ function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLay
   });
 
   const checkboxLists = Array.from(contentTypeDescriptions.keys()).map((ct) => {
-    let volumes = (volumeGroups.get(ct as ContentType) as IVolume[]);
+    let volumes = (volumeGroups.get(ct as ContentType));
     let contentTypeInfo = contentTypeDescriptions.get(ct as ContentType)!;
     let expanded = (ct === 'em');
     

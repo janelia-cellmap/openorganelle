@@ -200,14 +200,15 @@ export async function makeDatasets(metadataEndpoint: string): Promise<Map<string
     const datasets = await getDatasets(metadataEndpoint);
     const result = new Map()
     for (let dataset of datasets) {
-        result.set(dataset.name, {
+        console.log([dataset.name, dataset.views[0].name, dataset.views[0].source_names.length])
+        let value = {
             ...dataset,
             volume_map: new Map(dataset.volumes.map(v => [v.name, v])),
             space: outputDimensions,
             tags: makeTags(dataset, resolutionTagThreshold),
             thumbnailURL: ''
-        });
-        console.log(dataset.views)
+        }
+        result.set(dataset.name, value);
     }
     return result
 }

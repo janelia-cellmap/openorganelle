@@ -63,7 +63,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const { appState } = useContext(AppContext);
   const dataset = appState.datasets.get(datasetKey)!;
   const [layerFilter, setLayerFilter] = useState("");
-
+  console.log(dataset.views[0].source_names)
   const volume_names = dataset.volumes.map(d => d.name);
   // remove this when we don't have data on s3 anymore
   const bucket = "janelia-cosem-datasets";

@@ -41,20 +41,6 @@ interface HyperlinkListProps {
   links: Array<IPublication>
 }
 
-function isHyperlinkOrDOI(val: DOI | Hyperlink): val is Hyperlink {
-  return (val as Hyperlink).href !== undefined;
-} 
-
-function doiToHyperlink(d: Hyperlink | DOI): Hyperlink{
-  if (!isHyperlinkOrDOI(d)) {
-    let d_ = d as DOI
-    return {href: "https://doi.org/" + d_.DOI, title: d_.id}
-  }
-  else {
-    return d as Hyperlink;
-  }
-}
-
 
 export function HyperlinkList({links}: HyperlinkListProps) {
   return (<ul>{links.map((link, idx) => {
@@ -85,13 +71,13 @@ export function DatasetDescriptionPreview({
   return (
     <Box>
       <Typography variant="h6" className={classes.title}>
-        {dataset.name}
+        {dataset.description}
       </Typography>
       <p>
         <strong>Acquisition date</strong>: {dataset.acquisition!.start_date}
       </p>
       <p>
-        <strong>Dataset ID</strong>: {dataset.acquisition!.name}
+        <strong>Dataset ID</strong>: {dataset.name}
       </p>
       <p>
         <strong>Voxel size ({dataset.acquisition!.grid_spacing.unit})</strong>
@@ -158,14 +144,10 @@ export function DatasetAcquisition({
           <p>
             <strong>Dataset ID</strong>: {dataset.acquisition!.name}
           </p>
-          <p>
             <strong>DOI</strong>:{" "}
-            <HyperlinkList links={dataset.publications}/>
-          </p>
-          <p>
+            <HyperlinkList links={dataset.publications.filter(p => p.type === 'doi')}/>
             <strong>Publications</strong>:{" "}
-            <HyperlinkList links={dataset.publications}/>
-          </p>
+            <HyperlinkList links={dataset.publications.filter(p => p.type === 'paper')}/>
           <p>
             <strong>Dataset location</strong>: {storageLocation}
           </p>
