@@ -140,7 +140,7 @@ const nm: [number, string] = [1e-9, "m"];
 const outputDimensions: CoordinateSpace = { x: nm, y: nm, z: nm };
 
 export const contentTypeDescriptions = new Map<ContentType, ContentTypeMetadata>();
-contentTypeDescriptions.set('em', {label: "EM Layers", description: "Raw FIB-SEM data."});
+contentTypeDescriptions.set('em', {label: "EM Layers", description: "EM data."});
 contentTypeDescriptions.set('lm', {label: "LM Layers", description: "Light microscopy data."});
 contentTypeDescriptions.set('segmentation', {label: "Segmentation Layers", description: "Predictions that have undergone refinements such as thresholding, smoothing, size filtering, and connected component analysis. Double Left Click a segmentation to turn on/off a 3D rendering."});
 contentTypeDescriptions.set('prediction', {label: "Prediction Layers", description: "Raw distance transform inferences scaled from 0 to 255. A voxel value of 127 represent a predicted distance of 0 nm."});
