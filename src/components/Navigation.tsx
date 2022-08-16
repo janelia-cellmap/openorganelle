@@ -117,7 +117,7 @@ export default function Navigation() {
               About
             </Typography>
           </Link>
-          <Link className={classes.link} to="/tutorials">
+          <Link className={classes.link} to="/faq">
             <Typography variant="h6" color="inherit" noWrap>
               Help
             </Typography>
@@ -148,8 +148,8 @@ export default function Navigation() {
           <NavLink exact to="/" className={classes.navListLink}>
             <li className={classes.navListItem}>Datasets</li>
           </NavLink>
-          <NavLink to="/tutorials" className={classes.navListLink}>
-            <li className={classes.navListItem}>Tutorials</li>
+          <NavLink to="/faq" className={classes.navListLink}>
+            <li className={classes.navListItem}>FAQ</li>
           </NavLink>
           <NavLink to="/organelles" className={classes.navListLink}>
             <li className={classes.navListItem}>Organelles</li>
@@ -163,7 +163,7 @@ export default function Navigation() {
           <NavLink to="/measurements" className={classes.navListLink}>
             <li className={classes.navListItem}>Measurements</li>
           </NavLink>
-          <HashLink to="/tutorials#data_access">
+          <HashLink to="/faq#data_access">
             <li className={classes.navListItem}>Data Access</li>
           </HashLink>
         </ul>

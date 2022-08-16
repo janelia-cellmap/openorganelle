@@ -56,7 +56,7 @@ export default function Tutorials() {
           style={{ maxWidth: "54em", marginLeft: "auto", marginRight: "auto" }}
         >
           <Typography variant="h3" gutterBottom>
-            Tutorials
+            Frequently Asked Questions
           </Typography>
           <p className="anchor" id="website" />
           <Paper className={classes.section}>
@@ -88,10 +88,10 @@ export default function Tutorials() {
               <a href="#visualization">Visualization</a>.
             </Typography>
             <Typography variant="h5" gutterBottom>
-              Tutorials
+              FAQ
             </Typography>
             <Typography paragraph>
-              On the <Link to="/tutorials">Tutorials</Link> page, this page, is
+              On the <Link to="/faq">FAQ</Link> page, this page, is
               a compilation of instructions for navigating OpenOrganelle.
             </Typography>
             <Typography variant="h5" gutterBottom>

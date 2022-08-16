@@ -30,7 +30,7 @@ interface ClipBoardLinkProps {
 }
 
 const LinkBehavior = React.forwardRef<any, Omit<RouterLinkProps, "to">>(
-  (props, ref) => <HashLink ref={ref} to="/tutorials#data_access" {...props} />
+  (props, ref) => <HashLink ref={ref} to="/faq#data_access" {...props} />
 );
 
 export default function ClipboardLink({

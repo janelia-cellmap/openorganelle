@@ -27,7 +27,7 @@ export default function Home() {
       <Container maxWidth="lg">
         <Switch>
           <Route path="/code" component={Code} />
-          <Route path="/tutorials" component={Tutorials} />
+          <Route path="/faq" component={Tutorials} />
           <Route path="/publications" component={Publications} />
           <Route path="/organelles" component={Organelles} />
           <Route path="/" exact component={DatasetLayout} />
