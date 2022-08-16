@@ -3,7 +3,7 @@ import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import Settings from "./components/Settings";
 import { AppProvider } from "./context/AppContext";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
 import "./App.css";
@@ -46,6 +46,9 @@ function App() {
                 </Route>
                 <Route path="/terms_of_use">
                   <TermsOfUse />
+                </Route>
+                <Route path="/tutorials">
+                  <Redirect to="/faq" />
                 </Route>
                 <Route path="">
                   <Home />
