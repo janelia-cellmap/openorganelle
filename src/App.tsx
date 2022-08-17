@@ -50,6 +50,9 @@ function App() {
                 <Route path="/tutorials">
                   <Redirect to="/faq" />
                 </Route>
+                <Route path="/code">
+                  <Redirect to="/faq" />
+                </Route>
                 <Route path="">
                   <Home />
                 </Route>
