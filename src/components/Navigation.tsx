@@ -148,24 +148,18 @@ export default function Navigation() {
           <NavLink exact to="/" className={classes.navListLink}>
             <li className={classes.navListItem}>Datasets</li>
           </NavLink>
-          <NavLink to="/faq" className={classes.navListLink}>
-            <li className={classes.navListItem}>FAQ</li>
-          </NavLink>
           <NavLink to="/organelles" className={classes.navListLink}>
             <li className={classes.navListItem}>Organelles</li>
-          </NavLink>
-          <NavLink to="/code" className={classes.navListLink}>
-            <li className={classes.navListItem}>Code</li>
-          </NavLink>
-          <NavLink to="/publications" className={classes.navListLink}>
-            <li className={classes.navListItem}>Publications</li>
           </NavLink>
           <NavLink to="/measurements" className={classes.navListLink}>
             <li className={classes.navListItem}>Measurements</li>
           </NavLink>
-          <HashLink to="/faq#data_access">
-            <li className={classes.navListItem}>Data Access</li>
-          </HashLink>
+          <NavLink to="/publications" className={classes.navListLink}>
+            <li className={classes.navListItem}>Publications</li>
+          </NavLink>
+          <NavLink to="/faq" className={classes.navListLink}>
+            <li className={classes.navListItem}>FAQ</li>
+          </NavLink>
         </ul>
       </div>
     </>

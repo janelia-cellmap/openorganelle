@@ -1,7 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { Route, Switch } from "react-router-dom";
 import Container from "@material-ui/core/Container";
-import Code from "./Code";
 import Tutorials from "./Tutorials";
 import Publications from "./Publications";
 import Organelles from "./Organelles";
@@ -26,7 +25,6 @@ export default function Home() {
     <div className="content">
       <Container maxWidth="lg">
         <Switch>
-          <Route path="/code" component={Code} />
           <Route path="/faq" component={Tutorials} />
           <Route path="/publications" component={Publications} />
           <Route path="/organelles" component={Organelles} />
