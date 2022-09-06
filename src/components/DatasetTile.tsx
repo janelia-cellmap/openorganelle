@@ -9,7 +9,8 @@ import {
   CardContent,
   CardMedia,
   CardActionArea,
-  Card
+  Card,
+  Chip
 } from "@material-ui/core";
 import Popper from "@material-ui/core/Popper";
 
@@ -85,6 +86,8 @@ export default function DatasetTile({
               <Box component="p" textOverflow="ellipsis" overflow="hidden">
                 {datasetMeta.description.title}
               </Box>
+              <Chip label="FIB-SEM"/>
+              <Chip label="Segmentations"/>
             </CardContent>
           </CardActionArea>
         </Card>
@@ -116,7 +119,7 @@ export default function DatasetTile({
       </>
     );
   }
-
+else
   return (
     <RouterLink to={datasetLink} className={classes.link}>
       <Paper className={classes.paper}>
