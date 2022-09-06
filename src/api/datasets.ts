@@ -399,12 +399,12 @@ export async function makeDatasets(metadataEndpoint: string): Promise<Map<string
   }
 
   const entries: [string, Dataset][] = await Promise.all([...Object.keys(index.datasets)].map(async dataset_key => {
-    let {thumbnail, manifest} = await API.get(dataset_key)!;
+    let {manifest} = await API.get(dataset_key)!;
     const result: [string, Dataset] = [dataset_key, new Dataset(dataset_key,
       outputDimensions, 
       new Map([...Object.entries(manifest.sources)]),
       manifest.metadata,
-      thumbnail.toString(),
+      manifest.metadata.thumbnailURL || '',
       manifest.views)];
     return result
   }))
