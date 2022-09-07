@@ -15,6 +15,7 @@ import Popper from "@material-ui/core/Popper";
 
 import { Dataset } from "../api/datasets";
 import { DatasetDescriptionPreview } from "./DatasetDescriptionText";
+import BrokenImage from "../broken_image_black_24dp.svg";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -80,7 +81,7 @@ export default function DatasetTile({
           onMouseOut={handleMouseOut}
         >
           <CardActionArea component={RouterLink} to={datasetLink}>
-            <CardMedia style={{ height: 256 }} image={datasetMeta.thumbnailURL} />
+            <CardMedia style={{ height: 256 }} image={datasetMeta.thumbnailURL || BrokenImage} />
             <CardContent style={{ whiteSpace: "nowrap", padding: "0 1em" }}>
               <Box component="p" textOverflow="ellipsis" overflow="hidden">
                 {datasetMeta.description.title}
@@ -136,8 +137,8 @@ export default function DatasetTile({
           <Grid item xs={4}>
             <CardActionArea>
               <CardMedia
-                style={{ height: 256, width: 256, borderRadius: "10%" }}
-                image={datasetMeta.thumbnailURL}
+                style={{ height: 256, width: 256, borderRadius: "10%"}}
+                image={datasetMeta.thumbnailURL || BrokenImage}
               />
             </CardActionArea>
           </Grid>
