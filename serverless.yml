@@ -3,7 +3,6 @@ service: sle-openorganelle-client
 
 plugins:
   - serverless-finch
-  - serverless-plugin-package-json
   - serverless-deployment-bucket
 
 custom:
@@ -29,4 +28,4 @@ provider:
   tags:
     PROJECT: cosem
     DEVELOPER: ${env:USER}
-    VERSION: ${pkgjson:version}
+    VERSION: ${file(./package.json):version}
