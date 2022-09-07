@@ -72,7 +72,7 @@ interface IDataset{
   space: CoordinateSpace
   volumes: Map<string, VolumeSource>
   description: DatasetMetadata
-  thumbnailURL: string
+  thumbnailURL: string | undefined
   views: DatasetView[]
   tags: OSet<ITag>
 }
@@ -283,14 +283,14 @@ export class Dataset implements IDataset {
     public space: CoordinateSpace;
     public volumes: Map<string, VolumeSource>;
     public description: DatasetMetadata
-    public thumbnailURL: string
+    public thumbnailURL: string |  undefined
     public views: DatasetView[]
     public tags: OSet<ITag>
     constructor(name: string,
                 space: CoordinateSpace,
                 volumes: Map<string, VolumeSource>,
                 description: DatasetMetadata,
-                thumbnailURL: string,
+                thumbnailURL: string | undefined,
                 views: DatasetView[]) {
         this.name = name;
         this.space = space;
@@ -404,7 +404,7 @@ export async function makeDatasets(metadataEndpoint: string): Promise<Map<string
       outputDimensions, 
       new Map([...Object.entries(manifest.sources)]),
       manifest.metadata,
-      manifest.metadata.thumbnailURL || '',
+      manifest.metadata.thumbnailURL,
       manifest.views)];
     return result
   }))
