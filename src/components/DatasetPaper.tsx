@@ -19,6 +19,8 @@ import LayerCheckboxList from "./LayerCheckboxList";
 import NeuroglancerLink from "./NeuroglancerLink";
 import ClipboardLink from "./ClipboardLink";
 
+import BrokenImage from "../broken_image_24dp.svg";
+
 type DatasetPaperProps = {
   datasetKey: string;
 };
@@ -169,7 +171,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     });
   };
 
-	const thumbnailAlt = `2D rendering of ${dataset.description}`;
+	const thumbnailAlt = `2D rendering of ${dataset.name}`;
 
   return (
     <Grid container>
@@ -183,7 +185,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             >
               <img
 								alt={thumbnailAlt}
-                src={dataset.thumbnailURL}
+                src={dataset.thumbnailURL || BrokenImage}
                 className={classes.datasetthumbnail}
               />
             </NeuroglancerLink>

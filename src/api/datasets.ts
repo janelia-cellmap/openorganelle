@@ -72,7 +72,7 @@ interface IDataset{
   space: CoordinateSpace
   volumes: Map<string, VolumeSource>
   description: DatasetMetadata
-  thumbnailURL: string
+  thumbnailURL: string | undefined
   views: DatasetView[]
   tags: OSet<ITag>
 }
@@ -283,14 +283,14 @@ export class Dataset implements IDataset {
     public space: CoordinateSpace;
     public volumes: Map<string, VolumeSource>;
     public description: DatasetMetadata
-    public thumbnailURL: string
+    public thumbnailURL: string |  undefined
     public views: DatasetView[]
     public tags: OSet<ITag>
     constructor(name: string,
                 space: CoordinateSpace,
                 volumes: Map<string, VolumeSource>,
                 description: DatasetMetadata,
-                thumbnailURL: string,
+                thumbnailURL: string | undefined,
                 views: DatasetView[]) {
         this.name = name;
         this.space = space;
@@ -399,12 +399,12 @@ export async function makeDatasets(metadataEndpoint: string): Promise<Map<string
   }
 
   const entries: [string, Dataset][] = await Promise.all([...Object.keys(index.datasets)].map(async dataset_key => {
-    let {thumbnail, manifest} = await API.get(dataset_key)!;
+    let {manifest} = await API.get(dataset_key)!;
     const result: [string, Dataset] = [dataset_key, new Dataset(dataset_key,
       outputDimensions, 
       new Map([...Object.entries(manifest.sources)]),
       manifest.metadata,
-      thumbnail.toString(),
+      manifest.metadata.thumbnailURL || `https://janelia-cosem-datasets.s3.amazonaws.com/${dataset_key}/thumbnail.jpg`,
       manifest.views)];
     return result
   }))
