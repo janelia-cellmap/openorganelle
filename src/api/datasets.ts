@@ -404,7 +404,7 @@ export async function makeDatasets(metadataEndpoint: string): Promise<Map<string
       outputDimensions, 
       new Map([...Object.entries(manifest.sources)]),
       manifest.metadata,
-      manifest.metadata.thumbnailURL,
+      manifest.metadata.thumbnailURL || `https://janelia-cosem-datasets.s3.amazonaws.com/${dataset_key}/thumbnail.jpg`,
       manifest.views)];
     return result
   }))
