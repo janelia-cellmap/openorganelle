@@ -15,7 +15,7 @@ import Popper from "@material-ui/core/Popper";
 
 import { Dataset } from "../api/datasets";
 import { DatasetDescriptionPreview } from "./DatasetDescriptionText";
-import BrokenImage from "../broken_image_black_24dp.svg";
+import BrokenImage from "../broken_image_24dp.svg";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
