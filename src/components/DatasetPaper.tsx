@@ -19,7 +19,7 @@ import LayerCheckboxList from "./LayerCheckboxList";
 import NeuroglancerLink from "./NeuroglancerLink";
 import ClipboardLink from "./ClipboardLink";
 
-import BrokenImage from "../broken_image_black_24dp.svg";
+import BrokenImage from "../broken_image_24dp.svg";
 
 type DatasetPaperProps = {
   datasetKey: string;
