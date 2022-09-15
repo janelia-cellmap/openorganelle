@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {checkWebGL2} from "../api/util"
 import { ITag} from "../api/datasets";
-import {components} from "../api/schema"
 import { IFoob } from "../api/datasets2";
 
-type IDataset = components["schemas"]["Dataset"]
 
 export interface ContextProps {
   neuroglancerAddress: string,
@@ -28,7 +26,7 @@ interface AppContext {
 
 const contextDefault: ContextProps = {
   neuroglancerAddress: "https://neuroglancer-demo.appspot.com/#!",
-  metadataEndpoint: 'http://localhost:8001',
+  metadataEndpoint: 'https://fct5d83geg.execute-api.us-east-1.amazonaws.com/api/v1/',
   webGL2Enabled: checkWebGL2(),
   datasetsLoading: false,
   datasets: new Map(),

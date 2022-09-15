@@ -33,10 +33,10 @@ contentTypeDescriptions.set('analysis', { name: "Analysis Layers", description: 
 function makeShader(shaderArgs: IVolume["display_settings"], sampleType: SampleType): string | undefined{
     switch (sampleType) {
       case 'scalar':{
-        let lower = shaderArgs.contrast_limits.min;
-        let upper = shaderArgs.contrast_limits.max;
-        let cmin = shaderArgs.contrast_limits.start;
-        let cmax = shaderArgs.contrast_limits.end;
+        const lower = shaderArgs.contrast_limits.min;
+        const upper = shaderArgs.contrast_limits.max;
+        const cmin = shaderArgs.contrast_limits.start;
+        const cmax = shaderArgs.contrast_limits.end;
           return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${lower}, ${upper}])
           #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invert_lut? 1: 0})
           #uicontrol vec3 color color(default="${shaderArgs.color}")
@@ -79,21 +79,21 @@ const makeTags = (dataset: IDataset, resolutionTagThreshold: number): OSet<ITag>
     const tags: OSet<ITag> = new OSet();
     let latvox = undefined;
 
-    for (let val of dataset.institutions) {
+    for (const val of dataset.institutions) {
         tags.add({ value: val, category: 'Contributing institution' })
     }
     if (dataset.sample !== undefined) {
-        for (let val of dataset.sample.organism) {
+        for (const val of dataset.sample.organism) {
             tags.add({ value: val, category: 'Sample: Organism' })
         }
 
-        for (let val of dataset.sample.type) {
+        for (const val of dataset.sample.type) {
             tags.add({ value: val, category: 'Sample: Type' })
         }
-        for (let val of dataset.sample.subtype) {
+        for (const val of dataset.sample.subtype) {
             tags.add({ value: val, category: 'Sample: Subtype' })
         }
-        for (let val of dataset.sample.treatment) {
+        for (const val of dataset.sample.treatment) {
             tags.add({ value: val, category: 'Sample: Treatment' })
         }
     }
@@ -199,9 +199,9 @@ export interface IFoob extends IDataset {
 export async function makeDatasets(metadataEndpoint: string): Promise<Map<string, IFoob>> {
     const datasets = await getDatasets(metadataEndpoint);
     const result = new Map()
-    for (let dataset of datasets) {
+    for (const dataset of datasets) {
         console.log([dataset.name, dataset.views[0].name, dataset.views[0].source_names.length])
-        let value = {
+        const value = {
             ...dataset,
             volume_map: new Map(dataset.volumes.map(v => [v.name, v])),
             space: outputDimensions,

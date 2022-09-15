@@ -960,9 +960,9 @@ export default function Organelles() {
   }
   const tableRows = tableData.map((row) => {
     const neuroglancer_urls = row.examples.map((v, idx) => {
-      let dataset = datasets.get(demo_dataset_names[idx])!;
-      let layers = v.source_names.map(vk => {
-        let result = makeLayer(dataset.volume_map.get(vk)!, "image");
+      const dataset = datasets.get(demo_dataset_names[idx])!;
+      const layers = v.source_names.map(vk => {
+        const result = makeLayer(dataset.volume_map.get(vk)!, "image");
         return result;
       }); 
       return `${neuroglancerAddress}${makeNeuroglancerViewerState(layers as ImageLayer[], v.position, v.scale, v.orientation)}`;
@@ -974,7 +974,7 @@ export default function Organelles() {
         <TableCell>{row.file_name}</TableCell>
         <TableCell>{row.description}</TableCell>
         {neuroglancer_urls.length === 0
-          ? demo_dataset_names.map((v) => <TableCell></TableCell>)
+          ? demo_dataset_names.map((v, idx) => <TableCell key={idx}></TableCell>)
           : neuroglancer_urls.map((v, idx) => (
               <TableCell key={idx}>
                 <a href={v} target="_blank" rel="noopener noreferrer">

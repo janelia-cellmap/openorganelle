@@ -37,8 +37,8 @@ export default function DatasetFilters() {
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
   const tags: ITag[] = [];
   const tagSet: OSet<ITag> = new OSet();
-  for (let dataset of appState.datasets.values()) {
-    for (let tag of dataset.tags.map.values())
+  for (const dataset of appState.datasets.values()) {
+    for (const tag of dataset.tags.map.values())
       {
         tagSet.add(tag);
       }

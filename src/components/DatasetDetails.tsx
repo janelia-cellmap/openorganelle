@@ -23,7 +23,7 @@ interface DatasetDetailsProps {
 
 export default function DatasetDetails({ url }: DatasetDetailsProps) {
   const classes = useStyles();
-  let { slug }: { slug: string } = useParams();
+  const { slug }: { slug: string } = useParams();
   const { appState } = useContext(AppContext);
   if (appState.datasetsLoading) {
     return (

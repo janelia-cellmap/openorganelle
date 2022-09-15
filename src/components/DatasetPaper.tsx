@@ -74,8 +74,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     volume_names.map(k => [k, { selected: false, layerType: undefined }])
   );
   // initialize the layer checkboxes by looking at the first dataset view
-  for (let vn of volume_names) {
-    let vkeys = dataset.views[0].source_names;
+  for (const vn of volume_names) {
+    const vkeys = dataset.views[0].source_names;
     if (vkeys.includes(vn)) {
       volumeCheckStateInit.set(vn, {
         ...volumeCheckStateInit.get(vn),
@@ -84,7 +84,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     }
   }
   // the first view is selected, by default
-  const viewCheckStateInit = dataset.views.map((v, idx) => idx === 0);
+  const viewCheckStateInit = dataset.views.map(( v_, idx) => idx === 0);
 
   const [checkStates, setCheckStates] = useState({
     volumeCheckState: volumeCheckStateInit,
@@ -111,7 +111,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   };
 
   const handleViewChange = (index: number, views: IView[]) => () => {
-    const newViewState = checkStates.viewCheckState.map(v => false);
+    const newViewState = checkStates.viewCheckState.map(() => false);
     newViewState[index] = true;
 
     const newVolumeState = new Map(
@@ -132,11 +132,11 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
   // Update the default layer type for all the affected volumes
   const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let contentType: ContentType = event.target.name as ContentType;
+    const contentType: ContentType = event.target.name as ContentType;
     let newLayerType = undefined;
     const newVolumeCheckState = new Map(checkStates.volumeCheckState.entries());
-    for (let k of newVolumeCheckState.keys()) {
-      let val = newVolumeCheckState.get(k);
+    for (const k of newVolumeCheckState.keys()) {
+      const val = newVolumeCheckState.get(k);
       if (
         !(val === undefined) &&
         dataset.volume_map.get(k)?.content_type === contentType
@@ -159,7 +159,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
   const clearLayers = () => {
     const newVolumeCheckState = new Map(
-      [...checkStates.volumeCheckState.entries()].map(([k, v]) => [
+      [...checkStates.volumeCheckState.entries()].map(([k, ]) => [
         k,
         { selected: false }
       ])

@@ -1,16 +1,12 @@
 import {
-  urlSafeStringify,
-  encodeFragment,
   CoordinateSpaceTransform,
   CoordinateSpace,
-  ViewerState,
   ImageLayer,
   LayerDataSource,
   SegmentationLayer,
   Layer
 } from "@janelia-cosem/neuroglancer-url-tools";
-import { Index } from ".";
-import {DatasetMetadata, GithubDatasetAPI} from "./dataset_metadata";
+
 import { DisplaySettings, 
          ContentTypeEnum as ContentType, 
          SampleTypeEnum as SampleType,
@@ -23,13 +19,8 @@ export type DataFormats = "n5" | "zarr" | "precomputed" | "neuroglancer_legacy_m
 export type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
 export type VolumeStores = "n5" | "precomputed" | "zarr";
 
-const resolutionTagThreshold = 6;
 export interface titled {
   title: string
-}
-
-type Complete<T> = {
-  [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>> ? T[P] : (T[P] | undefined);
 }
 
 type TagCategories = "Software Availability" |
@@ -65,16 +56,6 @@ export class OSet<T>{
   [Symbol.iterator](){
     return this.map[Symbol.iterator]()
   }
-}
-
-interface IDataset{
-  name: string
-  space: CoordinateSpace
-  volumes: Map<string, VolumeSource>
-  description: DatasetMetadata
-  thumbnailURL: string
-  views: DatasetView[]
-  tags: OSet<ITag>
 }
 
 const DefaultView: IDatasetView = {name: "Default view", 
@@ -150,10 +131,10 @@ contentTypeDescriptions.set('analysis', {label: "Analysis Layers", description: 
 function makeShader(shaderArgs: DisplaySettings, sampleType: SampleType): string | undefined{
   switch (sampleType) {
     case 'scalar':{
-      let lower = shaderArgs.contrastLimits.min;
-      let upper = shaderArgs.contrastLimits.max;
-      let cmin = shaderArgs.contrastLimits.start;
-      let cmax = shaderArgs.contrastLimits.end;
+      const lower = shaderArgs.contrastLimits.min;
+      const upper = shaderArgs.contrastLimits.max;
+      const cmin = shaderArgs.contrastLimits.start;
+      const cmax = shaderArgs.contrastLimits.end;
         return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${lower}, ${upper}])
         #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertLUT? 1: 0})
         #uicontrol vec3 color color(default="${shaderArgs.color}")

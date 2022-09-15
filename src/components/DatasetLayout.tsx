@@ -49,7 +49,7 @@ export default function DatasetLayout() {
       // set up a lookup hash to keep track of categories that have a positive hit
       const filterCategories: Record<string, boolean> = {};
       // loop over each of the selected filters
-      for (let tag of appState.datasetFilter) {
+      for (const tag of appState.datasetFilter) {
         // if the dataset has the filter tag, then set the matching category to true
         if (dataset.tags.has(tag)) {
           filterCategories[tag.category] = true;
@@ -63,7 +63,7 @@ export default function DatasetLayout() {
       }
       // now that all the filters have been checked, throw out the dataset if it doesn't
       // have at least one positive match to a filter tag.
-      var hasFalseKeys = Object.keys(filterCategories).some(k => !filterCategories[k]);
+      const hasFalseKeys = Object.keys(filterCategories).some(k => !filterCategories[k]);
       if (hasFalseKeys) {
         return false;
       }

@@ -20,7 +20,7 @@ export default function Home() {
     makeDatasets(appState.metadataEndpoint).then(ds =>
       setAppState({ ...appState, datasets: ds, datasetsLoading: false })
     );
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); 
 
   return (
     <div className="content">

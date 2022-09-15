@@ -50,10 +50,10 @@ export class GithubDatasetAPI implements DatasetAPI {
     this.index = getObjectFromJSON<Index>(index_url)
   }
   async get(key: string) {
-    let datasetURL = new URL(this.url.toString() + "/" + key)
-    let thumbnailURL = new URL(datasetURL + "/thumbnail.jpg")
-    let manifest = await getObjectFromJSON<IDatasetManifest>(new URL(datasetURL.toString() + "/manifest.json"));
-    let leaf = {
+    const datasetURL = new URL(this.url.toString() + "/" + key)
+    const thumbnailURL = new URL(datasetURL + "/thumbnail.jpg")
+    const manifest = await getObjectFromJSON<IDatasetManifest>(new URL(datasetURL.toString() + "/manifest.json"));
+    const leaf = {
       thumbnail: thumbnailURL,
       manifest: manifest
     };
@@ -66,7 +66,7 @@ rawifyURL(url: URL): URL{
   // https://raw.githubusercontent.com/$user/$repo/$branch/path
 
   // replace github.com with raw.githubusercontent
-  let result: URL = new URL(url.toString());
+  const result: URL = new URL(url.toString());
   result.hostname = 'raw.githubusercontent.com';
   result.pathname = result.pathname.replace('/blob', '');
   return result;

@@ -2,7 +2,6 @@ import {
   createStyles,
   FormControl,
   makeStyles,
-  Theme,
   Typography
 } from "@material-ui/core";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -14,7 +13,7 @@ import VolumeCheckboxCollection from "./LayerGroup";
 import { VolumeCheckStates } from "./DatasetPaper";
 import { IFoob, IVolume, ContentType, contentTypeDescriptions } from "../api/datasets2";
 
-const useStyles: any = makeStyles((theme: Theme) =>
+const useStyles: any = makeStyles(() =>
   createStyles({
     root: {
       flexGrow: 1
@@ -80,9 +79,9 @@ function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLay
   });
 
   const checkboxLists = Array.from(contentTypeDescriptions.keys()).map((ct) => {
-    let volumes = (volumeGroups.get(ct as ContentType));
-    let contentTypeInfo = contentTypeDescriptions.get(ct as ContentType)!;
-    let expanded = (ct === 'em');
+    const volumes = (volumeGroups.get(ct as ContentType));
+    const contentTypeInfo = contentTypeDescriptions.get(ct as ContentType)!;
+    const expanded = (ct === 'em');
     
     if (volumes !== undefined && volumes.length > 0) {
       return <VolumeCheckboxCollection
@@ -132,7 +131,7 @@ export default function LayerCheckboxList({
   handleFilterChange,
   filter,
 }: LayerCheckboxListProps) {
-  if (filter === undefined) {filter = ""};
+  if (filter === undefined) {filter = ""}
   return (
     <>
       <Typography variant="h6">2. Select layers for the view</Typography>

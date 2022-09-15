@@ -9,7 +9,6 @@ import {components} from "../api/schema"
 import { IFoob, makeNeuroglancerViewerState, makeLayer } from "../api/datasets2";
 import { LayerTypes } from "../api/datasets";
 
-type IDataset = components["schemas"]["Dataset"]
 type IView = components["schemas"]["View"]
 
 interface VolumeCheckStates {
@@ -52,11 +51,11 @@ export default function NeuroglancerLink({
   const disabled = Boolean(local_view.source_names.length === 0);
   const layers = local_view.source_names.map(vk => {
     let layerType = "segmentation";
-    let sampleType = dataset.volume_map.get(vk)?.sample_type;
+    const sampleType = dataset.volume_map.get(vk)?.sample_type;
     if (sampleType === "scalar") {
       layerType = "image";
     }
-    let result = makeLayer(dataset.volume_map.get(vk)!, layerType as LayerTypes);
+    const result = makeLayer(dataset.volume_map.get(vk)!, layerType as LayerTypes);
     return result;
   });
   if (!disabled) {
