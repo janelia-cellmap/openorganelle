@@ -11,7 +11,7 @@ import "./App.css";
 const Analysis = lazy(() => import("./components/Analysis"));
 const TermsOfUse = lazy(() => import("./components/TermsOfUse"));
 const About = lazy(() => import("./components/About"));
-const Home = lazy(() => import("./components/Home"));
+const Index = lazy(() => import("./components/Index"));
 
 const theme = createMuiTheme({
   palette: {
@@ -54,7 +54,7 @@ function App() {
                   <Redirect to="/faq" />
                 </Route>
                 <Route path="">
-                  <Home />
+                  <Index />
                 </Route>
               </Switch>
             </Suspense>
