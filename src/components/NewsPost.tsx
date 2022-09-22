@@ -6,7 +6,10 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
 import { Octokit } from "@octokit/core";
+import {Endpoints} from "@octokit/types"
 import matter from 'gray-matter';
+
+type listRepoContentsResponse = Endpoints["GET /repos/{owner}/{repo}/contents/{path}"]["response"]
 
 interface NewsPostProps{
     title: string
@@ -31,7 +34,7 @@ export function NewsPostCollection(){
     const [posts, setPosts] = useState([])
     
     useEffect(() => {async function getPosts() {
-        const apiResponse = await octokit.request("Get /repos/{owner}/{repo}/contents/{path}", {
+        const apiResponse: listRepoContentsResponse = await octokit.request("Get /repos/{owner}/{repo}/contents/{path}", {
             owner: 'janelia-cosem',
             repo: 'openorganelle-blog',
             path: 'posts'
