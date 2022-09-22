@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { Route, Switch } from "react-router-dom";
-import Container from "@material-ui/core/Container";
+import Container  from "@material-ui/core/Container";
 import Tutorials from "./Tutorials";
 import Publications from "./Publications";
 import Organelles from "./Organelles";
@@ -32,9 +32,9 @@ export default function Index() {
           <Route path="/organelles" component={Organelles} />
           <Route path="/news" exact component={NewsPostCollection} />
           <Route path="/home" exact component={Home} />
-          <Route path="/" exact component={Home} />
-          <Route path="/datasets/" component={DatasetLayout} />
           <Route path="/datasets/:slug" component={DatasetDetails} />
+          <Route path="/datasets/" component={DatasetLayout} />
+          <Route path="/" exact component={Home} />
         </Switch>
       </Container>
     </div>
