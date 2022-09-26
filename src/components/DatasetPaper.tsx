@@ -112,7 +112,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   };
 
   const handleViewChange = (index: number, views: DatasetView[]) => () => {
-    const newViewState = checkStates.viewCheckState.map(v => false);
+    const newViewState = checkStates.viewCheckState.map(() => false);
     newViewState[index] = true;
 
     const newVolumeState = new Map(
@@ -160,7 +160,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
   const clearLayers = () => {
     const newVolumeCheckState = new Map(
-      [...checkStates.volumeCheckState.entries()].map(([k, v]) => [
+      [...checkStates.volumeCheckState.entries()].map(([k]) => [
         k,
         { selected: false }
       ])

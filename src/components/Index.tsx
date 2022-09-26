@@ -11,6 +11,7 @@ import { AppContext } from "../context/AppContext";
 import { makeDatasets } from "../api/datasets";
 import Home from "./Home";
 import { NewsPostCollection } from "./NewsPost";
+import { getPosts } from "../api/posts";
 
 export default function Index() {
   const {appState, setAppState} = useContext(AppContext);
@@ -21,6 +22,7 @@ export default function Index() {
     makeDatasets(appState.metadataEndpoint).then(ds =>
       setAppState({ ...appState, datasets: ds, datasetsLoading: false })
     );
+    getPosts(appState.postsAPI).then(posts => {setAppState({...appState, posts: posts!})})
   }, []); 
 
   return (

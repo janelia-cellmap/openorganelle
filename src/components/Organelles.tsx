@@ -975,7 +975,7 @@ export default function Organelles() {
         <TableCell>{row.file_name}</TableCell>
         <TableCell>{row.description}</TableCell>
         {neuroglancer_urls.length === 0
-          ? demo_dataset_names.map((v) => <TableCell></TableCell>)
+          ? demo_dataset_names.map((_v, idx) => <TableCell key={idx}></TableCell>)
           : neuroglancer_urls.map((v, idx) => (
               <TableCell key={idx}>
                 <a href={v} target="_blank" rel="noopener noreferrer">

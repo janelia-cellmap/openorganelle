@@ -2,9 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 
-const useStyles: any = makeStyles((theme: Theme) =>
+const useStyles: any = makeStyles(() =>
   createStyles({
     section: {
       padding: "1em",

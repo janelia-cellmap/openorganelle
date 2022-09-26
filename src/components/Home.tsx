@@ -4,6 +4,7 @@ import { makeDatasets } from "../api/datasets";
 import { Grid} from "@material-ui/core";
 import DatasetLayout from "./DatasetLayout";
 import { NewsPostCollection } from "./NewsPost";
+import { getPosts } from "../api/posts";
 
 export default function Home() {
   const {appState, setAppState} = useContext(AppContext);
@@ -14,6 +15,7 @@ export default function Home() {
     makeDatasets(appState.metadataEndpoint).then(ds =>
       setAppState({ ...appState, datasets: ds, datasetsLoading: false })
     );
+    getPosts(appState.postsAPI).then(posts => {setAppState({...appState, posts: posts!})})
   }, []); 
 
   return (
