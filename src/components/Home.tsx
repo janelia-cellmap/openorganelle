@@ -1,23 +1,10 @@
-import React, { useEffect, useContext } from "react";
-import { AppContext } from "../context/AppContext";
-import { makeDatasets } from "../api/datasets";
+import React from "react";
 import { Grid} from "@material-ui/core";
 import DatasetLayout from "./DatasetLayout";
 import { NewsPostCollection } from "./NewsPost";
-import { getPosts } from "../api/posts";
+
 
 export default function Home() {
-  const {appState, setAppState} = useContext(AppContext);
-
-  // Update the global datasets var when Home renders for the first time
-  useEffect(() => {
-    setAppState({ ...appState, datasetsLoading: true });
-    makeDatasets(appState.metadataEndpoint).then(ds =>
-      setAppState({ ...appState, datasets: ds, datasetsLoading: false })
-    );
-    getPosts(appState.postsAPI).then(posts => {setAppState({...appState, posts: posts!})})
-  }, []); 
-
   return (
     <div className="content">
       <Grid>

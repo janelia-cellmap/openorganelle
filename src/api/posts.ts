@@ -3,7 +3,6 @@ import matter from 'gray-matter';
 import { PostsAPIProps } from "../context/AppContext";
 import { visit } from 'unist-util-visit';
 import {remark} from 'remark'
-import remarkFrontmatter from "remark-frontmatter";
 
 export interface NewsPostProps{
     title: string
@@ -19,7 +18,6 @@ function transformImgSrc(url: string) {
   return (tree: any, file: any) => {
     visit(tree, 'paragraph', node => {
       const image = node.children.find((child: any) => child.type === 'image');
-      
       if (image) {
         image.url = image.url.replace('../', url);
       }
@@ -27,7 +25,7 @@ function transformImgSrc(url: string) {
   };
 }
 
-export async function getPosts({owner, repo, postsPath, assetsPath}: PostsAPIProps) {
+export async function getPosts({owner, repo, postsPath}: PostsAPIProps) {
     const postData = (await octokit.repos.getContent({owner, repo, path: postsPath})).data;
     // type narrowing
     if (!Array.isArray(postData)) {return}
