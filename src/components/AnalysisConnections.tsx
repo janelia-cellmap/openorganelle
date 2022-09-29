@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "react-query";
 import Card from "@material-ui/core/Card";
@@ -7,7 +7,7 @@ import AnalysisDataTable from "./AnalysisDataTable";
 import AnalysisConnectionsGraphic from "./AnalysisConnectionsGraphic";
 import NeuroglancerLink from "./NeuroglancerLink";
 
-import { Dataset, makeDatasets } from "../api/datasets";
+import { Dataset } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import { fetchAnalysisResults, queryResponse } from "../utils/datafetching";
 import { useQueryString } from "../utils/customHooks";
@@ -27,15 +27,7 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
     () => fetchAnalysisResults(cypher),
     { staleTime: Infinity, refetchOnWindowFocus: false }
   );
-  const { appState, setAppState } = useContext(AppContext);
-
-  // Update the global datasets var when Home renders for the first time
-  useEffect(() => {
-    setAppState({ ...appState, datasetsLoading: true });
-    makeDatasets(appState.metadataEndpoint).then(ds =>
-      setAppState({ ...appState, datasets: ds, datasetsLoading: false })
-    );
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const { appState } = useContext(AppContext);
 
   const dataset: Dataset = appState.datasets.get(datasetKey)!;
 

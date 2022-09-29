@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-d
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
 import "./App.css";
+import { PostsProvider } from "./context/PostsContext";
 
 const Analysis = lazy(() => import("./components/Analysis"));
 const TermsOfUse = lazy(() => import("./components/TermsOfUse"));
@@ -28,6 +29,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <AppProvider>
+        <PostsProvider>
         <Router>
           <div className="App">
             <header className="header">
@@ -61,6 +63,7 @@ function App() {
             <Footer />
           </div>
         </Router>
+        </PostsProvider>
       </AppProvider>
     </ThemeProvider>
   );

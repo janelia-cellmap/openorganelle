@@ -9,7 +9,6 @@ import Switch from "@material-ui/core/Switch";
 import Button from "@material-ui/core/Button";
 import FilterListIcon from '@material-ui/icons/FilterList';
 
-import { Dataset } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import sortFunctions from "../utils/sortingFunctions";
 import DatasetTile from "./DatasetTile";
@@ -25,8 +24,7 @@ export default function DatasetLayout() {
   const { datasetGrid: compact } = appState;
   const datasetsPerPage = compact ? 12 : 10;
 
-  const datasets: Map<string, Dataset> = appState.datasets;
-
+  const datasets = appState.datasets;
   const rangeStart = (page - 1) * datasetsPerPage;
   const rangeEnd = rangeStart + datasetsPerPage;
 

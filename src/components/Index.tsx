@@ -15,15 +15,16 @@ import { getPosts } from "../api/posts";
 
 export default function Index() {
   const {appState, setAppState} = useContext(AppContext);
-
-  // Update the global datasets var when Home renders for the first time
   useEffect(() => {
+    const fetchData = async () => {
+      const datasets = await makeDatasets(appState.metadataEndpoint);
+      const posts = await getPosts(appState.postsAPI);
+      setAppState({...appState, datasets: datasets, posts: posts!})
+    }
     setAppState({ ...appState, datasetsLoading: true });
-    makeDatasets(appState.metadataEndpoint).then(ds =>
-      setAppState({ ...appState, datasets: ds, datasetsLoading: false })
-    );
-    getPosts(appState.postsAPI).then(posts => {setAppState({...appState, posts: posts!})})
-  }, []); 
+    fetchData();
+    setAppState({ ...appState, datasetsLoading: false });
+  }, []);
 
   return (
     <div className="content">

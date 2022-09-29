@@ -1,6 +1,5 @@
 import { Octokit } from "@octokit/rest";
 import matter from 'gray-matter';
-import { PostsAPIProps } from "../context/AppContext";
 import { visit } from 'unist-util-visit';
 import {remark} from 'remark'
 
@@ -10,6 +9,13 @@ export interface NewsPostProps{
     authors: string[]
     date: Date
     tags: string[]
+}
+
+export interface PostApi {
+  owner: string
+  repo: string
+  postsPath: string
+  assetsPath: string
 }
 
 const octokit = new Octokit({});
@@ -25,7 +31,7 @@ function transformImgSrc(url: string) {
   };
 }
 
-export async function getPosts({owner, repo, postsPath}: PostsAPIProps) {
+export async function getPosts({owner, repo, postsPath}: PostApi) {
     const postData = (await octokit.repos.getContent({owner, repo, path: postsPath})).data;
     // type narrowing
     if (!Array.isArray(postData)) {return}
