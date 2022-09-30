@@ -2,7 +2,7 @@ import {createContext, useContext, useEffect, useReducer } from 'react'
 import React from 'react'
 import { getPosts, NewsPostProps, PostApi } from '../api/posts'
 
-type Action = {type: 'set', payload: NewsPostProps[]} | {type : 'get', payload: NewsPostProps[]}
+type Action = {type: 'set-posts', payload: NewsPostProps[]}
 type Dispatch = (action : Action) => void
 
 
@@ -21,18 +21,15 @@ const PostsContext = createContext<
 
 function postsReducer(state: PostState, action: Action) {
     switch (action.type) {
-        case 'set': {
-            return {...state, ...action.payload}
+        case 'set-posts': {
+            return {api: state.api, posts: action.payload}
         }
-        case 'get': {
-            return {...state}
-        }
-    }
+}
 }
 
 function setPosts(data: NewsPostProps[]): Action {
     return {
-    type: 'set',
+    type: 'set-posts',
     payload: data}
 }
 
@@ -46,7 +43,6 @@ export function PostsProvider({children}: any) {
         initPosts();
     }, [])
     const value = {state, dispatch}
-
     return <PostsContext.Provider value={value}>{children}</PostsContext.Provider>
 }
 
