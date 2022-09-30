@@ -15,7 +15,7 @@ const useStyles: any = makeStyles(() =>
       flexGrow: 1,
     },
     postImage: {
-        width: "300px"
+        width: "100%"
     },
   })
 );
@@ -30,17 +30,18 @@ const MyImage = ({node, ...props}: any) => {
     );
   };
 
-export default function NewsPost({title, content, authors, date, tags}: NewsPostProps){
+export default function NewsPost({title, content, authors, tags}: NewsPostProps){
     const classes = useStyles();
     return <Box className={classes.newsPost}>
-        <HashLink to={"/news#" + title.replace(" ", "-").toLowerCase()}><Typography variant="h2">{title}</Typography></HashLink>
+        <Typography variant="h4">{Intl.DateTimeFormat("en", {dateStyle: "long"}).format(date)}</Typography>
+        <HashLink to={"/news#" + title.replace(" ", "-").toLowerCase()}><Typography variant="h5">{title}</Typography></HashLink>
         <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw]}
         components={{img: MyImage}}>
         {content}
         </ReactMarkdown>
-        <Typography variant="subtitle2">Posted by {authors} on {date.toString()}</Typography>
+        <Typography variant="subtitle2">Posted on {Intl.DateTimeFormat("en", {dateStyle: "long"}).format(new Date())}</Typography>
         <Typography variant="subtitle2">{tags}</Typography>
         </Box>
 }
@@ -50,7 +51,7 @@ export function NewsPostCollection(){
     const {state} = usePosts();
     const classes = useStyles();
     return <Box className = {classes.root}>
-        <Typography variant="h1">News and Announcements</Typography>
+        <Typography variant="h3" className="">News and Announcements</Typography>
         <Grid container direction="row">
         <Grid item container direction="column" xs={8}>
             {state.posts.map((p, idx) => <Grid item key={idx}><NewsPost title={p.title} content={p.content} authors={p.authors} date={p.date} tags={p.tags}/></Grid>)}
