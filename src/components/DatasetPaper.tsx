@@ -8,8 +8,7 @@ import {
 } from "@material-ui/core";
 import React, { useContext, useState } from "react";
 import { ContentTypeEnum as ContentType, DatasetView } from "../api/manifest";
-import { Dataset, LayerTypes, makeQuiltURL } from "../api/datasets";
-import { AppContext } from "../context/AppContext";
+import {LayerTypes, makeQuiltURL } from "../api/datasets";
 import {
   DatasetAcquisition,
   DatasetDescriptionSummary
@@ -20,6 +19,7 @@ import NeuroglancerLink from "./NeuroglancerLink";
 import ClipboardLink from "./ClipboardLink";
 
 import BrokenImage from "../broken_image_24dp.svg";
+import { useDatasets } from "../context/DatasetsContext";
 
 type DatasetPaperProps = {
   datasetKey: string;
@@ -61,8 +61,13 @@ const useStyles: any = makeStyles((theme: Theme) =>
 
 export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const classes = useStyles();
-  const { appState } = useContext(AppContext);
-  const dataset: Dataset = appState.datasets.get(datasetKey)!;
+  //const { appState } = useContext(AppContext);
+  //const dataset = appState.datasets.get(datasetKey)!;
+  
+  const {state} = useDatasets()
+  
+  const dataset = state.datasets.get(datasetKey)!;
+  
   const [layerFilter, setLayerFilter] = useState("");
 
   const sources: string[] = [...dataset.volumes.keys()];
@@ -76,7 +81,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   );
   // initialize the layer checkboxes by looking at the first dataset view
   for (let vn of sources) {
-    let vkeys = dataset.views[0].sources;
+    let vkeys = dataset.views[0].source_names;
     if (vkeys.includes(vn)) {
       volumeCheckStateInit.set(vn, {
         ...volumeCheckStateInit.get(vn),
@@ -177,7 +182,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     <Grid container>
       <Grid item md={8}>
         <Paper className={classes.paper} variant="outlined">
-          <DatasetDescriptionSummary datasetMetadata={dataset.description}>
+          <DatasetDescriptionSummary datasetMetadata={dataset}>
             <NeuroglancerLink
               dataset={dataset}
               checkState={checkStates.volumeCheckState}
@@ -243,7 +248,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             s3URL={s3URL}
             bucketBrowseLink={bucketBrowseLink}
             storageLocation={s3URL}
-            datasetMetadata={dataset.description}
+            datasetMetadata={dataset}
           />
         </Paper>
       </Grid>

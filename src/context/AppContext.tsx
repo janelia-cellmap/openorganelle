@@ -1,27 +1,18 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {checkWebGL2} from "../api/util"
-import { Dataset, ITag} from "../api/datasets";
-import { NewsPostProps } from "../api/posts";
+import { Dataset, DatasetTag} from "../api/datasets";
 
-export interface PostsAPIProps {
-  owner: string
-  repo: string
-  postsPath: string
-  assetsPath: string
-}
 export interface ContextProps {
   neuroglancerAddress: string,
   metadataEndpoint: string,
   webGL2Enabled: boolean,
   datasetsLoading: boolean,
   datasets: Map<string, Dataset>,
-  postsAPI: PostsAPIProps,
-  posts: NewsPostProps[],
   datasetGrid: boolean,
   showFilters: boolean,
   sortBy: string,
-  datasetFilter: Array<ITag> | undefined,
+  datasetFilter: Array<DatasetTag> | undefined,
   [key: string]: any
 }
 
@@ -37,11 +28,6 @@ const contextDefault: ContextProps = {
   webGL2Enabled: checkWebGL2(),
   datasetsLoading: false,
   datasets: new Map(),
-  postsAPI: {owner: 'janelia-cosem',
-                  repo: 'openorganelle-blog',
-                  postsPath: 'posts',
-                  assetsPath: 'assets'},
-  posts: [],
   datasetGrid: true,
   datasetFilter: [],
   showFilters: false,

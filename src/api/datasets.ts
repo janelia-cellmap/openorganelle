@@ -18,6 +18,7 @@ import { DisplaySettings,
          VolumeSource,
          DatasetView as IDatasetView, 
          MeshSource } from "./manifest";
+import { Tag, OSet } from "./tagging";
 
 export type DataFormats = "n5" | "zarr" | "precomputed" | "neuroglancer_legacy_mesh"
 export type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
@@ -43,29 +44,8 @@ type TagCategories = "Software Availability" |
 "Lateral voxel size" |
 "Axial voxel size"
 
-export interface ITag{
-  value: string
-  category: TagCategories
-}
+export type DatasetTag = Tag<TagCategories>
 
-export class OSet<T>{
-  public map: Map<string, T>
-  constructor(){
-    this.map = new Map();
-  }
-  add(element: T) {
-    this.map.set(JSON.stringify(element), element)
-  }
-  has(element: T): boolean {
-    return [...this.map.keys()].includes(JSON.stringify(element))
-  }
-  delete(element: T): boolean {
-    return this.map.delete(JSON.stringify(element))
-  }
-  [Symbol.iterator](){
-    return this.map[Symbol.iterator]()
-  }
-}
 
 interface IDataset{
   name: string
@@ -74,7 +54,7 @@ interface IDataset{
   description: DatasetMetadata
   thumbnailURL: string | undefined
   views: DatasetView[]
-  tags: OSet<ITag>
+  tags: OSet<DatasetTag>
 }
 
 const DefaultView: IDatasetView = {name: "Default view", 
@@ -285,7 +265,7 @@ export class Dataset implements IDataset {
     public description: DatasetMetadata
     public thumbnailURL: string |  undefined
     public views: DatasetView[]
-    public tags: OSet<ITag>
+    public tags: OSet<DatasetTag>
     constructor(name: string,
                 space: CoordinateSpace,
                 volumes: Map<string, VolumeSource>,
@@ -304,7 +284,7 @@ export class Dataset implements IDataset {
         else {
           this.views = views.map(v => new DatasetView(v));
         }
-        this.tags = this.makeTags();
+        this.tags = makeTags(this.description);
     }
 
     makeNeuroglancerViewerState(layers: SegmentationLayer[] | ImageLayer[],
@@ -345,44 +325,72 @@ export class Dataset implements IDataset {
         );
         return encodeFragment(urlSafeStringify(vState));
     }
-    makeTags(): OSet<ITag>
-    {
-      const tags: OSet<ITag> = new OSet();
-      const descr = this.description;
-      let latvox = undefined;
-      tags.add({value: descr.imaging.institution, category: 'Acquisition institution'});
+}
 
-      for (let val of descr.institution) {
-        tags.add({value: val, category: 'Contributing institution'})}
-      for (let val of descr.sample.organism) {
-        tags.add({value: val, category: 'Sample: Organism'})
-      }
-      for (let val of descr.sample.type) {
-        tags.add({value: val, category: 'Sample: Type'})
-      }
-      for (let val of descr.sample.subtype) {
-        tags.add({value: val, category: 'Sample: Subtype'})
-          }
-      for (let val of descr.sample.treatment) {
-        tags.add({value: val, category: 'Sample: Treatment'})
-      }
-      const axvox = descr.imaging.gridSpacing.values.z
-      if (axvox !== undefined) {
-        let value = ''
-        if (axvox <= resolutionTagThreshold)
-        {value = `<= ${resolutionTagThreshold} nm`}
-        else {
-          value = `> ${resolutionTagThreshold} nm`
-        }
-        tags.add({value: value, category: 'Axial voxel size'});
-      }
-      if ((descr.imaging.gridSpacing.values.y !== undefined) || (descr.imaging.gridSpacing.values.x !== undefined)) {
-       latvox =  Math.min(descr.imaging.gridSpacing.values.y, descr.imaging.gridSpacing.values.x!);
-       tags.add({value: latvox.toString(), category: 'Lateral voxel size'});
-      }
-      tags.add({value: descr.softwareAvailability, category: 'Software Availability'});
-      return tags
+export function makeTags({imaging, institution, sample, softwareAvailability}: DatasetMetadata): OSet<DatasetTag> {
+  const tags: OSet<DatasetTag> = new OSet();
+  let latvox = undefined;
+  tags.add({value: imaging.institution, category: 'Acquisition institution'});
+  for (let val of institution) {tags.add({value: val, category: 'Contributing institution'})}
+  for (let val of sample.organism) {tags.add({value: val, category: 'Sample: Organism'})}
+  for (let val of sample.type) {tags.add({value: val, category: 'Sample: Type'})}
+  for (let val of sample.subtype) {tags.add({value: val, category: 'Sample: Subtype'})}
+  for (let val of sample.treatment) {tags.add({value: val, category: 'Sample: Treatment'})}
+  const axvox = imaging.gridSpacing.values.z
+  if (axvox !== undefined) {
+    let value = ''
+    if (axvox <= resolutionTagThreshold)
+    {value = `<= ${resolutionTagThreshold} nm`}
+    else {
+      value = `> ${resolutionTagThreshold} nm`
+    }
+    tags.add({value: value, category: 'Axial voxel size'});
   }
+  if ((imaging.gridSpacing.values.y !== undefined) || (imaging.gridSpacing.values.x !== undefined)) {
+   latvox =  Math.min(imaging.gridSpacing.values.y, imaging.gridSpacing.values.x!);
+   tags.add({value: latvox.toString(), category: 'Lateral voxel size'});
+  }
+  tags.add({value: softwareAvailability, category: 'Software Availability'});
+  return tags
+}
+
+export function makeNeuroglancerViewerState(layers: SegmentationLayer[] | ImageLayer[],
+  viewerPosition: number[] | undefined,
+  crossSectionScale: number | undefined,
+  crossSectionOrientation: number[] | undefined
+  ){
+// hack to post-hoc adjust alpha if there is only 1 layer selected
+if (layers.length  === 1 && layers[0] instanceof ImageLayer) {layers[0].opacity = 1.0}
+const projectionOrientation = crossSectionOrientation;
+crossSectionScale = crossSectionScale? crossSectionScale : 50;
+const projectionScale = 65536;
+// the first layer is the selected layer; consider making this a kwarg
+const selectedLayer = {'layer': layers[0]!.name, 'visible': true};
+const vState = new ViewerState(
+outputDimensions,
+viewerPosition,
+layers as Layer[],
+'4panel',
+undefined,
+crossSectionScale,
+undefined,
+crossSectionOrientation,
+projectionScale,
+undefined,
+projectionOrientation,
+true,
+true,
+true,
+undefined,
+undefined,
+undefined,
+undefined,
+'black',
+'black',
+selectedLayer,
+undefined
+);
+return encodeFragment(urlSafeStringify(vState));
 }
 
 export async function makeDatasets(metadataEndpoint: string): Promise<Map<string, Dataset>> {
@@ -412,3 +420,4 @@ export async function makeDatasets(metadataEndpoint: string): Promise<Map<string
 datasets = new Map<string, Dataset>(entries);
 return datasets;
 }
+

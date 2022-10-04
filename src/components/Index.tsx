@@ -11,15 +11,13 @@ import { AppContext } from "../context/AppContext";
 import { makeDatasets } from "../api/datasets";
 import Home from "./Home";
 import { NewsPostCollection } from "./NewsPost";
-import { getPosts } from "../api/posts";
 
 export default function Index() {
   const {appState, setAppState} = useContext(AppContext);
   useEffect(() => {
     const fetchData = async () => {
       const datasets = await makeDatasets(appState.metadataEndpoint);
-      const posts = await getPosts(appState.postsAPI);
-      setAppState({...appState, datasets: datasets, posts: posts!})
+      setAppState({...appState, datasets: datasets})
     }
     setAppState({ ...appState, datasetsLoading: true });
     fetchData();

@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import Popper from "@material-ui/core/Popper";
 
-import { Dataset } from "../api/datasets";
+import { TaggedDataset } from "../context/DatasetsContext";
 import { DatasetDescriptionPreview } from "./DatasetDescriptionText";
 import BrokenImage from "../broken_image_24dp.svg";
 
@@ -43,7 +43,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 );
 
 interface DatasetTileProps {
-  dataset: [string, Dataset];
+  dataset: [string, TaggedDataset];
   compact?: boolean;
 }
 
@@ -109,7 +109,11 @@ export default function DatasetTile({
         >
           <div className={classes.popper}>
             <DatasetDescriptionPreview
-              datasetMetadata={datasetMeta.description}
+              title={datasetMeta.description}
+              startDate={datasetMeta.acquisition?.start_date!}
+              id={datasetMeta.name}
+              gridSpacing={datasetMeta.acquisition?.grid_spacing!}
+              dimensions={datasetMeta.acquisition?.dimensions!}
               titleLink={datasetLink}
             />
           </div>
@@ -130,7 +134,11 @@ export default function DatasetTile({
         >
           <Grid item xs={4}>
             <DatasetDescriptionPreview
-              datasetMetadata={datasetMeta.description}
+              title={datasetMeta.description}
+              startDate={datasetMeta.acquisition?.start_date!}
+              id={datasetMeta.name}
+              gridSpacing={datasetMeta.acquisition?.grid_spacing!}
+              dimensions={datasetMeta.acquisition?.dimensions!}
               titleLink={datasetLink}
             />
           </Grid>

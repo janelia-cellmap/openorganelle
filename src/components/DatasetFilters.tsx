@@ -14,7 +14,8 @@ import CheckBoxIcon from "@material-ui/icons/CheckBox";
 
 import { AppContext } from "../context/AppContext";
 import sortFunctions from "../utils/sortingFunctions";
-import { ITag, OSet} from "../api/datasets";
+import { DatasetTag } from "../api/datasets";
+import { OSet } from "../api/tagging";
 
 export default function DatasetFilters() {
   const { appState, setPermanent, setAppState } = useContext(AppContext);
@@ -22,7 +23,7 @@ export default function DatasetFilters() {
     setPermanent({ sortBy: event.target.value as string });
   };
 
-  const handleFilterChange = (event: React.ChangeEvent<{}>, value: Array<ITag> | undefined, reason: string) => {
+  const handleFilterChange = (event: React.ChangeEvent<{}>, value: Array<DatasetTag> | undefined, reason: string) => {
     setAppState({...appState, datasetFilter: value});
     console.log({event, value, reason});
   };
@@ -35,8 +36,8 @@ export default function DatasetFilters() {
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
-  const tags: ITag[] = [];
-  const tagSet: OSet<ITag> = new OSet();
+  const tags: DatasetTag[] = [];
+  const tagSet: OSet<DatasetTag> = new OSet();
   for (let dataset of appState.datasets.values()) {
     for (let tag of dataset.tags.map.values())
       {

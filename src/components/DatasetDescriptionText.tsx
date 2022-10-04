@@ -3,24 +3,28 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { DatasetMetadata } from "../api/dataset_metadata";
+import { TaggedDataset } from "../context/DatasetsContext";
 import { DOI, Hyperlink, UnitfulVector } from "../api/manifest";
 
 export interface DescriptionPreviewProps {
-  datasetMetadata: DatasetMetadata;
+  title: string;
+  startDate: string;
+  id: string;
+  gridSpacing: UnitfulVector;
+  dimensions: UnitfulVector;
   titleLink: string;
 }
 
 export interface DescriptionSummaryProps {
   children: any;
-  datasetMetadata: DatasetMetadata;
+  datasetMetadata: TaggedDataset;
 }
 
 export interface DescriptionFullProps {
   s3URL: string;
   bucketBrowseLink: string;
   storageLocation: string;
-  datasetMetadata: DatasetMetadata;
+  datasetMetadata: TaggedDataset;
 }
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -80,27 +84,26 @@ function StringifyUnitfulVector(vec: UnitfulVector, decimals: number): string {
 }
 
 export function DatasetDescriptionPreview({
-  datasetMetadata
-}: DescriptionPreviewProps) {
+  title, startDate, id, gridSpacing, dimensions}: DescriptionPreviewProps) {
   const classes = useStyles();
   return (
     <Box>
       <Typography variant="h6" className={classes.title}>
-        {datasetMetadata.title}
+        {title}
       </Typography>
       <p>
-        <strong>Acquisition date</strong>: {datasetMetadata.imaging.startDate}
+        <strong>Acquisition date</strong>: {startDate}
       </p>
       <p>
-        <strong>Dataset ID</strong>: {datasetMetadata.id}
+        <strong>Dataset ID</strong>: {id}
       </p>
       <p>
-        <strong>Voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>
-        : {StringifyUnitfulVector(datasetMetadata.imaging.gridSpacing, 1)}
+        <strong>Voxel size ({gridSpacing.unit})</strong>
+        : {StringifyUnitfulVector(gridSpacing, 1)}
       </p>
       <p>
-        <strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}
-        {StringifyUnitfulVector(datasetMetadata.imaging.dimensions, 1)}
+        <strong>Dimensions ({dimensions.unit})</strong>:{" "}
+        {StringifyUnitfulVector(dimensions, 1)}
       </p>
     </Box>
   );
@@ -121,47 +124,47 @@ export function DatasetAcquisition({
         <Grid item xs={6}>
           <p>
             <strong>
-              Final voxel size ({datasetMetadata.imaging.gridSpacing.unit})
+              Final voxel size ({datasetMetadata.acquisition!.grid_spacing.unit})
             </strong>
-            : {StringifyUnitfulVector(datasetMetadata.imaging.gridSpacing, 1)}
+            : {StringifyUnitfulVector(datasetMetadata.acquisition!.grid_spacing!, 1)}
           </p>
           <p>
             <strong>
-              Dimensions ({datasetMetadata.imaging.dimensions.unit})
+              Dimensions ({datasetMetadata.acquisition!.dimensions.unit})
             </strong>
-            : {StringifyUnitfulVector(datasetMetadata.imaging.dimensions, 0)}
+            : {StringifyUnitfulVector(datasetMetadata.acquisition!.dimensions, 0)}
           </p>
           <p>
             <strong>Imaging duration (days)</strong>:{" "}
-            {datasetMetadata.imaging.duration}
+            {datasetMetadata.acquisition!.duration_days}
           </p>
           <p>
             <strong>Imaging start date</strong>:{" "}
-            {datasetMetadata.imaging.startDate}
+            {datasetMetadata.acquisition!.start_date}
           </p>
           <p>
             <strong>Primary energy (EV)</strong>:{" "}
-            {datasetMetadata.imaging.primaryEnergy}
+            {datasetMetadata.acquisition!.primary_energy}
           </p>
           <p>
-            <strong>Bias (V)</strong>: {datasetMetadata.imaging.biasVoltage}
+            <strong>Bias (V)</strong>: {datasetMetadata.acquisition!.bias_voltage}
           </p>
           <p>
             <strong>Imaging current (nA)</strong>:{" "}
-            {datasetMetadata.imaging.current}
+            {datasetMetadata.acquisition!.current}
           </p>
         </Grid>
         <Grid item xs={6}>
           <p>
             <strong>Scanning speed (MHz)</strong>:{" "}
-            {datasetMetadata.imaging.scanRate}
+            {datasetMetadata.acquisition!.scan_rate}
           </p>
           <p>
-            <strong>Dataset ID</strong>: {datasetMetadata.id}
+            <strong>Dataset ID</strong>: {datasetMetadata.name}
           </p>
           <p>
             <strong>DOI</strong>:{" "}
-            <HyperlinkList links={datasetMetadata.DOI.map(doiToHyperlink)}/>
+            <HyperlinkList links={datasetMetadata.publications.map(doiToHyperlink)}/>
           </p>
           <p>
             <strong>Publications</strong>:{" "}
@@ -185,7 +188,7 @@ export function DatasetDescriptionSummary({
     <>
       {children}
       <Typography variant="h6" className={classes.title}>
-        {datasetMetadata.title}
+        {datasetMetadata.description}
       </Typography>
       <p>
         <strong>Sample</strong>: {datasetMetadata.sample.description}

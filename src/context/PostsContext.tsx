@@ -10,10 +10,12 @@ type PostState = {api: PostApi
                   posts: NewsPostProps[]
                  }
 
-const postApi = {owner: 'janelia-cosem',
-                 repo: 'openorganelle-blog',
-                 postsPath: 'posts',
-                 assetsPath: 'assets'}
+const initialState = {api: {owner: 'janelia-cosem',
+                      repo: 'openorganelle-blog',
+                      postsPath: 'posts',
+                      assetsPath: 'assets',
+                      publishedOnly: true},
+                      posts: []}
 
 const PostsContext = createContext<
 {state: PostState, dispatch: Dispatch} | undefined>(undefined)
@@ -22,7 +24,7 @@ const PostsContext = createContext<
 function postsReducer(state: PostState, action: Action) {
     switch (action.type) {
         case 'set-posts': {
-            return {api: state.api, posts: action.payload}
+            return {...initialState, posts: action.payload}
         }
 }
 }
@@ -34,7 +36,7 @@ function setPosts(data: NewsPostProps[]): Action {
 }
 
 export function PostsProvider({children}: any) {
-    const [state, dispatch] = useReducer(postsReducer, {api: postApi, posts: []})
+    const [state, dispatch] = useReducer(postsReducer, initialState)
     useEffect(() => {
         async function initPosts() {
             const posts = await getPosts(state.api);

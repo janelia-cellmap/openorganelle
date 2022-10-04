@@ -30,7 +30,7 @@ const MyImage = ({node, ...props}: any) => {
     );
   };
 
-export default function NewsPost({title, content, authors, tags}: NewsPostProps){
+export default function NewsPost({title, content, authors, tags, date, published}: NewsPostProps){
     const classes = useStyles();
     return <Box className={classes.newsPost}>
         <Typography variant="h4">{Intl.DateTimeFormat("en", {dateStyle: "long"}).format(date)}</Typography>
@@ -42,6 +42,7 @@ export default function NewsPost({title, content, authors, tags}: NewsPostProps)
         {content}
         </ReactMarkdown>
         <Typography variant="subtitle2">Posted on {Intl.DateTimeFormat("en", {dateStyle: "long"}).format(new Date())}</Typography>
+        <Typography variant="subtitle2">Written by {authors}</Typography>
         <Typography variant="subtitle2">{tags}</Typography>
         </Box>
 }
@@ -54,7 +55,7 @@ export function NewsPostCollection(){
         <Typography variant="h3" className="">News and Announcements</Typography>
         <Grid container direction="row">
         <Grid item container direction="column" xs={8}>
-            {state.posts.map((p, idx) => <Grid item key={idx}><NewsPost title={p.title} content={p.content} authors={p.authors} date={p.date} tags={p.tags}/></Grid>)}
+            {state.posts.map((p, idx) => <Grid item key={idx}><NewsPost {...p}/></Grid>)}
             </Grid>
             <Grid item container direction="column" xs={4}>
                <Grid item><Typography variant='h3'>Archives</Typography></Grid> 

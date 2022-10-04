@@ -8,6 +8,7 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
 import "./App.css";
 import { PostsProvider } from "./context/PostsContext";
+import { DatasetsProvider } from "./context/DatasetsContext";
 
 const Analysis = lazy(() => import("./components/Analysis"));
 const TermsOfUse = lazy(() => import("./components/TermsOfUse"));
@@ -29,6 +30,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <AppProvider>
+        <DatasetsProvider>
         <PostsProvider>
         <Router>
           <div className="App">
@@ -64,6 +66,7 @@ function App() {
           </div>
         </Router>
         </PostsProvider>
+        </DatasetsProvider>
       </AppProvider>
     </ThemeProvider>
   );

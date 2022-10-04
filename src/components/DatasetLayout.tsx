@@ -10,6 +10,7 @@ import Button from "@material-ui/core/Button";
 import FilterListIcon from '@material-ui/icons/FilterList';
 
 import { AppContext } from "../context/AppContext";
+import { useDatasets } from "../context/DatasetsContext";
 import sortFunctions from "../utils/sortingFunctions";
 import DatasetTile from "./DatasetTile";
 import { useQueryString } from "../utils/customHooks";
@@ -20,11 +21,13 @@ export default function DatasetLayout() {
   const history = useHistory();
   const page = parseInt(query.get("page") || "1");
   const { appState, setPermanent } = useContext(AppContext);
-
+  
+  const {state} = useDatasets()
   const { datasetGrid: compact } = appState;
   const datasetsPerPage = compact ? 12 : 10;
 
-  const datasets = appState.datasets;
+  //const datasets = appState.datasets;
+  const datasets = state.datasets;
   const rangeStart = (page - 1) * datasetsPerPage;
   const rangeEnd = rangeStart + datasetsPerPage;
 
