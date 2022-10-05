@@ -69,8 +69,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const dataset = state.datasets.get(datasetKey)!;
   
   const [layerFilter, setLayerFilter] = useState("");
-
-  const sources: string[] = [...dataset.volumes.keys()];
+  const volumeMap = new Map(dataset.volumes.map((v) => [v.name, v]))
+  const sources: string[] = [...volumeMap.keys()];
   // remove this when we don't have data on s3 anymore
   const bucket = "janelia-cosem-datasets";
   const prefix = dataset.name;
@@ -138,14 +138,14 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
   // Update the default layer type for all the affected volumes
   const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let contentType: ContentType = event.target.name as ContentType;
+    let content_type = event.target.name as ContentType;
     let newLayerType = undefined;
     const newVolumeCheckState = new Map(checkStates.volumeCheckState.entries());
     for (let k of newVolumeCheckState.keys()) {
       let val = newVolumeCheckState.get(k);
       if (
         !(val === undefined) &&
-        dataset.volumes.get(k)?.contentType === contentType
+        volumeMap.get(k)?.content_type === content_type
       ) {
         if (event.target.checked) {
           newLayerType = "segmentation" as LayerTypes;

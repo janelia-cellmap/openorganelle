@@ -1,11 +1,8 @@
 import { Button } from "@material-ui/core";
 import React, { useContext } from "react";
 import {
-  Dataset,
   DatasetView,
-  LayerTypes,
-  makeLayer,
-  Volume
+  LayerTypes
 } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import LaunchIcon from "@material-ui/icons/Launch";
@@ -14,6 +11,8 @@ import {
   ImageLayer,
   SegmentationLayer
 } from "@janelia-cosem/neuroglancer-url-tools";
+import { TaggedDataset } from "../context/DatasetsContext";
+import { makeLayerV2, makeNeuroglancerViewerState, outputDimensions } from "../api/neuroglancer";
 
 interface VolumeCheckStates {
   selected: boolean;
@@ -26,7 +25,7 @@ interface VolumeCheckStates {
 }
 
 type NeuroglancerLinkProps = {
-  dataset: Dataset;
+  dataset: TaggedDataset;
   view: DatasetView;
   checkState: Map<string, VolumeCheckStates>;
   children?: React.ReactNode;
@@ -44,31 +43,32 @@ export default function NeuroglancerLink({
 
   const local_view = { ...view };
   local_view.sources = [];
-  dataset.volumes.forEach((value: Volume, key: string) => {
+  const volumeMap = new Map(dataset.volumes.map((v) => [v.name, v]))
+  for (let key of volumeMap.keys()) {
     if (checkState.get(key)?.selected) {
       local_view.sources.push(key);
     }
-  });
+  }
 
   let ngLink = "";
 
   const disabled = Boolean(local_view.sources.length === 0);
   const layers = local_view.sources.map(vk => {
     let layerType = "segmentation";
-    let sampleType = dataset.volumes.get(vk)?.sampleType;
+    let sampleType = volumeMap.get(vk)?.sample_type;
     if (sampleType === "scalar") {
       layerType = "image";
     }
-    let result = makeLayer(dataset.volumes.get(vk)!, layerType as LayerTypes);
+    let result = makeLayerV2(volumeMap.get(vk)!, layerType as LayerTypes, outputDimensions);
     return result;
   });
   if (!disabled) {
-    ngLink = `${neuroglancerAddress}${dataset.makeNeuroglancerViewerState(
+    ngLink = `${neuroglancerAddress}${makeNeuroglancerViewerState(
       layers as SegmentationLayer[] | ImageLayer[],
       local_view.position,
       local_view.scale,
-      local_view.orientation
-    )}`;
+      local_view.orientation,
+      outputDimensions)}`;
   }
 
   if (children) {

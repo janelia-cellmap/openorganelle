@@ -8,10 +8,11 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import "./Organelles.css";
-import { DatasetView, makeLayer } from "../api/datasets";
+import { DatasetView} from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { ImageLayer } from "@janelia-cosem/neuroglancer-url-tools";
+import { makeLayer, makeNeuroglancerViewerState, outputDimensions } from "../api/neuroglancer";
 class OrganelleTableEntry {
   constructor(
     public full_name: string,
@@ -962,11 +963,12 @@ export default function Organelles() {
   const tableRows = tableData.map((row) => {
     const neuroglancer_urls = row.examples.map((v, idx) => {
       let dataset = datasets.get(demo_dataset_names[idx])!;
-      let layers = v.sources.map(vk => {
-        let result = makeLayer(dataset.volumes.get(vk)!, "image");
-        return result;
-      }); 
-      return `${neuroglancerAddress}${dataset.makeNeuroglancerViewerState(layers as ImageLayer[], v.position, v.scale, v.orientation)}`;
+      let layers = v.sources.map(vk => {return makeLayer(dataset.volumes.get(vk)!, "image", outputDimensions)}); 
+      return `${neuroglancerAddress}${makeNeuroglancerViewerState(layers as ImageLayer[],
+                                                                   v.position,
+                                                                   v.scale,
+                                                                   v.orientation,
+                                                                   outputDimensions)}`;
     });
     return (
       <TableRow key={row.full_name}>

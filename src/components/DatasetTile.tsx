@@ -81,10 +81,10 @@ export default function DatasetTile({
           onMouseOut={handleMouseOut}
         >
           <CardActionArea component={RouterLink} to={datasetLink}>
-            <CardMedia style={{ height: 256 }} image={datasetMeta.thumbnailURL || BrokenImage} />
+            <CardMedia style={{ height: 256 }} image={datasetMeta.thumbnail_url ?? BrokenImage} />
             <CardContent style={{ whiteSpace: "nowrap", padding: "0 1em" }}>
               <Box component="p" textOverflow="ellipsis" overflow="hidden">
-                {datasetMeta.description.title}
+                {datasetMeta.description}
               </Box>
             </CardContent>
           </CardActionArea>
@@ -146,7 +146,7 @@ export default function DatasetTile({
             <CardActionArea>
               <CardMedia
                 style={{ height: 256, width: 256, borderRadius: "10%"}}
-                image={datasetMeta.thumbnailURL || BrokenImage}
+                image={datasetMeta.thumbnail_url ?? BrokenImage}
               />
             </CardActionArea>
           </Grid>
