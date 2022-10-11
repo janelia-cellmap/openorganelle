@@ -18,18 +18,32 @@ export interface paths {
 export interface components {
   schemas: {
     /**
-     * ArrayContainerTypeEnum
-     * @description An enumeration.
+     * ArrayContainerFormat
+     * @description
+     *     Supported chunked array container formats
+     *
      * @enum {string}
      */
-    ArrayContainerTypeEnum: "n5" | "zarr" | "precomputed";
+    ArrayContainerFormat: "n5" | "zarr" | "precomputed";
     /**
-     * ContentTypeEnum
-     * @description An enumeration.
+     * ContentType
+     * @description
+     *     Semantic classes for image data
+     *
      * @enum {string}
      */
-    ContentTypeEnum: "em" | "lm" | "prediction" | "segmentation" | "analysis";
-    /** ContrastLimits */
+    ContentType: "em" | "lm" | "prediction" | "segmentation" | "analysis";
+    /**
+     * ContrastLimits
+     * @description Specifies the range of values to use when displaying an image.
+     * The "start" and "end" properties determine the values that should be
+     * mapped to the lowest and highest intensities in a given lookup table.
+     *
+     * The "min" and "max" values determine the lowest and highest possible
+     * values in the image histogram. These values are useful to setting up
+     * the range of a histogram adjustment display to include a sensible range
+     * of values.
+     */
     ContrastLimits: {
       /** Start */
       start: number;
@@ -48,29 +62,36 @@ export interface components {
       description: string;
       /** Institutions */
       institutions: string[];
-      software_availability: components["schemas"]["SoftwareAvailability"];
+      softwareAvailability: components["schemas"]["SoftwareAvailability"];
       acquisition?: components["schemas"]["FIBSEMAcquisition"];
       sample?: components["schemas"]["Sample"];
       /** Publications */
       publications: components["schemas"]["Publication"][];
-      /** Volumes */
-      volumes: components["schemas"]["Volume"][];
+      /** Images */
+      images: components["schemas"]["Image"][];
       /** Views */
       views: components["schemas"]["View"][];
+      /**
+       * Thumbnailurl
+       * Format: uri
+       */
+      thumbnailUrl: string;
+      /** Published */
+      published: boolean;
     };
     /**
      * DisplaySettings
-     * @description Metadata for display settings
+     * @description Metadata for display settings.
      */
     DisplaySettings: {
-      contrast_limits: components["schemas"]["ContrastLimits"];
+      contrastLimits: components["schemas"]["ContrastLimits"];
       /**
        * Color
        * Format: color
        */
       color?: string;
-      /** Invert Lut */
-      invert_lut: boolean;
+      /** Invertlut */
+      invertLut: boolean;
     };
     /**
      * FIBSEMAcquisition
@@ -82,29 +103,52 @@ export interface components {
       /** Institution */
       institution: string;
       /**
-       * Start Date
+       * Startdate
        * Format: date
        */
-      start_date?: string;
-      grid_spacing: components["schemas"]["UnitfulVector"];
+      startDate?: string;
+      gridSpacing: components["schemas"]["UnitfulVector"];
       dimensions: components["schemas"]["UnitfulVector"];
-      /** Duration Days */
-      duration_days?: number;
-      /** Bias Voltage */
-      bias_voltage?: number;
-      /** Scan Rate */
-      scan_rate?: number;
+      /** Durationdays */
+      durationDays?: number;
+      /** Biasvoltage */
+      biasVoltage?: number;
+      /** Scanrate */
+      scanRate?: number;
       /** Current */
       current?: number;
-      /** Primary Energy */
-      primary_energy?: number;
+      /** Primaryenergy */
+      primaryEnergy?: number;
     };
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
     };
-    /** Mesh */
+    /**
+     * Image
+     * @description A representation of some describable, accessible piece of
+     * spatial data.
+     */
+    Image: {
+      /** Name */
+      name: string;
+      /** Description */
+      description: string;
+      /** Url */
+      url: string;
+      format: components["schemas"]["ArrayContainerFormat"];
+      transform: components["schemas"]["SpatialTransform"];
+      sampleType: components["schemas"]["SampleType"];
+      contentType: components["schemas"]["ContentType"];
+      displaySettings: components["schemas"]["DisplaySettings"];
+      /** Subsources */
+      subsources: components["schemas"]["Mesh"][];
+    };
+    /**
+     * Mesh
+     * @description A mesh, parametrized by a format and a list of integer ids
+     */
     Mesh: {
       /** Name */
       name: string;
@@ -112,24 +156,24 @@ export interface components {
       description: string;
       /** Url */
       url: string;
-      format: components["schemas"]["MeshTypeEnum"];
+      format: components["schemas"]["MeshFormat"];
       transform: components["schemas"]["SpatialTransform"];
       /** Ids */
       ids: number[];
     };
     /**
-     * MeshTypeEnum
+     * MeshFormat
      * @description
-     *     Strings representing supported mesh formats
+     *     Supported mesh formats
      *
      * @enum {string}
      */
-    MeshTypeEnum: "neuroglancer_legacy_mesh" | "neuroglancer_multilod_draco";
+    MeshFormat: "neuroglancer_legacy_mesh" | "neuroglancer_multilod_draco";
     /** Publication */
     Publication: {
       /** Name */
       name: string;
-      type: components["schemas"]["PublicationTypeEnum"];
+      type: components["schemas"]["PublicationType"];
       /**
        * Url
        * Format: uri
@@ -137,11 +181,13 @@ export interface components {
       url: string;
     };
     /**
-     * PublicationTypeEnum
-     * @description An enumeration.
+     * PublicationType
+     * @description
+     *     The types of publications supported -- DOI or paper.
+     *
      * @enum {string}
      */
-    PublicationTypeEnum: "doi" | "paper";
+    PublicationType: "doi" | "paper";
     /**
      * Sample
      * @description Metadata describing the sample and sample preparation.
@@ -163,11 +209,15 @@ export interface components {
       treatment: string[];
     };
     /**
-     * SampleTypeEnum
-     * @description An enumeration.
+     * SampleType
+     * @description
+     *     Semantic classes for image samples.
+     *     The class "scalar" contains samples that represent a quantity.
+     *     The class "label" contains samples that represent a class or identity.
+     *
      * @enum {string}
      */
-    SampleTypeEnum: "scalar" | "label";
+    SampleType: "scalar" | "label";
     /**
      * SoftwareAvailability
      * @description An enumeration.
@@ -176,7 +226,8 @@ export interface components {
     SoftwareAvailability: "open" | "partially open" | "closed";
     /**
      * SpatialTransform
-     * @description Representation of an N-dimensional scaling + translation transform for labelled axes with units.
+     * @description Representation of an N-dimensional scaling + translation transform for
+     * labelled axes with units.
      */
     SpatialTransform: {
       /** Axes */
@@ -210,30 +261,14 @@ export interface components {
       name: string;
       /** Description */
       description: string;
-      /** Source Names */
-      source_names: string[];
+      /** Sourcenames */
+      sourceNames: string[];
       /** Position */
       position?: number[];
       /** Scale */
       scale?: number;
       /** Orientation */
       orientation?: number[];
-    };
-    /** Volume */
-    Volume: {
-      /** Name */
-      name: string;
-      /** Description */
-      description: string;
-      /** Url */
-      url: string;
-      format: components["schemas"]["ArrayContainerTypeEnum"];
-      transform: components["schemas"]["SpatialTransform"];
-      sample_type: components["schemas"]["SampleTypeEnum"];
-      content_type: components["schemas"]["ContentTypeEnum"];
-      display_settings: components["schemas"]["DisplaySettings"];
-      /** Subsources */
-      subsources: components["schemas"]["Mesh"][];
     };
   };
 }

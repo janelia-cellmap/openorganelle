@@ -6,7 +6,7 @@ import {
   ListItemText,
   Radio
 } from "@material-ui/core";
-import { DatasetView } from "../api/datasets";
+import { View } from "../api/datasets";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 
@@ -25,9 +25,9 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface DatasetViewListProps {
-  views: DatasetView[];
+  views: View[];
   checkState: boolean[];
-  handleToggle: (val: number, views: DatasetView[]) => () => void | undefined;
+  handleToggle: (val: number, views: View[]) => () => void | undefined;
 }
 
 export default function DatasetViewList({

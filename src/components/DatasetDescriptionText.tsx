@@ -3,8 +3,8 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { TaggedDataset } from "../context/DatasetsContext";
-import { DOI, Hyperlink, UnitfulVector } from "../api/manifest";
+import { Publication, TaggedDataset, UnitfulVector } from "../api/datasets";
+import {stringifyUnitfulVector } from "../api/util";
 
 export interface DescriptionPreviewProps {
   title: string;
@@ -17,7 +17,7 @@ export interface DescriptionPreviewProps {
 
 export interface DescriptionSummaryProps {
   children: any;
-  datasetMetadata: TaggedDataset;
+  dataset: TaggedDataset;
 }
 
 export interface DescriptionFullProps {
@@ -35,53 +35,16 @@ const useStyles: any = makeStyles((theme: Theme) =>
   })
 );
 
-
-
-interface HyperlinkListProps {
-  links: Array<string | Hyperlink>
+interface PublicationListProps {
+  publications: Publication[]
 }
 
-function isHyperlinkOrDOI(val: DOI | Hyperlink): val is Hyperlink {
-  return (val as Hyperlink).href !== undefined;
-} 
-
-function doiToHyperlink(d: Hyperlink | DOI): Hyperlink{
-  if (!isHyperlinkOrDOI(d)) {
-    let d_ = d as DOI
-    return {href: "https://doi.org/" + d_.DOI, title: d_.id}
-  }
-  else {
-    return d as Hyperlink;
-  }
-}
-
-
-export function HyperlinkList({links}: HyperlinkListProps) {
-  return (<ul>{links.map((link, idx) => {
+export function PublicationList({publications}: PublicationListProps) {
+  return (<ul>{publications.map((link, idx) => {
     let key = "publicationList" + idx;
-    let result: React.ReactFragment;
-    if (typeof(link) == 'string'){
-      result = <li key={key}>{link}</li>
-    }
-    else {
-      result = <li key={key}><a href={link.href}>{link.title}</a></li>
-    }
-    return result
-    
+    return <li key={key}><a href={link.url}>{link.name}</a></li>    
 })}</ul>)
 } 
-
-function StringifyUnitfulVector(vec: UnitfulVector, decimals: number): string {
-  const val_array = [...Object.values(vec.values)].map(v =>
-    v.toFixed(decimals)
-  );
-  const axis_array = [...Object.keys(vec.values)];
-  if (val_array.length === 0) {
-    return "N/A";
-  } else {
-    return `${val_array.join(" x ")} (${axis_array.join(", ")})`;
-  }
-}
 
 export function DatasetDescriptionPreview({
   title, startDate, id, gridSpacing, dimensions}: DescriptionPreviewProps) {
@@ -99,11 +62,11 @@ export function DatasetDescriptionPreview({
       </p>
       <p>
         <strong>Voxel size ({gridSpacing.unit})</strong>
-        : {StringifyUnitfulVector(gridSpacing, 1)}
+        : {stringifyUnitfulVector(gridSpacing, 1)}
       </p>
       <p>
         <strong>Dimensions ({dimensions.unit})</strong>:{" "}
-        {StringifyUnitfulVector(dimensions, 1)}
+        {stringifyUnitfulVector(dimensions, 1)}
       </p>
     </Box>
   );
@@ -124,30 +87,30 @@ export function DatasetAcquisition({
         <Grid item xs={6}>
           <p>
             <strong>
-              Final voxel size ({datasetMetadata.acquisition!.grid_spacing.unit})
+              Final voxel size ({datasetMetadata.acquisition!.gridSpacing.unit})
             </strong>
-            : {StringifyUnitfulVector(datasetMetadata.acquisition!.grid_spacing!, 1)}
+            : {stringifyUnitfulVector(datasetMetadata.acquisition!.gridSpacing!, 1)}
           </p>
           <p>
             <strong>
               Dimensions ({datasetMetadata.acquisition!.dimensions.unit})
             </strong>
-            : {StringifyUnitfulVector(datasetMetadata.acquisition!.dimensions, 0)}
+            : {stringifyUnitfulVector(datasetMetadata.acquisition!.dimensions, 0)}
           </p>
           <p>
             <strong>Imaging duration (days)</strong>:{" "}
-            {datasetMetadata.acquisition!.duration_days}
+            {datasetMetadata.acquisition!.durationDays}
           </p>
           <p>
             <strong>Imaging start date</strong>:{" "}
-            {datasetMetadata.acquisition!.start_date}
+            {datasetMetadata.acquisition!.startDate}
           </p>
           <p>
             <strong>Primary energy (EV)</strong>:{" "}
-            {datasetMetadata.acquisition!.primary_energy}
+            {datasetMetadata.acquisition!.primaryEnergy}
           </p>
           <p>
-            <strong>Bias (V)</strong>: {datasetMetadata.acquisition!.bias_voltage}
+            <strong>Bias (V)</strong>: {datasetMetadata.acquisition!.biasVoltage}
           </p>
           <p>
             <strong>Imaging current (nA)</strong>:{" "}
@@ -157,18 +120,18 @@ export function DatasetAcquisition({
         <Grid item xs={6}>
           <p>
             <strong>Scanning speed (MHz)</strong>:{" "}
-            {datasetMetadata.acquisition!.scan_rate}
+            {datasetMetadata.acquisition!.scanRate}
           </p>
           <p>
             <strong>Dataset ID</strong>: {datasetMetadata.name}
           </p>
           <p>
             <strong>DOI</strong>:{" "}
-            <HyperlinkList links={datasetMetadata.publications.map(doiToHyperlink)}/>
+            <PublicationList publications={datasetMetadata.publications.filter((p) => {p.type == 'doi'})}/>
           </p>
           <p>
             <strong>Publications</strong>:{" "}
-            <HyperlinkList links={datasetMetadata.publications}/>
+            <PublicationList publications={datasetMetadata.publications.filter((p) => {p.type == 'paper'})}/>
           </p>
           <p>
             <strong>Dataset location</strong>: {storageLocation}
@@ -180,7 +143,7 @@ export function DatasetAcquisition({
 }
 
 export function DatasetDescriptionSummary({
-  datasetMetadata,
+  dataset,
   children
 }: DescriptionSummaryProps) {
   const classes = useStyles();
@@ -188,16 +151,16 @@ export function DatasetDescriptionSummary({
     <>
       {children}
       <Typography variant="h6" className={classes.title}>
-        {datasetMetadata.description}
+        {dataset.description}
       </Typography>
       <p>
-        <strong>Sample</strong>: {datasetMetadata.sample.description}
+        <strong>Sample</strong>: {dataset.sample!.description}
       </p>
       <p>
-        <strong>Protocol</strong>: {datasetMetadata.sample.protocol}
+        <strong>Protocol</strong>: {dataset.sample!.protocol}
       </p>
       <p>
-        <strong>Contributions</strong>: {datasetMetadata.sample.contributions}
+        <strong>Contributions</strong>: {dataset.sample!.contributions}
       </p>
     </>
   );

@@ -1,4 +1,4 @@
-import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 import matter from 'gray-matter';
 import { visit } from 'unist-util-visit';
 import {remark} from 'remark'

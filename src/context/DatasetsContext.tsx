@@ -1,15 +1,11 @@
 import {createContext, useContext, useEffect, useReducer } from 'react'
 import React from 'react'
-import {components} from "../api/datasets_api"
-import { getObjectFromJSON } from '../api/dataset_metadata'
 import { OSet } from '../api/tagging'
-import { DatasetTag } from '../api/datasets'
+import { TaggedDataset, Dataset, DatasetTag } from '../api/datasets'
+import {getObjectFromJSON} from "../api/util"
 
 type Action = {type: 'set-datasets', payload: Map<string, TaggedDataset>} | {type: 'set-loading', payload: boolean}
 type Dispatch = (action : Action) => void
-
-type Dataset = components["schemas"]["Dataset"]
-export type TaggedDataset = Dataset & {tags: OSet<DatasetTag>}
 
 type DatasetsState = {api: string
                       datasetsLoading: boolean
@@ -24,13 +20,13 @@ const DatasetsContext = createContext<
 {state: DatasetsState, dispatch: Dispatch} | undefined>(undefined)
 
 const resolutionTagThreshold = 6;
-function makeTags({acquisition, institutions, sample, software_availability}: Dataset): OSet<DatasetTag> {
+function makeTags({acquisition, institutions, sample, softwareAvailability}: Dataset): OSet<DatasetTag> {
     const tags: OSet<DatasetTag> = new OSet();
     let latvox = undefined;
     if (acquisition !== undefined) {
     if (acquisition.institution !== undefined) {
         tags.add({value: acquisition?.institution, category: 'Acquisition institution'});
-        const axvox = acquisition.grid_spacing.values.z
+        const axvox = acquisition.gridSpacing.values.z
         if (axvox !== undefined) {
           let value = ''
           if (axvox <= resolutionTagThreshold)
@@ -40,8 +36,8 @@ function makeTags({acquisition, institutions, sample, software_availability}: Da
           }
           tags.add({value: value, category: 'Axial voxel size'});
         }
-        if ((acquisition.grid_spacing.values.y !== undefined) || (acquisition.grid_spacing.values.x !== undefined)) {
-         latvox =  Math.min(acquisition.grid_spacing.values.y, acquisition.grid_spacing.values.x!);
+        if ((acquisition.gridSpacing.values.y !== undefined) || (acquisition.gridSpacing.values.x !== undefined)) {
+         latvox =  Math.min(acquisition.gridSpacing.values.y, acquisition.gridSpacing.values.x!);
          tags.add({value: latvox.toString(), category: 'Lateral voxel size'});
         }
     }
@@ -53,7 +49,7 @@ function makeTags({acquisition, institutions, sample, software_availability}: Da
     for (let val of sample.subtype) {tags.add({value: val, category: 'Sample: Subtype'})}
     for (let val of sample.treatment) {tags.add({value: val, category: 'Sample: Treatment'})}
     }
-    tags.add({value: software_availability, category: 'Software Availability'});
+    tags.add({value: softwareAvailability, category: 'Software Availability'});
     return tags
   }
 
@@ -80,7 +76,7 @@ function setLoading(data: boolean): Action {
 }
 
 export async function getDatasets(metadataEndpoint: string) {
-    const datasets = await getObjectFromJSON<Dataset[]>(new URL(metadataEndpoint));
+    const datasets: Dataset[] = await getObjectFromJSON<Dataset[]>(new URL(metadataEndpoint));
     const taggedDatasets = datasets.map((d) => {
         return {...d, tags: makeTags(d)}
         })

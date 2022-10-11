@@ -1,11 +1,5 @@
 import { CoordinateSpace, CoordinateSpaceTransform, encodeFragment, ImageLayer, Layer, LayerDataSource, SegmentationLayer, urlSafeStringify, ViewerState } from "@janelia-cosem/neuroglancer-url-tools";
-import { LayerTypes } from "./datasets";
-import { DisplaySettings, SpatialTransform, VolumeSource } from "./manifest";
-import {components} from "../api/datasets_api"
-
-type Image = components["schemas"]["Volume"]
-type SampleType = components["schemas"]["SampleTypeEnum"]
-type DisplaySettings = components["schemas"]["DisplaySettings"]
+import {Image, SampleType, LayerType, SpatialTransform } from "./datasets";
 
 // one nanometer, expressed as a scaled meter
 const nm: [number, string] = [1e-9, "m"];
@@ -60,102 +54,8 @@ export function makeShader(shaderArgs: any, sampleType: SampleType): string | un
     }
 }
 
-export function makeShaderV2(shaderArgs: DisplaySettings, sampleType: SampleType): string | undefined {
-    switch (sampleType) {
-        case 'scalar': {
-            let lower = shaderArgs.contrast_limits.min;
-            let upper = shaderArgs.contrast_limits.max;
-            let cmin = shaderArgs.contrast_limits.start;
-            let cmax = shaderArgs.contrast_limits.end;
-            return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${lower}, ${upper}])
-          #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invert_lut ? 1 : 0})
-          #uicontrol vec3 color color(default="${shaderArgs.color}")
-          float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
-            void main() {
-            emitRGB(color * inverter(normalized(), invertColormap));
-          }`
-        }
-        case "label":
-            return '';
-        default:
-            return undefined;
-    }
-}
-
-export function makeLayer(volume: VolumeSource,
-    layerType: LayerTypes,
-    outputDimensions: CoordinateSpace): Layer | undefined {
-    const srcURL = `${volume.format}://${volume.url}`;
-
-    // need to update the layerdatasource object to have a transform property
-    const source: LayerDataSource2 = {
-        url: srcURL,
-        transform: SpatialTransformToNeuroglancer(volume.transform, outputDimensions),
-        CoordinateSpaceTransform: SpatialTransformToNeuroglancer(volume.transform, outputDimensions)
-    };
-
-    const subsources = volume.subsources.map(subsource => {
-        return { url: `precomputed://${subsource.url}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions) }
-    });
-    let layer: Layer | undefined = undefined;
-    const color = volume.displaySettings.color ?? undefined;
-    if (layerType === 'image') {
-        let shader: string | undefined = undefined;
-        shader = makeShader(volume.displaySettings, volume.sampleType);
-        layer = new ImageLayer('rendering',
-            undefined,
-            undefined,
-            volume.name,
-            source,
-            0.75,
-            'additive',
-            shader,
-            undefined,
-            undefined);
-    }
-    else if (layerType === 'segmentation') {
-        if (subsources.length > 0) {
-            layer = new SegmentationLayer('source',
-                true,
-                undefined,
-                volume.name,
-                [source, ...subsources],
-                volume.subsources[0].ids,
-                undefined,
-                true,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                color);
-        }
-        else {
-            layer = new SegmentationLayer('source',
-                true,
-                undefined,
-                volume.name,
-                source,
-                undefined,
-                undefined,
-                true,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                color);
-        }
-    }
-    return layer
-}
-
-export function makeLayerV2(image: Image,
-    layerType: LayerTypes,
+export function makeLayer(image: Image,
+    layerType: LayerType,
     outputDimensions: CoordinateSpace): Layer | undefined {
     const srcURL = `${image.format}://${image.url}`;
 
@@ -170,10 +70,10 @@ export function makeLayerV2(image: Image,
         return { url: `precomputed://${subsource.url}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions) }
     });
     let layer: Layer | undefined = undefined;
-    const color = image.display_settings.color ?? undefined;
+    const color = image.displaySettings.color ?? undefined;
     if (layerType === 'image') {
         let shader: string | undefined = undefined;
-        shader = makeShaderV2(image.display_settings, image.sample_type);
+        shader = makeShader(image.displaySettings, image.sampleType);
         layer = new ImageLayer('rendering',
             undefined,
             undefined,

@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import Popper from "@material-ui/core/Popper";
 
-import { TaggedDataset } from "../context/DatasetsContext";
+import { TaggedDataset } from "../api/datasets";
 import { DatasetDescriptionPreview } from "./DatasetDescriptionText";
 import BrokenImage from "../broken_image_24dp.svg";
 
@@ -81,7 +81,7 @@ export default function DatasetTile({
           onMouseOut={handleMouseOut}
         >
           <CardActionArea component={RouterLink} to={datasetLink}>
-            <CardMedia style={{ height: 256 }} image={datasetMeta.thumbnail_url ?? BrokenImage} />
+            <CardMedia style={{ height: 256 }} image={datasetMeta.thumbnailUrl ?? BrokenImage} />
             <CardContent style={{ whiteSpace: "nowrap", padding: "0 1em" }}>
               <Box component="p" textOverflow="ellipsis" overflow="hidden">
                 {datasetMeta.description}
@@ -110,9 +110,9 @@ export default function DatasetTile({
           <div className={classes.popper}>
             <DatasetDescriptionPreview
               title={datasetMeta.description}
-              startDate={datasetMeta.acquisition?.start_date!}
+              startDate={datasetMeta.acquisition?.startDate!}
               id={datasetMeta.name}
-              gridSpacing={datasetMeta.acquisition?.grid_spacing!}
+              gridSpacing={datasetMeta.acquisition?.gridSpacing!}
               dimensions={datasetMeta.acquisition?.dimensions!}
               titleLink={datasetLink}
             />
@@ -135,9 +135,9 @@ export default function DatasetTile({
           <Grid item xs={4}>
             <DatasetDescriptionPreview
               title={datasetMeta.description}
-              startDate={datasetMeta.acquisition?.start_date!}
+              startDate={datasetMeta.acquisition?.startDate!}
               id={datasetMeta.name}
-              gridSpacing={datasetMeta.acquisition?.grid_spacing!}
+              gridSpacing={datasetMeta.acquisition?.gridSpacing!}
               dimensions={datasetMeta.acquisition?.dimensions!}
               titleLink={datasetLink}
             />
@@ -146,7 +146,7 @@ export default function DatasetTile({
             <CardActionArea>
               <CardMedia
                 style={{ height: 256, width: 256, borderRadius: "10%"}}
-                image={datasetMeta.thumbnail_url ?? BrokenImage}
+                image={datasetMeta.thumbnailUrl ?? BrokenImage}
               />
             </CardActionArea>
           </Grid>

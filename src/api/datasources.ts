@@ -1,8 +1,3 @@
-interface lsResult {
-    files: string[];
-    folders: string[]
-}
-
 // Make a URL from a bucket name
 export function bucketNameToURL(bucket: string): string { return `https://${bucket}.s3.amazonaws.com` }
 

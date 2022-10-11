@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import {ContentTypeEnum as ContentType} from "../api/manifest"
-import { Volume, ContentTypeMetadata } from "../api/datasets";
+import { Image, ContentType, ContentTypeMetadata } from "../api/datasets";
 import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
 import Typography from "@material-ui/core/Typography";
@@ -17,7 +16,7 @@ interface LayerTypeToggleProps {
 }
 
 interface VolumeCheckboxCollectionProps {
-  volumes: Volume[]
+  volumes: Image[]
   checkState: Map<string, VolumeCheckStates>
   handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   contentType: string,
@@ -43,7 +42,7 @@ export default function VolumeCheckboxCollection({
     setExpanded(!expanded);
   };
 
-  const checkBoxList = volumes?.map((volume: Volume) => {
+  const checkBoxList = volumes?.map((volume: Image) => {
     return (
       <FormControlLabel
         control={

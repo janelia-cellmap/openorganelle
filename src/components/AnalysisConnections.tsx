@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "react-query";
 import Card from "@material-ui/core/Card";
@@ -6,15 +6,13 @@ import Card from "@material-ui/core/Card";
 import AnalysisDataTable from "./AnalysisDataTable";
 import AnalysisConnectionsGraphic from "./AnalysisConnectionsGraphic";
 import NeuroglancerLink from "./NeuroglancerLink";
-
-import { Dataset } from "../api/datasets";
-import { AppContext } from "../context/AppContext";
 import { fetchAnalysisResults, queryResponse } from "../utils/datafetching";
 import { useQueryString } from "../utils/customHooks";
 import {
   convertLabelToOrganelle,
   convertLabelToOrganelleAbbreviation
 } from "../utils/organelles";
+import { useDatasets } from "../context/DatasetsContext";
 
 interface ACProps {
   cypher: string;
@@ -27,13 +25,13 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
     () => fetchAnalysisResults(cypher),
     { staleTime: Infinity, refetchOnWindowFocus: false }
   );
-  const { appState } = useContext(AppContext);
-
-  const dataset: Dataset = appState.datasets.get(datasetKey)!;
+  
+  const {state} = useDatasets();
+  const dataset = state.datasets.get(datasetKey)!;
 
   const queryString = useQueryString();
 
-  if (isLoading || appState.datasetsLoading) {
+  if (isLoading || state.datasetsLoading) {
     return <p>Loading...</p>;
   }
 

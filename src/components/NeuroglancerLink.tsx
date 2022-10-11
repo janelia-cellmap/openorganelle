@@ -1,8 +1,7 @@
 import { Button } from "@material-ui/core";
 import React, { useContext } from "react";
 import {
-  DatasetView,
-  LayerTypes
+  LayerType, TaggedDataset, View
 } from "../api/datasets";
 import { AppContext } from "../context/AppContext";
 import LaunchIcon from "@material-ui/icons/Launch";
@@ -11,22 +10,21 @@ import {
   ImageLayer,
   SegmentationLayer
 } from "@janelia-cosem/neuroglancer-url-tools";
-import { TaggedDataset } from "../context/DatasetsContext";
-import { makeLayerV2, makeNeuroglancerViewerState, outputDimensions } from "../api/neuroglancer";
+import { makeLayer, makeNeuroglancerViewerState, outputDimensions } from "../api/neuroglancer";
 
 interface VolumeCheckStates {
   selected: boolean;
-  layerType?: LayerTypes;
+  layerType?: LayerType;
 }
 
 interface VolumeCheckStates {
   selected: boolean;
-  layerType?: LayerTypes;
+  layerType?: LayerType;
 }
 
 type NeuroglancerLinkProps = {
   dataset: TaggedDataset;
-  view: DatasetView;
+  view: View;
   checkState: Map<string, VolumeCheckStates>;
   children?: React.ReactNode;
 };
@@ -42,24 +40,24 @@ export default function NeuroglancerLink({
   const webGL2Enabled = appState.webGL2Enabled;
 
   const local_view = { ...view };
-  local_view.sources = [];
-  const volumeMap = new Map(dataset.volumes.map((v) => [v.name, v]))
+  local_view.sourceNames = [];
+  const volumeMap = new Map(dataset.images.map((v) => [v.name, v]))
   for (let key of volumeMap.keys()) {
     if (checkState.get(key)?.selected) {
-      local_view.sources.push(key);
+      local_view.sourceNames.push(key);
     }
   }
 
   let ngLink = "";
 
-  const disabled = Boolean(local_view.sources.length === 0);
-  const layers = local_view.sources.map(vk => {
+  const disabled = Boolean(local_view.sourceNames.length === 0);
+  const layers = local_view.sourceNames.map(vk => {
     let layerType = "segmentation";
-    let sampleType = volumeMap.get(vk)?.sample_type;
+    let sampleType = volumeMap.get(vk)?.sampleType;
     if (sampleType === "scalar") {
       layerType = "image";
     }
-    let result = makeLayerV2(volumeMap.get(vk)!, layerType as LayerTypes, outputDimensions);
+    let result = makeLayer(volumeMap.get(vk)!, layerType as LayerType, outputDimensions);
     return result;
   });
   if (!disabled) {

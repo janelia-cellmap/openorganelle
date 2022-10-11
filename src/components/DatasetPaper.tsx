@@ -6,9 +6,8 @@ import {
   makeStyles,
   Theme
 } from "@material-ui/core";
-import React, { useContext, useState } from "react";
-import { ContentTypeEnum as ContentType, DatasetView } from "../api/manifest";
-import {LayerTypes, makeQuiltURL } from "../api/datasets";
+import React, { useState } from "react";
+import {LayerType, makeQuiltURL, View, ContentType} from "../api/datasets";
 import {
   DatasetAcquisition,
   DatasetDescriptionSummary
@@ -27,7 +26,7 @@ type DatasetPaperProps = {
 
 export interface VolumeCheckStates {
   selected: boolean;
-  layerType?: LayerTypes;
+  layerType?: LayerType;
 }
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -69,7 +68,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const dataset = state.datasets.get(datasetKey)!;
   
   const [layerFilter, setLayerFilter] = useState("");
-  const volumeMap = new Map(dataset.volumes.map((v) => [v.name, v]))
+  const volumeMap = new Map(dataset.images.map((v) => [v.name, v]))
   const sources: string[] = [...volumeMap.keys()];
   // remove this when we don't have data on s3 anymore
   const bucket = "janelia-cosem-datasets";
@@ -81,7 +80,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   );
   // initialize the layer checkboxes by looking at the first dataset view
   for (let vn of sources) {
-    let vkeys = dataset.views[0].source_names;
+    let vkeys = dataset.views[0].sourceNames;
     if (vkeys.includes(vn)) {
       volumeCheckStateInit.set(vn, {
         ...volumeCheckStateInit.get(vn),
@@ -116,7 +115,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     }
   };
 
-  const handleViewChange = (index: number, views: DatasetView[]) => () => {
+  const handleViewChange = (index: number, views: View[]) => () => {
     const newViewState = checkStates.viewCheckState.map(() => false);
     newViewState[index] = true;
 
@@ -126,7 +125,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
         { ...v, selected: false }
       ])
     );
-    views[newViewState.findIndex(v => v)].sources.map(k =>
+    views[newViewState.findIndex(v => v)].sourceNames.map(k =>
       newVolumeState.set(k, { ...newVolumeState.get(k), selected: true })
     );
 
@@ -138,21 +137,21 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
   // Update the default layer type for all the affected volumes
   const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let content_type = event.target.name as ContentType;
+    let contentType = event.target.name as ContentType;
     let newLayerType = undefined;
     const newVolumeCheckState = new Map(checkStates.volumeCheckState.entries());
     for (let k of newVolumeCheckState.keys()) {
       let val = newVolumeCheckState.get(k);
       if (
         !(val === undefined) &&
-        volumeMap.get(k)?.content_type === content_type
+        volumeMap.get(k)?.contentType === contentType
       ) {
         if (event.target.checked) {
-          newLayerType = "segmentation" as LayerTypes;
+          newLayerType = "segmentation" as LayerType;
         }
         newVolumeCheckState.set(k, {
           ...val,
-          layerType: newLayerType as LayerTypes
+          layerType: newLayerType as LayerType
         });
       }
     }
@@ -182,7 +181,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     <Grid container>
       <Grid item md={8}>
         <Paper className={classes.paper} variant="outlined">
-          <DatasetDescriptionSummary datasetMetadata={dataset}>
+          <DatasetDescriptionSummary dataset={dataset}>
             <NeuroglancerLink
               dataset={dataset}
               checkState={checkStates.volumeCheckState}
@@ -190,7 +189,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             >
               <img
 								alt={thumbnailAlt}
-                src={dataset.thumbnailURL || BrokenImage}
+                src={dataset.thumbnailUrl || BrokenImage}
                 className={classes.datasetthumbnail}
               />
             </NeuroglancerLink>

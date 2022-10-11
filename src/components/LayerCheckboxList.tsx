@@ -9,10 +9,10 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
-import {ContentTypeEnum as ContentType} from "../api/manifest";
-import {contentTypeDescriptions, Dataset, Volume } from "../api/datasets";
+import {ContentType, contentTypeDescriptions, Dataset } from "../api/datasets";
 import VolumeCheckboxCollection from "./LayerGroup";
 import { VolumeCheckStates } from "./DatasetPaper";
+import { Image } from "../api/datasets";
 
 const useStyles: any = makeStyles(() =>
   createStyles({
@@ -54,13 +54,13 @@ interface LayerFilterProps {
 
 function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLayerChange, filter}: FilteredLayerListProps) {
   const classes = useStyles();
-  const volumesListInit: Volume[] = []
+  const volumesListInit: Image[] = []
   const [volumesList, setVolumes] = useState(volumesListInit);
-  const volumeGroups: Map<ContentType, Volume[]> = new Map();
+  const volumeGroups: Map<ContentType, Image[]> = new Map();
 
   useEffect(() => {
     // filter volumes based on filter string
-    let filteredVolumes = Array.from(dataset.volumes.values());
+    let filteredVolumes = Array.from(dataset.images.values());
     if (filter) {
       // TODO: make this case insensitive
       filteredVolumes = filteredVolumes.filter(v =>
@@ -72,7 +72,7 @@ function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLay
       filteredVolumes);
   }, [dataset, filter]);
 
-  volumesList.forEach((v: Volume) => {
+  volumesList.forEach((v: Image) => {
     if (volumeGroups.get(v.contentType) === undefined) {
       volumeGroups.set(v.contentType, []);
     }
@@ -80,7 +80,7 @@ function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLay
   });
 
   const checkboxLists = Array.from(contentTypeDescriptions.keys()).map((ct) => {
-    let volumes = (volumeGroups.get(ct as ContentType) as Volume[]);
+    let volumes = (volumeGroups.get(ct as ContentType) as Image[]);
     let contentTypeInfo = contentTypeDescriptions.get(ct as ContentType)!;
     let expanded = (ct === 'em');
     
