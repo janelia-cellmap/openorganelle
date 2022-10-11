@@ -51,11 +51,11 @@ export function DatasetsProvider({children}: any) {
     const [state, dispatch] = useReducer(datasetsReducer, initialState)
     useEffect(() => {
         async function fetchData() {
-            console.log('begin fetching datasets')
+            console.time('fetching datasets')
             dispatch(setLoading(true))
             const data = await getDatasets(state.api);
             dispatch(setDatasets(data!))
-            console.log('done fetching datasets')
+            console.timeEnd('fetching datasets')
         }
         fetchData();
     }, [])
