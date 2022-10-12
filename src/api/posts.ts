@@ -26,7 +26,7 @@ const octokit = new Octokit({});
 
 function transformImgSrc(url: string) {
   // resolve relative paths in image URLs
-  return (tree: any, file: any) => {
+  return (tree: any) => {
     visit(tree, 'paragraph', node => {
       const image = node.children.find((child: any) => child.type === 'image');
       if (image) {
