@@ -23,8 +23,12 @@ const useStyles: any = makeStyles(() =>
     root: {
       flexGrow: 1,
     },
+    newsPost: {
+      maxWidth: "800px",
+      margin: "auto",
+    },
     postImage: {
-      width: "100%",
+      maxWidth: "100%",
     },
   })
 );
@@ -62,10 +66,6 @@ export default function NewsPost() {
       >
         {content}
       </ReactMarkdown>
-      <Typography variant="subtitle2">
-        Posted on{" "}
-        {Intl.DateTimeFormat("en", { dateStyle: "long" }).format(new Date())}
-      </Typography>
       <Typography variant="subtitle2">
         Written by {authors.join(", ")}
       </Typography>
