@@ -33,7 +33,7 @@ const useStyles: any = makeStyles(() =>
   })
 );
 
-const MyImage = ({ node, ...props }: any) => {
+const MyImage = ({ ...props }: any) => {
   const classes = useStyles();
   return <img className={classes.postImage} {...props} />;
 };
@@ -44,7 +44,6 @@ export default function NewsPost({
   authors,
   tags,
   date,
-  published,
 }: NewsPostProps) {
   const classes = useStyles();
   return (
@@ -76,8 +75,7 @@ export default function NewsPost({
   );
 }
 
-export function NewsPostSummary({ title, authors, tags, date }: NewsPostProps) {
-  const classes = useStyles();
+export function NewsPostSummary({ title, authors, date }: NewsPostProps) {
   return (
     <Card style={{minHeight: "400px"}}>
       <CardMedia component="img" height="140" image={banner} alt={title} />
@@ -100,7 +98,7 @@ export function NewsPostSummary({ title, authors, tags, date }: NewsPostProps) {
   );
 }
 
-const latestPostsCount = 3;
+const latestPostsCount = 5;
 
 export function NewsPostCollection() {
   // fetch the data here
