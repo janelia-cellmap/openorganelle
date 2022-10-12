@@ -472,18 +472,18 @@ export default function Tutorials() {
               downloading hundreds of thousands of files totalling hundreds of
               gigabytes is not feasible in the web browser. Instead, we
               recommend the following methods for direct data access:
-              <ul>
-                <li>
-                  <a href="#fiji">Opening data with Fiji</a>
-                </li>
-                <li>
-                  <a href="#python">Programmatic data access with Python</a>
-                </li>
-                <li>
-                  <a href="#aws-cli">Raw file access with the AWS CLI</a>
-                </li>
-              </ul>
             </Typography>
+            <ul>
+              <li>
+                <a href="#fiji">Opening data with Fiji</a>
+              </li>
+              <li>
+                <a href="#python">Programmatic data access with Python</a>
+              </li>
+              <li>
+                <a href="#aws-cli">Raw file access with the AWS CLI</a>
+              </li>
+            </ul>
             <p className="anchor" id="fiji" />
             <Typography variant="h5" gutterBottom>
               How do I open data in Fiji?
@@ -498,62 +498,62 @@ export default function Tutorials() {
               <img className="fiji_icon" src={fijiIcon} alt="blue fiji logo" />{" "}
               copies the dataset URL to the clipboard, which can be pasted in
               the Fiji app.
-              <ul>
-                <li>
-                  The BigDataViewer plugin allows interactive 3D visualization
-                  of our datasets. This plugin can be accessed by selecting the{" "}
-                  <Box fontFamily="Monospace" display="inline">
-                    Plugins
-                  </Box>{" "}
-                  dropdown menu, then selecting{" "}
-                  <Box fontFamily="Monospace" display="inline">
-                    BigDataViewer
-                  </Box>
-                  , and finally{" "}
-                  <Box fontFamily="Monospace" display="inline">
-                    N5 Viewer
-                  </Box>
-                  . Paste the URL for the dataset of interest in the text entry
-                  field of the plugin. For detailed instructions refer to the N5
-                  Viewer
-                  <a href="https://github.com/saalfeldlab/n5-viewer">
-                    {" "}
-                    documentation
-                  </a>
-                  . Note that this plugin does not allow directly saving full
-                  volumes to disk (but you can crop out a subregion of the data
-                  for saving).
-                </li>
-                <li>
-                  To open the datasets in Fiji and make use of all of the Fiji
-                  tools (e.g., saving to disk), select the{" "}
-                  <Box fontFamily="Monospace" display="inline">
-                    {" "}
-                    File
-                  </Box>{" "}
-                  dropdown menu, then{" "}
-                  <Box fontFamily="Monospace" display="inline">
-                    {" "}
-                    Import
-                  </Box>
-                  , then{" "}
-                  <Box fontFamily="Monospace" display="inline">
-                    N5
-                  </Box>
-                  , and paste the URL for the dataset of interest in the text
-                  entry field. For instructions on opening our datasets in Fiji
-                  please refer to this{" "}
-                  <a href="https://github.com/saalfeldlab/n5-ij">
-                    documentation
-                  </a>
-                  . Be advised that this method causes Fiji to load an entire
-                  image volume into memory, which will fail for large image
-                  volumes. Additionally, this option currently does not generate
-                  a representation of data that supports interactive 3D
-                  visualization.
-                </li>
-              </ul>
             </Typography>
+            <ul>
+              <li>
+                The BigDataViewer plugin allows interactive 3D visualization
+                of our datasets. This plugin can be accessed by selecting the{" "}
+                <Box fontFamily="Monospace" display="inline">
+                  Plugins
+                </Box>{" "}
+                dropdown menu, then selecting{" "}
+                <Box fontFamily="Monospace" display="inline">
+                  BigDataViewer
+                </Box>
+                , and finally{" "}
+                <Box fontFamily="Monospace" display="inline">
+                  N5 Viewer
+                </Box>
+                . Paste the URL for the dataset of interest in the text entry
+                field of the plugin. For detailed instructions refer to the N5
+                Viewer
+                <a href="https://github.com/saalfeldlab/n5-viewer">
+                  {" "}
+                  documentation
+                </a>
+                . Note that this plugin does not allow directly saving full
+                volumes to disk (but you can crop out a subregion of the data
+                for saving).
+              </li>
+              <li>
+                To open the datasets in Fiji and make use of all of the Fiji
+                tools (e.g., saving to disk), select the{" "}
+                <Box fontFamily="Monospace" display="inline">
+                  {" "}
+                  File
+                </Box>{" "}
+                dropdown menu, then{" "}
+                <Box fontFamily="Monospace" display="inline">
+                  {" "}
+                  Import
+                </Box>
+                , then{" "}
+                <Box fontFamily="Monospace" display="inline">
+                  N5
+                </Box>
+                , and paste the URL for the dataset of interest in the text
+                entry field. For instructions on opening our datasets in Fiji
+                please refer to this{" "}
+                <a href="https://github.com/saalfeldlab/n5-ij">
+                  documentation
+                </a>
+                . Be advised that this method causes Fiji to load an entire
+                image volume into memory, which will fail for large image
+                volumes. Additionally, this option currently does not generate
+                a representation of data that supports interactive 3D
+                visualization.
+              </li>
+            </ul>
             <p className="anchor" id="python" />
             <Typography variant="h5" gutterBottom>
               How do I open data with Python?
@@ -672,29 +672,29 @@ export default function Tutorials() {
             <Typography paragraph>
               If a dataset has measurements available you can find it under the{" "}
               <Link to="/measurements">Measurements</Link> page. To browse:
-              <ol>
-                <li>
-                  First select a dataset:{" "}
-                  <b>Interphase HeLa cell (jrc_hela-2)</b>
-                </li>
-                <li>
-                  Then select the first organelle you are interested in:{" "}
-                  <b>ER</b>
-                </li>
-                <li>
-                  You next have the option to select a second organelle to look
-                  at contact sites: <b>Mitochondria</b>. This step is optional,
-                  if left blank only the measurements for the first organelle
-                  will be displayed.
-                </li>
-
-                <li>
-                  Lastly, select the measurements you are interested in seeing.
-                  Multiple measurements can be selcted:{" "}
-                  <b>Surface Area (nm^2)</b>,<b>Volume (nm^3)</b>, <b>ID</b>{" "}
-                </li>
-              </ol>
             </Typography>
+            <ol>
+              <li>
+                First select a dataset:{" "}
+                <b>Interphase HeLa cell (jrc_hela-2)</b>
+              </li>
+              <li>
+                Then select the first organelle you are interested in:{" "}
+                <b>ER</b>
+              </li>
+              <li>
+                You next have the option to select a second organelle to look
+                at contact sites: <b>Mitochondria</b>. This step is optional,
+                if left blank only the measurements for the first organelle
+                will be displayed.
+              </li>
+
+              <li>
+                Lastly, select the measurements you are interested in seeing.
+                Multiple measurements can be selcted:{" "}
+                <b>Surface Area (nm^2)</b>,<b>Volume (nm^3)</b>, <b>ID</b>{" "}
+              </li>
+            </ol>
             <Typography paragraph>
               After clicking <b>Search</b>, a table will be populated with the
               measurements within the dataset that were selected. Below the
