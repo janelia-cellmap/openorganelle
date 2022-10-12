@@ -1,7 +1,6 @@
 import {createContext, useContext, useEffect, useReducer } from 'react'
 import React from 'react'
-import { OSet } from '../api/tagging'
-import { TaggedDataset, Dataset, DatasetTag } from '../api/datasets'
+import { TaggedDataset, Dataset, makeTags } from '../api/datasets'
 import {getObjectFromJSON} from "../api/util"
 
 type Action = {type: 'set-datasets', payload: Map<string, TaggedDataset>} | {type: 'set-loading', payload: boolean}
@@ -13,45 +12,10 @@ type DatasetsState = {api: string
                      }
 
 const initialState: DatasetsState = {api: 'https://fct5d83geg.execute-api.us-east-1.amazonaws.com/api/v1/datasets/',
-                     datasetsLoading: false,
-                      datasets: new Map()}
+                                     datasetsLoading: false,
+                                     datasets: new Map()}
 
-const DatasetsContext = createContext<
-{state: DatasetsState, dispatch: Dispatch} | undefined>(undefined)
-
-const resolutionTagThreshold = 6;
-function makeTags({acquisition, institutions, sample, softwareAvailability}: Dataset): OSet<DatasetTag> {
-    const tags: OSet<DatasetTag> = new OSet();
-    let latvox = undefined;
-    if (acquisition !== undefined) {
-    if (acquisition.institution !== undefined) {
-        tags.add({value: acquisition?.institution, category: 'Acquisition institution'});
-        const axvox = acquisition.gridSpacing.values.z
-        if (axvox !== undefined) {
-          let value = ''
-          if (axvox <= resolutionTagThreshold)
-          {value = `<= ${resolutionTagThreshold} nm`}
-          else {
-            value = `> ${resolutionTagThreshold} nm`
-          }
-          tags.add({value: value, category: 'Axial voxel size'});
-        }
-        if ((acquisition.gridSpacing.values.y !== undefined) || (acquisition.gridSpacing.values.x !== undefined)) {
-         latvox =  Math.min(acquisition.gridSpacing.values.y, acquisition.gridSpacing.values.x!);
-         tags.add({value: latvox.toString(), category: 'Lateral voxel size'});
-        }
-    }
-}
-    for (let val of institutions) {tags.add({value: val, category: 'Contributing institution'})}
-    if (sample !== undefined) {
-    for (let val of sample.organism) {tags.add({value: val, category: 'Sample: Organism'})}
-    for (let val of sample.type) {tags.add({value: val, category: 'Sample: Type'})}
-    for (let val of sample.subtype) {tags.add({value: val, category: 'Sample: Subtype'})}
-    for (let val of sample.treatment) {tags.add({value: val, category: 'Sample: Treatment'})}
-    }
-    tags.add({value: softwareAvailability, category: 'Software Availability'});
-    return tags
-  }
+const DatasetsContext = createContext<{state: DatasetsState, dispatch: Dispatch} | undefined>(undefined)
 
 function datasetsReducer(state: DatasetsState, action: Action) {
     switch (action.type) {

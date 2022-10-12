@@ -35,10 +35,10 @@ export function SpatialTransformToNeuroglancer(transform: SpatialTransform, outp
 export function makeShader(shaderArgs: any, sampleType: SampleType): string | undefined {
     switch (sampleType) {
         case 'scalar': {
-            let lower = shaderArgs.contrastLimits.min;
-            let upper = shaderArgs.contrastLimits.max;
-            let cmin = shaderArgs.contrastLimits.start;
-            let cmax = shaderArgs.contrastLimits.end;
+            const lower = shaderArgs.contrastLimits.min;
+            const upper = shaderArgs.contrastLimits.max;
+            const cmin = shaderArgs.contrastLimits.start;
+            const cmax = shaderArgs.contrastLimits.end;
             return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${lower}, ${upper}])
           #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertLUT ? 1 : 0})
           #uicontrol vec3 color color(default="${shaderArgs.color}")

@@ -964,9 +964,9 @@ export default function Organelles() {
   }
   const tableRows = tableData.map((row) => {
     const neuroglancer_urls = row.examples.map((v, idx) => {
-      let dataset = datasets.get(demo_dataset_names[idx])!;
-      let imageMap = new Map(dataset.images.map((image) => [image.name, image]));
-      let layers = v.sourceNames.map(vk => {return makeLayer(imageMap.get(vk)!, "image", outputDimensions)}); 
+      const dataset = datasets.get(demo_dataset_names[idx])!;
+      const imageMap = new Map(dataset.images.map((image) => [image.name, image]));
+      const layers = v.sourceNames.map(vk => {return makeLayer(imageMap.get(vk)!, "image", outputDimensions)}); 
       return `${neuroglancerAddress}${makeNeuroglancerViewerState(layers as ImageLayer[],
                                                                    v.position,
                                                                    v.scale,

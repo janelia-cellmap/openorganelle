@@ -80,9 +80,9 @@ function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLay
   });
 
   const checkboxLists = Array.from(contentTypeDescriptions.keys()).map((ct) => {
-    let volumes = (volumeGroups.get(ct as ContentType) as Image[]);
-    let contentTypeInfo = contentTypeDescriptions.get(ct as ContentType)!;
-    let expanded = (ct === 'em');
+    const volumes = (volumeGroups.get(ct as ContentType) as Image[]);
+    const contentTypeInfo = contentTypeDescriptions.get(ct as ContentType)!;
+    const expanded = (ct === 'em');
     
     if (volumes !== undefined && volumes.length > 0) {
       return <VolumeCheckboxCollection

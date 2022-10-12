@@ -63,12 +63,12 @@ export default function AnalysisDataTable({
       <Table size="small" {...getTableProps()}>
         <TableHead>
           {headerGroups.map(headerGroup => (
-            <TableRow {...headerGroup.getHeaderGroupProps()}>
+            <TableRow {...headerGroup.getHeaderGroupProps()} key={`tablerow_${headerGroup.id}`}>
               {headerGroup.headers.map(column => (
                 // Add the sorting props to control sorting. For this example
                 // we can add them into the header props
                 <TableCell
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
+                  {...column.getHeaderProps(column.getSortByToggleProps()) } key={`tablecell_${column.id}`}
                 >
                   {column.render("Header")}
                   {/* Add a sort direction indicator */}
@@ -85,13 +85,13 @@ export default function AnalysisDataTable({
           ))}
         </TableHead>
         <TableBody {...getTableBodyProps()}>
-          {page.map((row, i) => {
+          {page.map((row) => {
             prepareRow(row);
             return (
-              <TableRow {...row.getRowProps()}>
+              <TableRow {...row.getRowProps()} key={`row_${row.id}`}>
                 {row.cells.map(cell => {
                   return (
-                    <TableCell {...cell.getCellProps()}>
+                    <TableCell {...cell.getCellProps()} key={`cell_${cell.getCellProps().key}`}>
                       {cell.render("Cell")}
                     </TableCell>
                   );

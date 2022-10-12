@@ -29,7 +29,7 @@ type TagCategories = "Software Availability" |
   "Axial voxel size"
 
 export type DatasetTag = Tag<TagCategories>
-
+/*
 const DefaultView: View = {
   name: "Default view",
   description: "The default view of the data",
@@ -38,6 +38,7 @@ const DefaultView: View = {
   position: undefined,
   scale: undefined
 };
+*/
 export interface ContentTypeMetadata {
   label: string
   description: string
@@ -61,35 +62,24 @@ contentTypeDescriptions.set('prediction', { label: "Prediction Layers", descript
 contentTypeDescriptions.set('analysis', { label: "Analysis Layers", description: "Results of applying various analysis routines on raw data, predictions, or segmentations." });
 
 const resolutionTagThreshold = 6;
-function makeTags({acquisition, institutions, sample, softwareAvailability}: Dataset): OSet<DatasetTag> {
+export function makeTags({acquisition, institutions, sample, softwareAvailability}: Dataset): OSet<DatasetTag> {
   const tags: OSet<DatasetTag> = new OSet();
   let latvox = undefined;
-  if (acquisition !== undefined) {
-  if (acquisition.institution !== undefined) {
-      tags.add({value: acquisition?.institution, category: 'Acquisition institution'});
-      const axvox = acquisition.gridSpacing.values.z
-      if (axvox !== undefined) {
-        let value = ''
-        if (axvox <= resolutionTagThreshold)
-        {value = `<= ${resolutionTagThreshold} nm`}
-        else {
-          value = `> ${resolutionTagThreshold} nm`
-        }
-        tags.add({value: value, category: 'Axial voxel size'});
-      }
-      if ((acquisition.gridSpacing.values.y !== undefined) || (acquisition.gridSpacing.values.x !== undefined)) {
-       latvox =  Math.min(acquisition.gridSpacing.values.y, acquisition.gridSpacing.values.x!);
-       tags.add({value: latvox.toString(), category: 'Lateral voxel size'});
-      }
-  }
-}
-  for (let val of institutions) {tags.add({value: val, category: 'Contributing institution'})}
-  if (sample !== undefined) {
-  for (let val of sample.organism) {tags.add({value: val, category: 'Sample: Organism'})}
-  for (let val of sample.type) {tags.add({value: val, category: 'Sample: Type'})}
-  for (let val of sample.subtype) {tags.add({value: val, category: 'Sample: Subtype'})}
-  for (let val of sample.treatment) {tags.add({value: val, category: 'Sample: Treatment'})}
-  }
+  tags.add({value: acquisition.institution, category: 'Acquisition institution'});
+  const axvox = acquisition.gridSpacing.values.z
+  let value = ''
+  if (axvox <= resolutionTagThreshold){value = `<= ${resolutionTagThreshold} nm`}
+  else {value = `> ${resolutionTagThreshold} nm`}
+  
+  tags.add({value: value, category: 'Axial voxel size'});
+  latvox =  Math.min(acquisition.gridSpacing.values.y, acquisition.gridSpacing.values.x!);
+  tags.add({value: latvox.toString(), category: 'Lateral voxel size'});
+  
+  for (const val of institutions) {tags.add({value: val, category: 'Contributing institution'})}
+  for (const val of sample.organism) {tags.add({value: val, category: 'Sample: Organism'})}
+  for (const val of sample.type) {tags.add({value: val, category: 'Sample: Type'})}
+  for (const val of sample.subtype) {tags.add({value: val, category: 'Sample: Subtype'})}
+  for (const val of sample.treatment) {tags.add({value: val, category: 'Sample: Treatment'})}
   tags.add({value: softwareAvailability, category: 'Software Availability'});
   return tags
 }

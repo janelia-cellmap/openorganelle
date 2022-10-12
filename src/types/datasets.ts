@@ -63,8 +63,8 @@ export interface components {
       /** Institutions */
       institutions: string[];
       softwareAvailability: components["schemas"]["SoftwareAvailability"];
-      acquisition?: components["schemas"]["FIBSEMAcquisition"];
-      sample?: components["schemas"]["Sample"];
+      acquisition: components["schemas"]["FIBSEMAcquisition"];
+      sample: components["schemas"]["Sample"];
       /** Publications */
       publications: components["schemas"]["Publication"][];
       /** Images */

@@ -59,10 +59,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 );
 
 export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
-  const classes = useStyles();
-  //const { appState } = useContext(AppContext);
-  //const dataset = appState.datasets.get(datasetKey)!;
-  
+  const classes = useStyles(); 
   const {state} = useDatasets()
   
   const dataset = state.datasets.get(datasetKey)!;
@@ -79,8 +76,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     sources.map(k => [k, { selected: false, layerType: undefined }])
   );
   // initialize the layer checkboxes by looking at the first dataset view
-  for (let vn of sources) {
-    let vkeys = dataset.views[0].sourceNames;
+  for (const vn of sources) {
+    const vkeys = dataset.views[0].sourceNames;
     if (vkeys.includes(vn)) {
       volumeCheckStateInit.set(vn, {
         ...volumeCheckStateInit.get(vn),
@@ -137,11 +134,11 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
   // Update the default layer type for all the affected volumes
   const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let contentType = event.target.name as ContentType;
+    const contentType = event.target.name as ContentType;
     let newLayerType = undefined;
     const newVolumeCheckState = new Map(checkStates.volumeCheckState.entries());
-    for (let k of newVolumeCheckState.keys()) {
-      let val = newVolumeCheckState.get(k);
+    for (const k of newVolumeCheckState.keys()) {
+      const val = newVolumeCheckState.get(k);
       if (
         !(val === undefined) &&
         volumeMap.get(k)?.contentType === contentType

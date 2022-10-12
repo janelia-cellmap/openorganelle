@@ -65,7 +65,7 @@ export async function getPosts({owner, repo, postsPath, publishedOnly}: PostApi)
       return [...(await collection), post]
     }
     }
-    let initCollection: NewsPostProps[] = [];
+    const initCollection: NewsPostProps[] = [];
     const postsFiltered = postData.reduce(postsReducer, Promise.resolve(initCollection));
     return postsFiltered
 }

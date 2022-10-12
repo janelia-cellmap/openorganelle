@@ -42,7 +42,7 @@ export default function NeuroglancerLink({
   const local_view = { ...view };
   local_view.sourceNames = [];
   const volumeMap = new Map(dataset.images.map((v) => [v.name, v]))
-  for (let key of volumeMap.keys()) {
+  for (const key of volumeMap.keys()) {
     if (checkState.get(key)?.selected) {
       local_view.sourceNames.push(key);
     }
@@ -53,12 +53,11 @@ export default function NeuroglancerLink({
   const disabled = Boolean(local_view.sourceNames.length === 0);
   const layers = local_view.sourceNames.map(vk => {
     let layerType = "segmentation";
-    let sampleType = volumeMap.get(vk)?.sampleType;
+    const sampleType = volumeMap.get(vk)?.sampleType;
     if (sampleType === "scalar") {
       layerType = "image";
     }
-    let result = makeLayer(volumeMap.get(vk)!, layerType as LayerType, outputDimensions);
-    return result;
+    return makeLayer(volumeMap.get(vk)!, layerType as LayerType, outputDimensions);
   });
   if (!disabled) {
     ngLink = `${neuroglancerAddress}${makeNeuroglancerViewerState(

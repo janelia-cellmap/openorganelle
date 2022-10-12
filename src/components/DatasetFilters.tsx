@@ -16,9 +16,11 @@ import { AppContext } from "../context/AppContext";
 import sortFunctions from "../utils/sortingFunctions";
 import { DatasetTag } from "../api/datasets";
 import { OSet } from "../api/tagging";
+import { useDatasets } from "../context/DatasetsContext";
 
 export default function DatasetFilters() {
   const { appState, setPermanent, setAppState } = useContext(AppContext);
+  const {state} = useDatasets();
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setPermanent({ sortBy: event.target.value as string });
   };
@@ -38,8 +40,8 @@ export default function DatasetFilters() {
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
   const tags: DatasetTag[] = [];
   const tagSet: OSet<DatasetTag> = new OSet();
-  for (let dataset of appState.datasets.values()) {
-    for (let tag of dataset.tags.map.values())
+  for (const dataset of state.datasets.values()) {
+    for (const tag of dataset.tags.map.values())
       {
         tagSet.add(tag);
       }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Image, ContentType, ContentTypeMetadata } from "../api/datasets";
+import { Image, ContentTypeMetadata } from "../api/datasets";
 import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
 import Typography from "@material-ui/core/Typography";
@@ -7,13 +7,6 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { VolumeCheckStates } from "./DatasetPaper";
-
-interface LayerTypeToggleProps {
-  label: string
-  checked: boolean
-  contentType: ContentType
-  handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-}
 
 interface VolumeCheckboxCollectionProps {
   volumes: Image[]

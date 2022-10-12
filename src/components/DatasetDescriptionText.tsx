@@ -40,9 +40,8 @@ interface PublicationListProps {
 }
 
 export function PublicationList({publications}: PublicationListProps) {
-  return (<ul>{publications.map((link, idx) => {
-    let key = "publicationList" + idx;
-    return <li key={key}><a href={link.url}>{link.name}</a></li>    
+  return (<ul>{publications.map(link => {
+    return <li key={link.url + link.name}><a href={link.url}>{link.name}</a></li>    
 })}</ul>)
 } 
 
@@ -125,14 +124,10 @@ export function DatasetAcquisition({
           <p>
             <strong>Dataset ID</strong>: {datasetMetadata.name}
           </p>
-          <p>
             <strong>DOI</strong>:{" "}
-            <PublicationList publications={datasetMetadata.publications.filter((p) => {p.type == 'doi'})}/>
-          </p>
-          <p>
+            <PublicationList publications={datasetMetadata.publications.filter((p) => p.type == 'doi')}/>
             <strong>Publications</strong>:{" "}
-            <PublicationList publications={datasetMetadata.publications.filter((p) => {p.type == 'paper'})}/>
-          </p>
+            <PublicationList publications={datasetMetadata.publications.filter((p) => p.type == 'paper')}/>
           <p>
             <strong>Dataset location</strong>: {storageLocation}
           </p>
