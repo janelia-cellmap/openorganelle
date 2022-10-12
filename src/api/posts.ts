@@ -8,7 +8,9 @@ export interface NewsPostProps{
     content: string
     authors: string[]
     date: Date
+    thumbnail_url: string
     published: boolean
+    summary: string
     tags: string[]
 }
 
@@ -37,12 +39,14 @@ function transformImgSrc(url: string) {
 function validatePost(blob: any): NewsPostProps {
   // Ensure that the payload received from the api is valid
  const {data, content} = matter(blob);
- 
+
  return {title: data.title,
-         content: content, 
-         authors: data.authors, 
+         content: content,
+         authors: data.authors,
          date: new Date(data.date),
          tags: data.tags,
+         thumbnail_url: data.thumbnail_url,
+         summary: data.summary,
          published: data.published}
 }
 
