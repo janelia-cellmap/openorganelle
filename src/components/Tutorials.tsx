@@ -452,7 +452,6 @@ export default function Tutorials() {
               visit the <Link to="/organelles">Organelles</Link> page.
             </Typography>
           </Paper>
-
           <p className="anchor" id="data_access" />
           <Paper className={classes.section}>
             <Typography variant="h4" gutterBottom>
@@ -600,14 +599,14 @@ export default function Tutorials() {
               For convenience, all of the above functionality is contained in a
               python library we maintain ({" "}
               <a href="https://github.com/janelia-cosem/fibsem-tools">
-                <Box fontFamily="Monospace" display="inline">
+                <Box component="span" fontFamily="Monospace" display="inline">
                   {" "}
                   fibsem_tools
                 </Box>
               </a>
               ). As in the Fiji examples, the Python library addresses datasets
               through their URL. See the{" "}
-              <Box fontFamily="Monospace" display="inline">
+              <Box component="span" fontFamily="Monospace" display="inline">
                 {" "}
                 fibsem_tools
               </Box>{" "}
