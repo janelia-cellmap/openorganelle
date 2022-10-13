@@ -144,6 +144,9 @@ export default function Navigation() {
           <NavLink exact to="/datasets" className={classes.navListLink}>
             <li className={classes.navListItem}>Datasets</li>
           </NavLink>
+          <NavLink to="/news" className={classes.navListLink}>
+            <li className={classes.navListItem}>News</li>
+          </NavLink>
           <NavLink to="/organelles" className={classes.navListLink}>
             <li className={classes.navListItem}>Organelles</li>
           </NavLink>
@@ -152,9 +155,6 @@ export default function Navigation() {
           </NavLink>
           <NavLink to="/publications" className={classes.navListLink}>
             <li className={classes.navListItem}>Publications</li>
-          </NavLink>
-          <NavLink to="/news" className={classes.navListLink}>
-            <li className={classes.navListItem}>News</li>
           </NavLink>
           <NavLink to="/faq" className={classes.navListLink}>
             <li className={classes.navListItem}>FAQ</li>
