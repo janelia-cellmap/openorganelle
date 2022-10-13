@@ -11,7 +11,7 @@ type DatasetsState = {api: string
                      datasets: Map<string, TaggedDataset>
                      }
 
-const initialState: DatasetsState = {api: 'https://fct5d83geg.execute-api.us-east-1.amazonaws.com/api/v1/datasets/',
+const initialState: DatasetsState = {api: process.env.REACT_APP_DATASETS_API_ENDPOINT!,
                                      datasetsLoading: false,
                                      datasets: new Map()}
 

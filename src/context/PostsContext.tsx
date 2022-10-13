@@ -10,13 +10,12 @@ type PostState = {api: PostApi
                   posts: NewsPostProps[]
                  }
 
-const initialState = {api: {owner: 'janelia-cosem',
-                      repo: 'openorganelle-blog',
-                      postsPath: 'posts',
-                      assetsPath: 'assets',
+const initialState = {api: {owner: process.env.REACT_APP_POSTS_API_OWNER!,
+                      repo: process.env.REACT_APP_POSTS_API_REPO!,
+                      postsPath: process.env.REACT_APP_POSTS_API_POSTSPATH!,
+                      assetsPath: process.env.REACT_APP_POSTS_API_ASSETSPATH!,
                       publishedOnly: true},
                       posts: []}
-
 const PostsContext = createContext<
 {state: PostState, dispatch: Dispatch} | undefined>(undefined)
 
