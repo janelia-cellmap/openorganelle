@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid} from "@material-ui/core";
 import DatasetLayout from "./DatasetLayout";
-import { NewsPostCollection } from "./NewsPost";
+import NewsPostCollection from "./NewsPostCollection";
 
 
 export default function Home() {

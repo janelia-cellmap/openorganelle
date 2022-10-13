@@ -29,8 +29,14 @@ interface ClipBoardLinkProps {
   s3URL: string;
 }
 
+const DataFaqLink = (props:any , ref:any) => {
+  return (
+    <HashLink ref={ref} to="/faq#data_access" {...props} />
+  );
+}
+
 const LinkBehavior = React.forwardRef<any, Omit<RouterLinkProps, "to">>(
-  (props, ref) => <HashLink ref={ref} to="/faq#data_access" {...props} />
+  DataFaqLink
 );
 
 export default function ClipboardLink({

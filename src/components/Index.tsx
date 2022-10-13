@@ -8,7 +8,8 @@ import DatasetLayout from "./DatasetLayout";
 import DatasetDetails from "./DatasetDetails";
 import "./Index.css";
 import Home from "./Home";
-import { NewsPostCollection } from "./NewsPost";
+import NewsPostCollection from "./NewsPostCollection";
+import NewsPost from "./NewsPost";
 
 export default function Index() {
   return (
@@ -18,7 +19,8 @@ export default function Index() {
           <Route path="/faq" component={Tutorials} />
           <Route path="/publications" component={Publications} />
           <Route path="/organelles" component={Organelles} />
-          <Route path="/news" exact component={NewsPostCollection} />
+          <Route path="/news/:slug" component={NewsPost} />
+          <Route path="/news/" component={NewsPostCollection} />
           <Route path="/home" exact component={Home} />
           <Route path="/datasets/:slug" component={DatasetDetails} />
           <Route path="/datasets/" component={DatasetLayout} />
