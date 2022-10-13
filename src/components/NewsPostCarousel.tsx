@@ -14,7 +14,7 @@ import { postSlug } from "../utils/newsposts";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
-const postsInCarousel = 3;
+const postsInCarousel = 5;
 
 const useStyles = makeStyles((theme) => ({
   root: {
