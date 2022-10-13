@@ -8,7 +8,6 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { QueryClientProvider, QueryClient } from "react-query";
 import "./App.css";
 import { PostsProvider } from "./context/PostsContext";
-import { DatasetsProvider } from "./context/DatasetsContext";
 
 const Analysis = lazy(() => import("./components/Analysis"));
 const TermsOfUse = lazy(() => import("./components/TermsOfUse"));

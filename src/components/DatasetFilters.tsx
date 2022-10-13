@@ -38,7 +38,7 @@ export default function DatasetFilters() {
     setPermanent({ sortBy: event.target.value as string });
   };
 
-  const handleFilterChange = (event: React.ChangeEvent<{}>, value: Array<DatasetTag> | undefined, reason: string) => {
+  const handleFilterChange = (event: React.ChangeEvent<{}>, value: DatasetTag[] | undefined) => {
     setAppState({...appState, datasetFilter: value});
   };
 
