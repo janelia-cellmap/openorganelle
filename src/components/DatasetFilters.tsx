@@ -16,18 +16,30 @@ import { AppContext } from "../context/AppContext";
 import sortFunctions from "../utils/sortingFunctions";
 import { DatasetTag } from "../api/datasets";
 import { OSet } from "../api/tagging";
-import { useDatasets } from "../context/DatasetsContext";
+import { fetchDatasets } from "../context/DatasetsContext";
+import { useQuery } from "react-query";
 
 export default function DatasetFilters() {
   const { appState, setPermanent, setAppState } = useContext(AppContext);
-  const {state} = useDatasets();
+
+  const { isLoading, data, error } = useQuery('datasets', async () => fetchDatasets());
+
+  if (isLoading) {
+    return <>Loading datasets....</>
+  }
+
+  if (error) {
+    return <>Error loading datasets: {(error as Error).message}</>
+  }
+
+  const datasets = data!
+
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setPermanent({ sortBy: event.target.value as string });
   };
 
   const handleFilterChange = (event: React.ChangeEvent<{}>, value: Array<DatasetTag> | undefined, reason: string) => {
     setAppState({...appState, datasetFilter: value});
-    console.log({event, value, reason});
   };
 
   const options = Object.keys(sortFunctions).map(option => (
@@ -40,7 +52,7 @@ export default function DatasetFilters() {
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
   const tags: DatasetTag[] = [];
   const tagSet: OSet<DatasetTag> = new OSet();
-  for (const dataset of state.datasets.values()) {
+  for (const dataset of datasets.values()) {
     for (const tag of dataset.tags.map.values())
       {
         tagSet.add(tag);

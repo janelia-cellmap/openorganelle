@@ -10,11 +10,12 @@ import Button from "@material-ui/core/Button";
 import FilterListIcon from '@material-ui/icons/FilterList';
 
 import { AppContext } from "../context/AppContext";
-import { useDatasets } from "../context/DatasetsContext";
+import { fetchDatasets } from "../context/DatasetsContext";
 import sortFunctions from "../utils/sortingFunctions";
 import DatasetTile from "./DatasetTile";
 import { useQueryString } from "../utils/customHooks";
 import DatasetFilters from "./DatasetFilters";
+import { useQuery } from "react-query";
 
 export default function DatasetLayout() {
   const query = useQueryString();
@@ -22,15 +23,18 @@ export default function DatasetLayout() {
   const page = parseInt(query.get("page") || "1");
   const { appState, setPermanent } = useContext(AppContext);
   
-  const {state} = useDatasets()
   const { datasetGrid: compact } = appState;
   const datasetsPerPage = compact ? 12 : 10;
 
   //const datasets = appState.datasets;
-  const datasets = state.datasets;
+  
+  const { isLoading, data, error } = useQuery('datasets', async () => fetchDatasets());
+  if (isLoading) {return <>Loading dataset metadata...</>}
+  if (error) {return <>There was an error fetching dataset metadata.</>}
+
+  const datasets = data!;
   const rangeStart = (page - 1) * datasetsPerPage;
   const rangeEnd = rangeStart + datasetsPerPage;
-
 
   function setCurrentPage(page: number) {
     query.set("page", page.toString());

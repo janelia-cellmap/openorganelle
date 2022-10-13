@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface DatasetViewListProps {
   views: View[];
-  checkState: boolean[];
+  checkState: number;
   handleToggle: (val: number, views: View[]) => () => void | undefined;
 }
 
@@ -55,7 +55,7 @@ export default function DatasetViewList({
               <ListItemIcon>
                 <Radio
                   edge="start"
-                  checked={checkState[idx]}
+                  checked={checkState == idx}
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ "aria-labelledby": labelId }}

@@ -12,8 +12,9 @@ import { AppContext } from "../context/AppContext";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { ImageLayer } from "@janelia-cosem/neuroglancer-url-tools";
 import { makeLayer, makeNeuroglancerViewerState, outputDimensions } from "../api/neuroglancer";
-import { useDatasets } from "../context/DatasetsContext";
+import { fetchDatasets } from "../context/DatasetsContext";
 import { View } from "../api/datasets";
+import { useQuery } from "react-query";
 class OrganelleTableEntry {
   constructor(
     public full_name: string,
@@ -951,9 +952,12 @@ const analysisList = [
 
 export default function Organelles() {
   const {appState} = useContext(AppContext);
-  const {state} = useDatasets()
-  const neuroglancerAddress = appState.neuroglancerAddress;
-  const datasets = state.datasets;
+  const { isLoading, data, error } = useQuery('datasets', async () => fetchDatasets());
+  if (isLoading) {return <>Loading dataset metadata...</>}
+  if (error) {return <>There was an error fetching dataset metadata.</>}
+  
+  const neuroglancerAddress = appState.neuroglancerAddress
+  const datasets = data!
   
   if (datasets.size === 0) {
     return (

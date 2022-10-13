@@ -6,12 +6,12 @@ import Typography from "@material-ui/core/Typography";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { VolumeCheckStates } from "./DatasetPaper";
+import { ImageCheckState } from "./DatasetPaper";
 
-interface VolumeCheckboxCollectionProps {
-  volumes: Image[]
-  checkState: Map<string, VolumeCheckStates>
-  handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+interface ImageCheckboxCollectionProps {
+  images: Image[]
+  checkState: Map<string, ImageCheckState>
+  handleImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   contentType: string,
   contentTypeInfo: ContentTypeMetadata,
   accordionExpanded: boolean
@@ -21,34 +21,34 @@ interface VolumeCheckboxCollectionProps {
 }
 
 
-export default function VolumeCheckboxCollection({
-  volumes,
+export default function ImageCheckboxCollection({
+  images,
   checkState,
-  handleVolumeChange,
+  handleImageChange,
   contentType,
   contentTypeInfo,
   accordionExpanded,
-}: VolumeCheckboxCollectionProps) {
+}: ImageCheckboxCollectionProps) {
   const [expanded, setExpanded] = useState(accordionExpanded);
 
   const handleExpand = () => {
     setExpanded(!expanded);
   };
 
-  const checkBoxList = volumes?.map((volume: Image) => {
+  const checkBoxList = images?.map((image: Image) => {
     return (
       <FormControlLabel
         control={
           <Checkbox
-            checked={checkState.get(volume.name)!.selected}
-            onChange={handleVolumeChange}
+            checked={checkState.get(image.name) ? checkState.get(image.name)?.selected : false }
+            onChange={handleImageChange}
             color="primary"
-            name={volume.name}
+            name={image.name}
             size="small"
           />
         }
-        label={volume.description}
-        key={`${volume.name}`}
+        label={image.description}
+        key={`${image.name}`}
       />
     );
   });

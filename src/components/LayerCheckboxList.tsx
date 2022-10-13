@@ -10,8 +10,8 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
 import {ContentType, contentTypeDescriptions, Dataset } from "../api/datasets";
-import VolumeCheckboxCollection from "./LayerGroup";
-import { VolumeCheckStates } from "./DatasetPaper";
+import ImageCheckboxCollection from "./LayerGroup";
+import { ImageCheckState } from "./DatasetPaper";
 import { Image } from "../api/datasets";
 
 const useStyles: any = makeStyles(() =>
@@ -32,7 +32,7 @@ const useStyles: any = makeStyles(() =>
 
 interface LayerCheckboxListProps {
   dataset: Dataset;
-  checkState: Map<string, VolumeCheckStates>;
+  checkState: Map<string, ImageCheckState>;
   handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -41,7 +41,7 @@ interface LayerCheckboxListProps {
 
 interface FilteredLayerListProps {
   dataset: Dataset;
-  checkState: Map<string, VolumeCheckStates>;
+  checkState: Map<string, ImageCheckState>;
   handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   filter: string | undefined;
@@ -54,9 +54,9 @@ interface LayerFilterProps {
 
 function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLayerChange, filter}: FilteredLayerListProps) {
   const classes = useStyles();
-  const volumesListInit: Image[] = []
-  const [volumesList, setVolumes] = useState(volumesListInit);
-  const volumeGroups: Map<ContentType, Image[]> = new Map();
+  const imagesInit: Image[] = []
+  const [images, setImages] = useState(imagesInit);
+  const imageGroups: Map<ContentType, Image[]> = new Map();
 
   useEffect(() => {
     // filter volumes based on filter string
@@ -68,28 +68,28 @@ function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLay
         v.name.toLowerCase().includes(filter.toLowerCase())
       );
     }
-    setVolumes(
+    setImages(
       filteredVolumes);
   }, [dataset, filter]);
 
-  volumesList.forEach((v: Image) => {
-    if (volumeGroups.get(v.contentType) === undefined) {
-      volumeGroups.set(v.contentType, []);
+  images.forEach((v: Image) => {
+    if (imageGroups.get(v.contentType) === undefined) {
+      imageGroups.set(v.contentType, []);
     }
-    volumeGroups.get(v.contentType)!.push(v);
+    imageGroups.get(v.contentType)!.push(v);
   });
 
   const checkboxLists = Array.from(contentTypeDescriptions.keys()).map((ct) => {
-    const volumes = (volumeGroups.get(ct as ContentType) as Image[]);
+    const images = (imageGroups.get(ct as ContentType) as Image[]);
     const contentTypeInfo = contentTypeDescriptions.get(ct as ContentType)!;
     const expanded = (ct === 'em');
     
-    if (volumes !== undefined && volumes.length > 0) {
-      return <VolumeCheckboxCollection
+    if (images !== undefined && images.length > 0) {
+      return <ImageCheckboxCollection
               key={ct}
-              volumes={volumes}
+              images={images}
               checkState={checkState}
-              handleVolumeChange={handleVolumeChange}
+              handleImageChange={handleVolumeChange}
               contentType={ct}
               contentTypeInfo={contentTypeInfo}
               accordionExpanded={expanded}

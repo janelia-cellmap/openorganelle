@@ -39,8 +39,8 @@ function setLoading(data: boolean): Action {
     payload: data}
 }
 
-export async function getDatasets(metadataEndpoint: string) {
-    const datasets: Dataset[] = await getObjectFromJSON<Dataset[]>(new URL(metadataEndpoint));
+export async function fetchDatasets(url: string = initialState.api) {
+    const datasets: Dataset[] = await getObjectFromJSON<Dataset[]>(new URL(url));
     const taggedDatasets = datasets.map((d) => {
         return {...d, tags: makeTags(d)}
         })
@@ -53,7 +53,7 @@ export function DatasetsProvider({children}: any) {
         async function fetchData() {
             console.log('begin fetching datasets')
             dispatch(setLoading(true))
-            const data = await getDatasets(state.api);
+            const data = await fetchDatasets(state.api);
             dispatch(setDatasets(data!))
             console.log('done fetching datasets')
         }

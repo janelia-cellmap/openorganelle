@@ -4,7 +4,9 @@ import Skeleton from "@material-ui/lab/Skeleton";
 import { Paper, Grid } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import DatasetPaper from "./DatasetPaper";
-import { useDatasets } from "../context/DatasetsContext";
+import { fetchDatasets } from "../context/DatasetsContext";
+import { useQuery } from "react-query";
+
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -24,9 +26,10 @@ interface DatasetDetailsProps {
 export default function DatasetDetails({ url }: DatasetDetailsProps) {
   const classes = useStyles();
   const { slug }: { slug: string } = useParams();
-  const {state} = useDatasets();
+  const { isLoading, data, error } = useQuery('datasets', async () => fetchDatasets());
+    if (error) {return <>There was an error fetching dataset metadata.</>}
 
-  if (state.datasetsLoading) {
+  if (isLoading) {
     return (
       <Grid container>
         <Grid item md={8}>
@@ -80,7 +83,7 @@ export default function DatasetDetails({ url }: DatasetDetailsProps) {
         </Grid>
       </Grid>
     );
-  } else if (state.datasets.get(slug) === undefined) {
+  } else if (data!.get(slug) === undefined) {
     return <div> Error 404: Could not find a dataset with the key {slug}</div>;
   } else {
     return <DatasetPaper datasetKey={slug} key={url} />;

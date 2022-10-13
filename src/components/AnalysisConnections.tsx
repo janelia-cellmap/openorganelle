@@ -12,7 +12,7 @@ import {
   convertLabelToOrganelle,
   convertLabelToOrganelleAbbreviation
 } from "../utils/organelles";
-import { useDatasets } from "../context/DatasetsContext";
+import { fetchDatasets } from "../context/DatasetsContext";
 
 interface ACProps {
   cypher: string;
@@ -20,25 +20,28 @@ interface ACProps {
 }
 
 export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
-  const { isLoading, isError, data, error }: queryResponse = useQuery(
+  const { isLoading: isAnalysisLoading, isError: isAnalysisError, data: analysisData, error: analysisError }: queryResponse = useQuery(
     ["analysisConnection", cypher],
     () => fetchAnalysisResults(cypher),
     { staleTime: Infinity, refetchOnWindowFocus: false }
   );
   
-  const {state} = useDatasets();
-  const dataset = state.datasets.get(datasetKey)!;
+  const { isLoading: isDatasetsLoading, isError: isDatasetsError, data: datasetsData, error: datasetsError } = useQuery('datasets', async () => fetchDatasets());
 
   const queryString = useQueryString();
 
-  if (isLoading || state.datasetsLoading) {
+  if (isAnalysisLoading || isDatasetsLoading) {
     return <p>Loading...</p>;
   }
 
-  if (isError && error) {
-    return <p>There was an error with your request: {error.message}</p>;
+  if (isAnalysisError && analysisError) {
+    return <p>There was an error with your request: {analysisError.message}</p>;
   }
 
+  if (isDatasetsError && (datasetsError instanceof Error)) {
+    return <p>There was an error loading datasets: {datasetsError.message}</p>;
+  }
+  const dataset = datasetsData?.get(datasetKey)!
   const columns = [
     {
       accessor: "n",
@@ -59,7 +62,7 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
     }
   ];
 
-  const dataRows: string[] = data.data.map((entry: any) => {
+  const dataRows: string[] = analysisData.data.map((entry: any) => {
     const row = {
       n: `${entry.row[0].ID} - ${convertLabelToOrganelle(entry.row[3][0])}`,
       nId: entry.row[0].ID,

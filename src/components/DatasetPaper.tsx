@@ -18,13 +18,14 @@ import NeuroglancerLink from "./NeuroglancerLink";
 import ClipboardLink from "./ClipboardLink";
 
 import BrokenImage from "../broken_image_24dp.svg";
-import { useDatasets } from "../context/DatasetsContext";
+import { fetchDatasets } from "../context/DatasetsContext";
+import { useQuery } from "react-query";
 
 type DatasetPaperProps = {
   datasetKey: string;
 };
 
-export interface VolumeCheckStates {
+export interface ImageCheckState {
   selected: boolean;
   layerType?: LayerType;
 }
@@ -60,47 +61,55 @@ const useStyles: any = makeStyles((theme: Theme) =>
 
 export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const classes = useStyles(); 
-  const {state} = useDatasets()
-  
-  const dataset = state.datasets.get(datasetKey)!;
-  
   const [layerFilter, setLayerFilter] = useState("");
-  const volumeMap = new Map(dataset.images.map((v) => [v.name, v]))
-  const sources: string[] = [...volumeMap.keys()];
+  const { isLoading, data, error } = useQuery('datasets', async () => fetchDatasets());
+    
+  const [checkStates, setCheckStates] = useState({
+    images: new Map<string, ImageCheckState>(),
+    view: 0
+  });
+  
+  if (isLoading) {
+    return <>Loading datasets....</>
+  }
+
+  if (error) {
+    return <>Error loading datasets: {(error as Error).message}</>
+  }
+
+  //const dataset = state.datasets.get(datasetKey)!;
+  const dataset = data!.get(datasetKey)!;
+  
+  
+  const imageMap = new Map(dataset.images.map((v) => [v.name, v]))
+  const sources: string[] = [...imageMap.keys()];
   // remove this when we don't have data on s3 anymore
   const bucket = "janelia-cosem-datasets";
   const prefix = dataset.name;
   const bucketBrowseLink = makeQuiltURL(bucket, prefix);
   const s3URL = `s3://${bucket}/${prefix}/${dataset.name}.n5`;
-  const volumeCheckStateInit = new Map<string, VolumeCheckStates>(
-    sources.map(k => [k, { selected: false, layerType: undefined }])
-  );
+
   // initialize the layer checkboxes by looking at the first dataset view
+  
   for (const vn of sources) {
     const vkeys = dataset.views[0].sourceNames;
     if (vkeys.includes(vn)) {
-      volumeCheckStateInit.set(vn, {
-        ...volumeCheckStateInit.get(vn),
+      checkStates.images.set(vn, {
+        ...checkStates.images.get(vn),
         selected: true
       });
     }
   }
   // the first view is selected, by default
-  const viewCheckStateInit = dataset.views.map((v, idx) => idx === 0);
-
-  const [checkStates, setCheckStates] = useState({
-    volumeCheckState: volumeCheckStateInit,
-    viewCheckState: viewCheckStateInit
-  });
 
   const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const volumeCheckState = checkStates.volumeCheckState.get(
+    const imageCheckState = checkStates.images.get(
       event.target.name
     );
     const newCheckState = new Map(
-      checkStates.volumeCheckState
+      checkStates.images
         .set(event.target.name, {
-          ...volumeCheckState,
+          ...imageCheckState,
           selected: event.target.checked
         })
         .entries()
@@ -108,27 +117,25 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
     // Prevent all checkboxes from being deselected
     if (![...newCheckState.values()].every(v => !v.selected)) {
-      setCheckStates({ ...checkStates, volumeCheckState: newCheckState });
+      setCheckStates({ ...checkStates, images: newCheckState });
     }
   };
 
   const handleViewChange = (index: number, views: View[]) => () => {
-    const newViewState = checkStates.viewCheckState.map(() => false);
-    newViewState[index] = true;
-
-    const newVolumeState = new Map(
-      [...checkStates.volumeCheckState.entries()].map(([k, v]) => [
+    const newViewState = index
+    const newImageState = new Map(
+      [...checkStates.images.entries()].map(([k, v]) => [
         k,
         { ...v, selected: false }
       ])
     );
-    views[newViewState.findIndex(v => v)].sourceNames.map(k =>
-      newVolumeState.set(k, { ...newVolumeState.get(k), selected: true })
+    views[newViewState].sourceNames.map(k =>
+      newImageState.set(k, { ...newImageState.get(k), selected: true })
     );
 
     setCheckStates({
-      volumeCheckState: newVolumeState,
-      viewCheckState: newViewState
+      images: newImageState,
+      view: newViewState
     });
   };
 
@@ -136,23 +143,23 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const contentType = event.target.name as ContentType;
     let newLayerType = undefined;
-    const newVolumeCheckState = new Map(checkStates.volumeCheckState.entries());
-    for (const k of newVolumeCheckState.keys()) {
-      const val = newVolumeCheckState.get(k);
+    const newImageCheckState = new Map(checkStates.images.entries());
+    for (const k of newImageCheckState.keys()) {
+      const val = newImageCheckState.get(k);
       if (
         !(val === undefined) &&
-        volumeMap.get(k)?.contentType === contentType
+        imageMap.get(k)?.contentType === contentType
       ) {
         if (event.target.checked) {
           newLayerType = "segmentation" as LayerType;
         }
-        newVolumeCheckState.set(k, {
+        newImageCheckState.set(k, {
           ...val,
           layerType: newLayerType as LayerType
         });
       }
     }
-    setCheckStates({ ...checkStates, volumeCheckState: newVolumeCheckState });
+    setCheckStates({ ...checkStates, images: newImageCheckState });
   };
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,15 +167,15 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   };
 
   const clearLayers = () => {
-    const newVolumeCheckState = new Map(
-      [...checkStates.volumeCheckState.entries()].map(([k]) => [
+    const newImageCheckState = new Map(
+      [...checkStates.images.entries()].map(([k]) => [
         k,
         { selected: false }
       ])
     );
     setCheckStates({
       ...checkStates,
-      volumeCheckState: newVolumeCheckState
+      images: newImageCheckState
     });
   };
 
@@ -181,8 +188,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
           <DatasetDescriptionSummary dataset={dataset}>
             <NeuroglancerLink
               dataset={dataset}
-              checkState={checkStates.volumeCheckState}
-              view={dataset.views[checkStates.viewCheckState.findIndex(a => a)]}
+              checkState={checkStates.images}
+              view={dataset.views[checkStates.view]}
             >
               <img
 								alt={thumbnailAlt}
@@ -207,9 +214,9 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             <Grid item sm={10}>
               <NeuroglancerLink
                 dataset={dataset}
-                checkState={checkStates.volumeCheckState}
+                checkState={checkStates.images}
                 view={
-                  dataset.views[checkStates.viewCheckState.findIndex(a => a)]
+                  dataset.views[checkStates.view]
                 }
               />
             </Grid>
@@ -222,13 +229,13 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
               <DatasetViewList
                 views={dataset.views}
                 handleToggle={handleViewChange}
-                checkState={checkStates.viewCheckState}
+                checkState={checkStates.view}
               />
             </Grid>
             <Grid item sm={6}>
               <LayerCheckboxList
                 dataset={dataset}
-                checkState={checkStates.volumeCheckState}
+                checkState={checkStates.images}
                 handleVolumeChange={handleVolumeChange}
                 handleLayerChange={handleLayerChange}
                 handleFilterChange={handleFilterChange}
