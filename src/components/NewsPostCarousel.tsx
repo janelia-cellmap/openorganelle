@@ -10,6 +10,7 @@ import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from "react-swipeable-views-utils";
+import { postSlug } from "../utils/newsposts";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -65,6 +66,7 @@ export default function NewsPostCarousel() {
       label: post.title,
       imgPath: post.thumbnail_url,
       summary: post.summary,
+      date: post.date,
     };
   });
 
@@ -78,32 +80,32 @@ export default function NewsPostCarousel() {
     <div>
       <Typography variant="h4">Latest News</Typography>
       <div className={classes.root}>
-        <Paper square elevation={0} className={classes.header}>
-          <Typography>{steps[activeStep].label}</Typography>
-        </Paper>
-        <AutoPlaySwipeableViews
-          axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-          index={activeStep}
-          onChangeIndex={handleStepChange}
-          enableMouseEvents
-          interval={7000}
-        >
-          {steps.map((step, index) => (
-            <div key={step.label}>
-              {Math.abs(activeStep - index) <= 2 ? (
-                <img
-                  className={classes.img}
-                  src={step.imgPath}
-                  alt={step.label}
-                />
-              ) : null}
-              <p>{step.summary}</p>
-              <Button component={Link} to="/news/slug">
-                Learn More
-              </Button>
-            </div>
-          ))}
-        </AutoPlaySwipeableViews>
+        <Link to={`/news/${postSlug(steps[activeStep].date, steps[activeStep].label)}`} style={{textDecoration: "none"}}>
+          <Paper square elevation={0} className={classes.header}>
+            <Typography>{steps[activeStep].label}</Typography>
+          </Paper>
+          <AutoPlaySwipeableViews
+            axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+            index={activeStep}
+            onChangeIndex={handleStepChange}
+            enableMouseEvents
+            interval={7000}
+          >
+            {steps.map((step, index) => (
+              <div key={step.label}>
+                {Math.abs(activeStep - index) <= 2 ? (
+                  <img
+                    className={classes.img}
+                    src={step.imgPath}
+                    alt={step.label}
+                  />
+                ) : null}
+                <p>{step.summary}</p>
+                <Button>Learn More</Button>
+              </div>
+            ))}
+          </AutoPlaySwipeableViews>
+        </Link>
         <MobileStepper
           steps={maxSteps}
           position="static"
