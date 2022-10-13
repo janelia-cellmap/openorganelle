@@ -5,7 +5,6 @@ import Settings from "./components/Settings";
 import { AppProvider } from "./context/AppContext";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import { QueryClientProvider, QueryClient } from "react-query";
 import "./App.css";
 import { PostsProvider } from "./context/PostsContext";
 
@@ -14,7 +13,6 @@ const TermsOfUse = lazy(() => import("./components/TermsOfUse"));
 const About = lazy(() => import("./components/About"));
 const Index = lazy(() => import("./components/Index"));
 
-const queryClient = new QueryClient()
 
 const theme = createMuiTheme({
   palette: {
@@ -30,7 +28,6 @@ const theme = createMuiTheme({
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <QueryClientProvider client={queryClient}>
       <AppProvider>
         <PostsProvider>
         <Router>
@@ -68,7 +65,6 @@ function App() {
         </Router>
         </PostsProvider>
       </AppProvider>
-      </QueryClientProvider>
     </ThemeProvider>
   );
 }
