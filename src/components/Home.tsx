@@ -12,7 +12,7 @@ export default function Home() {
           <NewsPostCollection/>
         </Grid>
         <Grid item>
-          <DatasetLayout></DatasetLayout>
+          <DatasetLayout/>
         </Grid>
       </Grid>
     </div>
