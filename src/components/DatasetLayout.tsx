@@ -7,7 +7,7 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import Button from "@material-ui/core/Button";
-import FilterListIcon from '@material-ui/icons/FilterList';
+import FilterListIcon from "@material-ui/icons/FilterList";
 
 import { AppContext } from "../context/AppContext";
 import { fetchDatasets } from "../context/DatasetsContext";
@@ -17,20 +17,32 @@ import { useQueryString } from "../utils/customHooks";
 import DatasetFilters from "./DatasetFilters";
 import { useQuery } from "react-query";
 
-export default function DatasetLayout() {
+interface DatasetLayoutProps {
+  latestOnly: boolean;
+}
+
+export default function DatasetLayout({
+  latestOnly = false,
+}: DatasetLayoutProps) {
   const query = useQueryString();
   const history = useHistory();
   const page = parseInt(query.get("page") || "1");
   const { appState, setPermanent } = useContext(AppContext);
-  
+
   const { datasetGrid: compact } = appState;
   const datasetsPerPage = compact ? 12 : 10;
 
   //const datasets = appState.datasets;
-  
-  const { isLoading, data, error } = useQuery('datasets', async () => fetchDatasets());
-  if (isLoading) {return <>Loading dataset metadata...</>}
-  if (error) {return <>There was an error fetching dataset metadata.</>}
+
+  const { isLoading, data, error } = useQuery("datasets", async () =>
+    fetchDatasets()
+  );
+  if (isLoading) {
+    return <>Loading dataset metadata...</>;
+  }
+  if (error) {
+    return <>There was an error fetching dataset metadata.</>;
+  }
 
   const datasets = data!;
   const rangeStart = (page - 1) * datasetsPerPage;
@@ -40,11 +52,11 @@ export default function DatasetLayout() {
     query.set("page", page.toString());
     history.push({
       pathname: "",
-      search: query.toString()
+      search: query.toString(),
     });
   }
 
-  const datasetsFiltered = [...datasets].filter(dataset => {
+  const datasetsFiltered = [...datasets].filter((dataset) => {
     // if any tag in appState.datasetFilter is missing from the
     // tags in the dataset, then we don't have a match, so
     // return false.
@@ -62,14 +74,19 @@ export default function DatasetLayout() {
         } else {
           // If the category hasn't been seen yet or doesn't already have a positive hit
           // from another filter, then set it to false.
-          if (!filterCategories[tag.category] || filterCategories[tag.category] !== true) {
+          if (
+            !filterCategories[tag.category] ||
+            filterCategories[tag.category] !== true
+          ) {
             filterCategories[tag.category] = false;
           }
         }
       }
       // now that all the filters have been checked, throw out the dataset if it doesn't
       // have at least one positive match to a filter tag.
-      const hasFalseKeys = Object.keys(filterCategories).some(k => !filterCategories[k]);
+      const hasFalseKeys = Object.keys(filterCategories).some(
+        (k) => !filterCategories[k]
+      );
       if (hasFalseKeys) {
         return false;
       }
@@ -80,7 +97,9 @@ export default function DatasetLayout() {
 
   const totalPages = Math.ceil(datasetsFiltered.length / datasetsPerPage);
   // sort by number of volumes; this will break when the metadata changes to putting volumes in an array
-  const datasetsSorted = datasetsFiltered.sort(sortFunctions[appState.sortBy].func)
+  const datasetsSorted = datasetsFiltered.sort(
+    sortFunctions[appState.sortBy].func
+  );
 
   const displayedDatasets = datasetsSorted
     .slice(rangeStart, rangeEnd)
@@ -94,7 +113,9 @@ export default function DatasetLayout() {
           />
         );
       }
-      return <DatasetTile dataset={dataset} key={`${name}_${rangeStart}_${i}`} />;
+      return (
+        <DatasetTile dataset={dataset} key={`${name}_${rangeStart}_${i}`} />
+      );
     });
 
   const handleCompactChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,11 +129,45 @@ export default function DatasetLayout() {
     setPermanent({ showFilters: !appState.showFilters });
   };
 
+  if (latestOnly) {
+    const latestDatasets = [...datasets].sort(
+      sortFunctions['collected'].func
+    )
+    .slice(0,4)
+      .map(([name, dataset], i) => {
+        if (compact) {
+          return (
+            <DatasetTile
+              dataset={dataset}
+              compact={compact}
+              key={`${name}_${rangeStart}_${i}`}
+            />
+          );
+        }
+        return (
+          <DatasetTile dataset={dataset} key={`${name}_${rangeStart}_${i}`} />
+        );
+      });
+
+    return (
+      <div>
+        <Typography variant="h4">Latest Datasets</Typography>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Grid container spacing={1}>
+              {latestDatasets}
+            </Grid>
+          </Grid>
+        </Grid>
+      </div>
+    );
+  }
+
   return (
     <div>
       <Typography variant="h5">
-        Datasets {rangeStart + 1} to {Math.min(rangeEnd, datasetsFiltered.length)} of{" "}
-        {datasets.size}
+        Datasets {rangeStart + 1} to{" "}
+        {Math.min(rangeEnd, datasetsFiltered.length)} of {datasets.size}
       </Typography>
       <Grid container spacing={1}>
         <Grid item sm={8} xs={12}>
@@ -125,7 +180,14 @@ export default function DatasetLayout() {
           )}
         </Grid>
         <Grid item sm={2} xs={12}>
-          <Button variant="outlined" color="primary" onClick={handleFilterToggle} startIcon={<FilterListIcon />} >Filter / Sort</Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleFilterToggle}
+            startIcon={<FilterListIcon />}
+          >
+            Filter / Sort
+          </Button>
         </Grid>
         <Grid item sm={2} xs={12}>
           <FormGroup row>
@@ -143,10 +205,12 @@ export default function DatasetLayout() {
           </FormGroup>
         </Grid>
         {appState.showFilters ? (
-        <Grid item xs={12}>
-          <DatasetFilters/>
-        </Grid>
-        ):""}
+          <Grid item xs={12}>
+            <DatasetFilters />
+          </Grid>
+        ) : (
+          ""
+        )}
         <Grid item xs={12}>
           <Grid container spacing={1}>
             {displayedDatasets}

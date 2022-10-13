@@ -12,7 +12,7 @@ export default function Home() {
           <NewsPostCarousel/>
         </Grid>
         <Grid item>
-          <DatasetLayout/>
+          <DatasetLayout latestOnly/>
         </Grid>
       </Grid>
     </div>
