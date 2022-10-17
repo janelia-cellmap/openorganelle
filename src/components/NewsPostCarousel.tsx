@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { usePosts } from "../context/PostsContext";
 import { Link } from "react-router-dom";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import MobileStepper from "@material-ui/core/MobileStepper";
-import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
-import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+
+import { Typography, Paper, Button, MobileStepper } from '@mui/material';
+import {KeyboardArrowLeft, KeyboardArrowRight} from "@mui/icons-material";
+
+import { makeStyles, useTheme } from "@mui/material/styles";
 import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from "react-swipeable-views-utils";
 import { postSlug } from "../utils/newsposts";

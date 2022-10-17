@@ -1,13 +1,14 @@
 import React from "react";
 import { useTable, useSortBy, usePagination } from "react-table";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {Table,
+        TableBody,
+        TableCell,
+        TableHead,
+        TableRow,
+        Typography,
+        Button} from "@mui/material";
+
+import { createStyles, makeStyles, Theme } from "@mui/material/styles";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

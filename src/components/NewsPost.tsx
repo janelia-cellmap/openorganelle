@@ -5,7 +5,7 @@ import {
   createStyles,
   makeStyles,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";

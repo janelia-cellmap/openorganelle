@@ -1,14 +1,16 @@
+import React, { useState, useEffect } from "react";
 import {
   createStyles,
   FormControl,
   makeStyles,
-  Typography
-} from "@material-ui/core";
-import InputLabel from "@material-ui/core/InputLabel";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import SearchIcon from "@material-ui/icons/Search";
-import React, { useState, useEffect } from "react";
+  Typography,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment
+} from "@mui/material";
+
+import {Search} from "@mui/icons-material";
+
 import {ContentType, contentTypeDescriptions, Dataset } from "../api/datasets";
 import ImageCheckboxCollection from "./LayerGroup";
 import { ImageCheckState } from "./DatasetPaper";
@@ -115,7 +117,7 @@ function LayerFilter({ value, onChange } : LayerFilterProps) {
         onChange={onChange}
         startAdornment={
           <InputAdornment position="start">
-            <SearchIcon />
+            <Search />
           </InputAdornment>
         }
       />

@@ -1,7 +1,6 @@
 import React from "react";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
+import { Typography, Paper } from '@mui/material';
+import { makeStyles, createStyles } from "@mui/material/styles";
 
 const useStyles: any = makeStyles(() =>
   createStyles({

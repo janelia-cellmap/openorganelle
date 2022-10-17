@@ -4,7 +4,7 @@ import Footer from "./components/Footer";
 import Settings from "./components/Settings";
 import { AppProvider } from "./context/AppContext";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { ThemeProvider } from "@emotion/react";
 import "./App.css";
 import { PostsProvider } from "./context/PostsContext";
 
@@ -14,7 +14,7 @@ const About = lazy(() => import("./components/About"));
 const Index = lazy(() => import("./components/Index"));
 
 
-const theme = createMuiTheme({
+const theme = {
   palette: {
     primary: {
       main: "#5084AC"
@@ -23,7 +23,7 @@ const theme = createMuiTheme({
       main: "#27507C"
     }
   }
-});
+};
 
 function App() {
   return (

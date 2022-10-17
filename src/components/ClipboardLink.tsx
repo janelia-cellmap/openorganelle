@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import Snackbar from "@material-ui/core/Snackbar";
-import FolderOpen from "@material-ui/icons/FolderOpen";
-import Typography from "@material-ui/core/Typography";
-import Tooltip from "@material-ui/core/Tooltip";
+import { makeStyles, Theme, createStyles } from "@mui/material/styles";
+
+import { Assignment,
+         FolderOpen,
+         Help} from "@mui/icons-material";
+
+import {Button, Snackbar, Typography, Tooltip } from '@mui/material';
 import fijiIcon from "./fiji_icon.png";
-import { Button } from "@material-ui/core";
-import HelpIcon from "@material-ui/icons/Help";
+
 import { HashLink } from "react-router-hash-link";
 import { LinkProps as RouterLinkProps } from "react-router-dom";
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -61,7 +61,7 @@ export default function ClipboardLink({
           color="primary"
           fullWidth
           component={LinkBehavior}
-          startIcon={<HelpIcon />}
+          startIcon={<Help />}
           rel="noopener noreferrer"
           style={{ marginBottom: "1rem" }}
         >
@@ -116,7 +116,7 @@ export default function ClipboardLink({
           variant="outlined"
           color="primary"
           fullWidth
-          startIcon={<AssignmentIcon />}
+          startIcon={<Assignment />}
           style={{ marginBottom: "1rem" }}
           onClick={() => {
             navigator.clipboard.writeText(s3URL);

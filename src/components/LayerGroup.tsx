@@ -1,11 +1,16 @@
 import React, { useState } from "react";
+
+import {Accordion,
+        AccordionDetails,
+        AccordionSummary,
+        Checkbox,
+        FormControlLabel,
+        FormGroup,
+        Typography } from "@mui/material";
+
+import {ExpandMore} from "@mui/icons-material";
+
 import { Image, ContentTypeMetadata } from "../api/datasets";
-import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
-import Accordion from "@material-ui/core/Accordion";
-import Typography from "@material-ui/core/Typography";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { ImageCheckState } from "./DatasetPaper";
 
 interface ImageCheckboxCollectionProps {
@@ -56,7 +61,7 @@ export default function ImageCheckboxCollection({
   return (
     <Accordion key={contentType} expanded={expanded} onChange={handleExpand}>
       <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
+        expandIcon={<ExpandMore />}
         aria-controls="content"
         id="panel1bh-header"
       >

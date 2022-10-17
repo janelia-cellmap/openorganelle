@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import MailOutlineIcon from '@material-ui/icons/MailOutline';
-import TwitterIcon from '@material-ui/icons/Twitter';
+import { makeStyles } from "@mui/material/styles";
+import { Grid } from "@mui/material";
+
+import {MailOutline, Twitter} from '@mui/icons-material';
 
 import cosemLogo from "../COSEM_logo_invert_transparent.png";
 import fibsemLogo from "../fibsem_logo.png";
@@ -59,10 +59,10 @@ export default function Footer() {
         <Grid item md={3}>
           <p>Contact us</p>
           <a href="https://twitter.com/OpenOrganelle" className={classes.mailLink}>
-            <TwitterIcon style={{marginRight: "1rem"}}/> @OpenOrganelle
+            <Twitter style={{marginRight: "1rem"}}/> @OpenOrganelle
           </a>
           <a href="mailto:cosemdata@janelia.hhmi.org" className={classes.mailLink}>
-            <MailOutlineIcon style={{marginRight: "1rem"}}/> cosemdata@janelia.hhmi.org
+            <MailOutline style={{marginRight: "1rem"}}/> cosemdata@janelia.hhmi.org
           </a>
         </Grid>
         <Grid item md={6} className={classes.footerMiddle}>

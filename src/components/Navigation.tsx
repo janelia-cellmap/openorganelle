@@ -1,11 +1,10 @@
 import React, { useContext } from "react";
 import { NavLink, Link } from "react-router-dom";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import SettingsIcon from "@material-ui/icons/Settings";
-import { Grid } from "@material-ui/core";
+
+import {AppBar, Toolbar, Typography, Grid} from "@mui/material/";
+import { makeStyles, Theme, createStyles } from "@mui/material/styles";
+import SettingsIcon from "@mui/icons-material/Settings";
+
 import { AppContext } from "../context/AppContext";
 import janeliaLogo from "../janelia_logo.png";
 import { WebGL2CompatibilityWarning } from "./WebGL2Compatibility";

@@ -1,7 +1,7 @@
 import React, {FunctionComponent} from "react";
-import WarningIcon from "@material-ui/icons/Warning"
-import { Grid, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import WarningIcon from "@mui/icons-material/Warning"
+import { Grid, Typography } from "@mui/material";
+import { makeStyles } from "@mui/material/styles";
 
 const useStyles = makeStyles(theme => ({
     warning: {

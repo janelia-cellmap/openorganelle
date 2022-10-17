@@ -1,11 +1,12 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import Skeleton from "@material-ui/lab/Skeleton";
-import { Paper, Grid } from "@material-ui/core";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { useQuery } from "react-query";
+
+import { Paper, Grid, Skeleton } from "@mui/material";
+import { makeStyles, Theme, createStyles } from "@mui/material/styles";
+
 import DatasetPaper from "./DatasetPaper";
 import { fetchDatasets } from "../context/DatasetsContext";
-import { useQuery } from "react-query";
 
 
 const useStyles: any = makeStyles((theme: Theme) =>

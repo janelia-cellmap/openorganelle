@@ -5,7 +5,7 @@ import {
   createStyles,
   makeStyles,
   Theme
-} from "@material-ui/core";
+} from "@mui/material";
 import React, { useState } from "react";
 import {LayerType, makeQuiltURL, View, ContentType} from "../api/datasets";
 import {

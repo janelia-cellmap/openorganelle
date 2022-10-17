@@ -5,7 +5,7 @@ import {
   createStyles,
   makeStyles,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 
 import { usePosts } from "../context/PostsContext";
 import NewsPostSummary from "./NewsPostSummary";

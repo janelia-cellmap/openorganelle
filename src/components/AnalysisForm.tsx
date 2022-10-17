@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
-import Button from "@material-ui/core/Button";
-import MenuItem from "@material-ui/core/MenuItem";
+import { makeStyles } from "@mui/material/styles";
+import {FormControl, InputLabel, Select, Button, MenuItem} from "@mui/material";
 
 import { getContacts } from "../utils/cypherBuilder";
 import { organelleNames } from "../utils/organelles";

@@ -1,17 +1,17 @@
 import React from "react";
-import Paper from "@material-ui/core/Paper";
 import { Link as RouterLink } from "react-router-dom";
 
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { makeStyles, Theme, createStyles } from "@mui/material/styles";
 import {
   Box,
   Grid,
   CardContent,
   CardMedia,
   CardActionArea,
-  Card
-} from "@material-ui/core";
-import Popper from "@material-ui/core/Popper";
+  Card,
+  Popper,
+  Paper
+} from "@mui/material";
 
 import { TaggedDataset } from "../api/datasets";
 import { DatasetDescriptionPreview } from "./DatasetDescriptionText";

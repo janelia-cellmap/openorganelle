@@ -1,14 +1,14 @@
 import React from "react";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
+import { makeStyles, Theme, createStyles } from "@mui/material/styles";
 import {
+  Typography, 
+  List, 
+  ListItem,
   ListItemIcon,
   ListItemText,
   Radio
-} from "@material-ui/core";
+} from "@mui/material";
 import { View } from "../api/datasets";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

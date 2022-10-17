@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import Button from "@material-ui/core/Button";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import Chip from "@material-ui/core/Chip";
-import DoneIcon from "@material-ui/icons/Done";
+import { Button, Chip } from "@mui/material";
+import {FilterList, Done} from "@mui/icons-material";
 
 interface FilterParams {
   tags: string[];
@@ -36,7 +34,7 @@ export default function NewsPostFilters({
     if (isSelected) {
       return (
         <Chip
-          icon={<DoneIcon />}
+          icon={<Done />}
         style={{margin: "0.3em"}}
           onClick={() => handleClick(tag)}
           key={tag}
@@ -53,7 +51,7 @@ export default function NewsPostFilters({
         variant="outlined"
         color="primary"
         onClick={handleFilterToggle}
-        startIcon={<FilterListIcon />}
+        startIcon={<FilterList />}
       >
         Filter
       </Button>

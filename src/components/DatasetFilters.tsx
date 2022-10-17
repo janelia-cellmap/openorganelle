@@ -1,16 +1,16 @@
 import React, { useContext } from "react";
 
-import Grid from "@material-ui/core/Grid";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
+import { InputLabel,
+         Grid,
+         MenuItem,
+         FormControl,
+         Select,
+         Checkbox,
+         TextField,
+         Autocomplete } from '@mui/material';
 
-import Checkbox from "@material-ui/core/Checkbox";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import { CheckBox,
+         CheckBoxOutlineBlank} from "@mui/icons-material";
 
 import { AppContext } from "../context/AppContext";
 import sortFunctions from "../utils/sortingFunctions";
@@ -48,8 +48,8 @@ export default function DatasetFilters() {
     </MenuItem>
   ));
 
-  const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-  const checkedIcon = <CheckBoxIcon fontSize="small" />;
+  const icon = <CheckBoxOutlineBlank fontSize="small" />;
+  const checkedIcon = <CheckBox fontSize="small" />;
   const tags: DatasetTag[] = [];
   const tagSet: OSet<DatasetTag> = new OSet();
   for (const dataset of datasets.values()) {

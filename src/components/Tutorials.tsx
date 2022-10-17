@@ -1,16 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
+import { Typography, Grid, Paper, Box } from '@mui/material';
+import { makeStyles, createStyles } from "@mui/material/styles";
 
 import ng_contrast from "./ng_contrast.png";
 import ng_resolution from "./ng_resolution.png";
 import fijiIcon from "./fiji_icon.png";
 import "./Tutorials.css";
-import { Box } from "@material-ui/core";
 import { CodeBlock, dracula } from "react-code-blocks";
 
 const useStyles: any = makeStyles(() =>

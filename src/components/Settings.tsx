@@ -1,9 +1,6 @@
 import React, { useContext } from "react";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
-
+import {Grid, TextField, Typography} from "@mui/material";
+import { makeStyles } from "@mui/material/styles";
 import { AppContext } from "../context/AppContext";
 
 const useStyles = makeStyles(() => ({
