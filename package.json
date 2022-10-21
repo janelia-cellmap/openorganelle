@@ -33,6 +33,7 @@
     "react-code-blocks": "^0.0.8",
     "react-dom": "^17.0.2",
     "react-force-graph-3d": "^1.21.0",
+    "react-helmet": "^6.1.0",
     "react-html-parser": "^2.0.2",
     "react-markdown": "^8.0.3",
     "react-pdf": "^5.2.0",
@@ -72,6 +73,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.20",
     "@types/node": "^13.13.21",
+    "@types/react-helmet": "^6.1.5",
     "@types/react-router-dom": "^5.1.5",
     "@types/react-swipeable-views": "^0.13.1",
     "@types/react-swipeable-views-utils": "^0.13.4",

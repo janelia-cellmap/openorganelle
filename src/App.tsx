@@ -5,6 +5,7 @@ import Settings from "./components/Settings";
 import { AppProvider } from "./context/AppContext";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { Helmet } from "react-helmet";
 import "./App.css";
 import { PostsProvider } from "./context/PostsContext";
 
@@ -28,6 +29,14 @@ const theme = createMuiTheme({
 function App() {
   return (
     <ThemeProvider theme={theme}>
+      <Helmet>
+          <meta name="twitter:card" content="summary" />
+          <meta name="twitter:site" content="@OpenOrganelle" />
+          <meta name="twitter:title" content="OpenOrganelle" />
+          <meta name="twitter:description" content="FIB-SEM and segmentation datasets from Janelia Research Campus" />
+          <meta name="twitter:image" content="https://janelia-cosem.s3.amazonaws.com/jrc_hela-2/thumbnail.jpg" />
+          <title>OpenOrganelle</title>
+      </Helmet>
       <AppProvider>
         <PostsProvider>
         <Router>

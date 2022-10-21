@@ -10,6 +10,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { useParams } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 import { usePosts } from "../context/PostsContext";
 import { postSlug } from "../utils/newsposts";
@@ -51,10 +52,26 @@ export default function NewsPost() {
     return <p>Loading...</p>;
   }
 
-  const { title, content, authors, tags, date } = selectedPost;
+  const {
+    title,
+    content,
+    authors,
+    tags,
+    date,
+    thumbnail_url,
+    summary,
+  } = selectedPost;
 
   return (
     <Box className={classes.newsPost}>
+      <Helmet>
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@OpenOrganelle" />
+        <meta name="twitter:title" content={`OpenOrganelle - ${title}`} />
+        <meta name="twitter:description" content={summary} />
+        <meta name="twitter:image" content={thumbnail_url} />
+    <title>OpenOrganelle - {title}</title>
+      </Helmet>
       <Typography variant="h3">{title}</Typography>
       <Typography variant="subtitle1">
         {Intl.DateTimeFormat("en", { dateStyle: "long" }).format(date)}
@@ -70,7 +87,12 @@ export default function NewsPost() {
         Written by {authors.join(", ")}
       </Typography>
       {tags.map((tag) => (
-        <Chip style={{marginRight: "1em"}} key={tag} label={tag} variant="outlined" />
+        <Chip
+          style={{ marginRight: "1em" }}
+          key={tag}
+          label={tag}
+          variant="outlined"
+        />
       ))}
     </Box>
   );
