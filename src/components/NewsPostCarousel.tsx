@@ -64,7 +64,7 @@ export default function NewsPostCarousel() {
   const steps = selectedPosts.map((post) => {
     return {
       label: post.title,
-      imgPath: post.thumbnail_url,
+      imgPath: post.carousel_url,
       summary: post.summary,
       date: post.date,
     };

@@ -9,6 +9,7 @@ export interface NewsPostProps{
     authors: string[]
     date: Date
     thumbnail_url: string
+    carousel_url: string
     published: boolean
     summary: string
     tags: string[]
@@ -46,6 +47,7 @@ function validatePost(blob: any): NewsPostProps {
          date: new Date(data.date),
          tags: data.tags,
          thumbnail_url: data.thumbnail_url,
+         carousel_url: data.carousel_url,
          summary: data.summary,
          published: data.published}
 }
