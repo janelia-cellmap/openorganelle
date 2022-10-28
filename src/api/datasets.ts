@@ -5,7 +5,7 @@ import { getObjectFromJSON } from "./util";
 export type Dataset = components["schemas"]["Dataset"]
 export type TaggedDataset = Dataset & {tags: OSet<DatasetTag>}
 export type Image = components["schemas"]["Image"]
-export type View = components["schemas"]["View"]
+export type View = components["schemas"]["View"] & {thumbnailUrl?: String, tags?: string[]}
 export type ContentType = components["schemas"]["ContentType"]
 export type UnitfulVector = components["schemas"]["UnitfulVector"]
 export type Publication = components["schemas"]["Publication"]
