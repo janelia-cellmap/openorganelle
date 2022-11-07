@@ -1,7 +1,7 @@
-import { titled } from "../api/datasets"
 import {Dataset} from "../api/datasets"
 
-interface sortOption extends titled{
+interface sortOption {
+  title: string
   func: (a: [string, Dataset], b: [string, Dataset]) => number;
 }
 

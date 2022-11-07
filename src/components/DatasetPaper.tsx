@@ -7,7 +7,8 @@ import {
   Theme
 } from "@material-ui/core";
 import React, { useState } from "react";
-import {LayerType, makeQuiltURL, View, ContentType} from "../api/datasets";
+import {LayerType, View, ContentType} from "../api/datasets";
+import { makeQuiltURL } from "../api/util";
 import {
   DatasetAcquisition,
   DatasetDescriptionSummary

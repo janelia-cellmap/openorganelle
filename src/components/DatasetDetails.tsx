@@ -4,7 +4,7 @@ import Skeleton from "@material-ui/lab/Skeleton";
 import { Paper, Grid } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import DatasetPaper from "./DatasetPaper";
-import { fetchDatasets } from "../context/DatasetsContext";
+import { fetchDatasets } from "../api/datasets";
 import { useQuery } from "react-query";
 
 

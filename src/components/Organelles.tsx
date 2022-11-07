@@ -15,7 +15,7 @@ import { makeLayer, makeNeuroglancerViewerState, outputDimensions } from "../api
 import { fetchDatasets } from "../context/DatasetsContext";
 import { View } from "../api/datasets";
 import { useQuery } from "react-query";
-import BrokenImage from "../broken_image_24dp.svg";
+// import BrokenImage from "../broken_image_24dp.svg";
 
 class OrganelleTableEntry {
   constructor(
@@ -56,7 +56,7 @@ type Organelles = "cent" |
                   "ribo" |
                   "vesicle"
 
-const organelles: {[key in Organelles] :  string} = {
+const organelles: Record<Organelles, string> = {
   cent: "Centrosome",
   chrom: "Chromatin",
   echrom: "Euchromatin",

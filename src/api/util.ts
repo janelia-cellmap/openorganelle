@@ -1,5 +1,9 @@
 import { UnitfulVector } from "./datasets";
 
+export function makeQuiltURL(bucket: string, prefix: string): string {
+  return `https://open.quiltdata.com/b/${bucket}/tree/${prefix}/`
+}
+
 // Check if the browser has webgl2 enabled. This is required for using neuroglancer.
 export const checkWebGL2 = (): boolean => {
     const gl = document.createElement('canvas').getContext('webgl2');
