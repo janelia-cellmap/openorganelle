@@ -194,7 +194,7 @@ function supabaseDatasetToLegacy(dataset: Camelized<FetchedDataset>): legacyComp
         name: im.name,
         description: im.description,
         url: im.url,
-        format: (im.format.toLowerCase()) as components["schemas"]["ArrayContainerFormat"],
+        format: (im.format === 'NEUROGLANCER_PRECOMPUTED') ? 'precomputed' : (im.format.toLowerCase()) as components["schemas"]["ArrayContainerFormat"],
         transform: im.transform as components["schemas"]["SpatialTransform"],
         sampleType: (im.sampleType.toLowerCase()) as components["schemas"]["SampleType"],
         contentType: (im.contentType.toLowerCase()) as components["schemas"]["ContentType"],
@@ -231,3 +231,25 @@ function supabaseDatasetToLegacy(dataset: Camelized<FetchedDataset>): legacyComp
             thumbnailUrl: dataset.thumbnailUrl,
             published: true
 }}
+
+export async function fetchViews() {
+  const { data, error } = await supabase
+  .from('view')
+  .select(`
+    name,
+    description,
+    thumbnail_url,
+    position,
+    scale,
+    orientation,
+    tags,
+    created_at,
+    images:image(name),
+    dataset!inner(name)`).eq('dataset.is_published', true)
+  if (error === null) {
+    return data
+  }
+  else {
+    throw new Error(`Oops! ${JSON.stringify(error)}`)
+  }
+}
