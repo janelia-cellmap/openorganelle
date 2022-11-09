@@ -12,7 +12,7 @@ import {
   convertLabelToOrganelle,
   convertLabelToOrganelleAbbreviation
 } from "../utils/organelles";
-import { fetchDatasets } from "../context/DatasetsContext";
+import { fetchDatasets } from "../api/datasets";
 
 interface ACProps {
   cypher: string;
@@ -80,8 +80,6 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
     return row;
   });
 
-  const checkState = new Map([["fibsem-unit8", {selected: true}]]);
-
   return (
     <>
       {process.env.NODE_ENV !== "production" ? (
@@ -95,7 +93,6 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
       <AnalysisConnectionsGraphic data={dataRows} />
       <NeuroglancerLink
         dataset={dataset}
-        checkState={checkState}
         view={dataset.views[0]}
       />
     </>

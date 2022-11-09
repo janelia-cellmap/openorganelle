@@ -12,7 +12,7 @@ import { AppContext } from "../context/AppContext";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { ImageLayer } from "@janelia-cosem/neuroglancer-url-tools";
 import { makeLayer, makeNeuroglancerViewerState, outputDimensions } from "../api/neuroglancer";
-import { fetchDatasets } from "../context/DatasetsContext";
+import { fetchDatasets } from "../api/datasets";
 import { View } from "../api/datasets";
 import { useQuery } from "react-query";
 // import BrokenImage from "../broken_image_24dp.svg";

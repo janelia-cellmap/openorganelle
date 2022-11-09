@@ -12,46 +12,33 @@ import {
 } from "@janelia-cosem/neuroglancer-url-tools";
 import { makeLayer, makeNeuroglancerViewerState, outputDimensions } from "../api/neuroglancer";
 
-interface VolumeCheckStates {
-  selected: boolean;
-  layerType?: LayerType;
-}
-
-interface VolumeCheckStates {
-  selected: boolean;
-  layerType?: LayerType;
-}
-
 type NeuroglancerLinkProps = {
   dataset: TaggedDataset;
   view: View;
-  checkState: Map<string, VolumeCheckStates>;
+  imageNames?: Set<string> | string[];
   children?: React.ReactNode;
 };
 
 export default function NeuroglancerLink({
   dataset,
   view,
-  checkState,
+  imageNames,
   children
 }: NeuroglancerLinkProps) {
   const { appState } = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const webGL2Enabled = appState.webGL2Enabled;
 
-  const local_view = { ...view };
-  local_view.sourceNames = [];
+  const localView = { ...view };
+  if (imageNames) {
+    localView.sourceNames = Array.from(imageNames)
+  };
   const volumeMap = new Map(dataset.images.map((v) => [v.name, v]))
-  for (const key of volumeMap.keys()) {
-    if (checkState.get(key)?.selected) {
-      local_view.sourceNames.push(key);
-    }
-  }
 
   let ngLink = "";
 
-  const disabled = Boolean(local_view.sourceNames.length === 0);
-  const layers = local_view.sourceNames.map(vk => {
+  const disabled = Boolean(localView.sourceNames.length === 0);
+  const layers = localView.sourceNames.map(vk => {
     let layerType = "segmentation";
     const sampleType = volumeMap.get(vk)?.sampleType;
     if (sampleType === "scalar") {
@@ -62,9 +49,9 @@ export default function NeuroglancerLink({
   if (!disabled) {
     ngLink = `${neuroglancerAddress}${makeNeuroglancerViewerState(
       layers as SegmentationLayer[] | ImageLayer[],
-      local_view.position,
-      local_view.scale,
-      local_view.orientation,
+      localView.position,
+      localView.scale,
+      localView.orientation,
       outputDimensions)}`;
   }
 

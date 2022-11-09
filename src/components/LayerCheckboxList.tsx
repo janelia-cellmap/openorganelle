@@ -1,6 +1,11 @@
 import {
+  Checkbox,
   createStyles,
+  Divider,
   FormControl,
+  FormControlLabel,
+  FormGroup,
+  Grid,
   makeStyles,
   Typography
 } from "@material-ui/core";
@@ -9,10 +14,8 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
-import {ContentType, contentTypeDescriptions, Dataset } from "../api/datasets";
-import ImageCheckboxCollection from "./LayerGroup";
-import { ImageCheckState } from "./DatasetPaper";
-import { Image } from "../api/datasets";
+import { Image, Dataset } from "../api/datasets";
+import { ControlCamera } from "@material-ui/icons";
 
 const useStyles: any = makeStyles(() =>
   createStyles({
@@ -24,81 +27,35 @@ const useStyles: any = makeStyles(() =>
     },
     control: {
       width: "100%",
-      height: "400px",
+      height: "300px",
       overflow: "scroll"
+    },
+    divider: {
+      marginRight: "-1px"
     }
   })
 );
 
+
+
 interface LayerCheckboxListProps {
-  dataset: Dataset;
-  checkState: Map<string, ImageCheckState>;
-  handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  images: Image[];
+  checkState: Set<string>;
+  handleImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   filter: string | undefined;
 }
 
 interface FilteredLayerListProps {
-  dataset: Dataset;
-  checkState: Map<string, ImageCheckState>;
-  handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  images: Image[];
+  checkState: Set<string>;
+  handleImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   filter: string | undefined;
 }
 
 interface LayerFilterProps {
   value: string
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-}
-
-function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLayerChange, filter}: FilteredLayerListProps) {
-  const classes = useStyles();
-  const imagesInit: Image[] = []
-  const [images, setImages] = useState(imagesInit);
-  const imageGroups: Map<ContentType, Image[]> = new Map();
-
-  useEffect(() => {
-    // filter volumes based on filter string
-    let filteredVolumes = Array.from(dataset.images.values());
-    if (filter) {
-      // TODO: make this case insensitive
-      filteredVolumes = filteredVolumes.filter(v =>
-        v.description.toLowerCase().includes(filter.toLowerCase()) ||
-        v.name.toLowerCase().includes(filter.toLowerCase())
-      );
-    }
-    setImages(
-      filteredVolumes);
-  }, [dataset, filter]);
-
-  images.forEach((v: Image) => {
-    if (imageGroups.get(v.contentType) === undefined) {
-      imageGroups.set(v.contentType, []);
-    }
-    imageGroups.get(v.contentType)!.push(v);
-  });
-
-  const checkboxLists = Array.from(contentTypeDescriptions.keys()).map((ct) => {
-    const images = (imageGroups.get(ct as ContentType) as Image[]);
-    const contentTypeInfo = contentTypeDescriptions.get(ct as ContentType)!;
-    const expanded = (ct === 'em');
-    
-    if (images !== undefined && images.length > 0) {
-      return <ImageCheckboxCollection
-              key={ct}
-              images={images}
-              checkState={checkState}
-              handleImageChange={handleVolumeChange}
-              contentType={ct}
-              contentTypeInfo={contentTypeInfo}
-              accordionExpanded={expanded}
-              handleLayerChange={handleLayerChange}/>;
-    }
-    return null;
-  });
-
-  return <div className={classes.control}>{checkboxLists}</div>;
 }
 
 function LayerFilter({ value, onChange } : LayerFilterProps) {
@@ -123,25 +80,78 @@ function LayerFilter({ value, onChange } : LayerFilterProps) {
   );
 }
 
+function FilteredLayersList({ images,
+                              checkState, 
+                              handleImageChange, 
+                              filter}: FilteredLayerListProps) {
+  const classes = useStyles();
+  const [imagesDisplayed, setImages] = useState<Image[]>(images);
+
+  useEffect(() => {
+    let filteredImages = imagesDisplayed
+    if (filter) {
+      // TODO: make this case insensitive
+       filteredImages = images.filter(v =>
+        v.description.toLowerCase().includes(filter.toLowerCase()) ||
+        v.name.toLowerCase().includes(filter.toLowerCase())
+      );
+    }
+    setImages(
+      filteredImages);
+  }, [images, filter]);
+
+  const selectedCheckBoxes: ReturnType<typeof FormControlLabel>[] = []
+  const unselectedCheckBoxes: ReturnType<typeof FormControlLabel>[] = []
+
+  images.forEach((image) => {
+    const checkbox = <FormControlLabel
+        control={
+          <Checkbox
+            checked={checkState.has(image.name)}
+            onChange={handleImageChange}
+            color="primary"
+            name={image.name}
+            size="small"
+          />
+        }
+        label={image.description}
+        key={`${image.name}`}
+      />
+      if (checkState.has(image.name)) {
+        selectedCheckBoxes.push(checkbox)  
+      }
+      else {
+      unselectedCheckBoxes.push(checkbox)
+      }
+  })
+
+return (<>
+<div className={classes.control}>
+<FormGroup>{unselectedCheckBoxes}</FormGroup>
+</div>
+<Divider></Divider>
+<div className={classes.control}>
+<FormGroup>{selectedCheckBoxes}</FormGroup>
+</div>
+</>)
+}
 
 export default function LayerCheckboxList({
-  dataset,
+  images,
   checkState,
-  handleVolumeChange,
-  handleLayerChange,
+  handleImageChange,
   handleFilterChange,
   filter,
 }: LayerCheckboxListProps) {
   if (filter === undefined) {filter = ""}
   return (
     <>
-      <Typography variant="h6">2. Select layers for the view</Typography>
+      <Typography variant="h6">2. Select images</Typography>
       <LayerFilter value={filter} onChange={handleFilterChange} />
       <FilteredLayersList
-        dataset={dataset}
+        images={images}
         checkState={checkState}
-        handleVolumeChange={handleVolumeChange}
-        handleLayerChange={handleLayerChange}
+        handleImageChange={handleImageChange}
         filter={filter}
       />
     </>
