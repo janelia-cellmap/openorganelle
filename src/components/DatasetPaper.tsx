@@ -19,7 +19,7 @@ import NeuroglancerLink from "./NeuroglancerLink";
 import ClipboardLink from "./ClipboardLink";
 
 import BrokenImage from "../broken_image_24dp.svg";
-import { fetchDatasets } from "../context/DatasetsContext";
+import { fetchDatasets } from "../api/datasets";
 import { useQuery } from "react-query";
 
 type DatasetPaperProps = {

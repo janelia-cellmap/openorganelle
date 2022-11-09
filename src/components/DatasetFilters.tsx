@@ -16,7 +16,7 @@ import { AppContext } from "../context/AppContext";
 import sortFunctions from "../utils/sortingFunctions";
 import { DatasetTag } from "../api/datasets";
 import { OSet } from "../api/tagging";
-import { fetchDatasets } from "../context/DatasetsContext";
+import { fetchDatasets } from "../api/datasets";
 import { useQuery } from "react-query";
 
 export default function DatasetFilters() {

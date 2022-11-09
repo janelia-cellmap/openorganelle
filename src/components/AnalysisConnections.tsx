@@ -12,7 +12,7 @@ import {
   convertLabelToOrganelle,
   convertLabelToOrganelleAbbreviation
 } from "../utils/organelles";
-import { fetchDatasets } from "../context/DatasetsContext";
+import { fetchDatasets } from "../api/datasets";
 
 interface ACProps {
   cypher: string;
