@@ -7,7 +7,7 @@ import {
   Theme
 } from "@material-ui/core";
 import React, { useState } from "react";
-import {LayerType, View, ContentType} from "../api/datasets";
+import {LayerType, View, ContentType} from "../types/datasets";
 import { makeQuiltURL } from "../api/util";
 import {
   DatasetAcquisition,
@@ -21,6 +21,7 @@ import ClipboardLink from "./ClipboardLink";
 import BrokenImage from "../broken_image_24dp.svg";
 import { fetchDatasets } from "../api/datasets";
 import { useQuery } from "react-query";
+import { fetchViews } from "../api/views";
 
 type DatasetPaperProps = {
   datasetKey: string;
@@ -63,28 +64,33 @@ const useStyles: any = makeStyles((theme: Theme) =>
 export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const classes = useStyles(); 
   const [layerFilter, setLayerFilter] = useState("");
-  const { isLoading, data, error } = useQuery('datasets', async () => fetchDatasets());
-    
+  const datasetsLoader = useQuery('datasets', async () => fetchDatasets());
+  const viewsLoader = useQuery('views', async () => fetchViews());
+  
   const [checkStates, setCheckStates] = useState({
     images: new Map<string, ImageCheckState>(),
     view: 0
   });
   
-  if (isLoading) {
-    return <>Loading datasets....</>
+  if (datasetsLoader.isLoading || viewsLoader.isLoading) {
+    return <>Loading metadatata....</>
   }
 
-  if (error) {
-    return <>Error loading datasets: {(error as Error).message}</>
+  if (datasetsLoader.error) {
+    return <>Error loading metadata: {(datasetsLoader.error as Error).message}</>
   }
 
-  //const dataset = state.datasets.get(datasetKey)!;
-  const dataset = data!.get(datasetKey)!;
-  
+  if (viewsLoader.error) {
+    return <>Error loading metadata: {(viewsLoader.error as Error).message}</>
+  }
+
+
+  const dataset = datasetsLoader.data!.get(datasetKey)!;
+  const views = viewsLoader.data!.filter(v => v.datasetName === datasetKey) 
   
   const imageMap = new Map(dataset.images.map((v) => [v.name, v]))
   const sources: string[] = [...imageMap.keys()];
-  // remove this when we don't have data on s3 anymore
+
   const bucket = "janelia-cosem-datasets";
   const prefix = dataset.name;
   const bucketBrowseLink = makeQuiltURL(bucket, prefix);
@@ -93,7 +99,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   // initialize the layer checkboxes by looking at the first dataset view
   
   for (const vn of sources) {
-    const vkeys = dataset.views[0].sourceNames;
+    const vkeys = views[0].images.map(v => v.name);
     if (vkeys.includes(vn)) {
       checkStates.images.set(vn, {
         ...checkStates.images.get(vn),
@@ -130,8 +136,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
         { ...v, selected: false }
       ])
     );
-    views[newViewState].sourceNames.map(k =>
-      newImageState.set(k, { ...newImageState.get(k), selected: true })
+    views[newViewState].images.map(k =>
+      newImageState.set(k.name, { ...newImageState.get(k.name), selected: true })
     );
 
     setCheckStates({
@@ -181,17 +187,19 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   };
 
 	const thumbnailAlt = `2D rendering of ${dataset.name}`;
-
+  const local_view = views[checkStates.view]
   return (
     <Grid container>
       <Grid item md={8}>
         <Paper className={classes.paper} variant="outlined">
           <DatasetDescriptionSummary dataset={dataset}>
-            <NeuroglancerLink
-              dataset={dataset}
-              checkState={checkStates.images}
-              view={dataset.views[checkStates.view]}
-            >
+            <NeuroglancerLink 
+                position={local_view.position ?? undefined} 
+                scale={local_view.scale ?? undefined}
+                orientation={local_view.orientation ?? undefined}
+                images = {local_view.images}
+                
+                >
               <img
 								alt={thumbnailAlt}
                 src={dataset.thumbnailUrl || BrokenImage}

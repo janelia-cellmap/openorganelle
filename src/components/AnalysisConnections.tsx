@@ -80,8 +80,6 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
     return row;
   });
 
-  const checkState = new Map([["fibsem-unit8", {selected: true}]]);
-
   return (
     <>
       {process.env.NODE_ENV !== "production" ? (
@@ -93,11 +91,7 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
       )}
       <AnalysisDataTable data={dataRows} columns={columns} />
       <AnalysisConnectionsGraphic data={dataRows} />
-      <NeuroglancerLink
-        dataset={dataset}
-        checkState={checkState}
-        view={dataset.views[0]}
-      />
+      <NeuroglancerLink images={[dataset.images.filter(v => v.contentType === 'em')[0]!]}/>
     </>
   );
 }

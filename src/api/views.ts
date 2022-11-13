@@ -1,6 +1,5 @@
 import { supabase } from "./supabase";
 import { camelize, Camelized } from "./camel";
-import { Database } from "../types/database";
 import { ensureArray } from "./util";
 
 export async function fetchViews() {

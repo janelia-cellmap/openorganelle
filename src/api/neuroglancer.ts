@@ -1,4 +1,12 @@
-import { CoordinateSpace, CoordinateSpaceTransform, encodeFragment, ImageLayer, Layer, LayerDataSource as LayerDataSource1, SegmentationLayer, urlSafeStringify, ViewerState } from "@janelia-cosem/neuroglancer-url-tools";
+import { CoordinateSpace,
+         CoordinateSpaceTransform,
+         encodeFragment,
+         ImageLayer,
+         Layer,
+         LayerDataSource as LayerDataSource1,
+         SegmentationLayer,
+         urlSafeStringify,
+         ViewerState } from "@janelia-cosem/neuroglancer-url-tools";
 import {Image, SampleType, LayerType, SpatialTransform, View } from "../types/datasets";
 
 // one nanometer, expressed as a scaled meter
@@ -56,12 +64,12 @@ export function makeShader(shaderArgs: any, sampleType: SampleType): string | un
 
 export function makeLayer(image: Image,
     layerType: LayerType,
-    outputDimensions: CoordinateSpace): Layer | undefined {
+    outputDimensions: CoordinateSpace) {
 
     const srcURL = `${image.format}://${image.url}`;
 
     // need to update the layerdatasource object to have a transform property
-    const source: LayerDataSource2 = {
+    const source: LayerDataSource = {
         url: srcURL,
         transform: SpatialTransformToNeuroglancer(image.transform, outputDimensions),
         CoordinateSpaceTransform: SpatialTransformToNeuroglancer(image.transform, outputDimensions)
@@ -73,7 +81,7 @@ export function makeLayer(image: Image,
                  CoordinateSpaceTransform: SpatialTransformToNeuroglancer(mesh.transform, outputDimensions) 
                 }
     });
-    let layer: Layer | undefined = undefined;
+    let layer;
     const color = image.displaySettings.color ?? undefined;
     if (layerType === 'image') {
         let shader: string | undefined = undefined;
@@ -130,7 +138,7 @@ export function makeLayer(image: Image,
     return layer
 }
 
-export function makeNeuroglancerViewerState(layers: SegmentationLayer[] | ImageLayer[],
+export function makeNeuroglancerViewerState(layers: (SegmentationLayer | ImageLayer)[],
     viewerPosition: number[] | undefined,
     crossSectionScale: number | undefined,
     crossSectionOrientation: number[] | undefined,
@@ -169,19 +177,30 @@ export function makeNeuroglancerViewerState(layers: SegmentationLayer[] | ImageL
     return encodeFragment(urlSafeStringify(vState));
 }
 
+type viewToNeuroglancerUrlProps = {
+    position?: number[]
+    scale?: number
+    orientation?: number[]
+    images: Image[]
+    outputDimensions: CoordinateSpace,
+    host: string
+}
 
-export function viewToNeuroglancerUrl(view: View,
-                                      outputDimensions: CoordinateSpace,
-                                      host: string) {
-    const layers = view.images.map(im => {
-        const layerType = im.sampleType === 'scalar' ? 'image' : 'segmentation';
+export function makeNeuroglancerUrl({position,
+                                      scale,
+                                      orientation,
+                                      images,
+                                      outputDimensions,
+                                      host} : viewToNeuroglancerUrlProps) {
+    const layers = images.map(im => {
+        const layerType = (im.sampleType === 'scalar') ? 'image' : 'segmentation';
         return makeLayer(im, layerType, outputDimensions);
       });
 
     return `${host}${makeNeuroglancerViewerState(
         layers as SegmentationLayer[] | ImageLayer[],
-        view.position,
-        view.scale,
-        view.orientation,
+        position,
+        scale,
+        orientation,
         outputDimensions)}`;
     }

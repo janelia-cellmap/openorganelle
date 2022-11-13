@@ -1,60 +1,35 @@
 import { Button } from "@material-ui/core";
 import React, { useContext } from "react";
-import {
-  LayerType, TaggedDataset, View
-} from "../api/datasets";
+import {Image} from "../types/datasets"
 import { AppContext } from "../context/AppContext";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
-import {
-  ImageLayer,
-  SegmentationLayer
-} from "@janelia-cosem/neuroglancer-url-tools";
-import { makeLayer, makeNeuroglancerViewerState, outputDimensions, viewToNeuroglancerUrl } from "../api/neuroglancer";
+import { outputDimensions, makeNeuroglancerUrl } from "../api/neuroglancer";
 
-interface VolumeCheckStates {
-  selected: boolean;
-  layerType?: LayerType;
-}
-
-interface VolumeCheckStates {
-  selected: boolean;
-  layerType?: LayerType;
-}
 
 type NeuroglancerLinkProps = {
-  dataset: TaggedDataset;
-  view: View;
-  checkState: Map<string, VolumeCheckStates>;
+  position?: number[]
+  scale?: number;
+  orientation?: number[]
+  images: Image[],
   children?: React.ReactNode;
 };
 
 export default function NeuroglancerLink({
-  dataset,
-  view,
-  checkState,
+  position,
+  scale,
+  orientation,
+  images,
   children
 }: NeuroglancerLinkProps) {
   const { appState } = useContext(AppContext);
   const neuroglancerAddress = appState.neuroglancerAddress;
   const webGL2Enabled = appState.webGL2Enabled;
   let ngLink = "";
-  const local_view = { ...view };
-  local_view.sourceNames = [];
-  const volumeMap = new Map(dataset.images.map((v) => [v.name, v]))
   
-  for (const key of volumeMap.keys()) {
-    if (checkState.get(key)?.selected) {
-      local_view.sourceNames.push(key);
-    }
-  }
-  
-  const disabled = local_view.sourceNames.length === 0;
+  const disabled = images.length === 0;
   if (!disabled) {
-    ngLink = viewToNeuroglancerUrl(local_view,
-                                   volumeMap,
-                                   outputDimensions,
-                                   neuroglancerAddress)
+    ngLink = makeNeuroglancerUrl({position, scale, orientation, images, outputDimensions, host: neuroglancerAddress})
   }
   if (children) {
     return (

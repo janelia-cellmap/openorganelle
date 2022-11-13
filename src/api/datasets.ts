@@ -1,4 +1,3 @@
-import { Tag, OSet } from "./tagging";
 import { supabase } from "./supabase";
 import {camelize, Camelized} from './camel'
 import { ContentType,
@@ -8,22 +7,13 @@ import { ContentType,
          Sample,
          SampleType,
          UnitfulVector,
-         Image } from "../types/datasets";
+         Image, 
+         ArrayContainerFormat,
+         FIBSEMAcquisition,
+         SoftwareAvailability} from "../types/datasets";
 import { ensureArray, ensureNotArray } from "./util";
+import { DatasetTag, OSet } from "../types/tags";
 
-
-type TagCategories = "Software Availability" |
-  "Contributing institution" |
-  "Volumes" |
-  "Sample: Organism" |
-  "Sample: Type" |
-  "Sample: Subtype" |
-  "Sample: Treatment" |
-  "Acquisition institution" |
-  "Lateral voxel size" |
-  "Axial voxel size"
-
-export type DatasetTag = Tag<TagCategories>
 
 export interface ContentTypeMetadata {
   label: string
@@ -38,8 +28,18 @@ contentTypeDescriptions.set('segmentation', { label: "Segmentation Layers", desc
 contentTypeDescriptions.set('prediction', { label: "Prediction Layers", description: "Raw distance transform inferences scaled from 0 to 255. A voxel value of 127 represent a predicted distance of 0 nm." });
 contentTypeDescriptions.set('analysis', { label: "Analysis Layers", description: "Results of applying various analysis routines on raw data, predictions, or segmentations." });
 
+type makeTagsProps = {
+  acquisition: FIBSEMAcquisition
+  institutions: string[],
+  sample: Sample
+  softwareAvailability: SoftwareAvailability
+}
+
 const resolutionTagThreshold = 6;
-export function makeTags({acquisition, institutions, sample, softwareAvailability}: Dataset): OSet<DatasetTag> {
+export function makeTags({acquisition,
+                          institutions,
+                          sample,
+                          softwareAvailability}: makeTagsProps): OSet<DatasetTag> {
   const tags: OSet<DatasetTag> = new OSet();
   let latvox = undefined;
   tags.add({value: acquisition.institution, category: 'Acquisition institution'});
@@ -119,12 +119,15 @@ export async function fetchDatasets() {
     const camelized = camelize(data) as Camelized<typeof data>
     const legacy = new Map(camelized.map(d => {
       const legacyDataset = supabaseDatasetToLegacy(d)
-      return [d.name, {...legacyDataset, tags: makeTags(legacyDataset)}]
+      return [d.name, {...legacyDataset, tags: makeTags({acquisition: legacyDataset.acquisition,
+                                                         institutions: legacyDataset.institutions,
+                                                         sample: legacyDataset.sample,
+                                                         softwareAvailability: legacyDataset.softwareAvailability})}]
     }))
     return legacy
 }
 
-function supabaseDatasetToLegacy(dataset: Camelized<DatasetsFromDb>[number]): Dataset {      
+function supabaseDatasetToLegacy(dataset: Camelized<DatasetsFromDb>[number]) {      
     const acq = ensureNotArray(dataset.imageAcquisition)
     const gridSpacing: UnitfulVector = {values: {}, unit: acq.gridSpacingUnit}
     const dimensions: UnitfulVector = {values: {}, unit: acq.gridSpacingUnit}
@@ -146,7 +149,7 @@ function supabaseDatasetToLegacy(dataset: Camelized<DatasetsFromDb>[number]): Da
         name: im.name,
         description: im.description,
         url: im.url,
-        format: (im.format === 'NEUROGLANCER_PRECOMPUTED') ? 'precomputed' : (im.format.toLowerCase()) as components["schemas"]["ArrayContainerFormat"],
+        format: (im.format === 'NEUROGLANCER_PRECOMPUTED') ? 'precomputed' : (im.format.toLowerCase()) as ArrayContainerFormat,
         transform: im.transform,
         sampleType: (im.sampleType.toLowerCase()) as SampleType,
         contentType: (im.contentType.toLowerCase()) as ContentType,
@@ -165,7 +168,7 @@ function supabaseDatasetToLegacy(dataset: Camelized<DatasetsFromDb>[number]): Da
       name: dataset.name,
       description: dataset.description,
       institutions: [acq.institution],
-      softwareAvailability: "open",
+      softwareAvailability: "open" as SoftwareAvailability,
       acquisition: {
         name: acq.name,
         institution: acq.institution,

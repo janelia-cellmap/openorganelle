@@ -1,4 +1,4 @@
-import { UnitfulVector } from "./datasets";
+import { UnitfulVector } from "../types/datasets";
 
 export function makeQuiltURL(bucket: string, prefix: string): string {
   return `https://open.quiltdata.com/b/${bucket}/tree/${prefix}/`

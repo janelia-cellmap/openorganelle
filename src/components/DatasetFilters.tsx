@@ -14,10 +14,9 @@ import CheckBoxIcon from "@material-ui/icons/CheckBox";
 
 import { AppContext } from "../context/AppContext";
 import sortFunctions from "../utils/sortingFunctions";
-import { DatasetTag } from "../api/datasets";
-import { OSet } from "../api/tagging";
 import { fetchDatasets } from "../api/datasets";
 import { useQuery } from "react-query";
+import { DatasetTag, OSet } from "../types/tags";
 
 export default function DatasetFilters() {
   const { appState, setPermanent, setAppState } = useContext(AppContext);

@@ -1,5 +1,15 @@
-export type ArrayContainerFormat = "n5" | "zarr" | "precomputed";
-export type ContentType = "em" | "lm" | "prediction" | "segmentation" | "analysis";
+import { DatasetTag, OSet } from "./tags";
+
+export type ArrayContainerFormat = "n5" 
+                                 | "zarr" 
+                                 | "precomputed";
+
+export type ContentType = "em" 
+                        | "lm" 
+                        | "prediction" 
+                        | "segmentation" 
+                        | "analysis";
+
 export type ContrastLimits = {
       start: number;
       end: number;
@@ -18,6 +28,7 @@ export type Dataset = {
       images: Image[];
       thumbnailUrl: string;
       published: boolean;
+      tags?: OSet<DatasetTag>
     }
 
 export type DisplaySettings = {
@@ -78,8 +89,11 @@ export type Sample = {
       subtype: string[];
       treatment: string[];
     }
+
 export type SampleType = "scalar" | "label";
+
 export type SoftwareAvailability = "open" | "partially open" | "closed";
+
 export type SpatialTransform = {
       axes: string[];
       units: string[];

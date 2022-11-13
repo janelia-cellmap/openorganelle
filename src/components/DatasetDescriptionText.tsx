@@ -3,7 +3,7 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { Publication, TaggedDataset, UnitfulVector } from "../api/datasets";
+import { Publication, Dataset, UnitfulVector } from "../types/datasets";
 import {stringifyUnitfulVector } from "../api/util";
 
 export interface DescriptionPreviewProps {
@@ -17,14 +17,14 @@ export interface DescriptionPreviewProps {
 
 export interface DescriptionSummaryProps {
   children: any;
-  dataset: TaggedDataset;
+  dataset: Dataset;
 }
 
 export interface DescriptionFullProps {
   s3URL: string;
   bucketBrowseLink: string;
   storageLocation: string;
-  datasetMetadata: TaggedDataset;
+  datasetMetadata: Dataset;
 }
 
 const useStyles: any = makeStyles((theme: Theme) =>
