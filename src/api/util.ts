@@ -11,23 +11,35 @@ export const checkWebGL2 = (): boolean => {
     else {return true}
   }
 
-  export async function getObjectFromJSON<T>(url: URL): Promise<T> {
-    const response = await fetch(url.toString())
-    const metadata = response.json();
-  
-    if (response.ok) {
-      if (metadata) {
-        return metadata
+  export function ensureNotArray<T>(obj: null | T | T[]) {
+    if (obj === null) {
+      throw new Error('Object cannot be null')
+    }
+    else if (Array.isArray(obj)) {
+      if (obj.length > 0) {
+        return obj[0]
       }
       else {
-        return Promise.reject(new Error(`Could not access "${url.toString()}"`))
+        throw new Error('Expected a length-1 array or a non-array object as the argument to this function.')
       }
     }
     else {
-      const error = new Error(`Could not access "${url.toString()}"`)
-      return Promise.reject(error)
+      return obj
     }
   }
+  
+  export function ensureArray<T>(obj: null | T | T[]): T[] {
+    if (obj === null){
+      return []
+    }
+    else if (!Array.isArray(obj)){
+      return [obj]
+    }
+    else {
+      return obj
+    }
+  }
+
 export function stringifyUnitfulVector(vec: UnitfulVector, decimals: number): string {
       const val_array = [...Object.values(vec.values)].map(v => v.toFixed(decimals));
       const axis_array = [...Object.keys(vec.values)];

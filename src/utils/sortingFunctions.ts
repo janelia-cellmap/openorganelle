@@ -1,4 +1,4 @@
-import {Dataset} from "../api/datasets"
+import {Dataset} from "../types/datasets"
 
 interface sortOption {
   title: string

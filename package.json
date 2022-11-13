@@ -89,6 +89,7 @@
     "json-schema-to-typescript": "^11.0.2",
     "openapi-typescript": "^5.4.1",
     "prettier": "1.19.1",
+    "react-json-view": "^1.21.3",
     "serverless-deployment-bucket": "^1.5.1",
     "serverless-finch": "^2.6.0",
     "serverless-plugin-package-json": "^0.1.0",
