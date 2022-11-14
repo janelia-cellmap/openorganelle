@@ -40,8 +40,10 @@ export async function fetchViews() {
     if (error === null) {
       const result = data!.map(d => {
         return {...d,
+                tags: d.tags ?? [],
                 images: ensureArray(d.images).map(im => {
-                    return {...im, meshes: ensureArray(im.meshes)}
+                    return {...im,
+                            meshes: ensureArray(im.meshes)}
                 }),
                 }
       })

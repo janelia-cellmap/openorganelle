@@ -187,18 +187,18 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   };
 
 	const thumbnailAlt = `2D rendering of ${dataset.name}`;
-  const local_view = views[checkStates.view]
+  const localView = views[checkStates.view]
   return (
     <Grid container>
       <Grid item md={8}>
         <Paper className={classes.paper} variant="outlined">
           <DatasetDescriptionSummary dataset={dataset}>
             <NeuroglancerLink 
-                position={local_view.position ?? undefined} 
-                scale={local_view.scale ?? undefined}
-                orientation={local_view.orientation ?? undefined}
-                images = {local_view.images}
-                
+                position={localView.position ?? undefined} 
+                scale={localView.scale ?? undefined}
+                orientation={localView.orientation ?? undefined}
+                images = {localView.images}
+
                 >
               <img
 								alt={thumbnailAlt}

@@ -13,7 +13,6 @@ import { useQuery } from "react-query";
 import ReactJson from 'react-json-view'
 import { Box, Button, Card, CardActionArea, CardContent, CardMedia, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { fetchViews } from "../api/views";
-import { Database } from "../types/database";
 // import BrokenImage from "../broken_image_24dp.svg";
 
 
@@ -105,19 +104,16 @@ interface OrganelleEntryProps {
 export function ViewCard({view} : {view: View}) {
   const classes = useStyles();
   const { appState } = useContext(AppContext);
-  const { isLoading, data, error } = useQuery('views', async () => fetchViews());
-  if (isLoading) {
-    return <>Loading views....</>
-  }
-  if (error) {
-    return <>Error loading views: {(error as Error).message}</>
-  }
-
   
-  const neuroglancerUrl = viewToNeuroglancerUrl(view, outputDimensions, appState.neuroglancerAddress)
+  const neuroglancerUrl = makeNeuroglancerUrl({position: view.position ?? undefined,
+                                               scale: view.scale ?? undefined,
+                                               orientation: view.orientation ?? undefined,
+                                               images: view.images,
+                                               outputDimensions, 
+                                               host: appState.neuroglancerAddress})
   return <Card className={classes.viewCard}>
     <CardActionArea href={neuroglancerUrl}>
-    <CardMedia component="img" height="360" image={view.thumbnailUrl} alt="Preview image of the view"/>
+    <CardMedia component="img" height="360" image={view.thumbnailUrl ?? undefined} alt="Preview image of the view"/>
     <CardContent>
       <Typography component={"div"}>
         {view.name}
@@ -146,36 +142,29 @@ export function OrganelleEntry({name, views}: OrganelleEntryProps){
 
 
 export default function Organelles() {
-  const { isLoading, data, error } = useQuery('datasets', async () => fetchDatasets());
+  const { isLoading, data, error } = useQuery('views', async () => fetchViews());
   if (isLoading) {return (
     <div>
       <CircularProgress />
     </div>
   );}
-  if (error) {return <>There was an error fetching dataset metadata.</>}
+  if (error) {return <>There was an error fetching view metadata.</>}
   
-  const allTaggedViews: Map<string, View[]> = new Map();
   
-  data?.forEach((value) => {
-      value.views.filter((v) => {
-      return (v.tags !== undefined) && (v.tags.length > 0)
+  const viewsByTag = data?.reduce((previous, current) => {
+    current.tags.forEach((t) => {
+      const val = previous.get(t)
+      if (val === undefined) {previous.set(t, [current])}
+      else {previous.set(t, [...val, current])}
     })
-    .forEach(v => {
-      v.tags!.forEach(tag => {
-        const entry = allTaggedViews.get(tag)
-        if (entry === undefined) {
-          allTaggedViews.set(tag, [])
-        }
-        else {
-          entry.push(v)
-         allTaggedViews.set(tag, entry)
-        }
-  })
-})
-})
-  const sample = allTaggedViews.get('cent')![0]!
-  return <div><ViewCard view={sample}/></div>
-  
+    return previous
+  }, new Map<string, View[]>)
+
+  const sample = viewsByTag!.get('cent')![1]!
+  return <div><ViewCard view={sample}></ViewCard></div>
+  /*
+  return <div><ReactJson src={sample}/></div>
+  /*
   /*
   return <Grid container>
     {Array.from(allTaggedViews.entries()).map(([key, value], idx) => {return <Grid item key={idx}><OrganelleEntry name={key} views={value}/></Grid>})}

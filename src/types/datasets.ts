@@ -104,14 +104,16 @@ export type UnitfulVector = {
       unit: string;
       values: { [key: string]: number };
     }
+
 export type View = {
       name: string;
       description: string;
       images: Image[];
-      position?: number[];
-      scale?: number;
-      orientation?: number[];
-      thumbnailUrl? : string
+      position: number[] | null;
+      scale: number | null;
+      orientation: number[] | null;
+      thumbnailUrl : string | null
+      tags: string[]
     }
 
 export type LayerType = "image" | "segmentation"

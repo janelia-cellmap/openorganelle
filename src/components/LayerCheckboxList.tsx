@@ -9,10 +9,10 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
-import {ContentType, contentTypeDescriptions, Dataset } from "../api/datasets";
+import {ContentType, Dataset, Image } from "../types/datasets";
 import ImageCheckboxCollection from "./LayerGroup";
 import { ImageCheckState } from "./DatasetPaper";
-import { Image } from "../api/datasets";
+import { contentTypeDescriptions } from "../api/datasets";
 
 const useStyles: any = makeStyles(() =>
   createStyles({
