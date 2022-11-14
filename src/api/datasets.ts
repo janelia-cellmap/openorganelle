@@ -96,7 +96,9 @@ async function fetchDatasetsDirect(){
                     description,
                     url,
                     transform,
-                    created_at
+                    created_at,
+                    format,
+                    ids
                     )
             ),
             publications:publication(
@@ -137,33 +139,13 @@ function supabaseDatasetToLegacy(dataset: Camelized<DatasetsFromDb>[number]) {
         dimensions.values[axis] = acq.gridDimensions![idx]
     })
     
-    const publications = ensureArray(dataset.publications).map((p) => {
-      return {
-        name: p.name,
-        type: (p.type == "DOI" ? "doi" : "paper") as PublicationType, 
-        url: p.url
-            }
-    })
       const images: Image[] = ensureArray(dataset.images).map((im) => {
       return {
-        name: im.name,
-        description: im.description,
-        url: im.url,
-        format: (im.format === 'NEUROGLANCER_PRECOMPUTED') ? 'precomputed' : (im.format.toLowerCase()) as ArrayContainerFormat,
-        transform: im.transform,
-        sampleType: (im.sampleType.toLowerCase()) as SampleType,
-        contentType: (im.contentType.toLowerCase()) as ContentType,
-        displaySettings: {...im.displaySettings, color: im.displaySettings.color ?? undefined},
-        meshes: ensureArray(im.meshes).map((m) => {
-          return {
-            name: m.name,
-            description: m.description,
-            url: m.url, 
-            format: "neuroglancer_multilod_draco" as MeshFormat,
-            transform: m.transform,
-            ids: []}
-          })
-    }})
+        ...im,
+        meshes: ensureArray(im.meshes)
+      }
+    }
+    )
     return {
       name: dataset.name,
       description: dataset.description,
@@ -176,7 +158,7 @@ function supabaseDatasetToLegacy(dataset: Camelized<DatasetsFromDb>[number]) {
         gridSpacing: gridSpacing,
         dimensions: dimensions},
       sample: dataset.sample as Sample,
-      publications: publications,
+      publications: ensureArray(dataset.publications),
       images: images,
       thumbnailUrl: dataset.thumbnailUrl,
       published: true

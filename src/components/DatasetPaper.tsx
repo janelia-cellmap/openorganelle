@@ -222,11 +222,10 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
           <Grid container spacing={2}>
             <Grid item sm={10}>
               <NeuroglancerLink
-                dataset={dataset}
-                checkState={checkStates.images}
-                view={
-                  dataset.views[checkStates.view]
-                }
+                  scale= {views[checkStates.view].scale ?? undefined}
+                  position= {views[checkStates.view].position ?? undefined}
+                  orientation= {views[checkStates.view].orientation ?? undefined}
+                  images= {views[checkStates.view].images}
               />
             </Grid>
             <Grid item sm={2}>
@@ -236,7 +235,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             </Grid>
             <Grid item sm={6}>
               <DatasetViewList
-                views={dataset.views}
+                views={views}
                 handleToggle={handleViewChange}
                 checkState={checkStates.view}
               />

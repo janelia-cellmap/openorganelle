@@ -33,7 +33,7 @@ export type Dataset = {
 
 export type DisplaySettings = {
       contrastLimits: ContrastLimits
-      color?: string;
+      color: string | null;
       invertLut: boolean;
     }
 

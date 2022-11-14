@@ -31,7 +31,9 @@ export async function fetchViews() {
             description,
             url,
             transform,
-            created_at
+            created_at,
+            format,
+            ids
             )
     ),
       dataset!inner(name)`).eq('dataset.is_published', true)

@@ -6,7 +6,7 @@ import "./Organelles.css";
 import { AppContext } from "../context/AppContext";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { ImageLayer } from "@janelia-cosem/neuroglancer-url-tools";
-import { makeLayer, makeNeuroglancerViewerState, outputDimensions, viewToNeuroglancerUrl } from "../api/neuroglancer";
+import { makeLayer, makeNeuroglancerViewerState, outputDimensions, makeNeuroglancerUrl } from "../api/neuroglancer";
 import { fetchDatasets } from "../api/datasets";
 import { View } from "../types/datasets";
 import { useQuery } from "react-query";

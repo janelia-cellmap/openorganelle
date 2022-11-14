@@ -1,5 +1,5 @@
 
-import { Database as Schema, Json } from "./supabase";
+import { Database as Schema } from "./supabase";
 
 export type Modify<T, R> = Omit<T, keyof R> & R
 

@@ -13,9 +13,9 @@ import {
 } from "@material-ui/core";
 import Popper from "@material-ui/core/Popper";
 
-import { TaggedDataset } from "../api/datasets";
 import { DatasetDescriptionPreview } from "./DatasetDescriptionText";
 import BrokenImage from "../broken_image_24dp.svg";
+import { Dataset } from "../types/datasets";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -43,7 +43,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 );
 
 interface DatasetTileProps {
-  dataset: TaggedDataset;
+  dataset: Dataset;
   compact?: boolean;
 }
 
