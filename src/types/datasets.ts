@@ -1,30 +1,30 @@
-import { DatasetTag, OSet } from "./tags";
+import { DatasetTag, OSet } from "./tags"
 
 export type ArrayContainerFormat = "n5" 
                                  | "zarr" 
-                                 | "precomputed";
+                                 | "precomputed"
 
 export type ContentType = "em" 
                         | "lm" 
                         | "prediction" 
                         | "segmentation" 
-                        | "analysis";
+                        | "analysis"
 
 export type ContrastLimits = {
-      start: number;
-      end: number;
-      min: number;
-      max: number;
+      start: number
+      end: number
+      min: number
+      max: number
     }
 
 export type Dataset = {
       name: string;
       description: string;
-      institutions: string[];
+      institutions: string[]
       softwareAvailability: SoftwareAvailability;
       acquisition: FIBSEMAcquisition
       sample: Sample
-      publications: Publication[];
+      publications: Publication[]
       images: Image[];
       thumbnailUrl: string;
       published: boolean;
@@ -33,8 +33,8 @@ export type Dataset = {
 
 export type DisplaySettings = {
       contrastLimits: ContrastLimits
-      color: string | null;
-      invertLut: boolean;
+      color: string | null
+      invertLut: boolean
     }
 
 export type FIBSEMAcquisition = {
@@ -53,65 +53,66 @@ export type FIBSEMAcquisition = {
 export type Image = {
       name: string;
       description: string;
-      url: string;
+      url: string
       format: ArrayContainerFormat
       transform: SpatialTransform
       sampleType: SampleType
       contentType: ContentType
-      displaySettings: DisplaySettings;
+      displaySettings: DisplaySettings
       meshes: Mesh[]
     }
 
 export type Mesh = {
-      name: string;
+      name: string
       description: string;
-      url: string;
+      url: string
       format: MeshFormat
       transform: SpatialTransform
-      ids: number[];
+      ids: number[]
     };
 
-export type MeshFormat = "neuroglancer_legacy_mesh" | "neuroglancer_multilod_draco";
+export type MeshFormat = "neuroglancer_legacy_mesh" | "neuroglancer_multilod_draco"
 
 export type Publication = {
-      name: string;
+      name: string
       type: PublicationType
-      url: string;
+      url: string
     }
-export type PublicationType = "doi" | "paper";
+export type PublicationType = "doi" | "paper"
 
 export type Sample = {
-      description: string;
-      protocol: string;
-      contributions: string;
-      organism: string[];
-      type: string[];
-      subtype: string[];
-      treatment: string[];
+      description: string
+      protocol: string
+      contributions: string
+      organism: string[]
+      type: string[]
+      subtype: string[]
+      treatment: string[]
     }
 
-export type SampleType = "scalar" | "label";
+export type SampleType = "scalar" | "label"
 
-export type SoftwareAvailability = "open" | "partially open" | "closed";
+export type SoftwareAvailability = "open" | "partially open" | "closed"
 
 export type SpatialTransform = {
-      axes: string[];
-      units: string[];
-      translate: number[];
-      scale: number[];
+      axes: string[]
+      units: string[]
+      translate: number[]
+      scale: number[]
     }
 export type UnitfulVector = {
       unit: string;
-      values: { [key: string]: number };
+      values: { [key: string]: number }
     }
 
 export type View = {
-      name: string;
-      description: string;
-      images: Image[];
-      position: number[] | null;
-      scale: number | null;
-      orientation: number[] | null;
+      name: string
+      datasetName: string
+      description: string
+      images: Image[]
+      position: number[] | null
+      scale: number | null
+      orientation: number[] | null
       thumbnailUrl : string | null
       tags: string[]
     }

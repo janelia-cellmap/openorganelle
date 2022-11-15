@@ -1,14 +1,9 @@
 import { supabase } from "./supabase";
 import {camelize, Camelized} from './camel'
 import { ContentType,
-         Dataset,
-         MeshFormat,
-         PublicationType,
          Sample,
-         SampleType,
          UnitfulVector,
          Image, 
-         ArrayContainerFormat,
          FIBSEMAcquisition,
          SoftwareAvailability} from "../types/datasets";
 import { ensureArray, ensureNotArray } from "./util";
