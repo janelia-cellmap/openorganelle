@@ -78,7 +78,7 @@ interface OrganelleDetailProps {
 
 export default function OrganelleDetails({ views }: OrganelleDetailProps) {
   const { organelle } = useParams<PostParams>();
-  console.log({organelle, views});
-  const selectedOrganelle = views.get(organelle)|| [{name: undefined}];
-  return (<OrganelleCardList info={selectedOrganelle[0]} views={selectedOrganelle} />);
+  const selectedOrganelle = views.get(organelle) || [];
+  const info = {infoUrl: '', name: selectedOrganelle[0].name};
+  return (<OrganelleCardList info={info} views={selectedOrganelle} />);
 }
