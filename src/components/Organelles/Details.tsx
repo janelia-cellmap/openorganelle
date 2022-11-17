@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { View } from "../../types/datasets";
-import { useParams } from "react-router-dom";
+import { useParams, Link as RouterLink } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import {
@@ -87,7 +87,7 @@ export function ViewCard({ view }: { view: View }) {
         />
       {elevation === 10 ? (
         <div className={classes.hoverLinks} >
-          <p>Dataset: <a href={`/datasets/${view.datasetName}`}>{view.datasetName}</a></p>
+          <p>Dataset: <RouterLink to={`/datasets/${view.datasetName}`}>{view.datasetName}</RouterLink></p>
           <p>View with <a target="_blank" rel="noreferrer" href={neuroglancerUrl}>Neuroglancer</a></p>
         </div>
       )
