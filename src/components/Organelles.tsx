@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { Route, Switch } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import "./Organelles.css";
@@ -10,18 +11,14 @@ import { useQuery } from "react-query";
 import { Box, Card, CardActionArea, CardMedia, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { fetchViews } from "../api/views";
 import BrokenImage from "../broken_image_24dp.svg";
+import OrganelleGrid from "./Organelles/Grid";
+import OrganelleDetails from "./Organelles/Details";
 
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      flexGrow: 1
-    },
     viewCardCollection: {
       width: "100%",
-    },
-    viewCardDescriptionText: {
-      fontStyle: "italic"
     },
     viewCard: {
       padding: theme.spacing(2),
@@ -35,14 +32,10 @@ const useStyles: any = makeStyles((theme: Theme) =>
       width: "256px",
       height: "256px"
     },
-    viewThumbnailPreview: {
-      width: "64px",
-      height: "64px"
-    }  
   })
 );
 
-type Organelles = "cent"
+export type Organelles = "cent"
   | "chrom"
   | "echrom"
   | "hchrom"
@@ -63,12 +56,12 @@ type Organelles = "cent"
   | "ribo"
   | "vesicle"
 
-type OrganelleMetadata = {
+export type OrganelleMetadata = {
   name: string
   infoUrl: string
 }
 
-const organelles: Record<Organelles, OrganelleMetadata> = {
+export const organelles: Record<Organelles, OrganelleMetadata> = {
   cent: {
     name: "Centrosome",
     infoUrl: "https://en.wikipedia.org/wiki/Centrosome"
@@ -121,13 +114,13 @@ const organelles: Record<Organelles, OrganelleMetadata> = {
      name: "Mitochondria",
      infoUrl: "https://en.wikipedia.org/wiki/Mitochondrion"
     },
-  ne: { 
+  ne: {
     name: "Nuclear Envelope",
     infoUrl: "https://en.wikipedia.org/wiki/Nuclear_envelope"
    },
   np: {
     name: "Nuclear Pore",
-    infoUrl: "https://en.wikipedia.org/wiki/Nuclear_pore" 
+    infoUrl: "https://en.wikipedia.org/wiki/Nuclear_pore"
   },
   nucleolus: {
     name: "Nucleolus",
@@ -142,7 +135,7 @@ const organelles: Record<Organelles, OrganelleMetadata> = {
     infoUrl: "https://en.wikipedia.org/wiki/Cell_membrane"
   },
   ribo: {name: "Ribosome",
-  infoUrl: "https://en.wikipedia.org/wiki/Ribosome" 
+  infoUrl: "https://en.wikipedia.org/wiki/Ribosome"
 },
   vesicle: {
     name: "Vesicle",
@@ -171,7 +164,7 @@ export function ViewCard({ view }: { view: View }) {
   </Card>
 }
 
-interface OrganelleCardsProps {
+export interface OrganelleCardsProps {
   info: OrganelleMetadata
   views: View[]
 }
@@ -191,22 +184,8 @@ export function OrganelleCardList({info , views }: OrganelleCardsProps) {
   </>
 }
 
-export function OrganellePreview({info, views}: OrganelleCardsProps) {
-  const classes = useStyles();
-  return <div>
-  <Grid container spacing={1} direction={"row"}>
-    {views.slice(0,6).map((view, idx) => {
-      return <Grid item key={idx}>
-        <img src={view.thumbnailUrl ?? BrokenImage} className={classes.viewThumbnailPreview}/>
-        </Grid>
-      })}
-  </Grid>
-  <Typography>{info.name}</Typography>
-  </div>
-}
 
-
-export default function OrganellePreviewList() {
+export default function Organelles() {
   const { isLoading, data, error } = useQuery('views', async () => fetchViews());
   if (isLoading) {
     return (
@@ -215,46 +194,41 @@ export default function OrganellePreviewList() {
       </div>
     );
   }
-  if (error) { return <>There was an error fetching view metadata.</> }
+  if (error) { return <p>There was an error fetching view metadata.</p> }
 
 
   const viewsByTag = data?.reduce((previous, current) => {
     if (current.images.length > 0) {
       current.tags.forEach((t) => {
-        if (Object.keys(organelles).includes(t)) { 
+        if (Object.keys(organelles).includes(t)) {
           const val = previous.get(t)
           if (val === undefined) {
-            previous.set(t, [current]) 
+            previous.set(t, [current])
           }
           else {
-            previous.set(t, [...val, current]) 
+            previous.set(t, [...val, current])
           }
         }
         else {
-          console.log(`Tag ${t} could not be found ind the list of organelles`)
+          console.log(`Tag ${t} could not be found in the list of organelles`)
       }
       })
     }
     else { console.log(`The following view is missing its images: ${JSON.stringify(current)}`) }
     return previous
-  }, new Map<string, View[]>)
+  }, new Map<string, View[]>) || new Map<string, View[]>();
 
-  return <div>
-    <Grid container direction={"row"} spacing={2}>    
-    {Array.from(viewsByTag!.entries()).map(([tag, views], idx) => {
-    return  <Grid item key={idx} >
-      <Card key={`card_${idx}`} >
-      <CardActionArea href={`organelles/${tag}`}>
-      <OrganellePreview info={organelles[tag as Organelles]} views={views}/>
-      </CardActionArea>
-      </Card>
-      </Grid>
-      })
-    }
-    </Grid>
-  </div>
+  return (
+    <Switch>
+      <Route path="/organelles/:organelle">
+        <OrganelleDetails views={viewsByTag} />
+      </Route>
+      <Route path="/organelles" exact>
+        <OrganelleGrid views={viewsByTag} />
+      </Route>
+    </Switch>
+  );
 }
 
-// TODO: alphabetize views, make the last box a "view more"
 // TODO: subgallery: hover contains content about the dataset, two links
 // one to the dataset, one to neuroglancer (new tab)
