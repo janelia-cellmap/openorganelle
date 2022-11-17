@@ -64,7 +64,7 @@ interface OrganelleGridProps {
 export default function OrganelleGrid({ views }: OrganelleGridProps) {
   return (
     <>
-      <p>Organelle Grid</p>
+      <Typography variant="h3">Organelles</Typography>
       <Grid container direction={"row"} justify="center" spacing={2}>
         {Array.from(views!.entries())
           .sort()

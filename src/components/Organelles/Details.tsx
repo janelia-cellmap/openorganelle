@@ -45,7 +45,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
       border: "1px solid #fff",
       height: "6rem",
       padding: "1em",
-    }
+    },
   })
 );
 
@@ -85,13 +85,24 @@ export function ViewCard({ view }: { view: View }) {
           image={view.thumbnailUrl ?? BrokenImage}
           alt="Preview image of the view"
         />
-      {elevation === 10 ? (
-        <div className={classes.hoverLinks} >
-          <p>Dataset: <RouterLink to={`/datasets/${view.datasetName}`}>{view.datasetName}</RouterLink></p>
-          <p>View with <a target="_blank" rel="noreferrer" href={neuroglancerUrl}>Neuroglancer</a></p>
-        </div>
-      )
-        : ""}
+        {elevation === 10 ? (
+          <div className={classes.hoverLinks}>
+            <p>
+              Dataset:{" "}
+              <RouterLink to={`/datasets/${view.datasetName}`}>
+                {view.datasetName}
+              </RouterLink>
+            </p>
+            <p>
+              View with{" "}
+              <a target="_blank" rel="noreferrer" href={neuroglancerUrl}>
+                Neuroglancer
+              </a>
+            </p>
+          </div>
+        ) : (
+          ""
+        )}
       </Card>
     </div>
   );
@@ -106,8 +117,13 @@ export function OrganelleCardList({ info, views }: OrganelleCardsProps) {
   const classes = useStyles();
   return (
     <Box className={classes.viewCardCollection}>
-      <Typography variant="h4">{info.name}</Typography>
       <Grid container direction="row">
+        <Grid item xs={10}>
+          <Typography variant="h4">{info.name}</Typography>
+        </Grid>
+        <Grid item xs={2}>
+          <RouterLink to="/organelles"> &laquo; Back to all organelles</RouterLink>
+        </Grid>
         {views.map((v, idx) => {
           return (
             <Grid item key={idx}>
