@@ -9,9 +9,9 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import { View } from "../../types/datasets";
+import { Taxon, View } from "../../types/datasets";
 import BrokenImage from "../../broken_image_24dp.svg";
-import { organelles, Organelles, OrganelleCardsProps } from "../Organelles";
+import {OrganelleCardsProps } from "../Organelles";
 
 const useStyles: any = makeStyles(() =>
   createStyles({
@@ -31,7 +31,7 @@ const useStyles: any = makeStyles(() =>
   })
 );
 
-function OrganellePreview({ info, views }: OrganelleCardsProps) {
+function OrganellePreview({ taxon, views }: OrganelleCardsProps) {
   const classes = useStyles();
   return (
     <div>
@@ -52,23 +52,24 @@ function OrganellePreview({ info, views }: OrganelleCardsProps) {
           </div>
         </Grid>
       </Grid>
-      <Typography>{info.name}</Typography>
+      <Typography>{taxon.name}</Typography>
     </div>
   );
 }
 
 interface OrganelleGridProps {
   views: Map<string, View[]>;
+  taxa: Map<string, Taxon>
 }
 
-export default function OrganelleGrid({ views }: OrganelleGridProps) {
+export default function OrganelleGrid({ views, taxa }: OrganelleGridProps) {
   return (
     <>
       <Typography variant="h3">Organelles</Typography>
       <Grid container direction={"row"} justify="center" spacing={2}>
         {Array.from(views!.entries())
           .sort()
-          .map(([tag, views], idx) => {
+          .map(([taxon, views], idx) => {
             return (
               <Grid
                 item
@@ -79,10 +80,10 @@ export default function OrganelleGrid({ views }: OrganelleGridProps) {
                 style={{ maxWidth: "350px" }}
               >
                 <Card key={`card_${idx}`}>
-                  <CardActionArea component={Link} to={`/organelles/${tag}`}>
+                  <CardActionArea component={Link} to={`/organelles/${taxon}`}>
                     <CardContent>
                       <OrganellePreview
-                        info={organelles[tag as Organelles]}
+                        taxon={taxa.get(taxon)!}
                         views={views}
                       />
                     </CardContent>

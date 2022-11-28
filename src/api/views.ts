@@ -13,7 +13,7 @@ export async function fetchViews() {
       position,
       scale,
       orientation,
-      tags,
+      taxa:taxon(name, short_name),
       created_at,
       images:image(
         name,
@@ -40,7 +40,7 @@ export async function fetchViews() {
     if (error === null) {
       const result = data!.map(d => {
         return {...d,
-                tags: d.tags ?? [],
+                taxa: ensureArray(d.taxa),
                 images: ensureArray(d.images).map(im => {
                     return {...im,
                             meshes: ensureArray(im.meshes)}

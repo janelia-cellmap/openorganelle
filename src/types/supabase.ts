@@ -91,10 +91,10 @@ export interface Database {
           name: string
           institution: string
           start_date: string
-          grid_axes: string[] | null
-          grid_spacing: number[] | null
+          grid_axes: string[]
+          grid_spacing: number[]
           grid_spacing_unit: string
-          grid_dimensions: number[] | null
+          grid_dimensions: number[]
           grid_dimensions_unit: string
         }
         Insert: {
@@ -102,10 +102,10 @@ export interface Database {
           name: string
           institution: string
           start_date: string
-          grid_axes?: string[] | null
-          grid_spacing?: number[] | null
+          grid_axes: string[]
+          grid_spacing: number[]
           grid_spacing_unit: string
-          grid_dimensions?: number[] | null
+          grid_dimensions: number[]
           grid_dimensions_unit: string
         }
         Update: {
@@ -113,10 +113,10 @@ export interface Database {
           name?: string
           institution?: string
           start_date?: string
-          grid_axes?: string[] | null
-          grid_spacing?: number[] | null
+          grid_axes?: string[]
+          grid_spacing?: number[]
           grid_spacing_unit?: string
-          grid_dimensions?: number[] | null
+          grid_dimensions?: number[]
           grid_dimensions_unit?: string
         }
       }
@@ -224,6 +224,26 @@ export interface Database {
           treatment?: string[] | null
         }
       }
+      taxon: {
+        Row: {
+          id: number
+          created_at: string | null
+          name: string
+          short_name: string
+        }
+        Insert: {
+          id?: number
+          created_at?: string | null
+          name: string
+          short_name: string
+        }
+        Update: {
+          id?: number
+          created_at?: string | null
+          name?: string
+          short_name?: string
+        }
+      }
       view: {
         Row: {
           id: number
@@ -276,12 +296,33 @@ export interface Database {
           view_id?: number
         }
       }
+      view_to_taxon: {
+        Row: {
+          view_id: number
+          taxon_id: number
+        }
+        Insert: {
+          view_id: number
+          taxon_id: number
+        }
+        Update: {
+          view_id?: number
+          taxon_id?: number
+        }
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      json_matches_schema: {
+        Args: { schema: Json; instance: Json }
+        Returns: boolean
+      }
+      jsonb_matches_schema: {
+        Args: { schema: Json; instance: Json }
+        Returns: boolean
+      }
     }
     Enums: {
       array_container_format: "n5" | "zarr" | "precomputed"

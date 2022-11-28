@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View } from "../../types/datasets";
+import { Taxon, View } from "../../types/datasets";
 import { useParams, Link as RouterLink } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -14,7 +14,6 @@ import {
 import { AppContext } from "../../context/AppContext";
 import { outputDimensions, makeNeuroglancerUrl } from "../../api/neuroglancer";
 import BrokenImage from "../../broken_image_24dp.svg";
-import { OrganelleMetadata } from "../Organelles";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -109,17 +108,17 @@ export function ViewCard({ view }: { view: View }) {
 }
 
 export interface OrganelleCardsProps {
-  info: OrganelleMetadata;
+  taxon: Taxon;
   views: View[];
 }
 
-export function OrganelleCardList({ info, views }: OrganelleCardsProps) {
+export function OrganelleCardList({ taxon, views }: OrganelleCardsProps) {
   const classes = useStyles();
   return (
     <Box className={classes.viewCardCollection}>
       <Grid container direction="row">
         <Grid item xs={10}>
-          <Typography variant="h4">{info.name}</Typography>
+          <Typography variant="h4">{taxon.name}</Typography>
         </Grid>
         <Grid item xs={2}>
           <RouterLink to="/organelles"> &laquo; Back to all organelles</RouterLink>
@@ -142,11 +141,11 @@ type PostParams = {
 
 interface OrganelleDetailProps {
   views: Map<string, View[]>;
+  taxa: Map<string, Taxon> 
 }
 
-export default function OrganelleDetails({ views }: OrganelleDetailProps) {
+export default function OrganelleDetails({taxa, views }: OrganelleDetailProps) {
   const { organelle } = useParams<PostParams>();
   const selectedOrganelle = views.get(organelle) || [];
-  const info = { infoUrl: "", name: selectedOrganelle[0].name };
-  return <OrganelleCardList info={info} views={selectedOrganelle} />;
+  return <OrganelleCardList taxon={taxa.get(organelle)!} views={selectedOrganelle} />;
 }
