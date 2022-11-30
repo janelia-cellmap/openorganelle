@@ -1,8 +1,8 @@
 import { Octokit } from "@octokit/rest";
 import matter from 'gray-matter';
-import { visit } from 'unist-util-visit';
 import {remark} from 'remark'
-
+import remarkEmbedder from '@remark-embedder/core'
+import html from 'remark-html'
 export interface NewsPostProps{
     title: string
     content: string
@@ -25,16 +25,21 @@ export interface PostApi {
 
 const octokit = new Octokit({});
 
-function transformImgSrc(url: string) {
-  // resolve relative paths in image URLs
-  return (tree: any) => {
-    visit(tree, 'paragraph', node => {
-      const image = node.children.find((child: any) => child.type === 'image');
-      if (image) {
-        image.url = image.url.replace('../', url);
-      }
-    });
-  };
+const YoutubeVideoTransformer = {
+  name: 'YoutubeVideo',
+  shouldTransform(url: string) {
+    const {host, pathname} = new URL(url)
+
+    return (
+      ['youtube.com', 'www.youtube.com'].includes(host) &&
+      pathname.includes('/watch')
+    )
+  },
+  getHTML(url: string) {
+    const iframeUrl = url.replace('/watch?v=', '/embed/')
+    const result = `<iframe src="${iframeUrl}" style="width:100%; height:500px"></iframe>`
+    return result
+  },
 }
 
 function validatePost(blob: any): NewsPostProps {
@@ -53,7 +58,7 @@ function validatePost(blob: any): NewsPostProps {
 }
 
 export async function getPosts({owner, repo, postsPath, publishedOnly}: PostApi) {
-    const postData = (await octokit.repos.getContent({owner, repo, path: postsPath})).data;
+    const postData = (await octokit.repos.getContent({owner, repo, path: postsPath, ref: 'youtube_embed_test'})).data;
     
     // type narrowing
     if (!Array.isArray(postData)) {return}
@@ -66,8 +71,11 @@ export async function getPosts({owner, repo, postsPath, publishedOnly}: PostApi)
         return [...(await collection)]
       }
       else {
-      // resolve relative paths in image URIs, e.g. ../assets/image.png -> https://domain.com/assets/image.png
-      post.content = String(await remark().use(transformImgSrc, download_url.replace(d.path, '')).process(post.content));
+      post.content = String(await remark()
+        .use(remarkEmbedder, {
+          transformers: [YoutubeVideoTransformer]
+        }).use(html, {sanitize: false})
+        .process(post.content));
       return [...(await collection), post]
     }
     }
