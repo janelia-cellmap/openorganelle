@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -147,16 +147,15 @@ export default function DatasetLayout({
       });
 
     return (
-      <div>
-        <Typography variant="h4">Latest Datasets</Typography>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
-            <Grid container spacing={1}>
-              {latestDatasets}
-            </Grid>
-          </Grid>
+      <Grid container spacing={1} justify="space-around">
+        <Grid item xs={12} sm={6}>
+          <Typography variant="h4">Latest Datasets</Typography>
         </Grid>
-      </div>
+        <Grid item xs={12} sm={6} style={{textAlign: "right", paddingTop: "1em"}}>
+          <Link to="/datasets">All Datasets &raquo;</Link>
+        </Grid>
+            {latestDatasets}
+      </Grid>
     );
   }
 
