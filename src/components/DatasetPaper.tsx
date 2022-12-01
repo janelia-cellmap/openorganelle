@@ -86,7 +86,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
 
   const dataset = datasetsLoader.data!.get(datasetKey)!;
-  const views = viewsLoader.data!.filter(v => v.datasetName === datasetKey) 
+  const views = viewsLoader.data!.filter(v => (v.datasetName === datasetKey && v.description !== '')) 
   
   const imageMap = new Map(dataset.images.map((v) => [v.name, v]))
   const sources: string[] = [...imageMap.keys()];

@@ -58,11 +58,13 @@ function validatePost(blob: any): NewsPostProps {
 }
 
 export async function getPosts({owner, repo, postsPath, publishedOnly}: PostApi) {
-    const postData = (await octokit.repos.getContent({owner, repo, path: postsPath, ref: 'youtube_embed_test'})).data;
+    const postData = (await octokit.repos.getContent({owner, repo, path: postsPath})).data;
     
     // type narrowing
     if (!Array.isArray(postData)) {return}
-
+    
+    const initCollection: NewsPostProps[] = [];
+    
     const postsReducer = async (collection: Promise<NewsPostProps[]>, d: any) => {
       const download_url = d.download_url!;
       const response = await fetch(download_url)
@@ -79,7 +81,7 @@ export async function getPosts({owner, repo, postsPath, publishedOnly}: PostApi)
       return [...(await collection), post]
     }
     }
-    const initCollection: NewsPostProps[] = [];
+    
     const postsFiltered = postData.reduce(postsReducer, Promise.resolve(initCollection));
     return postsFiltered
 }
