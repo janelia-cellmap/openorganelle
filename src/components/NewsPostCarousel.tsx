@@ -107,6 +107,7 @@ export default function NewsPostCarousel() {
           </AutoPlaySwipeableViews>
         </Link>
         <MobileStepper
+          style={{background: "none"}}
           steps={maxSteps}
           position="static"
           variant="text"

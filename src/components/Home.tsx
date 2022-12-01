@@ -16,13 +16,14 @@ export default function Home() {
   return (
     <div className="content">
       <Grid container spacing={2}>
-        <Grid item>
+        <Grid item xs={12}>
           <NewsPostCarousel />
         </Grid>
-        <Grid item>
+        <hr style={{width: "100%", backgroundColor: "rgba(0,0,0,0.1)", border: "none", height: "1px"}}/>
+        <Grid item xs={12}>
           <DatasetLayout latestOnly />
         </Grid>
-        <Grid item>
+        <Grid item xs={12}>
           <Typography
             variant="h3"
             gutterBottom
@@ -35,7 +36,6 @@ export default function Home() {
             A data portal for volume electron microscopy datasets and
             accompanying segmentations available for exploration.
           </p>
-          
           <p>
           Many of the datasets hosted here were acquired with the enhanced focused ion beam scanning electron microscopy (FIB-SEM)
           technology developed at Janelia. Accompanying many of these EM volumes are automated segmentations and analyses of intracellular sub-structures.
