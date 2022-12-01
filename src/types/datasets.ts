@@ -17,6 +17,11 @@ export type ContrastLimits = {
       max: number
     }
 
+export type Taxon = {
+      name: string,
+      shortName: string
+}
+
 export type Dataset = {
       name: string;
       description: string;
@@ -114,7 +119,7 @@ export type View = {
       scale: number | null
       orientation: number[] | null
       thumbnailUrl : string | null
-      tags: string[]
+      taxa: Taxon[]
     }
 
 export type LayerType = "image" | "segmentation"
