@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import { AppContext } from "../context/AppContext";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   settings: {
     margin: "1em"
   },

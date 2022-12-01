@@ -14,17 +14,31 @@ import CheckBoxIcon from "@material-ui/icons/CheckBox";
 
 import { AppContext } from "../context/AppContext";
 import sortFunctions from "../utils/sortingFunctions";
-import { ITag, OSet} from "../api/datasets";
+import { fetchDatasets } from "../api/datasets";
+import { useQuery } from "react-query";
+import { DatasetTag, OSet } from "../types/tags";
 
 export default function DatasetFilters() {
   const { appState, setPermanent, setAppState } = useContext(AppContext);
+
+  const { isLoading, data, error } = useQuery('datasets', async () => fetchDatasets());
+
+  if (isLoading) {
+    return <>Loading datasets....</>
+  }
+
+  if (error) {
+    return <>Error loading datasets: {(error as Error).message}</>
+  }
+
+  const datasets = data!
+
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setPermanent({ sortBy: event.target.value as string });
   };
 
-  const handleFilterChange = (event: React.ChangeEvent<{}>, value: Array<ITag> | undefined, reason: string) => {
+  const handleFilterChange = (event: React.ChangeEvent<{}>, value: DatasetTag[] | undefined) => {
     setAppState({...appState, datasetFilter: value});
-    console.log({event, value, reason});
   };
 
   const options = Object.keys(sortFunctions).map(option => (
@@ -35,10 +49,10 @@ export default function DatasetFilters() {
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
-  const tags: ITag[] = [];
-  const tagSet: OSet<ITag> = new OSet();
-  for (let dataset of appState.datasets.values()) {
-    for (let tag of dataset.tags.map.values())
+  const tags: DatasetTag[] = [];
+  const tagSet: OSet<DatasetTag> = new OSet();
+  for (const dataset of datasets.values()) {
+    for (const tag of dataset.tags.map.values())
       {
         tagSet.add(tag);
       }

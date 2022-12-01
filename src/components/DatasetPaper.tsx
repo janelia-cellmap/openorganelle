@@ -6,10 +6,9 @@ import {
   makeStyles,
   Theme
 } from "@material-ui/core";
-import React, { useContext, useState } from "react";
-import { ContentTypeEnum as ContentType, DatasetView } from "../api/manifest";
-import { Dataset, LayerTypes, makeQuiltURL } from "../api/datasets";
-import { AppContext } from "../context/AppContext";
+import React, { useState } from "react";
+import {LayerType, View, ContentType} from "../types/datasets";
+import { makeQuiltURL } from "../api/util";
 import {
   DatasetAcquisition,
   DatasetDescriptionSummary
@@ -20,14 +19,17 @@ import NeuroglancerLink from "./NeuroglancerLink";
 import ClipboardLink from "./ClipboardLink";
 
 import BrokenImage from "../broken_image_24dp.svg";
+import { fetchDatasets } from "../api/datasets";
+import { useQuery } from "react-query";
+import { fetchViews } from "../api/views";
 
 type DatasetPaperProps = {
   datasetKey: string;
 };
 
-export interface VolumeCheckStates {
+export interface ImageCheckState {
   selected: boolean;
-  layerType?: LayerTypes;
+  layerType?: LayerType;
 }
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -60,46 +62,61 @@ const useStyles: any = makeStyles((theme: Theme) =>
 );
 
 export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
-  const classes = useStyles();
-  const { appState } = useContext(AppContext);
-  const dataset: Dataset = appState.datasets.get(datasetKey)!;
+  const classes = useStyles(); 
   const [layerFilter, setLayerFilter] = useState("");
+  const datasetsLoader = useQuery('datasets', async () => fetchDatasets());
+  const viewsLoader = useQuery('views', async () => fetchViews());
+  
+  const [checkStates, setCheckStates] = useState({
+    images: new Map<string, ImageCheckState>(),
+    view: 0
+  });
+  
+  if (datasetsLoader.isLoading || viewsLoader.isLoading) {
+    return <>Loading metadatata....</>
+  }
 
-  const sources: string[] = [...dataset.volumes.keys()];
-  // remove this when we don't have data on s3 anymore
+  if (datasetsLoader.error) {
+    return <>Error loading metadata: {(datasetsLoader.error as Error).message}</>
+  }
+
+  if (viewsLoader.error) {
+    return <>Error loading metadata: {(viewsLoader.error as Error).message}</>
+  }
+
+
+  const dataset = datasetsLoader.data!.get(datasetKey)!;
+  const views = viewsLoader.data!.filter(v => (v.datasetName === datasetKey && v.description !== '')) 
+  
+  const imageMap = new Map(dataset.images.map((v) => [v.name, v]))
+  const sources: string[] = [...imageMap.keys()];
+
   const bucket = "janelia-cosem-datasets";
   const prefix = dataset.name;
   const bucketBrowseLink = makeQuiltURL(bucket, prefix);
   const s3URL = `s3://${bucket}/${prefix}/${dataset.name}.n5`;
-  const volumeCheckStateInit = new Map<string, VolumeCheckStates>(
-    sources.map(k => [k, { selected: false, layerType: undefined }])
-  );
+
   // initialize the layer checkboxes by looking at the first dataset view
-  for (let vn of sources) {
-    let vkeys = dataset.views[0].sources;
+  
+  for (const vn of sources) {
+    const vkeys = views[0].images.map(v => v.name);
     if (vkeys.includes(vn)) {
-      volumeCheckStateInit.set(vn, {
-        ...volumeCheckStateInit.get(vn),
+      checkStates.images.set(vn, {
+        ...checkStates.images.get(vn),
         selected: true
       });
     }
   }
   // the first view is selected, by default
-  const viewCheckStateInit = dataset.views.map((v, idx) => idx === 0);
-
-  const [checkStates, setCheckStates] = useState({
-    volumeCheckState: volumeCheckStateInit,
-    viewCheckState: viewCheckStateInit
-  });
 
   const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const volumeCheckState = checkStates.volumeCheckState.get(
+    const imageCheckState = checkStates.images.get(
       event.target.name
     );
     const newCheckState = new Map(
-      checkStates.volumeCheckState
+      checkStates.images
         .set(event.target.name, {
-          ...volumeCheckState,
+          ...imageCheckState,
           selected: event.target.checked
         })
         .entries()
@@ -107,51 +124,49 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
     // Prevent all checkboxes from being deselected
     if (![...newCheckState.values()].every(v => !v.selected)) {
-      setCheckStates({ ...checkStates, volumeCheckState: newCheckState });
+      setCheckStates({ ...checkStates, images: newCheckState });
     }
   };
 
-  const handleViewChange = (index: number, views: DatasetView[]) => () => {
-    const newViewState = checkStates.viewCheckState.map(v => false);
-    newViewState[index] = true;
-
-    const newVolumeState = new Map(
-      [...checkStates.volumeCheckState.entries()].map(([k, v]) => [
+  const handleViewChange = (index: number, views: View[]) => () => {
+    const newViewState = index
+    const newImageState = new Map(
+      [...checkStates.images.entries()].map(([k, v]) => [
         k,
         { ...v, selected: false }
       ])
     );
-    views[newViewState.findIndex(v => v)].sources.map(k =>
-      newVolumeState.set(k, { ...newVolumeState.get(k), selected: true })
+    views[newViewState].images.map(k =>
+      newImageState.set(k.name, { ...newImageState.get(k.name), selected: true })
     );
 
     setCheckStates({
-      volumeCheckState: newVolumeState,
-      viewCheckState: newViewState
+      images: newImageState,
+      view: newViewState
     });
   };
 
   // Update the default layer type for all the affected volumes
   const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let contentType: ContentType = event.target.name as ContentType;
+    const contentType = event.target.name as ContentType;
     let newLayerType = undefined;
-    const newVolumeCheckState = new Map(checkStates.volumeCheckState.entries());
-    for (let k of newVolumeCheckState.keys()) {
-      let val = newVolumeCheckState.get(k);
+    const newImageCheckState = new Map(checkStates.images.entries());
+    for (const k of newImageCheckState.keys()) {
+      const val = newImageCheckState.get(k);
       if (
         !(val === undefined) &&
-        dataset.volumes.get(k)?.contentType === contentType
+        imageMap.get(k)?.contentType === contentType
       ) {
         if (event.target.checked) {
-          newLayerType = "segmentation" as LayerTypes;
+          newLayerType = "segmentation" as LayerType;
         }
-        newVolumeCheckState.set(k, {
+        newImageCheckState.set(k, {
           ...val,
-          layerType: newLayerType as LayerTypes
+          layerType: newLayerType as LayerType
         });
       }
     }
-    setCheckStates({ ...checkStates, volumeCheckState: newVolumeCheckState });
+    setCheckStates({ ...checkStates, images: newImageCheckState });
   };
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,33 +174,35 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   };
 
   const clearLayers = () => {
-    const newVolumeCheckState = new Map(
-      [...checkStates.volumeCheckState.entries()].map(([k, v]) => [
+    const newImageCheckState = new Map(
+      [...checkStates.images.entries()].map(([k]) => [
         k,
         { selected: false }
       ])
     );
     setCheckStates({
       ...checkStates,
-      volumeCheckState: newVolumeCheckState
+      images: newImageCheckState
     });
   };
 
 	const thumbnailAlt = `2D rendering of ${dataset.name}`;
-
+  const localView = views[checkStates.view]
   return (
     <Grid container>
       <Grid item md={8}>
         <Paper className={classes.paper} variant="outlined">
-          <DatasetDescriptionSummary datasetMetadata={dataset.description}>
-            <NeuroglancerLink
-              dataset={dataset}
-              checkState={checkStates.volumeCheckState}
-              view={dataset.views[checkStates.viewCheckState.findIndex(a => a)]}
-            >
+          <DatasetDescriptionSummary dataset={dataset}>
+            <NeuroglancerLink 
+                position={localView.position ?? undefined} 
+                scale={localView.scale ?? undefined}
+                orientation={localView.orientation ?? undefined}
+                images = {localView.images}
+
+                >
               <img
 								alt={thumbnailAlt}
-                src={dataset.thumbnailURL || BrokenImage}
+                src={dataset.thumbnailUrl || BrokenImage}
                 className={classes.datasetthumbnail}
               />
             </NeuroglancerLink>
@@ -205,11 +222,10 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
           <Grid container spacing={2}>
             <Grid item sm={10}>
               <NeuroglancerLink
-                dataset={dataset}
-                checkState={checkStates.volumeCheckState}
-                view={
-                  dataset.views[checkStates.viewCheckState.findIndex(a => a)]
-                }
+                  scale= {views[checkStates.view].scale ?? undefined}
+                  position= {views[checkStates.view].position ?? undefined}
+                  orientation= {views[checkStates.view].orientation ?? undefined}
+                  images= {views[checkStates.view].images}
               />
             </Grid>
             <Grid item sm={2}>
@@ -219,15 +235,15 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             </Grid>
             <Grid item sm={6}>
               <DatasetViewList
-                views={dataset.views}
+                views={views}
                 handleToggle={handleViewChange}
-                checkState={checkStates.viewCheckState}
+                checkState={checkStates.view}
               />
             </Grid>
             <Grid item sm={6}>
               <LayerCheckboxList
                 dataset={dataset}
-                checkState={checkStates.volumeCheckState}
+                checkState={checkStates.images}
                 handleVolumeChange={handleVolumeChange}
                 handleLayerChange={handleLayerChange}
                 handleFilterChange={handleFilterChange}
@@ -243,7 +259,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             s3URL={s3URL}
             bucketBrowseLink={bucketBrowseLink}
             storageLocation={s3URL}
-            datasetMetadata={dataset.description}
+            datasetMetadata={dataset}
           />
         </Paper>
       </Grid>

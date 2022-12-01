@@ -1,414 +1,161 @@
-import {
-  urlSafeStringify,
-  encodeFragment,
-  CoordinateSpaceTransform,
-  CoordinateSpace,
-  ViewerState,
-  ImageLayer,
-  LayerDataSource,
-  SegmentationLayer,
-  Layer
-} from "@janelia-cosem/neuroglancer-url-tools";
-import { Index } from ".";
-import {DatasetMetadata, GithubDatasetAPI} from "./dataset_metadata";
-import { DisplaySettings, 
-         ContentTypeEnum as ContentType, 
-         SampleTypeEnum as SampleType,
-         SpatialTransform, 
-         VolumeSource,
-         DatasetView as IDatasetView, 
-         MeshSource } from "./manifest";
+import { supabase } from "./supabase";
+import {camelize, Camelized} from './camel'
+import { ContentType,
+         Sample,
+         UnitfulVector,
+         Image, 
+         FIBSEMAcquisition,
+         SoftwareAvailability} from "../types/datasets";
+import { ensureArray, ensureNotArray } from "./util";
+import { DatasetTag, OSet } from "../types/tags";
 
-export type DataFormats = "n5" | "zarr" | "precomputed" | "neuroglancer_legacy_mesh"
-export type LayerTypes = 'image' | 'segmentation' | 'annotation' | 'mesh';
-export type VolumeStores = "n5" | "precomputed" | "zarr";
-
-const resolutionTagThreshold = 6;
-export interface titled {
-  title: string
-}
-
-type Complete<T> = {
-  [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>> ? T[P] : (T[P] | undefined);
-}
-
-type TagCategories = "Software Availability" |
-"Contributing institution" |
-"Volumes" |
-"Sample: Organism" |
-"Sample: Type" |
-"Sample: Subtype" |
-"Sample: Treatment" |
-"Acquisition institution" |
-"Lateral voxel size" |
-"Axial voxel size"
-
-export interface ITag{
-  value: string
-  category: TagCategories
-}
-
-export class OSet<T>{
-  public map: Map<string, T>
-  constructor(){
-    this.map = new Map();
-  }
-  add(element: T) {
-    this.map.set(JSON.stringify(element), element)
-  }
-  has(element: T): boolean {
-    return [...this.map.keys()].includes(JSON.stringify(element))
-  }
-  delete(element: T): boolean {
-    return this.map.delete(JSON.stringify(element))
-  }
-  [Symbol.iterator](){
-    return this.map[Symbol.iterator]()
-  }
-}
-
-interface IDataset{
-  name: string
-  space: CoordinateSpace
-  volumes: Map<string, VolumeSource>
-  description: DatasetMetadata
-  thumbnailURL: string | undefined
-  views: DatasetView[]
-  tags: OSet<ITag>
-}
-
-const DefaultView: IDatasetView = {name: "Default view", 
-                    description: "The default view of the data", 
-                    sources: [], 
-                    orientation: [0, 1, 0, 0], 
-                    position: undefined, 
-                    scale: undefined};
-export class DatasetView implements IDatasetView {
-  name: string;
-  description: string;
-  sources: string[];
-  position?: number[];
-  scale?: number;
-  orientation?: number[];
-  constructor(blob: IDatasetView = DefaultView){
-      this.name = blob.name;
-      this.description = blob.description;
-      this.sources = blob.sources;
-      this.position = blob.position ?? undefined;
-      this.scale = blob.scale ?? undefined;
-      this.orientation = blob.orientation ?? undefined;
-  }
-}
 
 export interface ContentTypeMetadata {
   label: string
   description: string
 }
 
-export function makeQuiltURL(bucket: string, prefix: string): string {
-  return `https://open.quiltdata.com/b/${bucket}/tree/${prefix}/`
-}
-
-export function isS3(url: string): boolean {
-  return url.startsWith('s3://')
-}
-
-
-function SpatialTransformToNeuroglancer(transform: SpatialTransform, outputDimensions: CoordinateSpace): CoordinateSpaceTransform {
-
-  const inputDimensions: CoordinateSpace = {
-    x: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('x')]), "m"],
-    y: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('y')]), "m"],
-    z: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('z')]), "m"]
-};
-
-const layerTransform: CoordinateSpaceTransform = {matrix:
-    [
-        [(transform.scale[transform.axes.indexOf('x')] < 0)? -1 : 1, 0, 0, transform.translate[transform.axes.indexOf('x')]],
-        [0, (transform.scale[transform.axes.indexOf('y')] < 0)? -1 : 1, 0, transform.translate[transform.axes.indexOf('y')]],
-        [0, 0, (transform.scale[transform.axes.indexOf('z')] < 0)? -1 : 1, transform.translate[transform.axes.indexOf('z')]]
-    ],
-    outputDimensions: outputDimensions,
-    inputDimensions: inputDimensions}
-  return layerTransform
-}
-
-// one nanometer, expressed as a scaled meter
-const nm: [number, string] = [1e-9, "m"];
-
-// this specifies the basis vectors of the coordinate space neuroglancer will use for displaying all the data
-const outputDimensions: CoordinateSpace = { x: nm, y: nm, z: nm };
-
 export const contentTypeDescriptions = new Map<ContentType, ContentTypeMetadata>();
-contentTypeDescriptions.set('em', {label: "EM Layers", description: "EM data."});
-contentTypeDescriptions.set('lm', {label: "LM Layers", description: "Light microscopy data."});
-contentTypeDescriptions.set('segmentation', {label: "Segmentation Layers", description: "Predictions that have undergone refinements such as thresholding, smoothing, size filtering, and connected component analysis. Double Left Click a segmentation to turn on/off a 3D rendering."});
-contentTypeDescriptions.set('prediction', {label: "Prediction Layers", description: "Raw distance transform inferences scaled from 0 to 255. A voxel value of 127 represent a predicted distance of 0 nm."});
-contentTypeDescriptions.set('analysis', {label: "Analysis Layers", description: "Results of applying various analysis routines on raw data, predictions, or segmentations."});
 
+contentTypeDescriptions.set('em', { label: "EM Layers", description: "EM data." });
+contentTypeDescriptions.set('lm', { label: "LM Layers", description: "Light microscopy data." });
+contentTypeDescriptions.set('segmentation', { label: "Segmentation Layers", description: "Predictions that have undergone refinements such as thresholding, smoothing, size filtering, and connected component analysis. Double Left Click a segmentation to turn on/off a 3D rendering." });
+contentTypeDescriptions.set('prediction', { label: "Prediction Layers", description: "Raw distance transform inferences scaled from 0 to 255. A voxel value of 127 represent a predicted distance of 0 nm." });
+contentTypeDescriptions.set('analysis', { label: "Analysis Layers", description: "Results of applying various analysis routines on raw data, predictions, or segmentations." });
 
-function makeShader(shaderArgs: DisplaySettings, sampleType: SampleType): string | undefined{
-  switch (sampleType) {
-    case 'scalar':{
-      let lower = shaderArgs.contrastLimits.min;
-      let upper = shaderArgs.contrastLimits.max;
-      let cmin = shaderArgs.contrastLimits.start;
-      let cmax = shaderArgs.contrastLimits.end;
-        return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${lower}, ${upper}])
-        #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertLUT? 1: 0})
-        #uicontrol vec3 color color(default="${shaderArgs.color}")
-        float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
-          void main() {
-          emitRGB(color * inverter(normalized(), invertColormap));
-        }`
-      }
-    case "label":
-      return '';
-    default:
-      return undefined;
-  }
+type makeTagsProps = {
+  acquisition: FIBSEMAcquisition
+  institutions: string[],
+  sample: Sample
+  softwareAvailability: SoftwareAvailability
 }
 
-
-export function makeLayer(volume: VolumeSource, layerType: LayerTypes): Layer | undefined {
-  const srcURL = `${volume.format}://${volume.url}`;
-
-  // need to update the layerdatasource object to have a transform property
-  const source: LayerDataSource2 = {url: srcURL,
-                                   transform: SpatialTransformToNeuroglancer(volume.transform, outputDimensions),
-                                  CoordinateSpaceTransform: SpatialTransformToNeuroglancer(volume.transform, outputDimensions)};
+const resolutionTagThreshold = 6;
+export function makeTags({acquisition,
+                          institutions,
+                          sample,
+                          softwareAvailability}: makeTagsProps): OSet<DatasetTag> {
+  const tags: OSet<DatasetTag> = new OSet();
+  let latvox = undefined;
+  tags.add({value: acquisition.institution, category: 'Acquisition institution'});
+  const axvox = acquisition.gridSpacing.values.z
+  let value = ''
+  if (axvox <= resolutionTagThreshold){value = `<= ${resolutionTagThreshold} nm`}
+  else {value = `> ${resolutionTagThreshold} nm`}
   
-  const subsources = volume.subsources.map(subsource => {
-    return {url: `precomputed://${subsource.url}`, transform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions), CoordinateSpaceTransform: SpatialTransformToNeuroglancer(subsource.transform, outputDimensions)}
-  });
-  let layer: Layer | undefined = undefined;
-  const color = volume.displaySettings.color ?? undefined;
-  if (layerType === 'image'){
-    let shader: string | undefined = undefined;
-    shader = makeShader(volume.displaySettings, volume.sampleType);
-    layer = new ImageLayer('rendering',
-                          undefined,
-                          undefined,
-                          volume.name,
-                          source,
-                          0.75,
-                          'additive',
-                          shader,
-                          undefined,
-                          undefined);
+  tags.add({value: value, category: 'Axial voxel size'});
+  latvox =  Math.min(acquisition.gridSpacing.values.y, acquisition.gridSpacing.values.x!);
+  tags.add({value: latvox.toString(), category: 'Lateral voxel size'});
+  
+  for (const val of institutions) {tags.add({value: val, category: 'Contributing institution'})}
+  for (const val of sample.organism) {tags.add({value: val, category: 'Sample: Organism'})}
+  for (const val of sample.type) {tags.add({value: val, category: 'Sample: Type'})}
+  for (const val of sample.subtype) {tags.add({value: val, category: 'Sample: Subtype'})}
+  for (const val of sample.treatment) {tags.add({value: val, category: 'Sample: Treatment'})}
+  tags.add({value: softwareAvailability, category: 'Software Availability'});
+  return tags
+}
+
+async function fetchDatasetsDirect(){
+  const { data, error } = await supabase
+    .from('dataset')
+    .select(`
+            name,
+            description,
+            thumbnail_url,
+            sample,
+            created_at,
+            image_acquisition:image_acquisition(
+                name,
+                institution,
+                start_date,
+                grid_axes,
+                grid_spacing,
+                grid_dimensions,
+                grid_spacing_unit,
+                grid_dimensions_unit
+            ),
+            images:image(
+                name,
+                description,
+                url,
+                format,
+                transform,
+                display_settings,
+                sample_type,
+                content_type,
+                institution,
+                created_at,
+                meshes:mesh(
+                    name,
+                    description,
+                    url,
+                    transform,
+                    created_at,
+                    format,
+                    ids
+                    )
+            ),
+            publications:publication(
+                name,
+                url,
+                type
+            )`).eq('is_published', true)
+  if (error == null) {
+    return data
   }
-  else if (layerType === 'segmentation') {
-    if (subsources.length > 0) {
-      layer = new SegmentationLayer('source',
-                                    true,
-                                    undefined,
-                                    volume.name,
-                                    [source, ...subsources],
-                                    volume.subsources[0].ids,
-                                    undefined,
-                                    true,
-                                    undefined,
-                                    undefined,
-                                    undefined,
-                                    undefined,
-                                    undefined,
-                                    undefined,
-                                    undefined,
-                                    color);
-    }
-    else {
-      layer = new SegmentationLayer('source',
-                                    true,
-                                    undefined,
-                                    volume.name,
-                                    source,
-                                    undefined,
-                                    undefined,
-                                    true,
-                                    undefined,
-                                    undefined,
-                                    undefined,
-                                    undefined,
-                                    undefined,
-                                    undefined,
-                                    undefined,
-                                    color);
-    }
-  }
-  return layer
-}
-
-interface LayerDataSource2 extends LayerDataSource {
-  transform: any
-}
-
-// A single n-dimensional array
-export class Volume implements VolumeSource {
-  url: string;
-  name: string;
-  transform: SpatialTransform;
-  contentType: ContentType;
-  sampleType: SampleType;
-  format: VolumeStores;
-  displaySettings: DisplaySettings;
-  description: string;
-  subsources: MeshSource[];
-    constructor(
-        url: string,
-        name: string,
-        transform: SpatialTransform,
-        contentType: ContentType,
-        sampleType: SampleType,
-        format: VolumeStores,
-        displaySettings: DisplaySettings,
-        description: string,
-        subsources: MeshSource[] | undefined
-    ) {
-      this.url = url;
-      this.name = name;
-      this.contentType = contentType;
-      this.transform=transform;
-      this.contentType=contentType;
-      this.sampleType=sampleType;
-      this.format=format;
-      this.displaySettings=displaySettings;
-      this.description=description;
-      this.subsources = subsources? subsources : []
-    }
-}
-
-// a collection of volumes, i.e. a collection of ndimensional arrays
-export class Dataset implements IDataset {
-    public name: string;
-    public space: CoordinateSpace;
-    public volumes: Map<string, VolumeSource>;
-    public description: DatasetMetadata
-    public thumbnailURL: string |  undefined
-    public views: DatasetView[]
-    public tags: OSet<ITag>
-    constructor(name: string,
-                space: CoordinateSpace,
-                volumes: Map<string, VolumeSource>,
-                description: DatasetMetadata,
-                thumbnailURL: string | undefined,
-                views: DatasetView[]) {
-        this.name = name;
-        this.space = space;
-        this.volumes = volumes;
-        this.description = description;
-        this.thumbnailURL = thumbnailURL;
-        this.views = [];
-        if (views.length === 0) {
-          this.views = [new DatasetView()]
-        }
-        else {
-          this.views = views.map(v => new DatasetView(v));
-        }
-        this.tags = this.makeTags();
-    }
-
-    makeNeuroglancerViewerState(layers: SegmentationLayer[] | ImageLayer[],
-                                 viewerPosition: number[] | undefined,
-                                 crossSectionScale: number | undefined,
-                                 crossSectionOrientation: number[] | undefined
-                                 ){
-        // hack to post-hoc adjust alpha if there is only 1 layer selected
-        if (layers.length  === 1 && layers[0] instanceof ImageLayer) {layers[0].opacity = 1.0}
-        const projectionOrientation = crossSectionOrientation;
-        crossSectionScale = crossSectionScale? crossSectionScale : 50;
-        const projectionScale = 65536;
-        // the first layer is the selected layer; consider making this a kwarg
-        const selectedLayer = {'layer': layers[0]!.name, 'visible': true};
-        const vState = new ViewerState(
-            outputDimensions,
-            viewerPosition,
-            layers as Layer[],
-            '4panel',
-            undefined,
-            crossSectionScale,
-            undefined,
-            crossSectionOrientation,
-            projectionScale,
-            undefined,
-            projectionOrientation,
-            true,
-            true,
-            true,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'black',
-            'black',
-            selectedLayer,
-            undefined
-        );
-        return encodeFragment(urlSafeStringify(vState));
-    }
-    makeTags(): OSet<ITag>
-    {
-      const tags: OSet<ITag> = new OSet();
-      const descr = this.description;
-      let latvox = undefined;
-      tags.add({value: descr.imaging.institution, category: 'Acquisition institution'});
-
-      for (let val of descr.institution) {
-        tags.add({value: val, category: 'Contributing institution'})}
-      for (let val of descr.sample.organism) {
-        tags.add({value: val, category: 'Sample: Organism'})
-      }
-      for (let val of descr.sample.type) {
-        tags.add({value: val, category: 'Sample: Type'})
-      }
-      for (let val of descr.sample.subtype) {
-        tags.add({value: val, category: 'Sample: Subtype'})
-          }
-      for (let val of descr.sample.treatment) {
-        tags.add({value: val, category: 'Sample: Treatment'})
-      }
-      const axvox = descr.imaging.gridSpacing.values.z
-      if (axvox !== undefined) {
-        let value = ''
-        if (axvox <= resolutionTagThreshold)
-        {value = `<= ${resolutionTagThreshold} nm`}
-        else {
-          value = `> ${resolutionTagThreshold} nm`
-        }
-        tags.add({value: value, category: 'Axial voxel size'});
-      }
-      if ((descr.imaging.gridSpacing.values.y !== undefined) || (descr.imaging.gridSpacing.values.x !== undefined)) {
-       latvox =  Math.min(descr.imaging.gridSpacing.values.y, descr.imaging.gridSpacing.values.x!);
-       tags.add({value: latvox.toString(), category: 'Lateral voxel size'});
-      }
-      tags.add({value: descr.softwareAvailability, category: 'Software Availability'});
-      return tags
+  else {
+    throw new Error(`Oops! ${JSON.stringify(error)}`)
   }
 }
 
-export async function makeDatasets(metadataEndpoint: string): Promise<Map<string, Dataset>> {
-  const API = new GithubDatasetAPI(metadataEndpoint);
-  let datasets: Map<string, Dataset> = new Map();
-  let index: Index;
+type DatasetsFromDb = Awaited<ReturnType<typeof fetchDatasetsDirect>>
 
-  try {
-    index = await API.index;
-  }
-  catch (error) {
-    console.log(`It was not possible to load an index of the datasets due to the following error: ${error}`)
-    return datasets;
-  }
-
-  const entries: [string, Dataset][] = await Promise.all([...Object.keys(index.datasets)].map(async dataset_key => {
-    let {manifest} = await API.get(dataset_key)!;
-    const result: [string, Dataset] = [dataset_key, new Dataset(dataset_key,
-      outputDimensions, 
-      new Map([...Object.entries(manifest.sources)]),
-      manifest.metadata,
-      manifest.metadata.thumbnailURL || `https://janelia-cosem-datasets.s3.amazonaws.com/${dataset_key}/thumbnail.jpg`,
-      manifest.views)];
-    return result
-  }))
-
-datasets = new Map<string, Dataset>(entries);
-return datasets;
+export async function fetchDatasets() {
+    const data = await fetchDatasetsDirect()
+    const camelized = camelize(data) as Camelized<typeof data>
+    const legacy = new Map(camelized.map(d => {
+      const legacyDataset = supabaseDatasetToLegacy(d)
+      return [d.name, {...legacyDataset, tags: makeTags({acquisition: legacyDataset.acquisition,
+                                                         institutions: legacyDataset.institutions,
+                                                         sample: legacyDataset.sample,
+                                                         softwareAvailability: legacyDataset.softwareAvailability})}]
+    }))
+    return legacy
 }
+
+function supabaseDatasetToLegacy(dataset: Camelized<DatasetsFromDb>[number]) {      
+    const acq = ensureNotArray(dataset.imageAcquisition)
+    const gridSpacing: UnitfulVector = {values: {}, unit: acq.gridSpacingUnit}
+    const dimensions: UnitfulVector = {values: {}, unit: acq.gridSpacingUnit}
+
+    acq.gridAxes?.forEach((axis, idx) => {
+        gridSpacing.values[axis] = acq.gridSpacing![idx]
+        dimensions.values[axis] = acq.gridDimensions![idx]
+    })
+    
+      const images: Image[] = ensureArray(dataset.images).map((im) => {
+      return {
+        ...im,
+        meshes: ensureArray(im.meshes)
+      }
+    }
+    )
+    return {
+      name: dataset.name,
+      description: dataset.description,
+      institutions: [acq.institution],
+      softwareAvailability: "open" as SoftwareAvailability,
+      acquisition: {
+        name: acq.name,
+        institution: acq.institution,
+        startDate: acq.startDate,
+        gridSpacing: gridSpacing,
+        dimensions: dimensions},
+      sample: dataset.sample as Sample,
+      publications: ensureArray(dataset.publications),
+      images: images,
+      thumbnailUrl: dataset.thumbnailUrl,
+      published: true
+    }
+  }

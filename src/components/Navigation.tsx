@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { NavLink, Link } from "react-router-dom";
-import { HashLink } from "react-router-hash-link";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -53,7 +52,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
       background: `linear-gradient( to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7)), url(${banner})`,
       backgroundPositionX: "right",
       backgroundSize: "cover",
-      minHeight: "200px",
+      minHeight: "100px",
       position: "relative",
       color: "#fff",
       margin: "62px 0 0 -1em"
@@ -108,17 +107,17 @@ export default function Navigation() {
           </a>
           <div className={classes.spacer} />
           <Link className={classes.link} to="/">
-            <Typography variant="h6" color="inherit" noWrap>
+            <Typography color="inherit" noWrap>
               Home
             </Typography>
           </Link>
           <Link className={classes.link} to="/about">
-            <Typography variant="h6" color="inherit" noWrap>
+            <Typography color="inherit" noWrap>
               About
             </Typography>
           </Link>
           <Link className={classes.link} to="/faq">
-            <Typography variant="h6" color="inherit" noWrap>
+            <Typography color="inherit" noWrap>
               Help
             </Typography>
           </Link>
@@ -137,16 +136,16 @@ export default function Navigation() {
                 OpenOrganelle
               </Link>
             </Typography>
-            <Typography variant="body1" gutterBottom>
-              Explore cells and tissue at nanometer resolution
-            </Typography>
           </Grid>
         </Grid>
       </div>
       <div className={classes.secondaryNav}>
         <ul className={classes.navList}>
-          <NavLink exact to="/" className={classes.navListLink}>
+          <NavLink exact to="/datasets" className={classes.navListLink}>
             <li className={classes.navListItem}>Datasets</li>
+          </NavLink>
+          <NavLink to="/news" className={classes.navListLink}>
+            <li className={classes.navListItem}>News</li>
           </NavLink>
           <NavLink to="/organelles" className={classes.navListLink}>
             <li className={classes.navListItem}>Organelles</li>

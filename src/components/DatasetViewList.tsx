@@ -6,7 +6,7 @@ import {
   ListItemText,
   Radio
 } from "@material-ui/core";
-import { DatasetView } from "../api/datasets";
+import { View } from "../types/datasets";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 
@@ -25,9 +25,9 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface DatasetViewListProps {
-  views: DatasetView[];
-  checkState: boolean[];
-  handleToggle: (val: number, views: DatasetView[]) => () => void | undefined;
+  views: View[];
+  checkState: number;
+  handleToggle: (val: number, views: View[]) => () => void | undefined;
 }
 
 export default function DatasetViewList({
@@ -55,7 +55,7 @@ export default function DatasetViewList({
               <ListItemIcon>
                 <Radio
                   edge="start"
-                  checked={checkState[idx]}
+                  checked={checkState == idx}
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ "aria-labelledby": labelId }}

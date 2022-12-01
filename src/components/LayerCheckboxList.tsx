@@ -2,7 +2,6 @@ import {
   createStyles,
   FormControl,
   makeStyles,
-  Theme,
   Typography
 } from "@material-ui/core";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -10,12 +9,12 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
-import {ContentTypeEnum as ContentType} from "../api/manifest";
-import {contentTypeDescriptions, Dataset, Volume } from "../api/datasets";
-import VolumeCheckboxCollection from "./LayerGroup";
-import { VolumeCheckStates } from "./DatasetPaper";
+import {ContentType, Dataset, Image } from "../types/datasets";
+import ImageCheckboxCollection from "./LayerGroup";
+import { ImageCheckState } from "./DatasetPaper";
+import { contentTypeDescriptions } from "../api/datasets";
 
-const useStyles: any = makeStyles((theme: Theme) =>
+const useStyles: any = makeStyles(() =>
   createStyles({
     root: {
       flexGrow: 1
@@ -33,7 +32,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 
 interface LayerCheckboxListProps {
   dataset: Dataset;
-  checkState: Map<string, VolumeCheckStates>;
+  checkState: Map<string, ImageCheckState>;
   handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -42,7 +41,7 @@ interface LayerCheckboxListProps {
 
 interface FilteredLayerListProps {
   dataset: Dataset;
-  checkState: Map<string, VolumeCheckStates>;
+  checkState: Map<string, ImageCheckState>;
   handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   filter: string | undefined;
@@ -55,13 +54,13 @@ interface LayerFilterProps {
 
 function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLayerChange, filter}: FilteredLayerListProps) {
   const classes = useStyles();
-  const volumesListInit: Volume[] = []
-  const [volumesList, setVolumes] = useState(volumesListInit);
-  const volumeGroups: Map<ContentType, Volume[]> = new Map();
+  const imagesInit: Image[] = []
+  const [images, setImages] = useState(imagesInit);
+  const imageGroups: Map<ContentType, Image[]> = new Map();
 
   useEffect(() => {
     // filter volumes based on filter string
-    let filteredVolumes = Array.from(dataset.volumes.values());
+    let filteredVolumes = Array.from(dataset.images.values());
     if (filter) {
       // TODO: make this case insensitive
       filteredVolumes = filteredVolumes.filter(v =>
@@ -69,28 +68,28 @@ function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLay
         v.name.toLowerCase().includes(filter.toLowerCase())
       );
     }
-    setVolumes(
+    setImages(
       filteredVolumes);
   }, [dataset, filter]);
 
-  volumesList.forEach((v: Volume) => {
-    if (volumeGroups.get(v.contentType) === undefined) {
-      volumeGroups.set(v.contentType, []);
+  images.forEach((v: Image) => {
+    if (imageGroups.get(v.contentType) === undefined) {
+      imageGroups.set(v.contentType, []);
     }
-    volumeGroups.get(v.contentType)!.push(v);
+    imageGroups.get(v.contentType)!.push(v);
   });
 
   const checkboxLists = Array.from(contentTypeDescriptions.keys()).map((ct) => {
-    let volumes = (volumeGroups.get(ct as ContentType) as Volume[]);
-    let contentTypeInfo = contentTypeDescriptions.get(ct as ContentType)!;
-    let expanded = (ct === 'em');
+    const images = (imageGroups.get(ct as ContentType) as Image[]);
+    const contentTypeInfo = contentTypeDescriptions.get(ct as ContentType)!;
+    const expanded = (ct === 'em');
     
-    if (volumes !== undefined && volumes.length > 0) {
-      return <VolumeCheckboxCollection
+    if (images !== undefined && images.length > 0) {
+      return <ImageCheckboxCollection
               key={ct}
-              volumes={volumes}
+              images={images}
               checkState={checkState}
-              handleVolumeChange={handleVolumeChange}
+              handleImageChange={handleVolumeChange}
               contentType={ct}
               contentTypeInfo={contentTypeInfo}
               accordionExpanded={expanded}
@@ -133,7 +132,7 @@ export default function LayerCheckboxList({
   handleFilterChange,
   filter,
 }: LayerCheckboxListProps) {
-  if (filter === undefined) {filter = ""};
+  if (filter === undefined) {filter = ""}
   return (
     <>
       <Typography variant="h6">2. Select layers for the view</Typography>

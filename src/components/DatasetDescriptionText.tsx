@@ -3,24 +3,28 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { DatasetMetadata } from "../api/dataset_metadata";
-import { DOI, Hyperlink, UnitfulVector } from "../api/manifest";
+import { Publication, Dataset, UnitfulVector } from "../types/datasets";
+import {stringifyUnitfulVector } from "../api/util";
 
 export interface DescriptionPreviewProps {
-  datasetMetadata: DatasetMetadata;
+  title: string;
+  startDate: string;
+  id: string;
+  gridSpacing: UnitfulVector;
+  dimensions: UnitfulVector;
   titleLink: string;
 }
 
 export interface DescriptionSummaryProps {
   children: any;
-  datasetMetadata: DatasetMetadata;
+  dataset: Dataset;
 }
 
 export interface DescriptionFullProps {
   s3URL: string;
   bucketBrowseLink: string;
   storageLocation: string;
-  datasetMetadata: DatasetMetadata;
+  datasetMetadata: Dataset;
 }
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -31,76 +35,37 @@ const useStyles: any = makeStyles((theme: Theme) =>
   })
 );
 
-
-
-interface HyperlinkListProps {
-  links: Array<string | Hyperlink>
+interface PublicationListProps {
+  publications: Publication[]
 }
 
-function isHyperlinkOrDOI(val: DOI | Hyperlink): val is Hyperlink {
-  return (val as Hyperlink).href !== undefined;
-} 
-
-function doiToHyperlink(d: Hyperlink | DOI): Hyperlink{
-  if (!isHyperlinkOrDOI(d)) {
-    let d_ = d as DOI
-    return {href: "https://doi.org/" + d_.DOI, title: d_.id}
-  }
-  else {
-    return d as Hyperlink;
-  }
-}
-
-
-export function HyperlinkList({links}: HyperlinkListProps) {
-  return (<ul>{links.map((link, idx) => {
-    let key = "publicationList" + idx;
-    let result: React.ReactFragment;
-    if (typeof(link) == 'string'){
-      result = <li key={key}>{link}</li>
-    }
-    else {
-      result = <li key={key}><a href={link.href}>{link.title}</a></li>
-    }
-    return result
-    
+export function PublicationList({publications}: PublicationListProps) {
+  return (<ul>{publications.map(link => {
+    return <li key={link.url + link.name}><a href={link.url}>{link.name}</a></li>    
 })}</ul>)
 } 
 
-function StringifyUnitfulVector(vec: UnitfulVector, decimals: number): string {
-  const val_array = [...Object.values(vec.values)].map(v =>
-    v.toFixed(decimals)
-  );
-  const axis_array = [...Object.keys(vec.values)];
-  if (val_array.length === 0) {
-    return "N/A";
-  } else {
-    return `${val_array.join(" x ")} (${axis_array.join(", ")})`;
-  }
-}
-
 export function DatasetDescriptionPreview({
-  datasetMetadata
-}: DescriptionPreviewProps) {
+  title, startDate, id, gridSpacing, dimensions}: DescriptionPreviewProps) {
   const classes = useStyles();
   return (
     <Box>
       <Typography variant="h6" className={classes.title}>
-        {datasetMetadata.title}
+        {title}
       </Typography>
       <p>
-        <strong>Acquisition date</strong>: {datasetMetadata.imaging.startDate}
+        <strong>Acquisition date</strong>: {startDate}
       </p>
       <p>
-        <strong>Dataset ID</strong>: {datasetMetadata.id}
+        <strong>Dataset ID</strong>: {id}
       </p>
       <p>
-        <strong>Voxel size ({datasetMetadata.imaging.gridSpacing.unit})</strong>
-        : {StringifyUnitfulVector(datasetMetadata.imaging.gridSpacing, 1)}
+        <strong>Voxel size ({gridSpacing.unit})</strong>
+        : {stringifyUnitfulVector(gridSpacing, 1)}
       </p>
       <p>
-        <strong>Dimensions ({datasetMetadata.imaging.dimensions.unit})</strong>:{" "}
-        {StringifyUnitfulVector(datasetMetadata.imaging.dimensions, 1)}
+        <strong>Dimensions ({dimensions.unit})</strong>:{" "}
+        {stringifyUnitfulVector(dimensions, 1)}
       </p>
     </Box>
   );
@@ -121,52 +86,48 @@ export function DatasetAcquisition({
         <Grid item xs={6}>
           <p>
             <strong>
-              Final voxel size ({datasetMetadata.imaging.gridSpacing.unit})
+              Final voxel size ({datasetMetadata.acquisition!.gridSpacing.unit})
             </strong>
-            : {StringifyUnitfulVector(datasetMetadata.imaging.gridSpacing, 1)}
+            : {stringifyUnitfulVector(datasetMetadata.acquisition!.gridSpacing!, 1)}
           </p>
           <p>
             <strong>
-              Dimensions ({datasetMetadata.imaging.dimensions.unit})
+              Dimensions ({datasetMetadata.acquisition!.dimensions.unit})
             </strong>
-            : {StringifyUnitfulVector(datasetMetadata.imaging.dimensions, 0)}
+            : {stringifyUnitfulVector(datasetMetadata.acquisition!.dimensions, 0)}
           </p>
           <p>
             <strong>Imaging duration (days)</strong>:{" "}
-            {datasetMetadata.imaging.duration}
+            {datasetMetadata.acquisition!.durationDays}
           </p>
           <p>
             <strong>Imaging start date</strong>:{" "}
-            {datasetMetadata.imaging.startDate}
+            {datasetMetadata.acquisition!.startDate}
           </p>
           <p>
             <strong>Primary energy (EV)</strong>:{" "}
-            {datasetMetadata.imaging.primaryEnergy}
+            {datasetMetadata.acquisition!.primaryEnergy}
           </p>
           <p>
-            <strong>Bias (V)</strong>: {datasetMetadata.imaging.biasVoltage}
+            <strong>Bias (V)</strong>: {datasetMetadata.acquisition!.biasVoltage}
           </p>
           <p>
             <strong>Imaging current (nA)</strong>:{" "}
-            {datasetMetadata.imaging.current}
+            {datasetMetadata.acquisition!.current}
           </p>
         </Grid>
         <Grid item xs={6}>
           <p>
             <strong>Scanning speed (MHz)</strong>:{" "}
-            {datasetMetadata.imaging.scanRate}
+            {datasetMetadata.acquisition!.scanRate}
           </p>
           <p>
-            <strong>Dataset ID</strong>: {datasetMetadata.id}
+            <strong>Dataset ID</strong>: {datasetMetadata.name}
           </p>
-          <p>
             <strong>DOI</strong>:{" "}
-            <HyperlinkList links={datasetMetadata.DOI.map(doiToHyperlink)}/>
-          </p>
-          <p>
+            <PublicationList publications={datasetMetadata.publications.filter((p) => p.type == 'doi')}/>
             <strong>Publications</strong>:{" "}
-            <HyperlinkList links={datasetMetadata.publications}/>
-          </p>
+            <PublicationList publications={datasetMetadata.publications.filter((p) => p.type == 'paper')}/>
           <p>
             <strong>Dataset location</strong>: {storageLocation}
           </p>
@@ -177,7 +138,7 @@ export function DatasetAcquisition({
 }
 
 export function DatasetDescriptionSummary({
-  datasetMetadata,
+  dataset,
   children
 }: DescriptionSummaryProps) {
   const classes = useStyles();
@@ -185,16 +146,16 @@ export function DatasetDescriptionSummary({
     <>
       {children}
       <Typography variant="h6" className={classes.title}>
-        {datasetMetadata.title}
+        {dataset.description}
       </Typography>
       <p>
-        <strong>Sample</strong>: {datasetMetadata.sample.description}
+        <strong>Sample</strong>: {dataset.sample!.description}
       </p>
       <p>
-        <strong>Protocol</strong>: {datasetMetadata.sample.protocol}
+        <strong>Protocol</strong>: {dataset.sample!.protocol}
       </p>
       <p>
-        <strong>Contributions</strong>: {datasetMetadata.sample.contributions}
+        <strong>Contributions</strong>: {dataset.sample!.contributions}
       </p>
     </>
   );

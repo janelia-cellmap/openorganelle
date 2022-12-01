@@ -1,18 +1,16 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {checkWebGL2} from "../api/util"
-import { Dataset, ITag} from "../api/datasets";
+import {DatasetTag} from "../types/tags";
 
 export interface ContextProps {
   neuroglancerAddress: string,
   metadataEndpoint: string,
   webGL2Enabled: boolean,
-  datasetsLoading: boolean,
-  datasets: Map<string, Dataset>,
   datasetGrid: boolean,
   showFilters: boolean,
   sortBy: string,
-  datasetFilter: Array<ITag> | undefined,
+  datasetFilter: Array<DatasetTag> | undefined,
   [key: string]: any
 }
 
@@ -26,8 +24,6 @@ const contextDefault: ContextProps = {
   neuroglancerAddress: "https://neuroglancer-demo.appspot.com/#!",
   metadataEndpoint: 'https://github.com/janelia-cosem/fibsem-metadata/blob/stable/api',
   webGL2Enabled: checkWebGL2(),
-  datasetsLoading: false,
-  datasets: new Map(),
   datasetGrid: true,
   datasetFilter: [],
   showFilters: false,

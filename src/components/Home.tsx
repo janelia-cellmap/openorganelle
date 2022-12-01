@@ -1,37 +1,53 @@
-import React, { useEffect, useContext } from "react";
-import { Route, Switch } from "react-router-dom";
-import Container from "@material-ui/core/Container";
-import Tutorials from "./Tutorials";
-import Publications from "./Publications";
-import Organelles from "./Organelles";
+import React from "react";
+import { Grid, Typography } from "@material-ui/core";
 import DatasetLayout from "./DatasetLayout";
-import DatasetDetails from "./DatasetDetails";
-import "./Home.css";
-import { AppContext } from "../context/AppContext";
-import { makeDatasets } from "../api/datasets";
+import NewsPostCarousel from "./NewsPostCarousel";
+
+/*
+Welcome to HHMI Janelia's OpenOrganelle
+A data portal for volume electron microscopy datasets and accompanying segmentations available for exploration.
+
+Many of the datasets hosted here were acquired with the enhanced focused ion beam scanning electron microscopy (FIB-SEM) technology developed at Janelia. Accompanying many of these EM volumes are automated segmentations and analyses of intracellular sub-structures.
+
+Be sure to check out our News and Announcements page to see what is new and learn more about the datasets. You can explore the gallery of organelles on the Organelles page or head to the FAQ page to learn how to work with the data yourself. To dive into the details of the methods behind the dataset generation head over to our Publications list.
+*/
 
 export default function Home() {
-  const {appState, setAppState} = useContext(AppContext);
-
-  // Update the global datasets var when Home renders for the first time
-  useEffect(() => {
-    setAppState({ ...appState, datasetsLoading: true });
-    makeDatasets(appState.metadataEndpoint).then(ds =>
-      setAppState({ ...appState, datasets: ds, datasetsLoading: false })
-    );
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   return (
     <div className="content">
-      <Container maxWidth="lg">
-        <Switch>
-          <Route path="/faq" component={Tutorials} />
-          <Route path="/publications" component={Publications} />
-          <Route path="/organelles" component={Organelles} />
-          <Route path="/" exact component={DatasetLayout} />
-          <Route path="/datasets/:slug" component={DatasetDetails} />
-        </Switch>
-      </Container>
+      <Grid container spacing={2}>
+        <Grid item>
+          <NewsPostCarousel />
+        </Grid>
+        <Grid item>
+          <DatasetLayout latestOnly />
+        </Grid>
+        <Grid item>
+          <Typography
+            variant="h3"
+            gutterBottom
+            style={{ marginTop: "2em", textAlign: "left" }}
+          >
+            Welcome to HHMI Janelia’s OpenOrganelle
+          </Typography>
+
+          <p>
+            A data portal for volume electron microscopy datasets and
+            accompanying segmentations available for exploration.
+          </p>
+          
+          <p>
+          Many of the datasets hosted here were acquired with the enhanced focused ion beam scanning electron microscopy (FIB-SEM)
+          technology developed at Janelia. Accompanying many of these EM volumes are automated segmentations and analyses of intracellular sub-structures.
+          </p>
+
+          <p>
+          Be sure to check out our <a href="/news">News and Announcements page</a> to see what is new and learn more about the datasets.
+          You can explore the gallery of organelles on the <a href="/organelles">Organelles page</a> or head to the <a href="/faq">FAQ page</a> to learn how to work with the data yourself.
+          To dive into the details of the methods behind the dataset generation head over to our <a href="/publications">Publications page</a>.
+          </p>
+        </Grid>
+      </Grid>
     </div>
   );
 }

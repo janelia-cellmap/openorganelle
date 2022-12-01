@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "react-query";
 import Card from "@material-ui/core/Card";
@@ -6,15 +6,13 @@ import Card from "@material-ui/core/Card";
 import AnalysisDataTable from "./AnalysisDataTable";
 import AnalysisConnectionsGraphic from "./AnalysisConnectionsGraphic";
 import NeuroglancerLink from "./NeuroglancerLink";
-
-import { Dataset, makeDatasets } from "../api/datasets";
-import { AppContext } from "../context/AppContext";
 import { fetchAnalysisResults, queryResponse } from "../utils/datafetching";
 import { useQueryString } from "../utils/customHooks";
 import {
   convertLabelToOrganelle,
   convertLabelToOrganelleAbbreviation
 } from "../utils/organelles";
+import { fetchDatasets } from "../api/datasets";
 
 interface ACProps {
   cypher: string;
@@ -22,33 +20,28 @@ interface ACProps {
 }
 
 export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
-  const { isLoading, isError, data, error }: queryResponse = useQuery(
+  const { isLoading: isAnalysisLoading, isError: isAnalysisError, data: analysisData, error: analysisError }: queryResponse = useQuery(
     ["analysisConnection", cypher],
     () => fetchAnalysisResults(cypher),
     { staleTime: Infinity, refetchOnWindowFocus: false }
   );
-  const { appState, setAppState } = useContext(AppContext);
-
-  // Update the global datasets var when Home renders for the first time
-  useEffect(() => {
-    setAppState({ ...appState, datasetsLoading: true });
-    makeDatasets(appState.metadataEndpoint).then(ds =>
-      setAppState({ ...appState, datasets: ds, datasetsLoading: false })
-    );
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const dataset: Dataset = appState.datasets.get(datasetKey)!;
+  
+  const { isLoading: isDatasetsLoading, isError: isDatasetsError, data: datasetsData, error: datasetsError } = useQuery('datasets', async () => fetchDatasets());
 
   const queryString = useQueryString();
 
-  if (isLoading || appState.datasetsLoading) {
+  if (isAnalysisLoading || isDatasetsLoading) {
     return <p>Loading...</p>;
   }
 
-  if (isError && error) {
-    return <p>There was an error with your request: {error.message}</p>;
+  if (isAnalysisError && analysisError) {
+    return <p>There was an error with your request: {analysisError.message}</p>;
   }
 
+  if (isDatasetsError && (datasetsError instanceof Error)) {
+    return <p>There was an error loading datasets: {datasetsError.message}</p>;
+  }
+  const dataset = datasetsData?.get(datasetKey)!
   const columns = [
     {
       accessor: "n",
@@ -69,7 +62,7 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
     }
   ];
 
-  const dataRows: string[] = data.data.map((entry: any) => {
+  const dataRows: string[] = analysisData.data.map((entry: any) => {
     const row = {
       n: `${entry.row[0].ID} - ${convertLabelToOrganelle(entry.row[3][0])}`,
       nId: entry.row[0].ID,
@@ -87,8 +80,6 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
     return row;
   });
 
-  const checkState = new Map([["fibsem-unit8", {selected: true}]]);
-
   return (
     <>
       {process.env.NODE_ENV !== "production" ? (
@@ -100,11 +91,7 @@ export default function AnalysisConnections({ cypher, datasetKey }: ACProps) {
       )}
       <AnalysisDataTable data={dataRows} columns={columns} />
       <AnalysisConnectionsGraphic data={dataRows} />
-      <NeuroglancerLink
-        dataset={dataset}
-        checkState={checkState}
-        view={dataset.views[0]}
-      />
+      <NeuroglancerLink images={[dataset.images.filter(v => v.contentType === 'em')[0]!]}/>
     </>
   );
 }

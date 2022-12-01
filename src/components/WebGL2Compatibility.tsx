@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
   }));
 
 
-export const WebGL2CompatibilityWarning: FunctionComponent<any> = (props) => {
+export const WebGL2CompatibilityWarning: FunctionComponent<any> = () => {
     const classes = useStyles();
     
     return <Grid container alignItems="center" spacing={2}>
