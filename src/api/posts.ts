@@ -42,19 +42,25 @@ const YoutubeVideoTransformer = {
   },
 }
 
-function validatePost(blob: any): NewsPostProps {
+function validatePost(blob: any): NewsPostProps | undefined {
   // Ensure that the payload received from the api is valid
  const {data, content} = matter(blob);
-
- return {title: data.title,
+ const date = new Date(data.date) 
+ if (!isNaN(date.getTime())) {
+  return {title: data.title,
          content: content,
          authors: data.authors,
-         date: new Date(data.date),
+         date: date,
          tags: data.tags,
          thumbnail_url: data.thumbnail_url,
          carousel_url: data.carousel_url,
          summary: data.summary,
          published: data.published}
+ }
+ else {
+  console.log(`Error constructing date object from input ${blob.date}.`)
+  return undefined
+ }
 }
 
 export async function getPosts({owner, repo, postsPath, publishedOnly}: PostApi) {
@@ -69,7 +75,7 @@ export async function getPosts({owner, repo, postsPath, publishedOnly}: PostApi)
       const download_url = d.download_url!;
       const response = await fetch(download_url)
       const post = validatePost(await response.text());
-      if (!post.published && publishedOnly){
+      if (post === undefined  || (!post.published && publishedOnly)){
         return [...(await collection)]
       }
       else {
