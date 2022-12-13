@@ -8,9 +8,9 @@ import { outputDimensions, makeNeuroglancerUrl } from "../api/neuroglancer";
 
 
 type NeuroglancerLinkProps = {
-  position?: number[]
-  scale?: number;
-  orientation?: number[]
+  position?: number[] | null
+  scale?: number | null
+  orientation?: number[] | null
   images: Image[],
   children?: React.ReactNode;
 };

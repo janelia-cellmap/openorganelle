@@ -178,9 +178,9 @@ export function makeNeuroglancerViewerState(layers: (SegmentationLayer | ImageLa
 }
 
 type viewToNeuroglancerUrlProps = {
-    position?: number[]
-    scale?: number
-    orientation?: number[]
+    position: number[] | undefined | null
+    scale: number | undefined | null
+    orientation: number[] | undefined | null
     images: Image[]
     outputDimensions: CoordinateSpace,
     host: string
@@ -199,8 +199,8 @@ export function makeNeuroglancerUrl({position,
 
     return `${host}${makeNeuroglancerViewerState(
         layers as SegmentationLayer[] | ImageLayer[],
-        position,
-        scale,
-        orientation,
+        position ?? undefined,
+        scale ?? undefined,
+        orientation ?? undefined,
         outputDimensions)}`;
     }

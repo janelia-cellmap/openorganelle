@@ -11,7 +11,6 @@ import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
 import {ContentType, Dataset, Image } from "../types/datasets";
 import ImageCheckboxCollection from "./LayerGroup";
-import { ImageCheckState } from "./DatasetPaper";
 import { contentTypeDescriptions } from "../api/datasets";
 
 const useStyles: any = makeStyles(() =>
@@ -32,18 +31,16 @@ const useStyles: any = makeStyles(() =>
 
 interface LayerCheckboxListProps {
   dataset: Dataset;
-  checkState: Map<string, ImageCheckState>;
-  handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  checkState: Set<string>;
+  handleImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   filter: string | undefined;
 }
 
 interface FilteredLayerListProps {
   dataset: Dataset;
-  checkState: Map<string, ImageCheckState>;
-  handleVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleLayerChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  checkState: Set<string>;
+  handleImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   filter: string | undefined;
 }
 
@@ -52,7 +49,7 @@ interface LayerFilterProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLayerChange, filter}: FilteredLayerListProps) {
+function FilteredLayersList({ dataset, checkState, handleImageChange, filter}: FilteredLayerListProps) {
   const classes = useStyles();
   const imagesInit: Image[] = []
   const [images, setImages] = useState(imagesInit);
@@ -89,11 +86,10 @@ function FilteredLayersList({ dataset, checkState, handleVolumeChange, handleLay
               key={ct}
               images={images}
               checkState={checkState}
-              handleImageChange={handleVolumeChange}
+              handleImageChange={handleImageChange}
               contentType={ct}
               contentTypeInfo={contentTypeInfo}
-              accordionExpanded={expanded}
-              handleLayerChange={handleLayerChange}/>;
+              accordionExpanded={expanded}/>;
     }
     return null;
   });
@@ -127,8 +123,7 @@ function LayerFilter({ value, onChange } : LayerFilterProps) {
 export default function LayerCheckboxList({
   dataset,
   checkState,
-  handleVolumeChange,
-  handleLayerChange,
+  handleImageChange,
   handleFilterChange,
   filter,
 }: LayerCheckboxListProps) {
@@ -140,8 +135,7 @@ export default function LayerCheckboxList({
       <FilteredLayersList
         dataset={dataset}
         checkState={checkState}
-        handleVolumeChange={handleVolumeChange}
-        handleLayerChange={handleLayerChange}
+        handleImageChange={handleImageChange}
         filter={filter}
       />
     </>

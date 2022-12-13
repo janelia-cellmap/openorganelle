@@ -7,7 +7,7 @@ import {
   Theme
 } from "@material-ui/core";
 import React, { useState } from "react";
-import {LayerType, View, ContentType} from "../types/datasets";
+import {View} from "../types/datasets";
 import { makeQuiltURL } from "../api/util";
 import {
   DatasetAcquisition,
@@ -21,16 +21,11 @@ import ClipboardLink from "./ClipboardLink";
 import BrokenImage from "../broken_image_24dp.svg";
 import { fetchDatasets } from "../api/datasets";
 import { useQuery } from "react-query";
-import { fetchViews } from "../api/views";
+import {fetchViews} from "../api/views"
 
 type DatasetPaperProps = {
   datasetKey: string;
 };
-
-export interface ImageCheckState {
-  selected: boolean;
-  layerType?: LayerType;
-}
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,112 +56,70 @@ const useStyles: any = makeStyles((theme: Theme) =>
   })
 );
 
+
+
 export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const classes = useStyles(); 
-  const [layerFilter, setLayerFilter] = useState("");
+  
   const datasetsLoader = useQuery('datasets', async () => fetchDatasets());
   const viewsLoader = useQuery('views', async () => fetchViews());
-  
-  const [checkStates, setCheckStates] = useState({
-    images: new Map<string, ImageCheckState>(),
-    view: 0
-  });
-  
+ 
+  const [layerFilter, setLayerFilter] = useState("");
+  const [imageChecked, setImageChecked] = useState(new Set<string>())
+  const [viewChecked, setViewChecked] = useState(0)
+ 
   if (datasetsLoader.isLoading || viewsLoader.isLoading) {
     return <>Loading metadatata....</>
   }
 
-  if (datasetsLoader.error) {
-    return <>Error loading metadata: {(datasetsLoader.error as Error).message}</>
+  else if (datasetsLoader.error || viewsLoader.error) {
+    const err = datasetsLoader.error ? datasetsLoader.error : viewsLoader.error
+    return <>Error loading metadata: {err as Error}</>
+  }
+  else {
+    if (datasetsLoader.data === undefined || viewsLoader.data === undefined) {
+      return <>Error loading metadata. Fetch succeeded but payload was undefined.</>
+    }
+    else if (datasetsLoader.data.get(datasetKey) === undefined) {
+      return <>Error parsing metadata. Fetch succeeded but a dataset named {datasetKey} could not be found.</>
+    }
   }
 
-  if (viewsLoader.error) {
-    return <>Error loading metadata: {(viewsLoader.error as Error).message}</>
-  }
-
-
-  const dataset = datasetsLoader.data!.get(datasetKey)!;
-  const views = viewsLoader.data!.filter(v => (v.datasetName === datasetKey && v.description !== '')) 
-  
-  const imageMap = new Map(dataset.images.map((v) => [v.name, v]))
-  const sources: string[] = [...imageMap.keys()];
-
+  const dataset = datasetsLoader.data.get(datasetKey)!;
+  const views = viewsLoader.data.filter(v => (v.datasetName === datasetKey && v.description !== '')) 
+    
   const bucket = "janelia-cosem-datasets";
   const prefix = dataset.name;
   const bucketBrowseLink = makeQuiltURL(bucket, prefix);
   const s3URL = `s3://${bucket}/${prefix}/${dataset.name}.n5`;
-
-  // initialize the layer checkboxes by looking at the first dataset view
   
-  for (const vn of sources) {
-    const vkeys = views[0].images.map(v => v.name);
-    if (vkeys.includes(vn)) {
-      checkStates.images.set(vn, {
-        ...checkStates.images.get(vn),
-        selected: true
-      });
-    }
+
+  // initialize the checkboxes with the first view
+  const imageNames = [...dataset.images.map(v => v.name)]
+  const inView = imageNames.filter(name => views[viewChecked].images.map(v => v.name).includes(name))
+  if (imageChecked.size == 0) {
+    inView.forEach(name => imageChecked.add(name))
   }
-  // the first view is selected, by default
-
-  const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const imageCheckState = checkStates.images.get(
-      event.target.name
-    );
-    const newCheckState = new Map(
-      checkStates.images
-        .set(event.target.name, {
-          ...imageCheckState,
-          selected: event.target.checked
-        })
-        .entries()
-    );
-
-    // Prevent all checkboxes from being deselected
-    if (![...newCheckState.values()].every(v => !v.selected)) {
-      setCheckStates({ ...checkStates, images: newCheckState });
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newImageChecked = new Set([...imageChecked])
+    if (event.target.checked) {
+      newImageChecked.add(event.target.name)
     }
-  };
-
-  const handleViewChange = (index: number, views: View[]) => () => {
-    const newViewState = index
-    const newImageState = new Map(
-      [...checkStates.images.entries()].map(([k, v]) => [
-        k,
-        { ...v, selected: false }
-      ])
-    );
-    views[newViewState].images.map(k =>
-      newImageState.set(k.name, { ...newImageState.get(k.name), selected: true })
-    );
-
-    setCheckStates({
-      images: newImageState,
-      view: newViewState
-    });
-  };
-
-  // Update the default layer type for all the affected volumes
-  const handleLayerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const contentType = event.target.name as ContentType;
-    let newLayerType = undefined;
-    const newImageCheckState = new Map(checkStates.images.entries());
-    for (const k of newImageCheckState.keys()) {
-      const val = newImageCheckState.get(k);
-      if (
-        !(val === undefined) &&
-        imageMap.get(k)?.contentType === contentType
-      ) {
-        if (event.target.checked) {
-          newLayerType = "segmentation" as LayerType;
-        }
-        newImageCheckState.set(k, {
-          ...val,
-          layerType: newLayerType as LayerType
-        });
+    else {
+      // prevent all image checkboxes from being deselected
+      if (newImageChecked.size > 1) {
+        newImageChecked.delete(event.target.name)
       }
     }
-    setCheckStates({ ...checkStates, images: newImageCheckState });
+    setImageChecked(newImageChecked)
+    }
+
+  const handleViewChange = (index: number, views: View[]) => () => {
+    const newImageState = views[index].images.reduce((previous, current) =>
+      previous.add(current.name), new Set<string>());
+
+    setViewChecked(index)
+    setImageChecked(newImageState)
   };
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,31 +127,22 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   };
 
   const clearLayers = () => {
-    const newImageCheckState = new Map(
-      [...checkStates.images.entries()].map(([k]) => [
-        k,
-        { selected: false }
-      ])
-    );
-    setCheckStates({
-      ...checkStates,
-      images: newImageCheckState
-    });
+    setImageChecked(new Set<string>())
   };
 
 	const thumbnailAlt = `2D rendering of ${dataset.name}`;
-  const localView = views[checkStates.view]
+  const localView = {...views[viewChecked], images: dataset.images.filter(v => imageChecked.has(v.name))} 
+  console.log(localView.images)
   return (
     <Grid container>
       <Grid item md={8}>
         <Paper className={classes.paper} variant="outlined">
           <DatasetDescriptionSummary dataset={dataset}>
             <NeuroglancerLink 
-                position={localView.position ?? undefined} 
-                scale={localView.scale ?? undefined}
-                orientation={localView.orientation ?? undefined}
-                images = {localView.images}
-
+                position={views[viewChecked].position} 
+                scale={views[viewChecked].scale}
+                orientation={views[viewChecked].orientation}
+                images = {views[viewChecked].images}
                 >
               <img
 								alt={thumbnailAlt}
@@ -222,10 +166,10 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
           <Grid container spacing={2}>
             <Grid item sm={10}>
               <NeuroglancerLink
-                  scale= {views[checkStates.view].scale ?? undefined}
-                  position= {views[checkStates.view].position ?? undefined}
-                  orientation= {views[checkStates.view].orientation ?? undefined}
-                  images= {views[checkStates.view].images}
+                  scale= {localView.scale}
+                  position= {localView.position}
+                  orientation= {localView.orientation}
+                  images= {localView.images}
               />
             </Grid>
             <Grid item sm={2}>
@@ -237,15 +181,14 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
               <DatasetViewList
                 views={views}
                 handleToggle={handleViewChange}
-                checkState={checkStates.view}
+                checkState={viewChecked}
               />
             </Grid>
             <Grid item sm={6}>
               <LayerCheckboxList
                 dataset={dataset}
-                checkState={checkStates.images}
-                handleVolumeChange={handleVolumeChange}
-                handleLayerChange={handleLayerChange}
+                checkState={imageChecked}
+                handleImageChange={handleImageChange}
                 handleFilterChange={handleFilterChange}
                 filter={layerFilter}
               />
