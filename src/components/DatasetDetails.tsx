@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import Skeleton from "@material-ui/lab/Skeleton";
 import { Paper, Grid } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import DatasetPaper, { DatasetPaperLoader } from "./DatasetPaper";
+import DatasetPaper from "./DatasetPaper";
 import { fetchDatasets } from "../api/datasets";
 import { useQuery } from "react-query";
 
@@ -86,6 +86,6 @@ export default function DatasetDetails({ url }: DatasetDetailsProps) {
   } else if (data!.get(slug) === undefined) {
     return <div> Error 404: Could not find a dataset with the key {slug}</div>;
   } else {
-    return <DatasetPaperLoader datasetKey={slug} key={url} />;
+    return <DatasetPaper datasetKey={slug} key={url} />;
   }
 }

@@ -6,8 +6,8 @@ import {
   makeStyles,
   Theme
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
-import {View, Dataset} from "../types/datasets";
+import React, { useState } from "react";
+import {View} from "../types/datasets";
 import { makeQuiltURL } from "../api/util";
 import {
   DatasetAcquisition,
@@ -23,13 +23,8 @@ import { fetchDatasets } from "../api/datasets";
 import { useQuery } from "react-query";
 import {fetchViews} from "../api/views"
 
-type DatasetPaperLoaderProps = {
-  datasetKey: string;
-};
-
 type DatasetPaperProps = {
-  dataset: Dataset;
-  views: View[];
+  datasetKey: string;
 };
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -61,37 +56,18 @@ const useStyles: any = makeStyles((theme: Theme) =>
   })
 );
 
-export function DatasetPaperLoader({datasetKey }: DatasetPaperLoaderProps) {
-  const datasetsLoader = useQuery('datasets', async () => fetchDatasets());
-  const viewsLoader = useQuery('views', async () => fetchViews());
 
-  if (datasetsLoader.isLoading || viewsLoader.isLoading) {
-    return <>Loading metadatata....</>
-  }
 
-  if (datasetsLoader.error) {
-    return <>Error loading metadata: {(datasetsLoader.error as Error).message}</>
-  }
-
-  if (viewsLoader.error) {
-    return <>Error loading metadata: {(viewsLoader.error as Error).message}</>
-  }
-
-  const dataset = datasetsLoader.data!.get(datasetKey)!;
-  const views = viewsLoader.data!.filter(v => (v.datasetName === datasetKey && v.description !== '')) 
-  return DatasetPaper({dataset, views})
-}
-
-export default function DatasetPaper({ dataset, views }: DatasetPaperProps) {
+export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const classes = useStyles(); 
- /* 
+  
   const datasetsLoader = useQuery('datasets', async () => fetchDatasets());
   const viewsLoader = useQuery('views', async () => fetchViews());
-  */
+ 
   const [layerFilter, setLayerFilter] = useState("");
   const [imageChecked, setImageChecked] = useState(new Set<string>())
   const [viewChecked, setViewChecked] = useState(0)
- /*
+ 
   if (datasetsLoader.isLoading || viewsLoader.isLoading) {
     return <>Loading metadatata....</>
   }
@@ -99,10 +75,6 @@ export default function DatasetPaper({ dataset, views }: DatasetPaperProps) {
   else if (datasetsLoader.error || viewsLoader.error) {
     const err = datasetsLoader.error ? datasetsLoader.error : viewsLoader.error
     return <>Error loading metadata: {err as Error}</>
-  }
-
-  else if (viewsLoader.error) {
-    return <>Error loading metadata: {(viewsLoader.error as Error).message}</>
   }
   else {
     if (datasetsLoader.data === undefined || viewsLoader.data === undefined) {
@@ -115,17 +87,19 @@ export default function DatasetPaper({ dataset, views }: DatasetPaperProps) {
 
   const dataset = datasetsLoader.data.get(datasetKey)!;
   const views = viewsLoader.data.filter(v => (v.datasetName === datasetKey && v.description !== '')) 
-  */
-  
+    
   const bucket = "janelia-cosem-datasets";
   const prefix = dataset.name;
   const bucketBrowseLink = makeQuiltURL(bucket, prefix);
   const s3URL = `s3://${bucket}/${prefix}/${dataset.name}.n5`;
-  console.log('rendering')
+  
+
+  // initialize the checkboxes with the first view
   const imageNames = [...dataset.images.map(v => v.name)]
   const inView = imageNames.filter(name => views[viewChecked].images.map(v => v.name).includes(name))
-  inView.forEach(name => imageChecked.add(name))
-
+  if (imageChecked.size == 0) {
+    inView.forEach(name => imageChecked.add(name))
+  }
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newImageChecked = new Set([...imageChecked])
     if (event.target.checked) {
@@ -137,7 +111,6 @@ export default function DatasetPaper({ dataset, views }: DatasetPaperProps) {
         newImageChecked.delete(event.target.name)
       }
     }
-    console.log(newImageChecked)
     setImageChecked(newImageChecked)
     }
 
@@ -149,7 +122,6 @@ export default function DatasetPaper({ dataset, views }: DatasetPaperProps) {
     setImageChecked(newImageState)
   };
 
-
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLayerFilter(event.target.value);
   };
@@ -159,17 +131,18 @@ export default function DatasetPaper({ dataset, views }: DatasetPaperProps) {
   };
 
 	const thumbnailAlt = `2D rendering of ${dataset.name}`;
-  const localView = views[viewChecked]
+  const localView = {...views[viewChecked], images: dataset.images.filter(v => imageChecked.has(v.name))} 
+  console.log(localView.images)
   return (
     <Grid container>
       <Grid item md={8}>
         <Paper className={classes.paper} variant="outlined">
           <DatasetDescriptionSummary dataset={dataset}>
             <NeuroglancerLink 
-                position={localView.position ?? undefined} 
-                scale={localView.scale ?? undefined}
-                orientation={localView.orientation ?? undefined}
-                images = {localView.images}
+                position={views[viewChecked].position} 
+                scale={views[viewChecked].scale}
+                orientation={views[viewChecked].orientation}
+                images = {views[viewChecked].images}
                 >
               <img
 								alt={thumbnailAlt}
@@ -193,10 +166,10 @@ export default function DatasetPaper({ dataset, views }: DatasetPaperProps) {
           <Grid container spacing={2}>
             <Grid item sm={10}>
               <NeuroglancerLink
-                  scale= {views[viewChecked].scale ?? undefined}
-                  position= {views[viewChecked].position ?? undefined}
-                  orientation= {views[viewChecked].orientation ?? undefined}
-                  images= {views[viewChecked].images}
+                  scale= {localView.scale}
+                  position= {localView.position}
+                  orientation= {localView.orientation}
+                  images= {localView.images}
               />
             </Grid>
             <Grid item sm={2}>
