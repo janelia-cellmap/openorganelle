@@ -7,18 +7,16 @@ import Typography from "@material-ui/core/Typography";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { ImageCheckState } from "./DatasetPaper";
 
 interface ImageCheckboxCollectionProps {
   images: Image[]
-  checkState: Map<string, ImageCheckState>
+  checkState: Set<string>
   handleImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   contentType: string,
   contentTypeInfo: ContentTypeMetadata,
   accordionExpanded: boolean
   layerTypeToggleLabel?: string,
   layerTypeToggleChecked?: boolean
-  handleLayerChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 
@@ -41,7 +39,7 @@ export default function ImageCheckboxCollection({
       <FormControlLabel
         control={
           <Checkbox
-            checked={checkState.get(image.name) ? checkState.get(image.name)?.selected : false }
+            checked={checkState.has(image.name)}
             onChange={handleImageChange}
             color="primary"
             name={image.name}
