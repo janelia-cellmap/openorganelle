@@ -21,8 +21,7 @@ import ClipboardLink from "./ClipboardLink";
 import BrokenImage from "../broken_image_24dp.svg";
 import { fetchDatasets } from "../api/datasets";
 import { useQuery } from "react-query";
-import { fetchViews } from "../api/views";
-import { InsertDriveFileTwoTone } from "@material-ui/icons";
+import {fetchViews} from "../api/views"
 
 type DatasetPaperLoaderProps = {
   datasetKey: string;
@@ -62,20 +61,44 @@ const useStyles: any = makeStyles((theme: Theme) =>
   })
 );
 
-export default function DatasetPaper({ datasetKey }: DatasetPaperLoaderProps) {
-  const classes = useStyles(); 
+export function DatasetPaperLoader({datasetKey }: DatasetPaperLoaderProps) {
   const datasetsLoader = useQuery('datasets', async () => fetchDatasets());
   const viewsLoader = useQuery('views', async () => fetchViews());
-  const [layerFilter, setLayerFilter] = useState("");
-  const [imageChecked, setImageChecked] = useState(new Set<string>())
-  const [viewChecked, setViewChecked] = useState(0)
-  
+
   if (datasetsLoader.isLoading || viewsLoader.isLoading) {
     return <>Loading metadatata....</>
   }
 
-  else if (datasetsLoader.error) {
+  if (datasetsLoader.error) {
     return <>Error loading metadata: {(datasetsLoader.error as Error).message}</>
+  }
+
+  if (viewsLoader.error) {
+    return <>Error loading metadata: {(viewsLoader.error as Error).message}</>
+  }
+
+  const dataset = datasetsLoader.data!.get(datasetKey)!;
+  const views = viewsLoader.data!.filter(v => (v.datasetName === datasetKey && v.description !== '')) 
+  return DatasetPaper({dataset, views})
+}
+
+export default function DatasetPaper({ dataset, views }: DatasetPaperProps) {
+  const classes = useStyles(); 
+ /* 
+  const datasetsLoader = useQuery('datasets', async () => fetchDatasets());
+  const viewsLoader = useQuery('views', async () => fetchViews());
+  */
+  const [layerFilter, setLayerFilter] = useState("");
+  const [imageChecked, setImageChecked] = useState(new Set<string>())
+  const [viewChecked, setViewChecked] = useState(0)
+ /*
+  if (datasetsLoader.isLoading || viewsLoader.isLoading) {
+    return <>Loading metadatata....</>
+  }
+
+  else if (datasetsLoader.error || viewsLoader.error) {
+    const err = datasetsLoader.error ? datasetsLoader.error : viewsLoader.error
+    return <>Error loading metadata: {err as Error}</>
   }
 
   else if (viewsLoader.error) {
@@ -90,10 +113,10 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperLoaderProps) {
     }
   }
 
-  
   const dataset = datasetsLoader.data.get(datasetKey)!;
   const views = viewsLoader.data.filter(v => (v.datasetName === datasetKey && v.description !== '')) 
-
+  */
+  
   const bucket = "janelia-cosem-datasets";
   const prefix = dataset.name;
   const bucketBrowseLink = makeQuiltURL(bucket, prefix);
