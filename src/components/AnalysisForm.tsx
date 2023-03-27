@@ -154,7 +154,6 @@ export default function AnalysisForm() {
       setOrganelleB(e.target.value as string);
       // planarity is only for ER-periph contacts with mito & ribo
       const combined = [organelleA, e.target.value].sort().toString();
-      console.log(combined);
       if (
         e.target.value === "" || !combined.match(/^er-periph,(ribo|mito)$/)
       ) {
