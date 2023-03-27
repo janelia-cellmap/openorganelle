@@ -132,7 +132,6 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
 	const thumbnailAlt = `2D rendering of ${dataset.name}`;
   const localView = {...views[viewChecked], images: dataset.images.filter(v => imageChecked.has(v.name))} 
-  console.log(localView.images)
   return (
     <Grid container>
       <Grid item md={8}>

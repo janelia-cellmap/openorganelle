@@ -127,7 +127,7 @@ export async function fetchDatasets() {
 function supabaseDatasetToLegacy(dataset: Camelized<DatasetsFromDb>[number]) {      
     const acq = ensureNotArray(dataset.imageAcquisition)
     const gridSpacing: UnitfulVector = {values: {}, unit: acq.gridSpacingUnit}
-    const dimensions: UnitfulVector = {values: {}, unit: acq.gridSpacingUnit}
+    const dimensions: UnitfulVector = {values: {}, unit: acq.gridDimensionsUnit}
 
     acq.gridAxes?.forEach((axis, idx) => {
         gridSpacing.values[axis] = acq.gridSpacing![idx]
