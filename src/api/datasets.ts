@@ -63,7 +63,15 @@ async function fetchDatasetsDirect(){
             name,
             description,
             thumbnail_url,
-            sample,
+            sample:sample(
+              description,
+              protocol,
+              contributions,
+              organism,
+              type,
+              subtype,
+              treatment
+            ),
             created_at,
             image_acquisition:image_acquisition(
                 name,
