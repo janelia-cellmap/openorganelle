@@ -627,7 +627,7 @@ export default function Tutorials() {
               When run from the command line, this command lists the contents of
               our data bucket:
               <CodeBlock
-                text="aws cli ls s3://janelia-cosem/"
+                text="aws cli ls s3://janelia-cosem-datasets/"
                 language=""
                 showLineNumbers={false}
                 theme={dracula}
@@ -639,6 +639,15 @@ export default function Tutorials() {
                 user guide
               </a>
               .
+            </Typography>
+            <p className="anchor" id="globus" />
+            <Typography variant="h5" gutterBottom>
+              How do I access data via globus?
+            </Typography>
+            <Typography paragraph>
+              If your institution is connected to <a href="https://www.globus.org">Globus</a>
+              {" "}network and has access to the <a href="https://www.globus.org/connectors/amazon-s3">globus s3 connector</a>,
+              then you can download data from s3 using the globus client. 
             </Typography>
             <Typography variant="h5" gutterBottom>
               How do I access the analysis database?
