@@ -660,6 +660,9 @@ export default function Tutorials() {
               </a>
               .
             </Typography>
+            <Typography variant="h5" gutterBottom>
+              Who can I contact about downloading data?
+            </Typography>
             <Typography paragraph>
               For more help or options accessing or downloading data please
               reach out to{" "}
