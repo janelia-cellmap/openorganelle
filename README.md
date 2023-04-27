@@ -5,7 +5,7 @@ This app provides a gateway for visualization of large cloud-hosted FIB-SEM data
 ### Bucket configuration
 
 The bucket hosting the datasets must have the proper configuration in order for this app to parse the contents of the bucket, and in order for neuroglancer to display arrays stored in the bucket.
-Specifically, the following bucket policy (or a more permissive one) must be used, where $BUCKET is the name of the bucket hosting the data, e.g. `janelia-cosem-datasets-dev`: 
+Specifically, the following bucket policy (or a more permissive one) must be used, where $BUCKET is the name of the bucket hosting the data, e.g. `janelia-cosem-datasets`: 
 
 ```json
 {
