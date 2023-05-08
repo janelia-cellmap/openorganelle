@@ -1,5 +1,3 @@
-import { UnitfulVector } from "../types/datasets";
-
 export function makeQuiltURL(bucket: string, prefix: string): string {
   return `https://open.quiltdata.com/b/${bucket}/tree/${prefix}/`
 }
@@ -39,12 +37,3 @@ export const checkWebGL2 = (): boolean => {
       return obj
     }
   }
-
-export function stringifyUnitfulVector(vec: UnitfulVector, decimals: number): string {
-      const val_array = [...Object.values(vec.values)].map(v => v.toFixed(decimals));
-      const axis_array = [...Object.keys(vec.values)];
-      if (val_array.length === 0) { return 'N/A' }
-      else {
-        return `${val_array.join(' x ')} (${axis_array.join(', ')})`
-      }
-    }

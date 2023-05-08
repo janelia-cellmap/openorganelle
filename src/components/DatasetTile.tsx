@@ -15,7 +15,7 @@ import Popper from "@material-ui/core/Popper";
 
 import { DatasetDescriptionPreview } from "./DatasetDescriptionText";
 import BrokenImage from "../broken_image_24dp.svg";
-import { Dataset } from "../types/datasets";
+import { Dataset } from "../types/database";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -109,10 +109,12 @@ export default function DatasetTile({
           <div className={classes.popper}>
             <DatasetDescriptionPreview
               title={dataset.description}
-              startDate={dataset.acquisition?.startDate!}
+              startDate={dataset.imageAcquisition.startDate}
               id={dataset.name}
-              gridSpacing={dataset.acquisition?.gridSpacing!}
-              dimensions={dataset.acquisition?.dimensions!}
+              gridSpacing={dataset.imageAcquisition.gridSpacing}
+              gridDimensions={dataset.imageAcquisition.gridDimensions}
+              gridSpacingUnit={dataset.imageAcquisition.gridSpacingUnit}
+              gridDimensionsUnit={dataset.imageAcquisition.gridDimensionsUnit}
               titleLink={datasetLink}
             />
           </div>
@@ -134,10 +136,12 @@ export default function DatasetTile({
           <Grid item xs={4}>
             <DatasetDescriptionPreview
               title={dataset.description}
-              startDate={dataset.acquisition?.startDate!}
+              startDate={dataset.imageAcquisition.startDate!}
               id={dataset.name}
-              gridSpacing={dataset.acquisition?.gridSpacing!}
-              dimensions={dataset.acquisition?.dimensions!}
+              gridSpacing={dataset.imageAcquisition.gridSpacing}
+              gridSpacingUnit={dataset.imageAcquisition.gridSpacingUnit}
+              gridDimensions={dataset.imageAcquisition.gridDimensions!}
+              gridDimensionsUnit={dataset.imageAcquisition.gridDimensionsUnit}
               titleLink={datasetLink}
             />
           </Grid>

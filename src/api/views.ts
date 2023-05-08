@@ -1,6 +1,7 @@
 import { supabase } from "./supabase";
-import { camelize, Camelized } from "./camel";
+import { camelize, Camelized } from "../types/camel";
 import { ensureArray } from "./util";
+import { ViewQueryResult } from "../types/database";
 
 export async function fetchViews() {
     const { data, error } = await supabase
@@ -36,7 +37,7 @@ export async function fetchViews() {
             ids
             )
     ),
-      dataset!inner(name)`).eq('dataset.is_published', true)
+      dataset!inner(name)`).eq('dataset.is_published', true).returns<ViewQueryResult>()
     if (error === null) {
       const result = data!.map(d => {
         return {...d,

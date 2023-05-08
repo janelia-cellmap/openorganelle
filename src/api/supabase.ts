@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { Database } from '../types/database';
+import { Database } from '../types/supabase';
 
 const supabaseUrl = 'https://kvwjcggnkipomjlbjykf.supabase.co'
 const supabaseKey = process.env.REACT_APP_SUPABASE_KEY

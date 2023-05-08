@@ -7,7 +7,9 @@ import { CoordinateSpace,
          SegmentationLayer,
          urlSafeStringify,
          ViewerState } from "@janelia-cosem/neuroglancer-url-tools";
-import {Image, SampleType, LayerType, SpatialTransform } from "../types/datasets";
+import {Image, SampleType, SpatialTransform } from "../types/database";
+
+export type LayerType = "image" | "segmentation"
 
 // one nanometer, expressed as a scaled meter
 const nm: [number, string] = [1e-9, "m"];

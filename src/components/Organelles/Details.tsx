@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Taxon, View } from "../../types/datasets";
+import { Taxon, View } from "../../types/database";
 import { useParams, Link as RouterLink } from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";

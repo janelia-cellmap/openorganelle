@@ -1,4 +1,4 @@
-import {Json} from '../types/supabase'
+import {Json} from './supabase'
 
 // The mapping from snake_case strings to 
 // camelCase strings

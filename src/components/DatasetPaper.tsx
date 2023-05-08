@@ -7,7 +7,7 @@ import {
   Theme
 } from "@material-ui/core";
 import React, { useState } from "react";
-import {View} from "../types/datasets";
+import {View} from "../types/database";
 import { makeQuiltURL } from "../api/util";
 import {
   DatasetAcquisition,

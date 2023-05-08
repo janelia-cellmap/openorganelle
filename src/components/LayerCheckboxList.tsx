@@ -9,7 +9,7 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
-import {ContentType, Dataset, Image } from "../types/datasets";
+import {ContentType, Dataset, Image } from "../types/database";
 import ImageCheckboxCollection from "./LayerGroup";
 import { contentTypeDescriptions } from "../api/datasets";
 
@@ -56,7 +56,7 @@ function FilteredLayersList({ dataset, checkState, handleImageChange, filter}: F
   const imageGroups: Map<ContentType, Image[]> = new Map();
 
   useEffect(() => {
-    // filter volumes based on filter string
+    // filter images based on filter string
     let filteredVolumes = Array.from(dataset.images.values());
     if (filter) {
       // TODO: make this case insensitive

@@ -1,14 +1,10 @@
 import { supabase } from "./supabase";
-import {camelize, Camelized} from './camel'
+import {camelize, Camelized} from '../types/camel'
 import { ContentType,
          Sample,
-         UnitfulVector,
-         Image, 
-         FIBSEMAcquisition,
-         SoftwareAvailability} from "../types/datasets";
-import { ensureArray, ensureNotArray } from "./util";
+         DatasetQueryResult,
+         ImageAcquisition} from "../types/database";
 import { DatasetTag, OSet } from "../types/tags";
-
 
 export interface ContentTypeMetadata {
   label: string
@@ -24,10 +20,10 @@ contentTypeDescriptions.set('prediction', { label: "Prediction Layers", descript
 contentTypeDescriptions.set('analysis', { label: "Analysis Layers", description: "Results of applying various analysis routines on raw data, predictions, or segmentations." });
 
 type makeTagsProps = {
-  acquisition: FIBSEMAcquisition
+  acquisition: ImageAcquisition
   institutions: string[],
   sample: Sample
-  softwareAvailability: SoftwareAvailability
+  softwareAvailability: "open" | "partially open" | "closed"
 }
 
 const resolutionTagThreshold = 6;
@@ -38,33 +34,59 @@ export function makeTags({acquisition,
   const tags: OSet<DatasetTag> = new OSet();
   let latvox = undefined;
   tags.add({value: acquisition.institution, category: 'Acquisition institution'});
-  const axvox = acquisition.gridSpacing.values.z
+  const axvox = acquisition.gridSpacing[2]
   let value = ''
   if (axvox <= resolutionTagThreshold){value = `<= ${resolutionTagThreshold} nm`}
   else {value = `> ${resolutionTagThreshold} nm`}
   
   tags.add({value: value, category: 'Axial voxel size'});
-  latvox =  Math.min(acquisition.gridSpacing.values.y, acquisition.gridSpacing.values.x!);
+  latvox =  Math.min(acquisition.gridSpacing[1], acquisition.gridSpacing[0]);
   tags.add({value: latvox.toString(), category: 'Lateral voxel size'});
   
   for (const val of institutions) {tags.add({value: val, category: 'Contributing institution'})}
-  for (const val of sample.organism) {tags.add({value: val, category: 'Sample: Organism'})}
-  for (const val of sample.type) {tags.add({value: val, category: 'Sample: Type'})}
-  for (const val of sample.subtype) {tags.add({value: val, category: 'Sample: Subtype'})}
-  for (const val of sample.treatment) {tags.add({value: val, category: 'Sample: Treatment'})}
+  if (sample.organism !== null) {
+    for (const val of sample.organism) {
+      tags.add({value: val, category: 'Sample: Organism'})
+    }
+  }
+  if (sample.type !== null) {
+    for (const val of sample.type) {
+      tags.add({value: val, category: 'Sample: Type'})
+    }
+  }
+  if (sample.subtype !== null) {
+    for (const val of sample.subtype) {
+      tags.add({value: val, category: 'Sample: Subtype'})
+    }
+  }
+  if (sample.treatment !== null) {
+    for (const val of sample.treatment) {
+      tags.add({value: val, category: 'Sample: Treatment'})
+    }
+  }
+  
   tags.add({value: softwareAvailability, category: 'Software Availability'});
   return tags
 }
 
-async function fetchDatasetsDirect(){
+async function queryDatasets(){
   const { data, error } = await supabase
     .from('dataset')
     .select(`
             name,
             description,
             thumbnail_url,
-            sample,
             created_at,
+            sample:sample(
+              name,
+              description,
+              protocol,
+              contributions,
+              type,
+              subtype,
+              treatment,
+              organism
+            ),
             image_acquisition:image_acquisition(
                 name,
                 institution,
@@ -100,7 +122,7 @@ async function fetchDatasetsDirect(){
                 name,
                 url,
                 type
-            )`).eq('is_published', true)
+            )`).eq('is_published', true).returns<DatasetQueryResult>()
   if (error == null) {
     return data
   }
@@ -109,53 +131,14 @@ async function fetchDatasetsDirect(){
   }
 }
 
-type DatasetsFromDb = Awaited<ReturnType<typeof fetchDatasetsDirect>>
-
 export async function fetchDatasets() {
-    const data = await fetchDatasetsDirect()
+    const data = await queryDatasets()
     const camelized = camelize(data) as Camelized<typeof data>
-    const legacy = new Map(camelized.map(d => {
-      const legacyDataset = supabaseDatasetToLegacy(d)
-      return [d.name, {...legacyDataset, tags: makeTags({acquisition: legacyDataset.acquisition,
-                                                         institutions: legacyDataset.institutions,
-                                                         sample: legacyDataset.sample,
-                                                         softwareAvailability: legacyDataset.softwareAvailability})}]
+    const dsets = new Map(camelized.map(d => {
+      return [d.name, {...d, tags: makeTags({acquisition: d.imageAcquisition,
+                                                         institutions: [d.imageAcquisition.institution],
+                                                         sample: d.sample,
+                                                         softwareAvailability: "open"})}]
     }))
-    return legacy
+    return dsets
 }
-
-function supabaseDatasetToLegacy(dataset: Camelized<DatasetsFromDb>[number]) {      
-    const acq = ensureNotArray(dataset.imageAcquisition)
-    const gridSpacing: UnitfulVector = {values: {}, unit: acq.gridSpacingUnit}
-    const dimensions: UnitfulVector = {values: {}, unit: acq.gridDimensionsUnit}
-
-    acq.gridAxes?.forEach((axis, idx) => {
-        gridSpacing.values[axis] = acq.gridSpacing![idx]
-        dimensions.values[axis] = acq.gridDimensions![idx]
-    })
-    
-      const images: Image[] = ensureArray(dataset.images).map((im) => {
-      return {
-        ...im,
-        meshes: ensureArray(im.meshes)
-      }
-    }
-    )
-    return {
-      name: dataset.name,
-      description: dataset.description,
-      institutions: [acq.institution],
-      softwareAvailability: "open" as SoftwareAvailability,
-      acquisition: {
-        name: acq.name,
-        institution: acq.institution,
-        startDate: acq.startDate,
-        gridSpacing: gridSpacing,
-        dimensions: dimensions},
-      sample: dataset.sample as Sample,
-      publications: ensureArray(dataset.publications),
-      images: images,
-      thumbnailUrl: dataset.thumbnailUrl,
-      published: true
-    }
-  }

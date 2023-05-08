@@ -3,15 +3,16 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { Publication, Dataset, UnitfulVector } from "../types/datasets";
-import {stringifyUnitfulVector } from "../api/util";
+import { Publication, Dataset } from "../types/database";
 
 export interface DescriptionPreviewProps {
   title: string;
   startDate: string;
   id: string;
-  gridSpacing: UnitfulVector;
-  dimensions: UnitfulVector;
+  gridSpacingUnit: string;
+  gridSpacing: number[]
+  gridDimensions: number[]
+  gridDimensionsUnit: string
   titleLink: string;
 }
 
@@ -46,7 +47,7 @@ export function PublicationList({publications}: PublicationListProps) {
 } 
 
 export function DatasetDescriptionPreview({
-  title, startDate, id, gridSpacing, dimensions}: DescriptionPreviewProps) {
+  title, startDate, id, gridSpacing, gridDimensions, gridSpacingUnit, gridDimensionsUnit}: DescriptionPreviewProps) {
   const classes = useStyles();
   return (
     <Box>
@@ -60,12 +61,12 @@ export function DatasetDescriptionPreview({
         <strong>Dataset ID</strong>: {id}
       </p>
       <p>
-        <strong>Voxel size ({gridSpacing.unit})</strong>
-        : {stringifyUnitfulVector(gridSpacing, 1)}
+        <strong>Voxel size ({gridSpacingUnit})</strong>
+        : {gridSpacing}
       </p>
       <p>
-        <strong>Dimensions ({dimensions.unit})</strong>:{" "}
-        {stringifyUnitfulVector(dimensions, 1)}
+        <strong>Dimensions ({gridDimensionsUnit})</strong>:{" "}
+        {gridDimensions}
       </p>
     </Box>
   );
@@ -86,40 +87,15 @@ export function DatasetAcquisition({
         <Grid item xs={6}>
           <p>
             <strong>
-              Final voxel size ({datasetMetadata.acquisition!.gridSpacing.unit})
+              Final voxel size ({datasetMetadata.imageAcquisition.gridSpacingUnit})
             </strong>
-            : {stringifyUnitfulVector(datasetMetadata.acquisition!.gridSpacing!, 1)}
+            : {datasetMetadata.imageAcquisition.gridSpacing}
           </p>
           <p>
             <strong>
-              Dimensions ({datasetMetadata.acquisition!.dimensions.unit})
+              Dimensions ({datasetMetadata.imageAcquisition.gridDimensionsUnit})
             </strong>
-            : {stringifyUnitfulVector(datasetMetadata.acquisition!.dimensions, 0)}
-          </p>
-          <p>
-            <strong>Imaging duration (days)</strong>:{" "}
-            {datasetMetadata.acquisition!.durationDays}
-          </p>
-          <p>
-            <strong>Imaging start date</strong>:{" "}
-            {datasetMetadata.acquisition!.startDate}
-          </p>
-          <p>
-            <strong>Primary energy (EV)</strong>:{" "}
-            {datasetMetadata.acquisition!.primaryEnergy}
-          </p>
-          <p>
-            <strong>Bias (V)</strong>: {datasetMetadata.acquisition!.biasVoltage}
-          </p>
-          <p>
-            <strong>Imaging current (nA)</strong>:{" "}
-            {datasetMetadata.acquisition!.current}
-          </p>
-        </Grid>
-        <Grid item xs={6}>
-          <p>
-            <strong>Scanning speed (MHz)</strong>:{" "}
-            {datasetMetadata.acquisition!.scanRate}
+            : {datasetMetadata.imageAcquisition.gridDimensions}
           </p>
           <p>
             <strong>Dataset ID</strong>: {datasetMetadata.name}
