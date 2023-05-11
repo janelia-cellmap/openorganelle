@@ -136,10 +136,11 @@ async function queryDatasets(){
 
 export async function fetchDatasets() {
     const data = await queryDatasets()
+    // convert snake_case keys to camelCase
     const camelized = camelize(data) as Camelized<typeof data>
+    // convert date strings to Date objects
     const stringsToDates = stringToDate(camelized) as ToDate<typeof camelized>
     const dsets = new Map(stringsToDates.map(d => {
-      d.createdAt
       return [d.name, {...d, tags: makeTags({acquisition: d.imageAcquisition,
                                              institutions: [d.imageAcquisition.institution],
                                              sample: d.sample,
