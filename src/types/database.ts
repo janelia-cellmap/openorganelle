@@ -1,4 +1,5 @@
 
+import {ToDate} from "./stringtodate"
 import { Camelized } from "./camel";
 import { Database} from "./supabase";
 import { DatasetTag, OSet } from "./tags";
@@ -117,11 +118,13 @@ export type ViewQueryResult = {
   images: ImageQueryResult[]
 }
 
-export type View = Camelized<ViewQueryResult>
-export type Image = Camelized<ImageQueryResult>
-export type Publication = Camelized<PublicationQueryResult>
-export type ImageAcquisition = Camelized<ImageAcquisitionQueryResult>
+
 export type Dataset = 
-  Camelized<DatasetQueryResult> & {
+  ToDate<Camelized<DatasetQueryResult>> & {
     tags: OSet<DatasetTag>
   }
+
+export type View = ToDate<Camelized<ViewQueryResult>>
+export type Image = Dataset['images'][number]
+export type Publication = Dataset['publications'][number]
+export type ImageAcquisition = Dataset['imageAcquisition']

@@ -7,7 +7,7 @@ import { Publication, Dataset } from "../types/database";
 
 export interface DescriptionPreviewProps {
   title: string;
-  startDate: string;
+  startDate: Date;
   id: string;
   gridSpacingUnit: string;
   gridSpacing: number[]
@@ -25,7 +25,7 @@ export interface DescriptionFullProps {
   s3URL: string;
   bucketBrowseLink: string;
   storageLocation: string;
-  datasetMetadata: Dataset;
+  dataset: Dataset;
 }
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -41,9 +41,13 @@ interface PublicationListProps {
 }
 
 export function PublicationList({publications}: PublicationListProps) {
-  return (<ul>{publications.map(link => {
-    return <li key={link.url + link.name}><a href={link.url}>{link.name}</a></li>    
-})}</ul>)
+  if (publications.length > 0) {
+  return <ul>
+    {publications.map(link => {
+    return <li key={link.url + link.name}><a href={link.url}>{link.name}</a></li>})}
+    </ul>}
+  else
+    {return <ul><em>None</em></ul>}
 } 
 
 export function DatasetDescriptionPreview({
@@ -55,18 +59,18 @@ export function DatasetDescriptionPreview({
         {title}
       </Typography>
       <p>
-        <strong>Acquisition date</strong>: {startDate}
+        <strong>Acquisition date</strong>: {startDate.toDateString()}
       </p>
       <p>
         <strong>Dataset ID</strong>: {id}
       </p>
       <p>
         <strong>Voxel size ({gridSpacingUnit})</strong>
-        : {gridSpacing}
+        : {gridSpacing.join(', ')}
       </p>
       <p>
         <strong>Dimensions ({gridDimensionsUnit})</strong>:{" "}
-        {gridDimensions}
+        {gridDimensions.join(', ')}
       </p>
     </Box>
   );
@@ -74,8 +78,10 @@ export function DatasetDescriptionPreview({
 
 export function DatasetAcquisition({
   storageLocation,
-  datasetMetadata
+  dataset
 }: DescriptionFullProps) {
+  const pubs = dataset.publications
+  const acq = dataset.imageAcquisition
   const classes = useStyles();
 
   return (
@@ -87,23 +93,25 @@ export function DatasetAcquisition({
         <Grid item xs={6}>
           <p>
             <strong>
-              Final voxel size ({datasetMetadata.imageAcquisition.gridSpacingUnit})
+              Final voxel size ({acq.gridSpacingUnit})
             </strong>
-            : {datasetMetadata.imageAcquisition.gridSpacing}
+            : {acq.gridSpacing.join(', ')} {'(' + acq.gridAxes.join(', ')+ ')'}
           </p>
           <p>
             <strong>
-              Dimensions ({datasetMetadata.imageAcquisition.gridDimensionsUnit})
+              Dimensions ({acq.gridDimensionsUnit})
             </strong>
-            : {datasetMetadata.imageAcquisition.gridDimensions}
+            : {acq.gridDimensions.join(', ')} {'(' + acq.gridAxes.join(', ')+ ')'}
           </p>
           <p>
-            <strong>Dataset ID</strong>: {datasetMetadata.name}
+            <strong>Dataset ID</strong>: {dataset.name}
           </p>
+
             <strong>DOI</strong>:{" "}
-            <PublicationList publications={datasetMetadata.publications.filter((p) => p.type == 'doi')}/>
+            <PublicationList publications={pubs.filter((p) => p.type == 'doi')}/>
+
             <strong>Publications</strong>:{" "}
-            <PublicationList publications={datasetMetadata.publications.filter((p) => p.type == 'paper')}/>
+            <PublicationList publications={pubs.filter((p) => p.type == 'paper')}/>
           <p>
             <strong>Dataset location</strong>: {storageLocation}
           </p>
@@ -125,13 +133,13 @@ export function DatasetDescriptionSummary({
         {dataset.description}
       </Typography>
       <p>
-        <strong>Sample</strong>: {dataset.sample!.description}
+        <strong>Sample</strong>: {dataset.sample.description}
       </p>
       <p>
-        <strong>Protocol</strong>: {dataset.sample!.protocol}
+        <strong>Protocol</strong>: {dataset.sample.protocol}
       </p>
       <p>
-        <strong>Contributions</strong>: {dataset.sample!.contributions}
+        <strong>Contributions</strong>: {dataset.sample.contributions}
       </p>
     </>
   );

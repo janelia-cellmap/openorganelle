@@ -94,6 +94,7 @@ export default function DatasetLayout({
 
   const totalPages = Math.ceil(datasetsFiltered.length / datasetsPerPage);
   // sort by number of volumes; this will break when the metadata changes to putting volumes in an array
+
   const datasetsSorted = datasetsFiltered.sort(
     sortFunctions[appState.sortBy].func
   );

@@ -1,3 +1,7 @@
+import { Json } from "../types/supabase";
+
+export const dateKeys = ["createdAt", "startDate"];
+
 export function makeQuiltURL(bucket: string, prefix: string): string {
   return `https://open.quiltdata.com/b/${bucket}/tree/${prefix}/`
 }
@@ -37,3 +41,42 @@ export const checkWebGL2 = (): boolean => {
       return obj
     }
   }
+
+  // convert 
+export function toCamel(s: string): string {
+  return s.replace(/([-_][a-z])/gi, ($1) => {
+    return $1.toUpperCase().replace('-', '').replace('_', '');
+  });
+}
+
+export function camelize(obj: Json): any {
+  if (obj === null) {return obj}
+  else if (typeof obj === 'number') {return obj} 
+  else if (typeof obj === 'string'){return obj}
+  else if (typeof obj === 'boolean') {return obj}
+  else if (Array.isArray(obj)) {return obj.map(camelize)}
+  else
+  {
+  const entries = Object.entries(obj);
+  const mappedEntries = entries.map(
+      ([k, v]) => [toCamel(k), camelize(v)])
+  return Object.fromEntries(mappedEntries)
+  }
+}
+
+export function stringToDate(obj: Json): any {
+  if (obj === null) {return obj}
+  else if (typeof obj === 'number') {return obj} 
+  else if (typeof obj === 'string'){return obj}
+  else if (typeof obj === 'boolean') {return obj}
+  else if (Array.isArray(obj)) {return obj.map(stringToDate)}
+  else
+  {
+  const entries = Object.entries(obj);
+  const mappedEntries = entries.map(
+      ([k, v]) => {
+        return (dateKeys.includes(k) && (typeof v === 'string')) ? [k, new Date(v)] : [k, stringToDate(v)]
+      })
+  return Object.fromEntries(mappedEntries)
+  }
+}

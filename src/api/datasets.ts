@@ -1,10 +1,12 @@
 import { supabase } from "./supabase";
-import {camelize, Camelized} from '../types/camel'
+import {Camelized} from '../types/camel'
+import {camelize, stringToDate} from "./util"
 import { ContentType,
          Sample,
          DatasetQueryResult,
          ImageAcquisition} from "../types/database";
 import { DatasetTag, OSet } from "../types/tags";
+import { ToDate } from "../types/stringtodate";
 
 export interface ContentTypeMetadata {
   label: string
@@ -123,7 +125,8 @@ async function queryDatasets(){
                 url,
                 type
             )`).eq('is_published', true).returns<DatasetQueryResult>()
-  if (error == null) {
+  
+            if (error == null) {
     return data
   }
   else {
@@ -134,11 +137,13 @@ async function queryDatasets(){
 export async function fetchDatasets() {
     const data = await queryDatasets()
     const camelized = camelize(data) as Camelized<typeof data>
-    const dsets = new Map(camelized.map(d => {
+    const stringsToDates = stringToDate(camelized) as ToDate<typeof camelized>
+    const dsets = new Map(stringsToDates.map(d => {
+      d.createdAt
       return [d.name, {...d, tags: makeTags({acquisition: d.imageAcquisition,
-                                                         institutions: [d.imageAcquisition.institution],
-                                                         sample: d.sample,
-                                                         softwareAvailability: "open"})}]
+                                             institutions: [d.imageAcquisition.institution],
+                                             sample: d.sample,
+                                             softwareAvailability: "open"})}]
     }))
     return dsets
 }
