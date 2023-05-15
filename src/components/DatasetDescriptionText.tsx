@@ -91,13 +91,14 @@ export function DatasetAcquisition({
   storageLocation,
   dataset
 }: DescriptionFullProps) {
+  const classes = useStyles();
   const pubs = dataset.publications
   const acq = dataset.imageAcquisition
   const pubPapers = pubs.filter((p) => p.type == 'paper')
   const pubDOI = pubs.filter((p) => p.type == 'doi')
   // check for an em dataset with fibsem acquisition metadata 
   let imageParams = undefined
- 
+  
   // This is a hack until we have proper rendering of image-specific metadata
   for (const im of dataset.images){
     if (zFibsemMetadata.safeParse(im.source).success)
@@ -105,6 +106,9 @@ export function DatasetAcquisition({
       const params = zFibsemMetadata.parse(im.source)
       imageParams = 
       <>
+      <Typography variant="h6" className={classes.title}>
+        FIB-SEM parameters
+      </Typography>
       <p><strong>Imaging duration (days)</strong> : {params.durationDays}</p>
       <p><strong>Bias (Volts)</strong>: {params.biasV}</p>
       <p><strong>Scan rate (Hz)</strong>: {params.scanHz}</p>
@@ -112,33 +116,44 @@ export function DatasetAcquisition({
       <p><strong>Primary energy (eV)</strong>: {params.landingEnergyEV}</p>
       </>
   }}
-  const classes = useStyles();
 
   return (
     <>
+    <Grid container spacing={2}>
+      <Grid item xs={6}>
       <Typography variant="h6" className={classes.title}>
         Acquisition details
       </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
           <p>
+          <strong>
+              Imaging start date
+            </strong>
+            :  {acq.startDate.toDateString()}
+            </p>
+            <p>
             <strong>
               Final voxel size ({acq.gridSpacingUnit})
             </strong>
-            : {acq.gridSpacing.join(', ')} {'(' + acq.gridAxes.join(', ')+ ')'}
+            : ({acq.gridSpacing.join(', ')}) ({acq.gridAxes.join(', ')})
           </p>
           <p>
             <strong>
               Dimensions ({acq.gridDimensionsUnit})
             </strong>
-            : {acq.gridDimensions.join(', ')} {'(' + acq.gridAxes.join(', ')+ ')'}
+            : ({acq.gridDimensions.join(', ')}) ({acq.gridAxes.join(', ')})
           </p>
-          <p><strong>Dataset ID</strong>: {dataset.name}</p>
-
-          <strong>DOI</strong>:{" "}
-            <PublicationList publications={pubDOI}/>
-            
-            <strong>Publications</strong>:{" "}
+          <p>
+            <strong>
+              Dataset ID
+            </strong>: {dataset.name}
+          </p>
+          <strong>
+            DOI
+          </strong>:{" "}
+          <PublicationList publications={pubDOI}/>
+          <strong>
+            Publications
+          </strong>:{" "}
             <PublicationList publications={pubPapers}/>
           <p>
             <strong>Dataset location</strong>: {storageLocation}
