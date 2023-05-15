@@ -104,8 +104,7 @@ export function DatasetAcquisition({
     if (zFibsemMetadata.safeParse(im.source).success)
     {
       const params = zFibsemMetadata.parse(im.source)
-      imageParams = 
-      <>
+      imageParams =  <>
       <Typography variant="h6" className={classes.title}>
         FIB-SEM parameters
       </Typography>
@@ -119,7 +118,7 @@ export function DatasetAcquisition({
 
   return (
     <>
-    <Grid container spacing={2}>
+      <Grid container spacing={2}>
       <Grid item xs={6}>
       <Typography variant="h6" className={classes.title}>
         Acquisition details
