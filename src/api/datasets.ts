@@ -104,7 +104,10 @@ async function queryDatasets(){
                 description,
                 url,
                 format,
-                transform,
+                grid_scale,
+                grid_translation,
+                grid_dims,
+                grid_units,
                 display_settings,
                 sample_type,
                 content_type,
@@ -114,7 +117,10 @@ async function queryDatasets(){
                     name,
                     description,
                     url,
-                    transform,
+                    grid_scale,
+                    grid_translation,
+                    grid_dims,
+                    grid_units,
                     created_at,
                     format,
                     ids
@@ -126,8 +132,9 @@ async function queryDatasets(){
                 type
             )`).eq('is_published', true).returns<DatasetQueryResult>()
   
-            if (error == null) {
-    return data
+            if (error === null) {
+              return data
+
   }
   else {
     throw new Error(`Oops! ${JSON.stringify(error)}`)

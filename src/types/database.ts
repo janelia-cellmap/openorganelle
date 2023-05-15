@@ -16,7 +16,7 @@ export type DisplaySettings = {
       end: number
     };
     color: string | null;
-    invertLut: boolean;
+    invertLUT: boolean;
   };
 
 
@@ -30,11 +30,11 @@ export type ArrayContainerFormat = Database["public"]["Enums"]["array_container_
 export type ContentType = Database["public"]["Enums"]["content_type"]
 export type SampleType = Database["public"]["Enums"]["sample_type"]
 
-export type SpatialTransform = {
+export type STTransform = {
     units: string[]
-    axes: string[]
+    dims: string[]
     scale: number[]
-    translate: number[]
+    translation: number[]
 }
 
 export type SampleQueryResult = {
@@ -64,7 +64,10 @@ export type ImageQueryResult = {
   description: string
   url: string
   format: Database["public"]["Enums"]["array_container_format"]
-  transform: SpatialTransform
+  grid_scale: number[]
+  grid_dims: string[]
+  grid_translation: number[]
+  grid_units: string[]
   display_settings: DisplaySettings
   created_at: string
   sample_type: Database["public"]["Enums"]["sample_type"]
@@ -76,7 +79,10 @@ export type ImageQueryResult = {
     description: string
     created_at: string
     url: string
-    transform: SpatialTransform
+    grid_scale: number[]
+    grid_dims: string[]
+    grid_translation: number[]
+    grid_units: string[]
     image_id: number
     format: Database["public"]["Enums"]["mesh_format"]
     ids: number[]

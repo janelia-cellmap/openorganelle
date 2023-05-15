@@ -7,7 +7,7 @@ import { CoordinateSpace,
          SegmentationLayer,
          urlSafeStringify,
          ViewerState } from "@janelia-cosem/neuroglancer-url-tools";
-import {Image, SampleType, SpatialTransform } from "../types/database";
+import {DisplaySettings, Image, SampleType, STTransform } from "../types/database";
 
 export type LayerType = "image" | "segmentation"
 
@@ -21,20 +21,20 @@ export interface LayerDataSource extends LayerDataSource1 {
     transform: any
 }
 
-export function SpatialTransformToNeuroglancer(transform: SpatialTransform, outputDimensions: CoordinateSpace): CoordinateSpaceTransform {
-
-    const inputDimensions: CoordinateSpace = {
-        x: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('x')]), "m"],
-        y: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('y')]), "m"],
-        z: [1e-9 * Math.abs(transform.scale[transform.axes.indexOf('z')]), "m"]
+export function STTransformToNeuroglancer({dims, translation, scale, units}: STTransform, 
+                                               outputDimensions: CoordinateSpace): CoordinateSpaceTransform {
+        const inputDimensions: CoordinateSpace = {
+        x: [Math.abs(scale[dims.indexOf('x')]), units[dims.indexOf('x')]],
+        y: [Math.abs(scale[dims.indexOf('y')]), units[dims.indexOf('y')]],
+        z: [Math.abs(scale[dims.indexOf('z')]), units[dims.indexOf('z')]]
     };
 
     const layerTransform: CoordinateSpaceTransform = {
         matrix:
             [
-                [(transform.scale[transform.axes.indexOf('x')] < 0) ? -1 : 1, 0, 0, transform.translate[transform.axes.indexOf('x')]],
-                [0, (transform.scale[transform.axes.indexOf('y')] < 0) ? -1 : 1, 0, transform.translate[transform.axes.indexOf('y')]],
-                [0, 0, (transform.scale[transform.axes.indexOf('z')] < 0) ? -1 : 1, transform.translate[transform.axes.indexOf('z')]]
+                [(scale[dims.indexOf('x')] < 0) ? -1 : 1, 0, 0, translation[dims.indexOf('x')]],
+                [0, (scale[dims.indexOf('y')] < 0) ? -1 : 1, 0, translation[dims.indexOf('y')]],
+                [0, 0, (scale[dims.indexOf('z')] < 0) ? -1 : 1, translation[dims.indexOf('z')]]
             ],
         outputDimensions: outputDimensions,
         inputDimensions: inputDimensions
@@ -42,52 +42,49 @@ export function SpatialTransformToNeuroglancer(transform: SpatialTransform, outp
     return layerTransform
 }
 
-export function makeShader(shaderArgs: any, sampleType: SampleType): string | undefined {
-    switch (sampleType) {
-        case 'scalar': {
-            const lower = shaderArgs.contrastLimits.min;
-            const upper = shaderArgs.contrastLimits.max;
-            const cmin = shaderArgs.contrastLimits.start;
-            const cmax = shaderArgs.contrastLimits.end;
-            return `#uicontrol invlerp normalized(range=[${cmin}, ${cmax}], window=[${lower}, ${upper}])
-          #uicontrol int invertColormap slider(min=0, max=1, step=1, default=${shaderArgs.invertLUT ? 1 : 0})
-          #uicontrol vec3 color color(default="${shaderArgs.color}")
-          float inverter(float val, int invert) {return 0.5 + ((2.0 * (-float(invert) + 0.5)) * (val - 0.5));}
-            void main() {
-            emitRGB(color * inverter(normalized(), invertColormap));
-          }`
+export function makeShader({color, invertLUT, contrastLimits}: DisplaySettings, sampleType: SampleType): string | undefined {
+    
+    if (sampleType == 'scalar') {
+            const window = [contrastLimits.min, contrastLimits.max]
+            const range = [contrastLimits.start, contrastLimits.end]
+            if (invertLUT) {range.reverse()}
+            return `#uicontrol invlerp normalized(range=[${range[0]}, ${range[1]}], window=[${window[0]}, ${window[1]}])\n#uicontrol vec3 color color(default="${color}")\nvoid main(){emitRGB(color * normalized());}`
         }
-        case "label":
-            return '';
-        default:
-            return undefined;
-    }
+    else {
+            return ''
+        }
 }
 
 export function makeLayer(image: Image,
     layerType: LayerType,
     outputDimensions: CoordinateSpace) {
-
+    const tform = {scale: image.gridScale, translation: image.gridTranslation, dims: image.gridDims, units : image.gridUnits}
     const srcURL = `${image.format}://${image.url}`;
 
     // need to update the layerdatasource object to have a transform property
     const source: LayerDataSource = {
         url: srcURL,
-        transform: SpatialTransformToNeuroglancer(image.transform, outputDimensions),
-        CoordinateSpaceTransform: SpatialTransformToNeuroglancer(image.transform, outputDimensions)
+        transform: STTransformToNeuroglancer(tform, outputDimensions),
+        CoordinateSpaceTransform: STTransformToNeuroglancer(tform, outputDimensions)
     };
 
     const subsources = image.meshes.map(mesh => {
+        const tform = {
+            scale: mesh.gridScale, 
+            translation: mesh.gridTranslation, 
+            dims: mesh.gridDims, 
+            units : mesh.gridUnits}
+
         return { url: `precomputed://${mesh.url}`,
-                 transform: SpatialTransformToNeuroglancer(mesh.transform, outputDimensions),
-                 CoordinateSpaceTransform: SpatialTransformToNeuroglancer(mesh.transform, outputDimensions) 
+                 transform: STTransformToNeuroglancer(tform, 
+                                                          outputDimensions),
+                 CoordinateSpaceTransform: STTransformToNeuroglancer(tform, outputDimensions) 
                 }
     });
     let layer;
     const color = image.displaySettings.color ?? undefined;
     if (layerType === 'image') {
-        let shader: string | undefined = undefined;
-        shader = makeShader(image.displaySettings, image.sampleType);
+        const shader = makeShader(image.displaySettings, image.sampleType)
         layer = new ImageLayer('rendering',
             undefined,
             undefined,
