@@ -3,7 +3,18 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { Publication, Dataset } from "../types/database";
+import { Publication, Dataset, FibsemParams } from "../types/database";
+import { z } from "zod";
+import { Camelized } from "../types/camel";
+
+const zFibsemMetadata = z.object({
+  durationDays: z.number(),
+  biasV: z.number(),
+  scanHz: z.number(),
+  currentNA: z.number(),
+  landingEnergyEV: z.number()
+}) satisfies z.ZodType<Camelized<FibsemParams>>
+
 
 export interface DescriptionPreviewProps {
   title: string;
@@ -82,6 +93,25 @@ export function DatasetAcquisition({
 }: DescriptionFullProps) {
   const pubs = dataset.publications
   const acq = dataset.imageAcquisition
+  const pubPapers = pubs.filter((p) => p.type == 'paper')
+  const pubDOI = pubs.filter((p) => p.type == 'doi')
+  // check for an em dataset with fibsem acquisition metadata 
+  let imageParams = undefined
+ 
+  // This is a hack until we have proper rendering of image-specific metadata
+  for (const im of dataset.images){
+    if (zFibsemMetadata.safeParse(im.source).success)
+    {
+      const params = zFibsemMetadata.parse(im.source)
+      imageParams = 
+      <>
+      <p><strong>Imaging duration (days)</strong> : {params.durationDays}</p>
+      <p><strong>Bias (Volts)</strong>: {params.biasV}</p>
+      <p><strong>Scan rate (Hz)</strong>: {params.scanHz}</p>
+      <p><strong>Current (nA)</strong>: {params.currentNA}</p>
+      <p><strong>Primary energy (eV)</strong>: {params.landingEnergyEV}</p>
+      </>
+  }}
   const classes = useStyles();
 
   return (
@@ -103,18 +133,19 @@ export function DatasetAcquisition({
             </strong>
             : {acq.gridDimensions.join(', ')} {'(' + acq.gridAxes.join(', ')+ ')'}
           </p>
-          <p>
-            <strong>Dataset ID</strong>: {dataset.name}
-          </p>
+          <p><strong>Dataset ID</strong>: {dataset.name}</p>
 
-            <strong>DOI</strong>:{" "}
-            <PublicationList publications={pubs.filter((p) => p.type == 'doi')}/>
-
+          <strong>DOI</strong>:{" "}
+            <PublicationList publications={pubDOI}/>
+            
             <strong>Publications</strong>:{" "}
-            <PublicationList publications={pubs.filter((p) => p.type == 'paper')}/>
+            <PublicationList publications={pubPapers}/>
           <p>
             <strong>Dataset location</strong>: {storageLocation}
           </p>
+        </Grid>
+        <Grid item>
+        {imageParams}
         </Grid>
       </Grid>
     </>

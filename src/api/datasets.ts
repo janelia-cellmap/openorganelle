@@ -71,6 +71,7 @@ export function makeTags({acquisition,
   return tags
 }
 
+
 async function queryDatasets(){
   const { data, error } = await supabase
     .from('dataset')
@@ -104,6 +105,7 @@ async function queryDatasets(){
                 description,
                 url,
                 format,
+                source,
                 grid_scale,
                 grid_translation,
                 grid_dims,
@@ -117,6 +119,7 @@ async function queryDatasets(){
                     name,
                     description,
                     url,
+                    source,
                     grid_scale,
                     grid_translation,
                     grid_dims,

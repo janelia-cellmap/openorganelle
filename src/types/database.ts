@@ -1,7 +1,7 @@
 
 import {ToDate} from "./stringtodate"
 import { Camelized } from "./camel";
-import { Database} from "./supabase";
+import { Database, Json} from "./supabase";
 import { DatasetTag, OSet } from "./tags";
 
 export type Modify<T, R> = Omit<T, keyof R> & R
@@ -23,6 +23,14 @@ export type DisplaySettings = {
 export type Taxon = {
     name: string,
     shortName: string
+}
+
+export type FibsemParams = {
+  duration_days: number
+  bias_V: number
+  scan_hz: number
+  current_nA: number
+  landing_energy_eV: number
 }
 
 export type Sample = Omit<Tables["sample"]["Row"], "id">
@@ -64,6 +72,7 @@ export type ImageQueryResult = {
   description: string
   url: string
   format: Database["public"]["Enums"]["array_container_format"]
+  source: FibsemParams | null
   grid_scale: number[]
   grid_dims: string[]
   grid_translation: number[]
@@ -79,6 +88,7 @@ export type ImageQueryResult = {
     description: string
     created_at: string
     url: string
+    source: null
     grid_scale: number[]
     grid_dims: string[]
     grid_translation: number[]
