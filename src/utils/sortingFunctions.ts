@@ -1,4 +1,4 @@
-import {Dataset} from "../types/datasets"
+import {Dataset} from "../types/database"
 
 interface sortOption {
   title: string
@@ -29,8 +29,8 @@ const sortFunctions: sortOptions = {
   collected: {
     // datasets.description.imaging.startDate
     func: (a: [string, Dataset], b: [string, Dataset]) =>
-      new Date(b[1].acquisition!.startDate!).getTime() -
-      new Date(a[1].acquisition!.startDate!).getTime(),
+      new Date(b[1].imageAcquisition!.startDate!).getTime() -
+      new Date(a[1].imageAcquisition!.startDate!).getTime(),
     title: "Date Collected"
   }
 };

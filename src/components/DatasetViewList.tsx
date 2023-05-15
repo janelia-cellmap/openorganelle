@@ -6,7 +6,7 @@ import {
   ListItemText,
   Radio
 } from "@material-ui/core";
-import { View } from "../types/datasets";
+import { View } from "../types/database";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 

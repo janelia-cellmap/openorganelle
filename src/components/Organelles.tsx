@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import "./Organelles.css";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { Taxon, View } from "../types/datasets";
+import { Taxon, View } from "../types/database";
 import { useQuery } from "react-query";
 import { fetchViews } from "../api/views";
 import OrganelleGrid from "./Organelles/Grid";

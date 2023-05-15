@@ -9,7 +9,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import { Taxon, View } from "../../types/datasets";
+import { Taxon, View } from "../../types/database";
 import BrokenImage from "../../broken_image_24dp.svg";
 import {OrganelleCardsProps } from "../Organelles";
 

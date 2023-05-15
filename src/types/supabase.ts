@@ -11,168 +11,207 @@ export interface Database {
     Tables: {
       dataset: {
         Row: {
-          id: number
-          name: string
-          description: string
-          thumbnail_url: string
-          is_published: boolean
-          sample: Json
-          created_at: string
           acquisition_id: number
+          created_at: string
+          description: string
+          id: number
+          is_published: boolean
+          name: string
+          sample: Json
+          sample_id: number | null
+          thumbnail_url: string
         }
         Insert: {
-          id?: number
-          name: string
-          description: string
-          thumbnail_url: string
-          is_published: boolean
-          sample: Json
-          created_at?: string
           acquisition_id: number
+          created_at?: string
+          description: string
+          id?: number
+          is_published: boolean
+          name: string
+          sample: Json
+          sample_id?: number | null
+          thumbnail_url: string
         }
         Update: {
-          id?: number
-          name?: string
-          description?: string
-          thumbnail_url?: string
-          is_published?: boolean
-          sample?: Json
-          created_at?: string
           acquisition_id?: number
+          created_at?: string
+          description?: string
+          id?: number
+          is_published?: boolean
+          name?: string
+          sample?: Json
+          sample_id?: number | null
+          thumbnail_url?: string
         }
       }
       image: {
         Row: {
-          id: number
-          name: string
-          description: string
-          url: string
-          format: Database["public"]["Enums"]["array_container_format"]
-          transform: Json
-          display_settings: Json
-          created_at: string
-          sample_type: Database["public"]["Enums"]["sample_type"]
           content_type: Database["public"]["Enums"]["content_type"]
+          created_at: string
           dataset_name: string
+          description: string
+          display_settings: Json
+          format: Database["public"]["Enums"]["array_container_format"]
+          grid_dims: string[] | null
+          grid_index_order: string | null
+          grid_scale: number[] | null
+          grid_translation: number[] | null
+          grid_units: string[] | null
+          id: number
           institution: string
+          name: string
+          sample_type: Database["public"]["Enums"]["sample_type"]
+          source: Json | null
+          transform: Json
+          url: string
         }
         Insert: {
-          id?: number
-          name: string
-          description: string
-          url: string
-          format: Database["public"]["Enums"]["array_container_format"]
-          transform: Json
-          display_settings: Json
-          created_at?: string
-          sample_type: Database["public"]["Enums"]["sample_type"]
           content_type: Database["public"]["Enums"]["content_type"]
+          created_at?: string
           dataset_name: string
+          description: string
+          display_settings: Json
+          format: Database["public"]["Enums"]["array_container_format"]
+          grid_dims?: string[] | null
+          grid_index_order?: string | null
+          grid_scale?: number[] | null
+          grid_translation?: number[] | null
+          grid_units?: string[] | null
+          id?: number
           institution: string
+          name: string
+          sample_type: Database["public"]["Enums"]["sample_type"]
+          source?: Json | null
+          transform: Json
+          url: string
         }
         Update: {
-          id?: number
-          name?: string
-          description?: string
-          url?: string
-          format?: Database["public"]["Enums"]["array_container_format"]
-          transform?: Json
-          display_settings?: Json
-          created_at?: string
-          sample_type?: Database["public"]["Enums"]["sample_type"]
           content_type?: Database["public"]["Enums"]["content_type"]
+          created_at?: string
           dataset_name?: string
+          description?: string
+          display_settings?: Json
+          format?: Database["public"]["Enums"]["array_container_format"]
+          grid_dims?: string[] | null
+          grid_index_order?: string | null
+          grid_scale?: number[] | null
+          grid_translation?: number[] | null
+          grid_units?: string[] | null
+          id?: number
           institution?: string
+          name?: string
+          sample_type?: Database["public"]["Enums"]["sample_type"]
+          source?: Json | null
+          transform?: Json
+          url?: string
         }
       }
       image_acquisition: {
         Row: {
-          id: number
-          name: string
-          institution: string
-          start_date: string
           grid_axes: string[]
-          grid_spacing: number[]
-          grid_spacing_unit: string
           grid_dimensions: number[]
           grid_dimensions_unit: string
+          grid_spacing: number[]
+          grid_spacing_unit: string
+          id: number
+          institution: string
+          name: string
+          start_date: string
         }
         Insert: {
-          id?: number
-          name: string
-          institution: string
-          start_date: string
           grid_axes: string[]
-          grid_spacing: number[]
-          grid_spacing_unit: string
           grid_dimensions: number[]
           grid_dimensions_unit: string
+          grid_spacing: number[]
+          grid_spacing_unit: string
+          id?: number
+          institution: string
+          name: string
+          start_date: string
         }
         Update: {
-          id?: number
-          name?: string
-          institution?: string
-          start_date?: string
           grid_axes?: string[]
-          grid_spacing?: number[]
-          grid_spacing_unit?: string
           grid_dimensions?: number[]
           grid_dimensions_unit?: string
+          grid_spacing?: number[]
+          grid_spacing_unit?: string
+          id?: number
+          institution?: string
+          name?: string
+          start_date?: string
         }
       }
       mesh: {
         Row: {
-          id: number
-          name: string
-          description: string
           created_at: string
-          url: string
-          transform: Json
-          image_id: number
+          description: string
           format: Database["public"]["Enums"]["mesh_format"]
+          grid_dims: string[] | null
+          grid_index_order: string | null
+          grid_scale: number[] | null
+          grid_translation: number[] | null
+          grid_units: string[] | null
+          id: number
           ids: number[]
+          image_id: number
+          name: string
+          source: Json | null
+          transform: Json
+          url: string
         }
         Insert: {
-          id?: number
-          name: string
-          description: string
           created_at?: string
-          url: string
-          transform: Json
-          image_id: number
+          description: string
           format: Database["public"]["Enums"]["mesh_format"]
+          grid_dims?: string[] | null
+          grid_index_order?: string | null
+          grid_scale?: number[] | null
+          grid_translation?: number[] | null
+          grid_units?: string[] | null
+          id?: number
           ids: number[]
+          image_id: number
+          name: string
+          source?: Json | null
+          transform: Json
+          url: string
         }
         Update: {
-          id?: number
-          name?: string
-          description?: string
           created_at?: string
-          url?: string
-          transform?: Json
-          image_id?: number
+          description?: string
           format?: Database["public"]["Enums"]["mesh_format"]
+          grid_dims?: string[] | null
+          grid_index_order?: string | null
+          grid_scale?: number[] | null
+          grid_translation?: number[] | null
+          grid_units?: string[] | null
+          id?: number
           ids?: number[]
+          image_id?: number
+          name?: string
+          source?: Json | null
+          transform?: Json
+          url?: string
         }
       }
       publication: {
         Row: {
           id: number
           name: string
-          url: string
           type: Database["public"]["Enums"]["publication_type"]
+          url: string
         }
         Insert: {
           id?: number
           name: string
-          url: string
           type: Database["public"]["Enums"]["publication_type"]
+          url: string
         }
         Update: {
           id?: number
           name?: string
-          url?: string
           type?: Database["public"]["Enums"]["publication_type"]
+          url?: string
         }
       }
       publication_to_dataset: {
@@ -191,94 +230,91 @@ export interface Database {
       }
       sample: {
         Row: {
+          contributions: string
+          description: string
           id: number
           name: string
-          description: string
-          protocol: string
-          contributions: string
           organism: string[] | null
-          type: string[] | null
+          protocol: string
           subtype: string[] | null
           treatment: string[] | null
+          type: string[] | null
         }
         Insert: {
+          contributions: string
+          description: string
           id?: number
           name: string
-          description: string
-          protocol: string
-          contributions: string
           organism?: string[] | null
-          type?: string[] | null
+          protocol: string
           subtype?: string[] | null
           treatment?: string[] | null
+          type?: string[] | null
         }
         Update: {
+          contributions?: string
+          description?: string
           id?: number
           name?: string
-          description?: string
-          protocol?: string
-          contributions?: string
           organism?: string[] | null
-          type?: string[] | null
+          protocol?: string
           subtype?: string[] | null
           treatment?: string[] | null
+          type?: string[] | null
         }
       }
       taxon: {
         Row: {
-          id: number
           created_at: string | null
+          id: number
           name: string
           short_name: string
         }
         Insert: {
-          id?: number
           created_at?: string | null
+          id?: number
           name: string
           short_name: string
         }
         Update: {
-          id?: number
           created_at?: string | null
+          id?: number
           name?: string
           short_name?: string
         }
       }
       view: {
         Row: {
+          created_at: string
+          dataset_name: string
+          description: string
           id: number
           name: string
-          description: string
-          created_at: string
+          orientation: number[] | null
           position: number[] | null
           scale: number | null
-          orientation: number[] | null
-          tags: string[] | null
-          dataset_name: string
           thumbnail_url: string | null
         }
         Insert: {
+          created_at?: string
+          dataset_name: string
+          description: string
           id?: number
           name: string
-          description: string
-          created_at?: string
+          orientation?: number[] | null
           position?: number[] | null
           scale?: number | null
-          orientation?: number[] | null
-          tags?: string[] | null
-          dataset_name: string
           thumbnail_url?: string | null
         }
         Update: {
+          created_at?: string
+          dataset_name?: string
+          description?: string
           id?: number
           name?: string
-          description?: string
-          created_at?: string
+          orientation?: number[] | null
           position?: number[] | null
           scale?: number | null
-          orientation?: number[] | null
-          tags?: string[] | null
-          dataset_name?: string
           thumbnail_url?: string | null
         }
       }
@@ -298,16 +334,16 @@ export interface Database {
       }
       view_to_taxon: {
         Row: {
-          view_id: number
           taxon_id: number
+          view_id: number
         }
         Insert: {
-          view_id: number
           taxon_id: number
+          view_id: number
         }
         Update: {
-          view_id?: number
           taxon_id?: number
+          view_id?: number
         }
       }
     }
@@ -315,14 +351,7 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      json_matches_schema: {
-        Args: { schema: Json; instance: Json }
-        Returns: boolean
-      }
-      jsonb_matches_schema: {
-        Args: { schema: Json; instance: Json }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
       array_container_format: "n5" | "zarr" | "precomputed"
@@ -330,6 +359,12 @@ export interface Database {
       mesh_format: "neuroglancer_multilod_draco" | "neuroglancer_legacy_mesh"
       publication_type: "paper" | "doi"
       sample_type: "scalar" | "label"
+    }
+    CompositeTypes: {
+      display: {
+        min: number
+        max: number
+      }
     }
   }
 }

@@ -1,6 +1,8 @@
 import { supabase } from "./supabase";
-import { camelize, Camelized } from "./camel";
-import { ensureArray } from "./util";
+import { Camelized } from "../types/camel";
+import { camelize, stringToDate } from "./util";
+import { ViewQueryResult } from "../types/database";
+import { ToDate } from "../types/stringtodate";
 
 export async function fetchViews() {
     const { data, error } = await supabase
@@ -20,9 +22,12 @@ export async function fetchViews() {
         description,
         url,
         format,
-        transform,
         display_settings,
         sample_type,
+        grid_scale,
+        grid_translation,
+        grid_dims,
+        grid_units,
         content_type,
         institution,
         created_at,
@@ -30,24 +35,20 @@ export async function fetchViews() {
             name,
             description,
             url,
-            transform,
+            grid_scale,
+            grid_translation,
+            grid_dims,
+            grid_units,
             created_at,
             format,
             ids
             )
     ),
-      dataset!inner(name)`).eq('dataset.is_published', true)
+      dataset!inner(name)`).eq('dataset.is_published', true).returns<ViewQueryResult>()
     if (error === null) {
-      const result = data!.map(d => {
-        return {...d,
-                taxa: ensureArray(d.taxa),
-                images: ensureArray(d.images).map(im => {
-                    return {...im,
-                            meshes: ensureArray(im.meshes)}
-                }),
-                }
-      })
-      return camelize(result) as Camelized<typeof result>
+      const camelized = camelize(data) as Camelized<typeof data>
+      const dateified = stringToDate(camelized) as ToDate<typeof camelized>
+      return dateified
     }
     else {
       throw new Error(`Oops! ${JSON.stringify(error)}`)

@@ -3,15 +3,27 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { Publication, Dataset, UnitfulVector } from "../types/datasets";
-import {stringifyUnitfulVector } from "../api/util";
+import { Publication, Dataset, FibsemParams } from "../types/database";
+import { z } from "zod";
+import { Camelized } from "../types/camel";
+
+const zFibsemMetadata = z.object({
+  durationDays: z.number(),
+  biasV: z.number(),
+  scanHz: z.number(),
+  currentNA: z.number(),
+  landingEnergyEV: z.number()
+}) satisfies z.ZodType<Camelized<FibsemParams>>
+
 
 export interface DescriptionPreviewProps {
   title: string;
-  startDate: string;
+  startDate: Date;
   id: string;
-  gridSpacing: UnitfulVector;
-  dimensions: UnitfulVector;
+  gridSpacingUnit: string;
+  gridSpacing: number[]
+  gridDimensions: number[]
+  gridDimensionsUnit: string
   titleLink: string;
 }
 
@@ -24,7 +36,7 @@ export interface DescriptionFullProps {
   s3URL: string;
   bucketBrowseLink: string;
   storageLocation: string;
-  datasetMetadata: Dataset;
+  dataset: Dataset;
 }
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -40,13 +52,17 @@ interface PublicationListProps {
 }
 
 export function PublicationList({publications}: PublicationListProps) {
-  return (<ul>{publications.map(link => {
-    return <li key={link.url + link.name}><a href={link.url}>{link.name}</a></li>    
-})}</ul>)
+  if (publications.length > 0) {
+  return <ul>
+    {publications.map(link => {
+    return <li key={link.url + link.name}><a href={link.url}>{link.name}</a></li>})}
+    </ul>}
+  else
+    {return <ul><em>None</em></ul>}
 } 
 
 export function DatasetDescriptionPreview({
-  title, startDate, id, gridSpacing, dimensions}: DescriptionPreviewProps) {
+  title, startDate, id, gridSpacing, gridDimensions, gridSpacingUnit, gridDimensionsUnit}: DescriptionPreviewProps) {
   const classes = useStyles();
   return (
     <Box>
@@ -54,18 +70,18 @@ export function DatasetDescriptionPreview({
         {title}
       </Typography>
       <p>
-        <strong>Acquisition date</strong>: {startDate}
+        <strong>Acquisition date</strong>: {startDate.toDateString()}
       </p>
       <p>
         <strong>Dataset ID</strong>: {id}
       </p>
       <p>
-        <strong>Voxel size ({gridSpacing.unit})</strong>
-        : {stringifyUnitfulVector(gridSpacing, 1)}
+        <strong>Voxel size ({gridSpacingUnit})</strong>
+        : {gridSpacing.join(', ')}
       </p>
       <p>
-        <strong>Dimensions ({dimensions.unit})</strong>:{" "}
-        {stringifyUnitfulVector(dimensions, 1)}
+        <strong>Dimensions ({gridDimensionsUnit})</strong>:{" "}
+        {gridDimensions.join(', ')}
       </p>
     </Box>
   );
@@ -73,64 +89,77 @@ export function DatasetDescriptionPreview({
 
 export function DatasetAcquisition({
   storageLocation,
-  datasetMetadata
+  dataset
 }: DescriptionFullProps) {
   const classes = useStyles();
+  const pubs = dataset.publications
+  const acq = dataset.imageAcquisition
+  const pubPapers = pubs.filter((p) => p.type == 'paper')
+  const pubDOI = pubs.filter((p) => p.type == 'doi')
+  // check for an em dataset with fibsem acquisition metadata 
+  let imageParams = undefined
+  
+  // This is a hack until we have proper rendering of image-specific metadata
+  for (const im of dataset.images){
+    if (zFibsemMetadata.safeParse(im.source).success)
+    {
+      const params = zFibsemMetadata.parse(im.source)
+      imageParams =  <>
+      <Typography variant="h6" className={classes.title}>
+        FIB-SEM parameters
+      </Typography>
+      <p><strong>Imaging duration (days)</strong> : {params.durationDays}</p>
+      <p><strong>Bias (Volts)</strong>: {params.biasV}</p>
+      <p><strong>Scan rate (Hz)</strong>: {params.scanHz}</p>
+      <p><strong>Current (nA)</strong>: {params.currentNA}</p>
+      <p><strong>Primary energy (eV)</strong>: {params.landingEnergyEV}</p>
+      </>
+  }}
 
   return (
     <>
+      <Grid container spacing={2}>
+      <Grid item xs={6}>
       <Typography variant="h6" className={classes.title}>
         Acquisition details
       </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
+          <p>
+          <strong>
+              Imaging start date
+            </strong>
+            :  {acq.startDate.toDateString()}
+            </p>
+            <p>
+            <strong>
+              Final voxel size ({acq.gridSpacingUnit})
+            </strong>
+            : ({acq.gridSpacing.join(', ')}) ({acq.gridAxes.join(', ')})
+          </p>
           <p>
             <strong>
-              Final voxel size ({datasetMetadata.acquisition!.gridSpacing.unit})
+              Dimensions ({acq.gridDimensionsUnit})
             </strong>
-            : {stringifyUnitfulVector(datasetMetadata.acquisition!.gridSpacing!, 1)}
+            : ({acq.gridDimensions.join(', ')}) ({acq.gridAxes.join(', ')})
           </p>
           <p>
             <strong>
-              Dimensions ({datasetMetadata.acquisition!.dimensions.unit})
-            </strong>
-            : {stringifyUnitfulVector(datasetMetadata.acquisition!.dimensions, 0)}
+              Dataset ID
+            </strong>: {dataset.name}
           </p>
-          <p>
-            <strong>Imaging duration (days)</strong>:{" "}
-            {datasetMetadata.acquisition!.durationDays}
-          </p>
-          <p>
-            <strong>Imaging start date</strong>:{" "}
-            {datasetMetadata.acquisition!.startDate}
-          </p>
-          <p>
-            <strong>Primary energy (EV)</strong>:{" "}
-            {datasetMetadata.acquisition!.primaryEnergy}
-          </p>
-          <p>
-            <strong>Bias (V)</strong>: {datasetMetadata.acquisition!.biasVoltage}
-          </p>
-          <p>
-            <strong>Imaging current (nA)</strong>:{" "}
-            {datasetMetadata.acquisition!.current}
-          </p>
-        </Grid>
-        <Grid item xs={6}>
-          <p>
-            <strong>Scanning speed (MHz)</strong>:{" "}
-            {datasetMetadata.acquisition!.scanRate}
-          </p>
-          <p>
-            <strong>Dataset ID</strong>: {datasetMetadata.name}
-          </p>
-            <strong>DOI</strong>:{" "}
-            <PublicationList publications={datasetMetadata.publications.filter((p) => p.type == 'doi')}/>
-            <strong>Publications</strong>:{" "}
-            <PublicationList publications={datasetMetadata.publications.filter((p) => p.type == 'paper')}/>
+          <strong>
+            DOI
+          </strong>:{" "}
+          <PublicationList publications={pubDOI}/>
+          <strong>
+            Publications
+          </strong>:{" "}
+            <PublicationList publications={pubPapers}/>
           <p>
             <strong>Dataset location</strong>: {storageLocation}
           </p>
+        </Grid>
+        <Grid item>
+        {imageParams}
         </Grid>
       </Grid>
     </>
@@ -149,13 +178,13 @@ export function DatasetDescriptionSummary({
         {dataset.description}
       </Typography>
       <p>
-        <strong>Sample</strong>: {dataset.sample!.description}
+        <strong>Sample</strong>: {dataset.sample.description}
       </p>
       <p>
-        <strong>Protocol</strong>: {dataset.sample!.protocol}
+        <strong>Protocol</strong>: {dataset.sample.protocol}
       </p>
       <p>
-        <strong>Contributions</strong>: {dataset.sample!.contributions}
+        <strong>Contributions</strong>: {dataset.sample.contributions}
       </p>
     </>
   );

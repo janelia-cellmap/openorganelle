@@ -7,7 +7,7 @@ import {
   Theme
 } from "@material-ui/core";
 import React, { useState } from "react";
-import {View} from "../types/datasets";
+import {View} from "../types/database";
 import { makeQuiltURL } from "../api/util";
 import {
   DatasetAcquisition,
@@ -87,7 +87,22 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
   const dataset = datasetsLoader.data.get(datasetKey)!;
   const views = viewsLoader.data.filter(v => (v.datasetName === datasetKey && v.description !== '')) 
-    
+  if (views.length < 1) {
+    // insert default view
+    views.push({
+      name: 'Default view', 
+      description: 'The default view of the data',
+    thumbnailUrl: null,
+  createdAt: new Date(),
+datasetName: dataset.name,
+position: null,
+scale: null,
+orientation: null,
+taxa: [],
+tags: [],
+images: dataset.images.filter(im => im.contentType == 'em')
+})
+  }
   const bucket = "janelia-cosem-datasets";
   const prefix = dataset.name;
   const bucketBrowseLink = makeQuiltURL(bucket, prefix);
@@ -201,7 +216,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             s3URL={s3URL}
             bucketBrowseLink={bucketBrowseLink}
             storageLocation={s3URL}
-            datasetMetadata={dataset}
+            dataset={dataset}
           />
         </Paper>
       </Grid>
