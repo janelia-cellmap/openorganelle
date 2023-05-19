@@ -15,10 +15,9 @@ export interface Database {
           created_at: string
           description: string
           id: number
-          is_published: boolean
           name: string
-          sample: Json
           sample_id: number | null
+          stage: Database["public"]["Enums"]["stage"]
           thumbnail_url: string
         }
         Insert: {
@@ -26,10 +25,9 @@ export interface Database {
           created_at?: string
           description: string
           id?: number
-          is_published: boolean
           name: string
-          sample: Json
           sample_id?: number | null
+          stage?: Database["public"]["Enums"]["stage"]
           thumbnail_url: string
         }
         Update: {
@@ -37,10 +35,9 @@ export interface Database {
           created_at?: string
           description?: string
           id?: number
-          is_published?: boolean
           name?: string
-          sample?: Json
           sample_id?: number | null
+          stage?: Database["public"]["Enums"]["stage"]
           thumbnail_url?: string
         }
       }
@@ -52,17 +49,17 @@ export interface Database {
           description: string
           display_settings: Json
           format: Database["public"]["Enums"]["array_container_format"]
-          grid_dims: string[] | null
-          grid_index_order: string | null
-          grid_scale: number[] | null
-          grid_translation: number[] | null
-          grid_units: string[] | null
+          grid_dims: string[]
+          grid_index_order: string
+          grid_scale: number[]
+          grid_translation: number[]
+          grid_units: string[]
           id: number
           institution: string
           name: string
           sample_type: Database["public"]["Enums"]["sample_type"]
           source: Json | null
-          transform: Json
+          stage: Database["public"]["Enums"]["stage"]
           url: string
         }
         Insert: {
@@ -72,17 +69,17 @@ export interface Database {
           description: string
           display_settings: Json
           format: Database["public"]["Enums"]["array_container_format"]
-          grid_dims?: string[] | null
-          grid_index_order?: string | null
-          grid_scale?: number[] | null
-          grid_translation?: number[] | null
-          grid_units?: string[] | null
+          grid_dims: string[]
+          grid_index_order?: string
+          grid_scale: number[]
+          grid_translation: number[]
+          grid_units: string[]
           id?: number
           institution: string
           name: string
           sample_type: Database["public"]["Enums"]["sample_type"]
           source?: Json | null
-          transform: Json
+          stage?: Database["public"]["Enums"]["stage"]
           url: string
         }
         Update: {
@@ -92,17 +89,17 @@ export interface Database {
           description?: string
           display_settings?: Json
           format?: Database["public"]["Enums"]["array_container_format"]
-          grid_dims?: string[] | null
-          grid_index_order?: string | null
-          grid_scale?: number[] | null
-          grid_translation?: number[] | null
-          grid_units?: string[] | null
+          grid_dims?: string[]
+          grid_index_order?: string
+          grid_scale?: number[]
+          grid_translation?: number[]
+          grid_units?: string[]
           id?: number
           institution?: string
           name?: string
           sample_type?: Database["public"]["Enums"]["sample_type"]
           source?: Json | null
-          transform?: Json
+          stage?: Database["public"]["Enums"]["stage"]
           url?: string
         }
       }
@@ -146,51 +143,51 @@ export interface Database {
           created_at: string
           description: string
           format: Database["public"]["Enums"]["mesh_format"]
-          grid_dims: string[] | null
-          grid_index_order: string | null
-          grid_scale: number[] | null
-          grid_translation: number[] | null
-          grid_units: string[] | null
+          grid_dims: string[]
+          grid_index_order: string
+          grid_scale: number[]
+          grid_translation: number[]
+          grid_units: string[]
           id: number
           ids: number[]
           image_id: number
           name: string
           source: Json | null
-          transform: Json
+          stage: Database["public"]["Enums"]["stage"]
           url: string
         }
         Insert: {
           created_at?: string
           description: string
           format: Database["public"]["Enums"]["mesh_format"]
-          grid_dims?: string[] | null
-          grid_index_order?: string | null
-          grid_scale?: number[] | null
-          grid_translation?: number[] | null
-          grid_units?: string[] | null
+          grid_dims: string[]
+          grid_index_order?: string
+          grid_scale: number[]
+          grid_translation: number[]
+          grid_units: string[]
           id?: number
           ids: number[]
           image_id: number
           name: string
           source?: Json | null
-          transform: Json
+          stage?: Database["public"]["Enums"]["stage"]
           url: string
         }
         Update: {
           created_at?: string
           description?: string
           format?: Database["public"]["Enums"]["mesh_format"]
-          grid_dims?: string[] | null
-          grid_index_order?: string | null
-          grid_scale?: number[] | null
-          grid_translation?: number[] | null
-          grid_units?: string[] | null
+          grid_dims?: string[]
+          grid_index_order?: string
+          grid_scale?: number[]
+          grid_translation?: number[]
+          grid_units?: string[]
           id?: number
           ids?: number[]
           image_id?: number
           name?: string
           source?: Json | null
-          transform?: Json
+          stage?: Database["public"]["Enums"]["stage"]
           url?: string
         }
       }
@@ -198,18 +195,21 @@ export interface Database {
         Row: {
           id: number
           name: string
+          stage: Database["public"]["Enums"]["stage"]
           type: Database["public"]["Enums"]["publication_type"]
           url: string
         }
         Insert: {
           id?: number
           name: string
+          stage?: Database["public"]["Enums"]["stage"]
           type: Database["public"]["Enums"]["publication_type"]
           url: string
         }
         Update: {
           id?: number
           name?: string
+          stage?: Database["public"]["Enums"]["stage"]
           type?: Database["public"]["Enums"]["publication_type"]
           url?: string
         }
@@ -269,18 +269,21 @@ export interface Database {
           id: number
           name: string
           short_name: string
+          stage: Database["public"]["Enums"]["stage"]
         }
         Insert: {
           created_at?: string | null
           id?: number
           name: string
           short_name: string
+          stage?: Database["public"]["Enums"]["stage"]
         }
         Update: {
           created_at?: string | null
           id?: number
           name?: string
           short_name?: string
+          stage?: Database["public"]["Enums"]["stage"]
         }
       }
       view: {
@@ -293,6 +296,7 @@ export interface Database {
           orientation: number[] | null
           position: number[] | null
           scale: number | null
+          stage: Database["public"]["Enums"]["stage"]
           thumbnail_url: string | null
         }
         Insert: {
@@ -304,6 +308,7 @@ export interface Database {
           orientation?: number[] | null
           position?: number[] | null
           scale?: number | null
+          stage?: Database["public"]["Enums"]["stage"]
           thumbnail_url?: string | null
         }
         Update: {
@@ -315,6 +320,7 @@ export interface Database {
           orientation?: number[] | null
           position?: number[] | null
           scale?: number | null
+          stage?: Database["public"]["Enums"]["stage"]
           thumbnail_url?: string | null
         }
       }
@@ -359,6 +365,7 @@ export interface Database {
       mesh_format: "neuroglancer_multilod_draco" | "neuroglancer_legacy_mesh"
       publication_type: "paper" | "doi"
       sample_type: "scalar" | "label"
+      stage: "dev" | "prod"
     }
     CompositeTypes: {
       display: {

@@ -87,20 +87,21 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
 
   const dataset = datasetsLoader.data.get(datasetKey)!;
   const views = viewsLoader.data.filter(v => (v.datasetName === datasetKey && v.description !== '')) 
-  if (views.length < 1) {
+  if (views.length == 0) {
     // insert default view
     views.push({
       name: 'Default view', 
       description: 'The default view of the data',
-    thumbnailUrl: null,
-  createdAt: new Date(),
-datasetName: dataset.name,
-position: null,
-scale: null,
-orientation: null,
-taxa: [],
-tags: [],
-images: dataset.images.filter(im => im.contentType == 'em')
+      thumbnailUrl: null,
+      createdAt: new Date(),
+      datasetName: dataset.name,
+      position: null,
+      scale: null,
+      orientation: null,
+      taxa: [],
+      tags: [],
+      stage: 'prod',
+      images: dataset.images.filter(im => im.contentType == 'em')
 })
   }
   const bucket = "janelia-cosem-datasets";

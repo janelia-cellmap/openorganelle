@@ -37,6 +37,7 @@ export type Sample = Omit<Tables["sample"]["Row"], "id">
 export type ArrayContainerFormat = Database["public"]["Enums"]["array_container_format"]
 export type ContentType = Database["public"]["Enums"]["content_type"]
 export type SampleType = Database["public"]["Enums"]["sample_type"]
+export type Stage = Database["public"]["Enums"]["stage"]
 
 export type STTransform = {
     units: string[]
@@ -83,6 +84,7 @@ export type ImageQueryResult = {
   content_type: Database["public"]["Enums"]["content_type"]
   dataset_name: string
   institution: string
+  stage: Stage
   meshes: {
     name: string
     description: string
@@ -96,12 +98,14 @@ export type ImageQueryResult = {
     image_id: number
     format: Database["public"]["Enums"]["mesh_format"]
     ids: number[]
+    stage: Stage
   }[]
 }
 
 export type PublicationQueryResult = {
   name: string
   url: string
+  stage: Stage
   type: Database["public"]["Enums"]["publication_type"]
 }
 
@@ -113,6 +117,7 @@ export type DatasetQueryResult = {
   sample: SampleQueryResult
   image_acquisition: ImageAcquisitionQueryResult
   images: ImageQueryResult[]
+  stage: Stage
   publications: PublicationQueryResult[]
 }
 
@@ -126,10 +131,12 @@ export type ViewQueryResult = {
   tags: string[] | null
   dataset_name: string
   thumbnail_url: string | null
+  stage: Stage
   taxa: {
     created_at: string | null
     name: string
     short_name: string
+    stage: Stage
   }[]
   images: ImageQueryResult[]
 }

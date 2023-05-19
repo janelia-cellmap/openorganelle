@@ -80,6 +80,7 @@ async function queryDatasets(){
             description,
             thumbnail_url,
             created_at,
+            stage,
             sample:sample(
               name,
               description,
@@ -115,6 +116,7 @@ async function queryDatasets(){
                 content_type,
                 institution,
                 created_at,
+                stage,
                 meshes:mesh(
                     name,
                     description,
@@ -126,14 +128,21 @@ async function queryDatasets(){
                     grid_units,
                     created_at,
                     format,
+                    stage,
                     ids
                     )
             ),
             publications:publication(
                 name,
                 url,
-                type
-            )`).returns<DatasetQueryResult>()
+                type,
+                stage
+            )`)
+            .eq('stage', 'prod')
+            .eq('images.stage', 'prod')
+            .eq('images.meshes.stage', 'prod')
+            .eq('publications.stage', 'prod')
+            .returns<DatasetQueryResult>()
   
             if (error === null) {
               return data
