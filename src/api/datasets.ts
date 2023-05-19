@@ -133,7 +133,7 @@ async function queryDatasets(){
                 name,
                 url,
                 type
-            )`).eq('is_published', true).returns<DatasetQueryResult>()
+            )`).returns<DatasetQueryResult>()
   
             if (error === null) {
               return data
