@@ -138,10 +138,6 @@ async function queryDatasets(){
                 type,
                 stage
             )`)
-            .eq('stage', 'prod')
-            .eq('images.stage', 'prod')
-            .eq('images.meshes.stage', 'prod')
-            .eq('publications.stage', 'prod')
             .returns<DatasetQueryResult>()
   
             if (error === null) {

@@ -17,6 +17,7 @@ export async function fetchViews() {
       orientation,
       taxa:taxon(name, short_name),
       created_at,
+      stage,
       images:image(
         name,
         description,
@@ -46,6 +47,7 @@ export async function fetchViews() {
     ),
       dataset!inner(name)`).returns<ViewQueryResult>()
     if (error === null) {
+      // insert a default view in case one is missing
       const camelized = camelize(data) as Camelized<typeof data>
       const dateified = stringToDate(camelized) as ToDate<typeof camelized>
       return dateified
