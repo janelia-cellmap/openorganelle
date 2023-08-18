@@ -627,7 +627,7 @@ export default function Tutorials() {
               When run from the command line, this command lists the contents of
               our data bucket:
               <CodeBlock
-                text="aws cli ls s3://janelia-cosem-datasets/"
+                text="aws s3 ls s3://janelia-cosem-datasets/"
                 language=""
                 showLineNumbers={false}
                 theme={dracula}
@@ -636,8 +636,11 @@ export default function Tutorials() {
               advised that this may take a long time. Detailed instructions for
               using this tool can be found in the{" "}
               <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">
-                user guide
+                user guide.
               </a>.
+            </Typography>
+            <Typography>
+            If you do not have an AWS account, you may see an error relating to missing credentials when you attempt to copy data. This error should resolve if you add &quot;--no-sign-requests&quot; to the AWS CLI command.
             </Typography>
             <Typography>If you do not have an AWS account, you may see an error relating to missing credentials when you attempt to copy data. This error should resolve if you add &quot;--no-sign-requests&quot; to the AWS CLI command.</Typography>
             <p className="anchor" id="globus" />

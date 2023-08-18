@@ -22,6 +22,7 @@ import BrokenImage from "../broken_image_24dp.svg";
 import { fetchDatasets } from "../api/datasets";
 import { useQuery } from "react-query";
 import {fetchViews} from "../api/views"
+import { Table } from "./LayerTable";
 
 type DatasetPaperProps = {
   datasetKey: string;
@@ -207,6 +208,9 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
                 handleFilterChange={handleFilterChange}
                 filter={layerFilter}
               />
+            </Grid>
+            <Grid item>
+              <Table images={dataset.images}></Table>
             </Grid>
           </Grid>
         </Paper>
