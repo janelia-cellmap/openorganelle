@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ContentTypeMetadata } from "../api/datasets";
-import {Image} from "../types/database"
+import {Imagery} from "../types/database"
 import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
 import Accordion from "@material-ui/core/Accordion";
 import Typography from "@material-ui/core/Typography";
@@ -9,7 +9,7 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 interface ImageCheckboxCollectionProps {
-  images: Image[]
+  imagery: Imagery[]
   checkState: Set<string>
   handleImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   contentType: string,
@@ -21,7 +21,7 @@ interface ImageCheckboxCollectionProps {
 
 
 export default function ImageCheckboxCollection({
-  images,
+  imagery,
   checkState,
   handleImageChange,
   contentType,
@@ -34,7 +34,7 @@ export default function ImageCheckboxCollection({
     setExpanded(!expanded);
   };
 
-  const checkBoxList = images?.map((image: Image) => {
+  const checkBoxList = imagery?.map((image: Imagery) => {
     return (
       <FormControlLabel
         control={

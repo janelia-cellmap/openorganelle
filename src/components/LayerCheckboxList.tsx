@@ -9,7 +9,7 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import React, { useState, useEffect } from "react";
-import {ContentType, Dataset, Image } from "../types/database";
+import {ContentType, Dataset, Imagery } from "../types/database";
 import ImageCheckboxCollection from "./LayerGroup";
 import { contentTypeDescriptions } from "../api/datasets";
 
@@ -51,13 +51,13 @@ interface LayerFilterProps {
 
 function FilteredLayersList({ dataset, checkState, handleImageChange, filter}: FilteredLayerListProps) {
   const classes = useStyles();
-  const imagesInit: Image[] = []
-  const [images, setImages] = useState(imagesInit);
-  const imageGroups: Map<ContentType, Image[]> = new Map();
+  const imageryInit: Imagery[] = []
+  const [imagery, setImagery] = useState(imageryInit);
+  const imageGroups: Map<ContentType, Imagery[]> = new Map();
 
   useEffect(() => {
     // filter images based on filter string
-    let filteredVolumes = Array.from(dataset.images.values());
+    let filteredVolumes = Array.from(dataset.imagery.values());
     if (filter) {
       // TODO: make this case insensitive
       filteredVolumes = filteredVolumes.filter(v =>
@@ -65,11 +65,11 @@ function FilteredLayersList({ dataset, checkState, handleImageChange, filter}: F
         v.name.toLowerCase().includes(filter.toLowerCase())
       );
     }
-    setImages(
+    setImagery(
       filteredVolumes);
   }, [dataset, filter]);
 
-  images.forEach((v: Image) => {
+  imagery.forEach((v: Imagery) => {
     if (imageGroups.get(v.contentType) === undefined) {
       imageGroups.set(v.contentType, []);
     }
@@ -77,14 +77,14 @@ function FilteredLayersList({ dataset, checkState, handleImageChange, filter}: F
   });
 
   const checkboxLists = Array.from(contentTypeDescriptions.keys()).map((ct) => {
-    const images = (imageGroups.get(ct as ContentType) as Image[]);
+    const imagery = (imageGroups.get(ct as ContentType) as Imagery[]);
     const contentTypeInfo = contentTypeDescriptions.get(ct as ContentType)!;
     const expanded = (ct === 'em');
     
-    if (images !== undefined && images.length > 0) {
+    if (imagery !== undefined && imagery.length > 0) {
       return <ImageCheckboxCollection
               key={ct}
-              images={images}
+              imagery={imagery}
               checkState={checkState}
               handleImageChange={handleImageChange}
               contentType={ct}

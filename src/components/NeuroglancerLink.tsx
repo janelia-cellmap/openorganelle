@@ -1,6 +1,6 @@
 import { Button } from "@material-ui/core";
 import React, { useContext } from "react";
-import {Image} from "../types/database"
+import {Imagery} from "../types/database"
 import { AppContext } from "../context/AppContext";
 import LaunchIcon from "@material-ui/icons/Launch";
 import WarningIcon from "@material-ui/icons/Warning";
@@ -11,7 +11,7 @@ type NeuroglancerLinkProps = {
   position?: number[] | null
   scale?: number | null
   orientation?: number[] | null
-  images: Image[],
+  imagery: Imagery[],
   children?: React.ReactNode;
 };
 
@@ -19,7 +19,7 @@ export default function NeuroglancerLink({
   position,
   scale,
   orientation,
-  images,
+  imagery,
   children
 }: NeuroglancerLinkProps) {
   const { appState } = useContext(AppContext);
@@ -27,9 +27,9 @@ export default function NeuroglancerLink({
   const webGL2Enabled = appState.webGL2Enabled;
   let ngLink = "";
   
-  const disabled = images.length === 0;
+  const disabled = imagery.length === 0;
   if (!disabled) {
-    ngLink = makeNeuroglancerUrl({position, scale, orientation, images, outputDimensions, host: neuroglancerAddress})
+    ngLink = makeNeuroglancerUrl({position, scale, orientation, imagery, outputDimensions, host: neuroglancerAddress})
   }
   if (children) {
     return (

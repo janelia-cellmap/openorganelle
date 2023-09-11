@@ -101,7 +101,7 @@ async function queryDatasets(){
                 grid_spacing_unit,
                 grid_dimensions_unit
             ),
-            images:image(
+            imagery:imagery(
                 name,
                 description,
                 url,
@@ -116,22 +116,7 @@ async function queryDatasets(){
                 content_type,
                 institution,
                 created_at,
-                stage,
-                meshes:mesh(
-                    name,
-                    description,
-                    url,
-                    source,
-                    grid_scale,
-                    grid_translation,
-                    grid_dims,
-                    grid_units,
-                    created_at,
-                    format,
-                    stage,
-                    ids
-                    )
-            ),
+                stage)
             publications:publication(
                 name,
                 url,
@@ -139,11 +124,10 @@ async function queryDatasets(){
                 stage
             )`)
             .eq('stage', 'prod')
-            .eq('images.stage', 'prod')
-            .eq('images.meshes.stage', 'prod')
+            .eq('imagery.stage', 'prod')
             .eq('publications.stage', 'prod')
             .returns<DatasetQueryResult>()
-  
+            
             if (error === null) {
               return data
 

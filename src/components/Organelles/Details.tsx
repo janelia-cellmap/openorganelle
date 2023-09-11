@@ -57,7 +57,7 @@ export function ViewCard({ view }: { view: View }) {
     position: view.position ?? undefined,
     scale: view.scale ?? undefined,
     orientation: view.orientation ?? undefined,
-    images: view.images,
+    imagery: view.imagery,
     outputDimensions,
     host: appState.neuroglancerAddress,
   });

@@ -51,7 +51,7 @@
     "remark-gfm": "^3.0.1",
     "remark-html": "^15.0.1",
     "valid-url": "^1.0.9",
-    "zod": "^3.21.4"
+    "zod": "^3.22.1"
   },
   "scripts": {
     "start": "react-scripts start",

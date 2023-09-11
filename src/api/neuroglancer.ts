@@ -7,9 +7,9 @@ import { CoordinateSpace,
          SegmentationLayer,
          urlSafeStringify,
          ViewerState } from "@janelia-cosem/neuroglancer-url-tools";
-import {DisplaySettings, Image, SampleType, STTransform } from "../types/database";
+import {DisplaySettings, Imagery, isDisplayEmpty, MaybeDisplaySettings, SampleType, STTransform } from "../types/database";
 
-export type LayerType = "image" | "segmentation"
+export type LayerType = "image" | "segmentation" | "annotation"
 
 // one nanometer, expressed as a scaled meter
 const nm: [number, string] = [1e-9, "m"];
@@ -42,22 +42,21 @@ export function STTransformToNeuroglancer({dims, translation, scale, units}: STT
     return layerTransform
 }
 
-export function makeShader({color, invertLUT, contrastLimits}: DisplaySettings, sampleType: SampleType): string | undefined {
-    
-    if (sampleType == 'scalar') {
-            const window = [contrastLimits.min, contrastLimits.max]
-            const range = [contrastLimits.start, contrastLimits.end]
-            if (invertLUT) {range.reverse()}
-            return `#uicontrol invlerp normalized(range=[${range[0]}, ${range[1]}], window=[${window[0]}, ${window[1]}])\n#uicontrol vec3 color color(default="${color}")\nvoid main(){emitRGB(color * normalized());}`
-        }
-    else {
-            return ''
-        }
+export function makeScalarShader({color, invertLUT, contrastLimits}: DisplaySettings): string {
+        const window = [contrastLimits.min, contrastLimits.max]
+        const range = [contrastLimits.start, contrastLimits.end]
+        if (invertLUT) {range.reverse()}
+        return `#uicontrol invlerp normalized(range=[${range[0]}, ${range[1]}], window=[${window[0]}, ${window[1]}])\n#uicontrol vec3 color color(default="${color}")\nvoid main(){emitRGB(color * normalized());}`
+    }
+
+type makeLayerProps = {
+    image: Imagery
+    displaySettings: MaybeDisplaySettings
+    outputDimensions: CoordinateSpace,
+    layerType: LayerType,
 }
 
-export function makeLayer(image: Image,
-    layerType: LayerType,
-    outputDimensions: CoordinateSpace) {
+export function makeLayer({image, displaySettings, outputDimensions, layerType}: makeLayerProps) {
     const tform = {scale: image.gridScale, translation: image.gridTranslation, dims: image.gridDims, units : image.gridUnits}
     const srcURL = `${image.format}://${image.url}`;
 
@@ -67,7 +66,8 @@ export function makeLayer(image: Image,
         transform: STTransformToNeuroglancer(tform, outputDimensions),
         CoordinateSpaceTransform: STTransformToNeuroglancer(tform, outputDimensions)
     };
-
+    const subsources: any[] = []
+    /*
     const subsources = image.meshes.map(mesh => {
         const tform = {
             scale: mesh.gridScale, 
@@ -81,10 +81,20 @@ export function makeLayer(image: Image,
                  CoordinateSpaceTransform: STTransformToNeuroglancer(tform, outputDimensions) 
                 }
     });
+    */
     let layer;
-    const color = image.displaySettings.color ?? undefined;
+    let color: string | undefined
+    if (Object.keys(displaySettings).length > 0) {
+        color = displaySettings.color
+    } 
     if (layerType === 'image') {
-        const shader = makeShader(image.displaySettings, image.sampleType)
+        let shader: undefined | string
+        if (isDisplayEmpty(displaySettings)) {
+            shader = undefined
+        }
+        else {
+            shader = makeScalarShader(displaySettings)
+        }
         layer = new ImageLayer('rendering',
             undefined,
             undefined,
@@ -97,25 +107,6 @@ export function makeLayer(image: Image,
             undefined);
     }
     else if (layerType === 'segmentation') {
-        if (subsources.length > 0) {
-            layer = new SegmentationLayer('source',
-                true,
-                undefined,
-                image.name,
-                [source, ...subsources],
-                image.meshes[0].ids,
-                undefined,
-                true,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                color);
-        }
-        else {
             layer = new SegmentationLayer('source',
                 true,
                 undefined,
@@ -133,7 +124,6 @@ export function makeLayer(image: Image,
                 undefined,
                 color);
         }
-    }
     return layer
 }
 
@@ -176,11 +166,12 @@ export function makeNeuroglancerViewerState(layers: (SegmentationLayer | ImageLa
     return encodeFragment(urlSafeStringify(vState));
 }
 
+
 type viewToNeuroglancerUrlProps = {
     position: number[] | undefined | null
     scale: number | undefined | null
     orientation: number[] | undefined | null
-    images: Image[]
+    imagery: Imagery[]
     outputDimensions: CoordinateSpace,
     host: string
 }
@@ -188,12 +179,12 @@ type viewToNeuroglancerUrlProps = {
 export function makeNeuroglancerUrl({position,
                                       scale,
                                       orientation,
-                                      images,
+                                      imagery,
                                       outputDimensions,
                                       host} : viewToNeuroglancerUrlProps) {
-    const layers = images.map(im => {
-        const layerType = (im.sampleType === 'scalar') ? 'image' : 'segmentation';
-        return makeLayer(im, layerType, outputDimensions);
+    const layers = imagery.map(image => {
+        const layerType = (image.sampleType === 'scalar') ? 'image' : 'segmentation';
+        return makeLayer({image, image.displaySettings, outputDimensions, layerType});
       });
 
     return `${host}${makeNeuroglancerViewerState(

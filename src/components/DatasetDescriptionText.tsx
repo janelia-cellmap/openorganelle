@@ -100,7 +100,7 @@ export function DatasetAcquisition({
   let imageParams = undefined
   
   // This is a hack until we have proper rendering of image-specific metadata
-  for (const im of dataset.images){
+  for (const im of dataset.imagery){
     if (zFibsemMetadata.safeParse(im.source).success)
     {
       const params = zFibsemMetadata.parse(im.source)

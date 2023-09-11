@@ -38,7 +38,7 @@ export default function Organelles() {
   new Map<string, Taxon>())!
 
   const viewsByTaxon = data?.reduce((previous, current) => {
-    if (current.images.length > 0) {
+    if (current.imagery.length > 0) {
       current.taxa.forEach((t) => {
           const val = previous.get(t.shortName)
           if (val === undefined) {

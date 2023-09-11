@@ -17,7 +17,7 @@ export async function fetchViews() {
       orientation,
       taxa:taxon(name, short_name),
       created_at,
-      images:image(
+      imagery:imagery(
         name,
         description,
         url,
@@ -30,20 +30,7 @@ export async function fetchViews() {
         grid_units,
         content_type,
         institution,
-        created_at,
-        meshes:mesh(
-            name,
-            description,
-            url,
-            grid_scale,
-            grid_translation,
-            grid_dims,
-            grid_units,
-            created_at,
-            format,
-            ids
-            )
-    ),
+        created_at),
       dataset!inner(name)`).returns<ViewQueryResult>()
     if (error === null) {
       const camelized = camelize(data) as Camelized<typeof data>

@@ -23,7 +23,7 @@ const sortFunctions: sortOptions = {
   },
   size: {
     func: (a: [string, Dataset], b: [string, Dataset]) =>
-      [...b[1].images.keys()].length - [...a[1].images.keys()].length,
+      [...b[1].imagery.keys()].length - [...a[1].imagery.keys()].length,
     title: "Dataset Size"
   },
   collected: {

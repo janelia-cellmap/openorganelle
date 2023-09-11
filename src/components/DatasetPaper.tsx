@@ -101,7 +101,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
       taxa: [],
       tags: [],
       stage: 'prod',
-      images: dataset.images.filter(im => im.contentType == 'em')
+      imagery: dataset.imagery.filter(im => im.contentType == 'em')
 })
   }
   const bucket = "janelia-cosem-datasets";
@@ -111,8 +111,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   
 
   // initialize the checkboxes with the first view
-  const imageNames = [...dataset.images.map(v => v.name)]
-  const inView = imageNames.filter(name => views[viewChecked].images.map(v => v.name).includes(name))
+  const imageNames = [...dataset.imagery.map(v => v.name)]
+  const inView = imageNames.filter(name => views[viewChecked].imagery.map(v => v.name).includes(name))
   if (imageChecked.size == 0) {
     inView.forEach(name => imageChecked.add(name))
   }
@@ -131,7 +131,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     }
 
   const handleViewChange = (index: number, views: View[]) => () => {
-    const newImageState = views[index].images.reduce((previous, current) =>
+    const newImageState = views[index].imagery.reduce((previous, current) =>
       previous.add(current.name), new Set<string>());
 
     setViewChecked(index)
@@ -147,7 +147,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   };
 
 	const thumbnailAlt = `2D rendering of ${dataset.name}`;
-  const localView = {...views[viewChecked], images: dataset.images.filter(v => imageChecked.has(v.name))} 
+  const localView = {...views[viewChecked], imagery: dataset.imagery.filter(v => imageChecked.has(v.name))} 
   return (
     <Grid container>
       <Grid item md={8}>
@@ -157,7 +157,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
                 position={views[viewChecked].position} 
                 scale={views[viewChecked].scale}
                 orientation={views[viewChecked].orientation}
-                images = {views[viewChecked].images}
+                imagery = {views[viewChecked].imagery}
                 >
               <img
 								alt={thumbnailAlt}
@@ -184,7 +184,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
                   scale= {localView.scale}
                   position= {localView.position}
                   orientation= {localView.orientation}
-                  images= {localView.images}
+                  imagery= {localView.imagery}
               />
             </Grid>
             <Grid item sm={2}>

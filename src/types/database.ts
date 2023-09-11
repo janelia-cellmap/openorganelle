@@ -3,10 +3,13 @@ import {ToDate} from "./stringtodate"
 import { Camelized } from "./camel";
 import { Database, Json} from "./supabase";
 import { DatasetTag, OSet } from "./tags";
+import {z} from "zod";
 
 export type Modify<T, R> = Omit<T, keyof R> & R
 
 type Tables = Database["public"]["Tables"]
+
+type NoDisplaySettings = {}
 
 export type DisplaySettings = {
     contrastLimits: {
@@ -19,6 +22,11 @@ export type DisplaySettings = {
     invertLUT: boolean;
   };
 
+export type MaybeDisplaySettings = DisplaySettings | NoDisplaySettings
+
+ export const isDisplayEmpty = (b: MaybeDisplaySettings): b is NoDisplaySettings => {
+    return Object.keys(b as NoDisplaySettings).length == 0
+}
 
 export type Taxon = {
     name: string,
@@ -68,38 +76,23 @@ export type ImageAcquisitionQueryResult = {
   grid_dimensions_unit: string
 }
 
-export type ImageQueryResult = {
+export type ImageryQueryResult = {
   name: string
   description: string
   url: string
-  format: Database["public"]["Enums"]["array_container_format"]
+  format: Database["public"]["Enums"]["imagery_format"]
   source: FibsemParams | null
   grid_scale: number[]
   grid_dims: string[]
   grid_translation: number[]
   grid_units: string[]
-  display_settings: DisplaySettings
   created_at: string
+  displaySettings: MaybeDisplaySettings
   sample_type: Database["public"]["Enums"]["sample_type"]
   content_type: Database["public"]["Enums"]["content_type"]
   dataset_name: string
   institution: string
   stage: Stage
-  meshes: {
-    name: string
-    description: string
-    created_at: string
-    url: string
-    source: null
-    grid_scale: number[]
-    grid_dims: string[]
-    grid_translation: number[]
-    grid_units: string[]
-    image_id: number
-    format: Database["public"]["Enums"]["mesh_format"]
-    ids: number[]
-    stage: Stage
-  }[]
 }
 
 export type PublicationQueryResult = {
@@ -116,7 +109,7 @@ export type DatasetQueryResult = {
   created_at: string
   sample: SampleQueryResult
   image_acquisition: ImageAcquisitionQueryResult
-  images: ImageQueryResult[]
+  imagery: ImageryQueryResult[]
   stage: Stage
   publications: PublicationQueryResult[]
 }
@@ -138,7 +131,7 @@ export type ViewQueryResult = {
     short_name: string
     stage: Stage
   }[]
-  images: ImageQueryResult[]
+  imagery: ImageryQueryResult[]
 }
 
 
@@ -148,6 +141,26 @@ export type Dataset =
   }
 
 export type View = ToDate<Camelized<ViewQueryResult>>
-export type Image = Dataset['images'][number]
+/*
+export const zView = z.object({
+  name: z.string(),
+  description: z.string(),
+  created_at: z.date(),
+  position: z.optional(z.array(z.number())),
+  scale: z.optional(z.array(z.number())),
+  orientation: z.optional(z.array(z.number())),
+  tags: z.array(z.string()),
+  dataset_name: z.string(),
+  thumbnail_url: z.string(),
+  stage: z.enum(['dev', 'prod'])
+}) satisfies z.ZodType<View>
+export type Imagery = Dataset['imagery'][number]
+export const zImagery = z.object({
+  name: z.string(),
+  description: z.string(),
+})
+*/
+export type Imagery = Dataset['imagery'][number]
+
 export type Publication = Dataset['publications'][number]
 export type ImageAcquisition = Dataset['imageAcquisition']
