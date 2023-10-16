@@ -18,7 +18,7 @@ const zFibsemMetadata = z.object({
 
 export interface DescriptionPreviewProps {
   title: string;
-  startDate: Date | undefined;
+  startDate: string | null;
   id: string;
   gridSpacingUnit: string;
   gridSpacing: number[]
@@ -66,23 +66,11 @@ export function DatasetDescriptionPreview({
   const classes = useStyles();
   return (
     <Box>
-      <Typography variant="h6" className={classes.title}>
-        {title}
-      </Typography>
-      <p>
-        <strong>Acquisition date</strong>: {startDate ? startDate.toDateString() : 'Unknown' }
-      </p>
-      <p>
-        <strong>Dataset ID</strong>: {id}
-      </p>
-      <p>
-        <strong>Voxel size ({gridSpacingUnit})</strong>
-        : {gridSpacing.join(', ')}
-      </p>
-      <p>
-        <strong>Dimensions ({gridDimensionsUnit})</strong>:{" "}
-        {gridDimensions.join(', ')}
-      </p>
+      <Typography variant="h6" className={classes.title}>{title}</Typography>
+      <p><strong>Acquisition date</strong>: {startDate ? new Date(startDate).toDateString() : ' Unknown' }</p>
+      <p><strong>Dataset ID</strong>: {id}</p>
+      <p><strong>Voxel size ({gridSpacingUnit})</strong>: {" "}{gridSpacing.join(', ')}</p>
+      <p><strong>Dimensions ({gridDimensionsUnit})</strong>:{" "}{gridDimensions.join(', ')}</p>
     </Box>
   );
 }
@@ -124,15 +112,12 @@ export function DatasetAcquisition({
         Acquisition details
       </Typography>
           <p>
-          <strong>
-              Imaging start date
-            </strong>
-            :  {acq.startDate.toDateString()}
-            </p>
-            <p>
             <strong>
-              Final voxel size ({acq.gridSpacingUnit})
-            </strong>
+              Imaging start date
+            </strong>:{acq.startDate? new Date(acq.startDate).toDateString() : ' Unknown'}
+              </p>
+          <p>
+            <strong>Final voxel size ({acq.gridSpacingUnit})</strong>
             : ({acq.gridSpacing.join(', ')}) ({acq.gridAxes.join(', ')})
           </p>
           <p>

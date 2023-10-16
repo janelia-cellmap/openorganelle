@@ -129,7 +129,7 @@ export default function DatasetLayout({
 
   if (latestOnly) {
     const latestDatasets = [...datasets].sort(
-      sortFunctions['collected'].func
+      sortFunctions['added'].func
     )
     .slice(0,4)
       .map(([name, dataset], i) => {

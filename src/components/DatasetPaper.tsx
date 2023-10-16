@@ -93,7 +93,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
       name: 'Default view', 
       description: 'The default view of the data',
       thumbnailUrl: null,
-      createdAt: new Date(),
+      createdAt: new Date().toDateString(),
       datasetName: dataset.name,
       position: null,
       scale: null,

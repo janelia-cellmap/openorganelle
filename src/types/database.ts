@@ -1,7 +1,6 @@
 
-import {ToDate} from "./stringtodate"
 import { Camelized } from "./camel";
-import { Database, Json} from "./supabase";
+import { Database} from "./supabase";
 import { DatasetTag, OSet } from "./tags";
 
 export type Modify<T, R> = Omit<T, keyof R> & R
@@ -60,7 +59,7 @@ export type SampleQueryResult = {
 export type ImageAcquisitionQueryResult = {
   name: string
   institution: string
-  start_date: string
+  start_date: string | null
   grid_axes: string[]
   grid_spacing: number[]
   grid_spacing_unit: string
@@ -143,11 +142,11 @@ export type ViewQueryResult = {
 
 
 export type Dataset = 
-  ToDate<Camelized<DatasetQueryResult>> & {
+  Camelized<DatasetQueryResult> & {
     tags: OSet<DatasetTag>
   }
 
-export type View = ToDate<Camelized<ViewQueryResult>>
+export type View = Camelized<ViewQueryResult>
 export type Image = Dataset['images'][number]
 export type Publication = Dataset['publications'][number]
 export type ImageAcquisition = Dataset['imageAcquisition']
