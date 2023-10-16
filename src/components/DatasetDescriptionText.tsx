@@ -18,7 +18,7 @@ const zFibsemMetadata = z.object({
 
 export interface DescriptionPreviewProps {
   title: string;
-  startDate: Date;
+  startDate: Date | undefined;
   id: string;
   gridSpacingUnit: string;
   gridSpacing: number[]
@@ -70,7 +70,7 @@ export function DatasetDescriptionPreview({
         {title}
       </Typography>
       <p>
-        <strong>Acquisition date</strong>: {startDate.toDateString()}
+        <strong>Acquisition date</strong>: {startDate ? startDate.toDateString() : 'Unknown' }
       </p>
       <p>
         <strong>Dataset ID</strong>: {id}
