@@ -27,11 +27,16 @@ const sortFunctions: sortOptions = {
     title: "Dataset Size"
   },
   collected: {
-    // datasets.description.imaging.startDate
     func: (a: [string, Dataset], b: [string, Dataset]) =>
       new Date(b[1].imageAcquisition!.startDate!).getTime() -
       new Date(a[1].imageAcquisition!.startDate!).getTime(),
     title: "Date Collected"
+  },
+  added: {
+    func: (a: [string, Dataset], b: [string, Dataset]) =>
+      new Date(b[1].createdAt).getTime() -
+      new Date(a[1].createdAt).getTime(),
+    title: "Date Added"
   }
 };
 

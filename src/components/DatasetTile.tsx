@@ -136,7 +136,7 @@ export default function DatasetTile({
           <Grid item xs={4}>
             <DatasetDescriptionPreview
               title={dataset.description}
-              startDate={dataset.imageAcquisition.startDate!}
+              startDate={dataset.imageAcquisition.startDate}
               id={dataset.name}
               gridSpacing={dataset.imageAcquisition.gridSpacing}
               gridSpacingUnit={dataset.imageAcquisition.gridSpacingUnit}

@@ -3,15 +3,6 @@ import { Grid, Typography } from "@material-ui/core";
 import DatasetLayout from "./DatasetLayout";
 import NewsPostCarousel from "./NewsPostCarousel";
 
-/*
-Welcome to HHMI Janelia's OpenOrganelle
-A data portal for volume electron microscopy datasets and accompanying segmentations available for exploration.
-
-Many of the datasets hosted here were acquired with the enhanced focused ion beam scanning electron microscopy (FIB-SEM) technology developed at Janelia. Accompanying many of these EM volumes are automated segmentations and analyses of intracellular sub-structures.
-
-Be sure to check out our News and Announcements page to see what is new and learn more about the datasets. You can explore the gallery of organelles on the Organelles page or head to the FAQ page to learn how to work with the data yourself. To dive into the details of the methods behind the dataset generation head over to our Publications list.
-*/
-
 export default function Home() {
   return (
     <div className="content">

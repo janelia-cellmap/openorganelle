@@ -1,12 +1,11 @@
 import { supabase } from "./supabase";
 import {Camelized} from '../types/camel'
-import {camelize, stringToDate} from "./util"
+import {camelize, getStage} from "./util"
 import { ContentType,
          Sample,
          DatasetQueryResult,
          ImageAcquisition} from "../types/database";
 import { DatasetTag, OSet } from "../types/tags";
-import { ToDate } from "../types/stringtodate";
 
 export interface ContentTypeMetadata {
   label: string
@@ -73,6 +72,14 @@ export function makeTags({acquisition,
 
 
 async function queryDatasets(){
+  const stage = getStage()
+  let stageFilter: ['dev', 'prod'] | ['prod']
+  if (stage == 'dev') {
+    stageFilter = ['dev', 'prod']
+  }
+  else {
+    stageFilter = ['prod']
+  }
   const { data, error } = await supabase
     .from('dataset')
     .select(`
@@ -138,12 +145,12 @@ async function queryDatasets(){
                 type,
                 stage
             )`)
-            .eq('stage', 'prod')
-            .eq('images.stage', 'prod')
-            .eq('images.meshes.stage', 'prod')
-            .eq('publications.stage', 'prod')
+            .in('stage', stageFilter)
+            .in('images.stage', stageFilter)
+            .in('images.meshes.stage', stageFilter)
+            .in('publications.stage', stageFilter)
             .returns<DatasetQueryResult>()
-  
+              
             if (error === null) {
               return data
 
@@ -157,9 +164,7 @@ export async function fetchDatasets() {
     const data = await queryDatasets()
     // convert snake_case keys to camelCase
     const camelized = camelize(data) as Camelized<typeof data>
-    // convert date strings to Date objects
-    const stringsToDates = stringToDate(camelized) as ToDate<typeof camelized>
-    const dsets = new Map(stringsToDates.map(d => {
+    const dsets = new Map(camelized.map(d => {
       return [d.name, {...d, tags: makeTags({acquisition: d.imageAcquisition,
                                              institutions: [d.imageAcquisition.institution],
                                              sample: d.sample,

@@ -10,6 +10,7 @@ import { AppContext } from "../context/AppContext";
 import janeliaLogo from "../janelia_logo.png";
 import { WebGL2CompatibilityWarning } from "./WebGL2Compatibility";
 import banner from "./cosem_banner.jpg";
+import { getStage } from "../api/util";
 
 const useStyles: any = makeStyles((theme: Theme) =>
   createStyles({
@@ -88,7 +89,8 @@ const useStyles: any = makeStyles((theme: Theme) =>
 export default function Navigation() {
   const classes = useStyles();
   const { appState } = useContext(AppContext);
-
+  const stage = getStage()
+  const homeLinkTitle = stage == 'prod' ? 'OpenOrganelle' : 'OpenOrganelle (dev mode)'
   return (
     <>
       <AppBar position="fixed" className={classes.appbar}>
@@ -133,7 +135,7 @@ export default function Navigation() {
           <Grid item sm={10} md={6} className={classes.mastheadText}>
             <Typography variant="h3">
               <Link className={classes.homeLink} to="/">
-                OpenOrganelle
+                {homeLinkTitle}
               </Link>
             </Typography>
           </Grid>

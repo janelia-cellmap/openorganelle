@@ -1,8 +1,7 @@
 import { supabase } from "./supabase";
 import { Camelized } from "../types/camel";
-import { camelize, stringToDate } from "./util";
+import { camelize } from "./util";
 import { ViewQueryResult } from "../types/database";
-import { ToDate } from "../types/stringtodate";
 
 export async function fetchViews() {
     const { data, error } = await supabase
@@ -47,8 +46,7 @@ export async function fetchViews() {
       dataset!inner(name)`).returns<ViewQueryResult>()
     if (error === null) {
       const camelized = camelize(data) as Camelized<typeof data>
-      const dateified = stringToDate(camelized) as ToDate<typeof camelized>
-      return dateified
+      return camelized
     }
     else {
       throw new Error(`Oops! ${JSON.stringify(error)}`)

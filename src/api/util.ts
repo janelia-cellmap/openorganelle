@@ -80,3 +80,16 @@ export function stringToDate(obj: Json): any {
   return Object.fromEntries(mappedEntries)
   }
 }
+
+export const getStage = () => {
+  const maybeDev = process.env.REACT_APP_STAGE
+  if (maybeDev === 'dev') {
+    return maybeDev
+  }
+  else if (maybeDev === 'prod') {
+    return maybeDev
+  }
+  else {
+    throw new Error('Failed to parse environment variable REACT_APP_DEV_MODE. It should be one of ["dev", "prod"]')
+  }
+}
