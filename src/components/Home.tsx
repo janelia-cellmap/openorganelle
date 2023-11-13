@@ -20,7 +20,7 @@ export default function Home() {
             gutterBottom
             style={{ marginTop: "2em", textAlign: "left" }}
           >
-            Welcome to HHMI Janelia’s OpenOrganelle
+            About HHMI Janelia’s OpenOrganelle
           </Typography>
 
           <p>

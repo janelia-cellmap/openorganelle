@@ -22,7 +22,7 @@ export default function About() {
         gutterBottom
         style={{ marginTop: "2em", textAlign: "center" }}
       >
-        Welcome to HHMI Janelia’s OpenOrganelle.
+        About HHMI Janelia’s OpenOrganelle.
       </Typography>
       <div
         style={{ maxWidth: "45em", marginLeft: "auto", marginRight: "auto" }}
