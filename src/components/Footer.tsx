@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     fontWeight: "bold",
     fontSize: "1.3em",
     marginLeft: "1em",
-    textDecoration: "none"
+    textDecoration: "none",
   },
   linkContainer: {
     display: "flex",
@@ -75,13 +75,6 @@ export default function Footer() {
             >
               <img src={cellmapLogo} alt="Cellmap" className={classes.cellmapLogo} />
             </a>
-            <a href={fibsemURL} target="_blank" rel="noopener noreferrer">
-              <img
-                src={fibsemLogo}
-                alt="FIB-SEM Technology"
-                className={classes.cellmapLogo}
-              />
-            </a>
             <a
               href={hessURL}
               className={classes.hessLink}
@@ -89,6 +82,13 @@ export default function Footer() {
               rel="noopener noreferrer"
             >
               Hess Lab
+            </a>
+            <a href={fibsemURL} target="_blank" rel="noopener noreferrer">
+              <img
+                src={fibsemLogo}
+                alt="FIB-SEM Technology"
+                className={classes.cellmapLogo}
+              />
             </a>
           </div>
           <p>
