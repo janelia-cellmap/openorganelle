@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     display: "inline-block"
   },
   cellmapLogo: {
-    maxHeight: "70px",
+    maxHeight: "50px",
     marginRight: theme.spacing(2)
   },
   footer: {
