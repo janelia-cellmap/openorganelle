@@ -404,7 +404,7 @@ export default function Tutorials() {
             </Typography>
 
             <Typography paragraph>
-              The organelle annotations produced by the COSEM Project Team often
+              The organelle annotations produced by the Cellmap Project Team often
               include both <i>predictions</i> and <i>segmentations</i>.
             </Typography>
 
@@ -421,12 +421,10 @@ export default function Tutorials() {
               <b>Segmentations</b> are at minimum a thresholded prediction.
               Additionally, there are post-processing refinements that can be
               performed to help clean up the predictions such as size filtering.
-              For more details about the refinements used please visit our
-              GitHub (
+              For more details about the refinements used, please see this {" "}
               <a href="https://github.com/janelia-cosem/refinements">
-                https://github.com/janelia-cosem/refinements
-              </a>
-              ).
+               GitHub repo
+              </a>.
             </Typography>
 
             <Typography variant="h5" gutterBottom>
@@ -725,7 +723,7 @@ export default function Tutorials() {
             <Typography gutterBottom>
               All of the software we developed for preparing, analyzing, and
               visualizing these datasets is open source. These tools can be
-              found on the <a href="https://github.com/janelia-cosem/">COSEM</a>{" "}
+              found on the <a href="https://github.com/janelia-cellmap/">Cellmap</a>{" "}
               and <a href="https://github.com/saalfeldlab/">Saalfeld lab</a>{" "}
               github pages.
             </Typography>
@@ -814,7 +812,7 @@ export default function Tutorials() {
               predictions?
             </Typography>
             <Typography gutterBottom>
-              Training data used for ML predictions by the COSEM Project Team
+              Training data used for ML predictions by the Cellmap Project Team
               were generated using Amira and Paintera. For more information
               please reference{" "}
               <a href="https://doi.org/10.1038/s41586-021-03977-3">
@@ -868,8 +866,7 @@ export default function Tutorials() {
             </Typography>
 
             <Typography paragraph>
-              We welcome you to visit our GitHub organization,{" "}
-              <a href="https://github.com/janelia-cosem">janelia-cosem</a>, to
+              We welcome you to visit our <a href="https://github.com/janelia-cellmap">Github page</a> to
               access all of our code and software. More information about the
               software used and written for this project can be found in the{" "}
               Code section above.

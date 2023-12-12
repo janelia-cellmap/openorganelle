@@ -50,6 +50,7 @@
     "remark": "^14.0.2",
     "remark-gfm": "^3.0.1",
     "remark-html": "^15.0.1",
+    "serverless-s3-sync": "^3.2.0",
     "valid-url": "^1.0.9",
     "zod": "^3.21.4"
   },
@@ -90,8 +91,6 @@
     "eslint-plugin-flowtype": "^3.13.0",
     "eslint-plugin-react": "^7.21.0",
     "jest-canvas-mock": "^2.3.1",
-    "json-schema-to-typescript": "^11.0.2",
-    "openapi-typescript": "^5.4.1",
     "prettier": "1.19.1",
     "react-json-view": "^1.21.3",
     "serverless-deployment-bucket": "^1.5.1",

@@ -5,10 +5,10 @@ import Grid from "@material-ui/core/Grid";
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import TwitterIcon from '@material-ui/icons/Twitter';
 
-import cosemLogo from "../COSEM_logo_invert_transparent.png";
+import cellmapLogo from "./cellmapLogoDarkText.png";
 import fibsemLogo from "../fibsem_logo.png";
 
-const cosemURL = "https://www.janelia.org/project-team/cosem";
+const cellmapURL = "https://www.janelia.org/project-team/cellmap";
 const hessURL = "https://www.janelia.org/lab/hess-lab";
 const fibsemURL = "https://www.janelia.org/project-team/fib-sem-technology";
 
@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     marginLeft: "1em",
     display: "inline-block"
   },
-  cosemLogo: {
+  cellmapLogo: {
     maxHeight: "70px",
     marginRight: theme.spacing(2)
   },
@@ -68,18 +68,18 @@ export default function Footer() {
         <Grid item md={6} className={classes.footerMiddle}>
           <div className={classes.linkContainer}>
             <a
-              href={cosemURL}
+              href={cellmapURL}
               className={classes.link}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <img src={cosemLogo} alt="COSEM" className={classes.cosemLogo} />
+              <img src={cellmapLogo} alt="Cellmap" className={classes.cellmapLogo} />
             </a>
             <a href={fibsemURL} target="_blank" rel="noopener noreferrer">
               <img
                 src={fibsemLogo}
                 alt="FIB-SEM Technology"
-                className={classes.cosemLogo}
+                className={classes.cellmapLogo}
               />
             </a>
             <a
