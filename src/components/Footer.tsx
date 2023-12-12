@@ -21,7 +21,11 @@ const useStyles = makeStyles(theme => ({
   },
   cellmapLogo: {
     maxHeight: "50px",
-    marginRight: theme.spacing(2)
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(4)
+  },
+  fibsemLogo: {
+    maxHeight: "90px",
   },
   footer: {
     padding: "1em 1em 0.5em 1em",
@@ -33,7 +37,6 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.primary.contrastText,
     fontWeight: "bold",
     fontSize: "1.3em",
-    marginLeft: "1em",
     textDecoration: "none",
   },
   linkContainer: {
@@ -87,7 +90,7 @@ export default function Footer() {
               <img
                 src={fibsemLogo}
                 alt="FIB-SEM Technology"
-                className={classes.cellmapLogo}
+                className={classes.fibsemLogo}
               />
             </a>
           </div>
