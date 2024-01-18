@@ -627,28 +627,19 @@ export default function Tutorials() {
               When run from the command line, this command lists the contents of
               our data bucket:
               <CodeBlock
-                text="aws s3 ls s3://janelia-cosem-datasets/ --no-sign-request"
+                text="aws cli ls s3://janelia-cosem-datasets/"
                 language=""
                 showLineNumbers={false}
                 theme={dracula}
               />
               The AWS CLI can also copy data from S3 to local storage, but be
-              advised that this may take a long time. For example, 
-              an image dataset may be copied to you local machine upon execution 
-              of the following command in Terminal:
-               <CodeBlock
-                text="aws s3 cp s3://janelia-cosem-datasets/DATASET_NAME/DATASET_NAME.n5 . --recursive --no-sign-request"
-                language=""
-                showLineNumbers={false}
-                theme={dracula}
-              />  
-              where &quot;DATASET_NAME&quot; is the name of the raw image dataset you intend to download. 
-              Detailed instructions for using this tool can be found in the{" "}
+              advised that this may take a long time. Detailed instructions for
+              using this tool can be found in the{" "}
               <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">
                 user guide
               </a>.
             </Typography>
-            <Typography>If you do not have an AWS account, you may see an error relating to missing credentials when you attempt to copy data. This error should resolve if you add &quot;--no-sign-request&quot; to the AWS CLI command.</Typography>
+            <Typography>If you do not have an AWS account, you may see an error relating to missing credentials when you attempt to copy data. This error should resolve if you add &quot;--no-sign-requests&quot; to the AWS CLI command.</Typography>
             <p className="anchor" id="globus" />
             <Typography variant="h5" gutterBottom>
               How do I access data via globus?
