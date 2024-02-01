@@ -26,6 +26,6 @@ provider:
     name: janelia-serverless-deployments
     blockPublicAccess: true
   tags:
-    PROJECT: cosem
+    PROJECT: cellmap
     DEVELOPER: ${env:USER}
     VERSION: ${file(./package.json):version}

@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 import { NewsPostProps } from "../api/posts";
 import { postSlug } from "../utils/newsposts";
 
-import banner from "./cosem_banner.jpg";
+import banner from "./banner.jpg";
 
 export default function NewsPostSummary({
   title,

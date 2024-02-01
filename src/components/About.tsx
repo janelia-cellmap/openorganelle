@@ -53,8 +53,8 @@ export default function About() {
             This provides a unique opportunity to expand research at the
             intersection of these fields and drive forward our tools to study
             subcellular structures; this effort is being led by the{" "}
-            <a href="https://www.janelia.org/project-team/cosem">
-              COSEM Project Team
+            <a href="https://www.janelia.org/project-team/cellmap">
+              Cellmap Project Team
             </a>
             .
           </p>
@@ -64,7 +64,7 @@ export default function About() {
             the enhanced FIB-SEM platform (Hess Lab and FIB-SEM Technology) both
             demands and enables the development of universal machine learning
             classifiers for the automatic detection of sub-cellular structures
-            in these data. The COSEM project team, in collaboration with the
+            in these data. The Cellmap project team, in collaboration with the
             Saalfeld and Funke labs with biological guidance from the
             Lippincott-Schwartz lab, has begun tackling the segmentation problem
             as well as the subsequent large-scale quantitative analysis of these
@@ -105,7 +105,7 @@ export default function About() {
             Data IDs (i.e. jrc_hela-2).
           </p>
           <p style={{ textIndent: "3ch" }}>
-            We welcome you to visit our GitHub repository, janelia-cosem, to
+            We welcome you to visit our <a href="https://www.github.com/janelia-cellmap"> Github repository </a> to
             access all of our code and software. More information about the
             software used and written for this project can be found on the Code
             page.
@@ -140,9 +140,9 @@ export default function About() {
             from Pietro De Camilli’s laboratory at Yale for advice.
           </p>
           <p style={{ textIndent: "3ch" }}>
-            This work is part of the COSEM Project Team at Janelia Research
+            This work is part of the Cellmap Project Team at Janelia Research
             Campus, Howard Hughes Medical Institute, Ashburn, VA. During this
-            effort, the COSEM Project Team consisted of: Riasat Ali, Rebecca
+            effort, the Cellmap Project Team consisted of: Riasat Ali, Rebecca
             Arruda, Rohit Bahtra, Davis Bennett, Destiny Nguyen, Woohyun Park,
             and Alyson Petruncio, led by Aubrey Weigel, with Steering Committee
             of Jan Funke, Harald Hess, Wyatt Korff, Jennifer

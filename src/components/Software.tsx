@@ -153,13 +153,6 @@ export default function Software() {
           )
         </li>
         <li>
-          n5ng (
-          <a href="https://github.com/janelia-cosem/n5ng">
-            https://github.com/janelia-cosem/n5ng
-          </a>
-          ){" "}
-        </li>
-        <li>
           waterz (
           <a href="https://github.com/funkey/waterz">
             https://github.com/funkey/waterz

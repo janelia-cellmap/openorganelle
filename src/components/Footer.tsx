@@ -5,10 +5,10 @@ import Grid from "@material-ui/core/Grid";
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import TwitterIcon from '@material-ui/icons/Twitter';
 
-import cosemLogo from "../COSEM_logo_invert_transparent.png";
+import cellmapLogo from "./cellmapLogoDarkText.png";
 import fibsemLogo from "../fibsem_logo.png";
 
-const cosemURL = "https://www.janelia.org/project-team/cosem";
+const cellmapURL = "https://www.janelia.org/project-team/cellmap";
 const hessURL = "https://www.janelia.org/lab/hess-lab";
 const fibsemURL = "https://www.janelia.org/project-team/fib-sem-technology";
 
@@ -19,9 +19,13 @@ const useStyles = makeStyles(theme => ({
     marginLeft: "1em",
     display: "inline-block"
   },
-  cosemLogo: {
-    maxHeight: "70px",
-    marginRight: theme.spacing(2)
+  cellmapLogo: {
+    maxHeight: "50px",
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(4)
+  },
+  fibsemLogo: {
+    maxHeight: "90px",
   },
   footer: {
     padding: "1em 1em 0.5em 1em",
@@ -33,8 +37,7 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.primary.contrastText,
     fontWeight: "bold",
     fontSize: "1.3em",
-    marginLeft: "1em",
-    textDecoration: "none"
+    textDecoration: "none",
   },
   linkContainer: {
     display: "flex",
@@ -68,19 +71,12 @@ export default function Footer() {
         <Grid item md={6} className={classes.footerMiddle}>
           <div className={classes.linkContainer}>
             <a
-              href={cosemURL}
+              href={cellmapURL}
               className={classes.link}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <img src={cosemLogo} alt="COSEM" className={classes.cosemLogo} />
-            </a>
-            <a href={fibsemURL} target="_blank" rel="noopener noreferrer">
-              <img
-                src={fibsemLogo}
-                alt="FIB-SEM Technology"
-                className={classes.cosemLogo}
-              />
+              <img src={cellmapLogo} alt="Cellmap" className={classes.cellmapLogo} />
             </a>
             <a
               href={hessURL}
@@ -89,6 +85,13 @@ export default function Footer() {
               rel="noopener noreferrer"
             >
               Hess Lab
+            </a>
+            <a href={fibsemURL} target="_blank" rel="noopener noreferrer">
+              <img
+                src={fibsemLogo}
+                alt="FIB-SEM Technology"
+                className={classes.fibsemLogo}
+              />
             </a>
           </div>
           <p>

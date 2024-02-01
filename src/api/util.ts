@@ -90,6 +90,6 @@ export const getStage = () => {
     return maybeDev
   }
   else {
-    throw new Error('Failed to parse environment variable REACT_APP_DEV_MODE. It should be one of ["dev", "prod"]')
+    throw new Error('Failed to parse environment variable REACT_APP_STAGE. It should be one of ["dev", "prod"]')
   }
 }

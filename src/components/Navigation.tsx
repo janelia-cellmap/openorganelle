@@ -9,7 +9,7 @@ import { Grid } from "@material-ui/core";
 import { AppContext } from "../context/AppContext";
 import janeliaLogo from "../janelia_logo.png";
 import { WebGL2CompatibilityWarning } from "./WebGL2Compatibility";
-import banner from "./cosem_banner.jpg";
+import banner from "./banner.jpg";
 import { getStage } from "../api/util";
 
 const useStyles: any = makeStyles((theme: Theme) =>
@@ -25,7 +25,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
     spacer: {
       flexGrow: 1
     },
-    cosemLogo: {
+    cellmapLogo: {
       maxHeight: "70px",
       marginRight: theme.spacing(2)
     },
