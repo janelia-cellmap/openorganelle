@@ -97,7 +97,7 @@
     "serverless-finch": "^4.0.0",
     "serverless-plugin-package-json": "^0.1.0",
     "source-map-loader": "^0.2.4",
-    "supabase": "^1.11.7",
+    "supabase": "^1.136.3",
     "ts-loader": "^6.2.2",
     "typescript": "4.9"
   }
