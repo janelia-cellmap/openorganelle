@@ -25,11 +25,11 @@ export type Taxon = {
 }
 
 export type FibsemParams = {
-  duration_days: number
-  bias_V: number
-  scan_hz: number
-  current_nA: number
-  landing_energy_eV: number
+  duration_days: number | null
+  bias_V: number | null
+  scan_hz: number | null
+  current_nA: number | null
+  landing_energy_eV: number | null
 }
 
 export type Sample = Omit<Tables["sample"]["Row"], "id">
