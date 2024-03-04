@@ -3,7 +3,7 @@ export type Json =
   | number
   | boolean
   | null
-  | { [key: string]: Json }
+  | { [key: string]: Json | undefined }
   | Json[]
 
 export interface Database {
@@ -11,320 +11,366 @@ export interface Database {
     Tables: {
       dataset: {
         Row: {
+          acquisition_id: number
+          created_at: string
+          description: string
           id: number
           name: string
-          description: string
-          thumbnail_url: string
-          created_at: string
-          acquisition_id: number
           sample_id: number | null
           stage: Database["public"]["Enums"]["stage"]
+          thumbnail_url: string
         }
         Insert: {
+          acquisition_id: number
+          created_at?: string
+          description: string
           id?: number
           name: string
-          description: string
-          thumbnail_url: string
-          created_at?: string
-          acquisition_id: number
           sample_id?: number | null
           stage?: Database["public"]["Enums"]["stage"]
+          thumbnail_url: string
         }
         Update: {
+          acquisition_id?: number
+          created_at?: string
+          description?: string
           id?: number
           name?: string
-          description?: string
-          thumbnail_url?: string
-          created_at?: string
-          acquisition_id?: number
           sample_id?: number | null
           stage?: Database["public"]["Enums"]["stage"]
+          thumbnail_url?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "dataset_acquisition_id_fkey"
+            columns: ["acquisition_id"]
+            isOneToOne: false
+            referencedRelation: "image_acquisition"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dataset_sample_id_fkey"
+            columns: ["sample_id"]
+            isOneToOne: false
+            referencedRelation: "sample"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       fibsem_acquisition: {
         Row: {
+          fib_milling_thickness_nm: number | null
           id: number
           instrument: string | null
+          notes: string | null
+          sem_bias_v: number | null
+          sem_current_na: number | null
+          sem_dwell_time_ms: number | null
+          sem_primary_energy_ev: number | null
+          sem_sampling_rate_mhz: number | null
+          sem_x_step_nm: number | null
+          sem_y_step_nm: number | null
           start_date: string | null
           stop_date: string | null
-          fib_milling_thickness_nm: number | null
-          sem_y_step_nm: number | null
-          sem_x_step_nm: number | null
-          sem_sampling_rate_mhz: number | null
-          sem_primary_energy_ev: number | null
-          sem_dwell_time_ms: number | null
-          sem_current_na: number | null
-          sem_bias_v: number | null
-          notes: string | null
         }
         Insert: {
+          fib_milling_thickness_nm?: number | null
           id?: number
           instrument?: string | null
+          notes?: string | null
+          sem_bias_v?: number | null
+          sem_current_na?: number | null
+          sem_dwell_time_ms?: number | null
+          sem_primary_energy_ev?: number | null
+          sem_sampling_rate_mhz?: number | null
+          sem_x_step_nm?: number | null
+          sem_y_step_nm?: number | null
           start_date?: string | null
           stop_date?: string | null
-          fib_milling_thickness_nm?: number | null
-          sem_y_step_nm?: number | null
-          sem_x_step_nm?: number | null
-          sem_sampling_rate_mhz?: number | null
-          sem_primary_energy_ev?: number | null
-          sem_dwell_time_ms?: number | null
-          sem_current_na?: number | null
-          sem_bias_v?: number | null
-          notes?: string | null
         }
         Update: {
+          fib_milling_thickness_nm?: number | null
           id?: number
           instrument?: string | null
+          notes?: string | null
+          sem_bias_v?: number | null
+          sem_current_na?: number | null
+          sem_dwell_time_ms?: number | null
+          sem_primary_energy_ev?: number | null
+          sem_sampling_rate_mhz?: number | null
+          sem_x_step_nm?: number | null
+          sem_y_step_nm?: number | null
           start_date?: string | null
           stop_date?: string | null
-          fib_milling_thickness_nm?: number | null
-          sem_y_step_nm?: number | null
-          sem_x_step_nm?: number | null
-          sem_sampling_rate_mhz?: number | null
-          sem_primary_energy_ev?: number | null
-          sem_dwell_time_ms?: number | null
-          sem_current_na?: number | null
-          sem_bias_v?: number | null
-          notes?: string | null
         }
+        Relationships: []
       }
       image: {
         Row: {
-          id: number
-          name: string
-          description: string
-          url: string
-          format: Database["public"]["Enums"]["array_container_format"]
-          display_settings: Json
-          created_at: string
-          sample_type: Database["public"]["Enums"]["sample_type"]
           content_type: Database["public"]["Enums"]["content_type"]
+          created_at: string
           dataset_name: string
-          institution: string
-          source: Json | null
+          description: string
+          display_settings: Json
+          format: Database["public"]["Enums"]["array_container_format"]
           grid_dims: string[]
+          grid_index_order: string
           grid_scale: number[]
           grid_translation: number[]
           grid_units: string[]
-          grid_index_order: string
+          id: number
+          institution: string
+          name: string
+          sample_type: Database["public"]["Enums"]["sample_type"]
+          source: Json | null
           stage: Database["public"]["Enums"]["stage"]
+          url: string
         }
         Insert: {
-          id?: number
-          name: string
-          description: string
-          url: string
-          format: Database["public"]["Enums"]["array_container_format"]
-          display_settings: Json
-          created_at?: string
-          sample_type: Database["public"]["Enums"]["sample_type"]
           content_type: Database["public"]["Enums"]["content_type"]
+          created_at?: string
           dataset_name: string
-          institution: string
-          source?: Json | null
+          description: string
+          display_settings: Json
+          format: Database["public"]["Enums"]["array_container_format"]
           grid_dims: string[]
+          grid_index_order?: string
           grid_scale: number[]
           grid_translation: number[]
           grid_units: string[]
-          grid_index_order?: string
+          id?: number
+          institution: string
+          name: string
+          sample_type: Database["public"]["Enums"]["sample_type"]
+          source?: Json | null
           stage?: Database["public"]["Enums"]["stage"]
+          url: string
         }
         Update: {
-          id?: number
-          name?: string
-          description?: string
-          url?: string
-          format?: Database["public"]["Enums"]["array_container_format"]
-          display_settings?: Json
-          created_at?: string
-          sample_type?: Database["public"]["Enums"]["sample_type"]
           content_type?: Database["public"]["Enums"]["content_type"]
+          created_at?: string
           dataset_name?: string
-          institution?: string
-          source?: Json | null
+          description?: string
+          display_settings?: Json
+          format?: Database["public"]["Enums"]["array_container_format"]
           grid_dims?: string[]
+          grid_index_order?: string
           grid_scale?: number[]
           grid_translation?: number[]
           grid_units?: string[]
-          grid_index_order?: string
+          id?: number
+          institution?: string
+          name?: string
+          sample_type?: Database["public"]["Enums"]["sample_type"]
+          source?: Json | null
           stage?: Database["public"]["Enums"]["stage"]
+          url?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "image_dataset_name_fkey"
+            columns: ["dataset_name"]
+            isOneToOne: false
+            referencedRelation: "dataset"
+            referencedColumns: ["name"]
+          }
+        ]
       }
       image_acquisition: {
         Row: {
-          id: number
-          name: string
-          institution: string
-          start_date: string | null
           grid_axes: string[]
-          grid_spacing: number[]
-          grid_spacing_unit: string
           grid_dimensions: number[]
           grid_dimensions_unit: string
+          grid_spacing: number[]
+          grid_spacing_unit: string
+          id: number
+          institution: string
+          name: string
+          start_date: string | null
         }
         Insert: {
-          id?: number
-          name: string
-          institution: string
-          start_date?: string | null
           grid_axes: string[]
-          grid_spacing: number[]
-          grid_spacing_unit: string
           grid_dimensions: number[]
           grid_dimensions_unit: string
+          grid_spacing: number[]
+          grid_spacing_unit: string
+          id?: number
+          institution: string
+          name: string
+          start_date?: string | null
         }
         Update: {
-          id?: number
-          name?: string
-          institution?: string
-          start_date?: string | null
           grid_axes?: string[]
-          grid_spacing?: number[]
-          grid_spacing_unit?: string
           grid_dimensions?: number[]
           grid_dimensions_unit?: string
+          grid_spacing?: number[]
+          grid_spacing_unit?: string
+          id?: number
+          institution?: string
+          name?: string
+          start_date?: string | null
         }
+        Relationships: []
       }
       imagery: {
         Row: {
-          id: number
-          name: string
-          description: string
-          url: string
-          format: Database["public"]["Enums"]["imagery_format"]
-          display_settings: Json
-          created_at: string
-          sample_type: Database["public"]["Enums"]["sample_type"]
           content_type: Database["public"]["Enums"]["content_type"]
+          coordinate_space: string
+          created_at: string
           dataset_name: string
-          institution: string
-          source: Json
+          description: string
+          display_settings: Json
+          format: Database["public"]["Enums"]["imagery_format"]
           grid_dims: string[]
+          grid_index_order: string
           grid_scale: number[]
           grid_translation: number[]
           grid_units: string[]
-          grid_index_order: string
-          coordinate_space: string
+          id: number
+          institution: string
+          name: string
+          sample_type: Database["public"]["Enums"]["sample_type"]
+          source: Json
           stage: Database["public"]["Enums"]["stage"]
+          url: string
         }
         Insert: {
-          id?: number
-          name: string
-          description: string
-          url: string
-          format: Database["public"]["Enums"]["imagery_format"]
-          display_settings?: Json
-          created_at?: string
-          sample_type: Database["public"]["Enums"]["sample_type"]
           content_type: Database["public"]["Enums"]["content_type"]
+          coordinate_space?: string
+          created_at?: string
           dataset_name: string
-          institution: string
-          source?: Json
+          description: string
+          display_settings?: Json
+          format: Database["public"]["Enums"]["imagery_format"]
           grid_dims: string[]
+          grid_index_order?: string
           grid_scale: number[]
           grid_translation: number[]
           grid_units: string[]
-          grid_index_order?: string
-          coordinate_space?: string
+          id?: number
+          institution: string
+          name: string
+          sample_type: Database["public"]["Enums"]["sample_type"]
+          source?: Json
           stage?: Database["public"]["Enums"]["stage"]
+          url: string
         }
         Update: {
-          id?: number
-          name?: string
-          description?: string
-          url?: string
-          format?: Database["public"]["Enums"]["imagery_format"]
-          display_settings?: Json
-          created_at?: string
-          sample_type?: Database["public"]["Enums"]["sample_type"]
           content_type?: Database["public"]["Enums"]["content_type"]
+          coordinate_space?: string
+          created_at?: string
           dataset_name?: string
-          institution?: string
-          source?: Json
+          description?: string
+          display_settings?: Json
+          format?: Database["public"]["Enums"]["imagery_format"]
           grid_dims?: string[]
+          grid_index_order?: string
           grid_scale?: number[]
           grid_translation?: number[]
           grid_units?: string[]
-          grid_index_order?: string
-          coordinate_space?: string
+          id?: number
+          institution?: string
+          name?: string
+          sample_type?: Database["public"]["Enums"]["sample_type"]
+          source?: Json
           stage?: Database["public"]["Enums"]["stage"]
+          url?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "imagery_dataset_name_fkey"
+            columns: ["dataset_name"]
+            isOneToOne: false
+            referencedRelation: "dataset"
+            referencedColumns: ["name"]
+          }
+        ]
       }
       mesh: {
         Row: {
-          id: number
-          name: string
-          description: string
           created_at: string
-          url: string
-          image_id: number
+          description: string
           format: Database["public"]["Enums"]["mesh_format"]
-          ids: number[]
-          source: Json | null
           grid_dims: string[]
+          grid_index_order: string
           grid_scale: number[]
           grid_translation: number[]
           grid_units: string[]
-          grid_index_order: string
+          id: number
+          ids: number[]
+          image_id: number
+          name: string
+          source: Json | null
           stage: Database["public"]["Enums"]["stage"]
+          url: string
         }
         Insert: {
-          id?: number
-          name: string
-          description: string
           created_at?: string
-          url: string
-          image_id: number
+          description: string
           format: Database["public"]["Enums"]["mesh_format"]
-          ids: number[]
-          source?: Json | null
           grid_dims: string[]
+          grid_index_order?: string
           grid_scale: number[]
           grid_translation: number[]
           grid_units: string[]
-          grid_index_order?: string
+          id?: number
+          ids: number[]
+          image_id: number
+          name: string
+          source?: Json | null
           stage?: Database["public"]["Enums"]["stage"]
+          url: string
         }
         Update: {
-          id?: number
-          name?: string
-          description?: string
           created_at?: string
-          url?: string
-          image_id?: number
+          description?: string
           format?: Database["public"]["Enums"]["mesh_format"]
-          ids?: number[]
-          source?: Json | null
           grid_dims?: string[]
+          grid_index_order?: string
           grid_scale?: number[]
           grid_translation?: number[]
           grid_units?: string[]
-          grid_index_order?: string
+          id?: number
+          ids?: number[]
+          image_id?: number
+          name?: string
+          source?: Json | null
           stage?: Database["public"]["Enums"]["stage"]
+          url?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "mesh_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "image"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       publication: {
         Row: {
           id: number
           name: string
-          url: string
-          type: Database["public"]["Enums"]["publication_type"]
           stage: Database["public"]["Enums"]["stage"]
+          type: Database["public"]["Enums"]["publication_type"]
+          url: string
         }
         Insert: {
           id?: number
           name: string
-          url: string
-          type: Database["public"]["Enums"]["publication_type"]
           stage?: Database["public"]["Enums"]["stage"]
+          type: Database["public"]["Enums"]["publication_type"]
+          url: string
         }
         Update: {
           id?: number
           name?: string
-          url?: string
-          type?: Database["public"]["Enums"]["publication_type"]
           stage?: Database["public"]["Enums"]["stage"]
+          type?: Database["public"]["Enums"]["publication_type"]
+          url?: string
         }
+        Relationships: []
       }
       publication_to_dataset: {
         Row: {
@@ -339,102 +385,129 @@ export interface Database {
           dataset_name?: string
           publication_id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "publication_to_dataset_dataset_name_fkey"
+            columns: ["dataset_name"]
+            isOneToOne: false
+            referencedRelation: "dataset"
+            referencedColumns: ["name"]
+          },
+          {
+            foreignKeyName: "publication_to_dataset_publication_id_fkey"
+            columns: ["publication_id"]
+            isOneToOne: false
+            referencedRelation: "publication"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       sample: {
         Row: {
+          contributions: string
+          description: string
           id: number
           name: string
-          description: string
-          protocol: string
-          contributions: string
           organism: string[] | null
-          type: string[] | null
+          protocol: string
           subtype: string[] | null
           treatment: string[] | null
+          type: string[] | null
         }
         Insert: {
+          contributions: string
+          description: string
           id?: number
           name: string
-          description: string
-          protocol: string
-          contributions: string
           organism?: string[] | null
-          type?: string[] | null
+          protocol: string
           subtype?: string[] | null
           treatment?: string[] | null
+          type?: string[] | null
         }
         Update: {
+          contributions?: string
+          description?: string
           id?: number
           name?: string
-          description?: string
-          protocol?: string
-          contributions?: string
           organism?: string[] | null
-          type?: string[] | null
+          protocol?: string
           subtype?: string[] | null
           treatment?: string[] | null
+          type?: string[] | null
         }
+        Relationships: []
       }
       taxon: {
         Row: {
-          id: number
           created_at: string | null
+          id: number
           name: string
           short_name: string
           stage: Database["public"]["Enums"]["stage"]
         }
         Insert: {
-          id?: number
           created_at?: string | null
+          id?: number
           name: string
           short_name: string
           stage?: Database["public"]["Enums"]["stage"]
         }
         Update: {
-          id?: number
           created_at?: string | null
+          id?: number
           name?: string
           short_name?: string
           stage?: Database["public"]["Enums"]["stage"]
         }
+        Relationships: []
       }
       view: {
         Row: {
+          created_at: string
+          dataset_name: string
+          description: string
           id: number
           name: string
-          description: string
-          created_at: string
+          orientation: number[] | null
           position: number[] | null
           scale: number | null
-          orientation: number[] | null
-          dataset_name: string
-          thumbnail_url: string | null
           stage: Database["public"]["Enums"]["stage"]
+          thumbnail_url: string | null
         }
         Insert: {
+          created_at?: string
+          dataset_name: string
+          description: string
           id?: number
           name: string
-          description: string
-          created_at?: string
+          orientation?: number[] | null
           position?: number[] | null
           scale?: number | null
-          orientation?: number[] | null
-          dataset_name: string
-          thumbnail_url?: string | null
           stage?: Database["public"]["Enums"]["stage"]
+          thumbnail_url?: string | null
         }
         Update: {
+          created_at?: string
+          dataset_name?: string
+          description?: string
           id?: number
           name?: string
-          description?: string
-          created_at?: string
+          orientation?: number[] | null
           position?: number[] | null
           scale?: number | null
-          orientation?: number[] | null
-          dataset_name?: string
-          thumbnail_url?: string | null
           stage?: Database["public"]["Enums"]["stage"]
+          thumbnail_url?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "view_dataset_name_fkey"
+            columns: ["dataset_name"]
+            isOneToOne: false
+            referencedRelation: "dataset"
+            referencedColumns: ["name"]
+          }
+        ]
       }
       view_to_image: {
         Row: {
@@ -449,37 +522,85 @@ export interface Database {
           image_id?: number
           view_id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "view_to_image_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "image"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "view_to_image_view_id_fkey"
+            columns: ["view_id"]
+            isOneToOne: false
+            referencedRelation: "view"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       view_to_imagery: {
         Row: {
+          display_settings: Json
           imagery_id: number
           view_id: number
-          display_settings: Json
         }
         Insert: {
+          display_settings?: Json
           imagery_id: number
           view_id: number
-          display_settings?: Json
         }
         Update: {
+          display_settings?: Json
           imagery_id?: number
           view_id?: number
-          display_settings?: Json
         }
+        Relationships: [
+          {
+            foreignKeyName: "view_to_imagery_image_id_fkey"
+            columns: ["imagery_id"]
+            isOneToOne: false
+            referencedRelation: "imagery"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "view_to_imagery_view_id_fkey"
+            columns: ["view_id"]
+            isOneToOne: false
+            referencedRelation: "view"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       view_to_taxon: {
         Row: {
-          view_id: number
           taxon_id: number
+          view_id: number
         }
         Insert: {
-          view_id: number
           taxon_id: number
+          view_id: number
         }
         Update: {
-          view_id?: number
           taxon_id?: number
+          view_id?: number
         }
+        Relationships: [
+          {
+            foreignKeyName: "view_to_taxon_taxon_id_fkey"
+            columns: ["taxon_id"]
+            isOneToOne: false
+            referencedRelation: "taxon"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "view_to_taxon_view_id_fkey"
+            columns: ["view_id"]
+            isOneToOne: false
+            referencedRelation: "view"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
@@ -509,6 +630,91 @@ export interface Database {
       sample_type: "scalar" | "label" | "geometry"
       stage: "dev" | "prod"
     }
+    CompositeTypes: {
+      display: {
+        min: number
+        max: number
+      }
+    }
   }
 }
 
+export type Tables<
+  PublicTableNameOrOptions extends
+    | keyof (Database["public"]["Tables"] & Database["public"]["Views"])
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : PublicTableNameOrOptions extends keyof (Database["public"]["Tables"] &
+      Database["public"]["Views"])
+  ? (Database["public"]["Tables"] &
+      Database["public"]["Views"])[PublicTableNameOrOptions] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : never
+
+export type TablesInsert<
+  PublicTableNameOrOptions extends
+    | keyof Database["public"]["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
+  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : never
+
+export type TablesUpdate<
+  PublicTableNameOrOptions extends
+    | keyof Database["public"]["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
+  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : never
+
+export type Enums<
+  PublicEnumNameOrOptions extends
+    | keyof Database["public"]["Enums"]
+    | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof Database["public"]["Enums"]
+  ? Database["public"]["Enums"][PublicEnumNameOrOptions]
+  : never
