@@ -107,8 +107,8 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const bucket = "janelia-cosem-datasets";
   const prefix = dataset.name;
   const bucketBrowseLink = makeQuiltURL(bucket, prefix);
-  const s3URL = `s3://${bucket}/${prefix}/${dataset.name}.n5`;
-  
+  const s3URL = `s3://${bucket}/${prefix}/`;
+ 
 
   // initialize the checkboxes with the first view
   const imageNames = [...dataset.images.map(v => v.name)]
