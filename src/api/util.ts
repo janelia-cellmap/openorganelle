@@ -8,9 +8,7 @@ export function makeQuiltURL(bucket: string, prefix: string): string {
 
 // Check if the browser has webgl2 enabled. This is required for using neuroglancer.
 export const checkWebGL2 = (): boolean => {
-    const gl = document.createElement('canvas').getContext('webgl2');
-    if (!gl) {return false} 
-    else {return true}
+    return !(document.createElement('canvas').getContext('webgl2') === null);
   }
 
   export function ensureNotArray<T>(obj: null | T | T[]) {
@@ -59,17 +57,21 @@ export function camelize(obj: Json): any {
   {
   const entries = Object.entries(obj);
   const mappedEntries = entries.map(
-      ([k, v]) => [toCamel(k), camelize(v)])
+      ([k, v]) => {
+        if (v !== undefined){
+          return [toCamel(k), camelize(v)]
+        }
+      else {
+        throw new Error('values may not be undefined')
+      }})
   return Object.fromEntries(mappedEntries)
   }
 }
 
-export function stringToDate(obj: Json): any {
-  if (obj === null) {return obj}
-  else if (typeof obj === 'number') {return obj} 
-  else if (typeof obj === 'string'){return obj}
-  else if (typeof obj === 'boolean') {return obj}
-  else if (Array.isArray(obj)) {return obj.map(stringToDate)}
+export function stringToDate(obj: Json | undefined): any {
+  if ((obj === null) || (obj === undefined)) {return null}
+  if (['number', 'string', 'boolean'].includes(typeof obj)) {return obj} 
+  if (Array.isArray(obj)) {return obj.map(stringToDate)}
   else
   {
   const entries = Object.entries(obj);
