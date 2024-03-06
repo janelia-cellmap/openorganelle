@@ -108,10 +108,25 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const prefix = dataset.name;
   const bucketBrowseLink = makeQuiltURL(bucket, prefix);
   const s3URL = `s3://${bucket}/${prefix}/`;
- 
+  
+  // this is a hack / symptom of abstraction leakage
+  // we display just 1 fiji URL, but potentially *multiple* contiainer roots (in case we have n5 and zarr data).
+  // until we add multiple fiji URLs (ideally, one per image), we have to pick either n5 or zarr as the suffix for the 
+  // single fiji url; the following code performs a majority vote to pick.
+
+  let num_zarr = 0
+  let num_n5 = 0
+
+  for (const img of dataset.images){
+    if (img.format == 'zarr') {num_zarr += 1}
+    else if (img.format == 'n5') {num_n5 += 1}
+  }
+
+  dataset.images[0].format
+  const containerRoot = `${s3URL}${(num_n5 > num_zarr) ? dataset.name + '.n5' : dataset.name + '.zarr'}`
 
   // initialize the checkboxes with the first view
-  const imageNames = [...dataset.images.map(v => v.name)]
+  const imageNames = dataset.images.map(v => v.name)
   const inView = imageNames.filter(name => views[viewChecked].images.map(v => v.name).includes(name))
   if (imageChecked.size == 0) {
     inView.forEach(name => imageChecked.add(name))
@@ -172,7 +187,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
         <Paper className={classes.paper} variant="outlined">
           <ClipboardLink
             bucketBrowseLink={String(bucketBrowseLink)}
-            s3URL={String(s3URL)}
+            s3URL={containerRoot}
           />
         </Paper>
       </Grid>
