@@ -88,8 +88,8 @@ export const getStage = () => {
   if (maybeDev === 'dev') {
     return maybeDev
   }
-  else if (maybeDev === 'prod') {
-    return maybeDev
+  else if (maybeDev === 'prod' || maybeDev === undefined) {
+    return 'prod'
   }
   else {
     throw new Error('Failed to parse environment variable REACT_APP_STAGE. It should be one of ["dev", "prod"]')

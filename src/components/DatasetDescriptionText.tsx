@@ -140,7 +140,7 @@ export function DatasetAcquisition({
           <p>
             <strong>
               Imaging start date
-            </strong>:{acq.startDate ? new Date(acq.startDate).toDateString() : ' Unknown'}
+            </strong>: {(acq.startDate ? new Date(acq.startDate).toDateString() : 'Unknown')}
           </p>
           <p>
             <strong>Final voxel size ({acq.gridSpacingUnit})</strong>
