@@ -122,8 +122,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     else if (img.format == 'n5') {num_n5 += 1}
   }
 
-  dataset.images[0].format
-  const containerRoot = `${s3URL}${(num_n5 > num_zarr) ? dataset.name + '.n5' : dataset.name + '.zarr'}`
+  const containerRoot = `${s3URL}${(num_n5 > num_zarr) ? prefix + '.n5' : prefix + '.zarr'}`
 
   // initialize the checkboxes with the first view
   const imageNames = dataset.images.map(v => v.name)
