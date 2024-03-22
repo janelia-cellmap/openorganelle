@@ -11,7 +11,8 @@ import {View} from "../types/database";
 import { makeQuiltURL } from "../api/util";
 import {
   DatasetAcquisition,
-  DatasetDescriptionSummary
+  DatasetDescriptionSummary,
+  DatasetAcknowledgments
 } from "./DatasetDescriptionText";
 import DatasetViewList from "./DatasetViewList";
 import LayerCheckboxList from "./LayerCheckboxList";
@@ -233,8 +234,10 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
             storageLocation={s3URL}
             dataset={dataset}
           />
+
         </Paper>
       </Grid>
+      <DatasetAcknowledgments dataset={dataset} />
     </Grid>
   );
 }
