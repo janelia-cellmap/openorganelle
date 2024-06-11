@@ -8,6 +8,8 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import Button from "@material-ui/core/Button";
 import FilterListIcon from "@material-ui/icons/FilterList";
+import Input from "@material-ui/core/Input";
+
 
 import { AppContext } from "../context/AppContext";
 import { fetchDatasets } from "../api/datasets";
@@ -27,7 +29,7 @@ export default function DatasetLayout({
   const query = useQueryString();
   const history = useHistory();
   const page = parseInt(query.get("page") || "1");
-  const { appState, setPermanent } = useContext(AppContext);
+  const { appState, setPermanent, setSearched} = useContext(AppContext);
 
   const { datasetGrid: compact } = appState;
   const datasetsPerPage = compact ? 12 : 10;
@@ -92,14 +94,27 @@ export default function DatasetLayout({
     return true;
   });
 
-  const totalPages = Math.ceil(datasetsFiltered.length / datasetsPerPage);
   // sort by number of volumes; this will break when the metadata changes to putting volumes in an array
 
-  const datasetsSorted = datasetsFiltered.sort(
+  const datasetsSearched = [...datasetsFiltered].filter(
+    ([key, dataset_info]) => {
+      return (
+        dataset_info
+        .description
+        .toLowerCase()
+        .includes(appState.searchFilter!.toLowerCase()) ||
+        key
+        .toLowerCase()
+        .includes(appState.searchFilter!.toLowerCase())
+      );
+    }
+  );
+
+  const datasetsSorted = datasetsSearched.sort(
     sortFunctions[appState.sortBy].func
   );
 
-  //const datasetsSearched = datasetsSorted.filter();
+  const totalPages = datasetsSorted.length==0 ? 1 : Math.ceil(datasetsSorted.length / datasetsPerPage);
 
   const displayedDatasets = datasetsSorted
     .slice(rangeStart, rangeEnd)
@@ -120,6 +135,10 @@ export default function DatasetLayout({
 
   const handleCompactChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPermanent({ datasetGrid: event.target.checked });
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<{value: unknown}>) => {
+    setSearched({searchFilter: event.target.value as string});
   };
 
   if (datasets.size < 1) {
@@ -162,12 +181,17 @@ export default function DatasetLayout({
     );
   }
 
+  const datasetCount = datasetsSorted.length >= 1 ? <Typography variant="h4">
+                                        Datasets {rangeStart + 1} to{" "}
+                                      {Math.min(rangeEnd, datasetsSorted.length)} of {datasets.size}
+                                      </Typography> :
+                                      <Typography variant="h4">
+                                        No datasets found
+                                      </Typography>
+
   return (
     <div>
-      <Typography variant="h5">
-        Datasets {rangeStart + 1} to{" "}
-        {Math.min(rangeEnd, datasetsFiltered.length)} of {datasets.size}
-      </Typography>
+      {datasetCount}
       <Grid container spacing={1}>
         <Grid item sm={8} xs={12}>
           {datasets.size > datasetsPerPage && (
@@ -177,6 +201,14 @@ export default function DatasetLayout({
               onChange={(e, value) => setCurrentPage(value)}
             />
           )}
+        </Grid>
+        <Grid item sm={8} xs={12}>
+          <Input
+            id="search-datasets"
+            placeholder="Search Dataset"
+            value={appState.searchFilter}
+            onChange={handleSearchChange} 
+          />
         </Grid>
         <Grid item sm={2} xs={12}>
           <Button
