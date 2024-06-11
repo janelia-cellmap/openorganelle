@@ -99,6 +99,8 @@ export default function DatasetLayout({
     sortFunctions[appState.sortBy].func
   );
 
+  //const datasetsSearched = datasetsSorted.filter();
+
   const displayedDatasets = datasetsSorted
     .slice(rangeStart, rangeEnd)
     .map(([name, dataset], i) => {

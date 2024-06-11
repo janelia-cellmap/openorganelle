@@ -11,6 +11,7 @@ export interface ContextProps {
   showFilters: boolean,
   sortBy: string,
   datasetFilter: Array<DatasetTag> | undefined,
+  searchFilter: string | null,
   [key: string]: any
 }
 
@@ -27,7 +28,8 @@ const contextDefault: ContextProps = {
   datasetGrid: true,
   datasetFilter: [],
   showFilters: false,
-  sortBy: 'size'
+  sortBy: 'size',
+  searchFilter: ""
 }
 
 const allowedPermanent = ['datasetGrid'];

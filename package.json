@@ -26,6 +26,7 @@
     "@types/url-parse": "^1.4.3",
     "@types/valid-url": "^1.0.3",
     "date-fns": "^2.29.3",
+    "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
     "grey-matter": "^0.0.0",
     "node-fetch": "^2.6.1",
@@ -51,6 +52,7 @@
     "remark-gfm": "^3.0.1",
     "remark-html": "^15.0.1",
     "serverless-s3-sync": "^3.2.0",
+    "sls": "^0.1.0",
     "valid-url": "^1.0.9",
     "zod": "^3.21.4"
   },

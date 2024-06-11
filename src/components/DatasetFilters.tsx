@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 
 import Grid from "@material-ui/core/Grid";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -18,8 +18,12 @@ import { fetchDatasets } from "../api/datasets";
 import { useQuery } from "react-query";
 import { DatasetTag, OSet } from "../types/tags";
 
+import Input from "@material-ui/core/Input";
+
 export default function DatasetFilters() {
   const { appState, setPermanent, setAppState } = useContext(AppContext);
+  const [searchField, setSearchField] = useState("");
+ 
 
   const { isLoading, data, error } = useQuery('datasets', async () => fetchDatasets());
 
@@ -39,6 +43,10 @@ export default function DatasetFilters() {
 
   const handleFilterChange = (event: React.ChangeEvent<{}>, value: DatasetTag[] | undefined) => {
     setAppState({...appState, datasetFilter: value});
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<{value: unknown}>) => {
+    setSearchField(event.target.value as string);
   };
 
   const options = Object.keys(sortFunctions).map(option => (
@@ -65,6 +73,22 @@ export default function DatasetFilters() {
     return 0
   });
 
+  
+  var filteredDatasets = new Map([...datasets].filter(
+    ([key, dataset_info]) => {
+      return (
+        dataset_info
+        .description
+        .toLowerCase()
+        .includes(searchField.toLowerCase()) ||
+        key
+        .toLowerCase()
+        .includes(searchField.toLowerCase())
+      );
+    }
+  ));
+
+
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} sm={6}>
@@ -81,6 +105,18 @@ export default function DatasetFilters() {
         </FormControl>
       </Grid>
       <Grid item xs={12} sm={6}>
+        <FormControl>
+        <Input
+          id="search-datasets"
+          placeholder="Search Dataset"
+          value={searchField}
+          onChange={handleSearchChange} 
+        />
+        {filteredDatasets}
+        </FormControl>
+        {/* {filteredDatasets} */}
+      </Grid>
+      {/* <Grid item xs={12} sm={6}>
         <Autocomplete
           multiple
           size="small"
@@ -112,7 +148,7 @@ export default function DatasetFilters() {
             />
           )}
         />
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }
