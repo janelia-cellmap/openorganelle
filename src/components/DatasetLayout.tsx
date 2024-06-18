@@ -9,6 +9,7 @@ import Switch from "@material-ui/core/Switch";
 import Button from "@material-ui/core/Button";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import Input from "@material-ui/core/Input";
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 
 import { AppContext } from "../context/AppContext";
@@ -23,10 +24,32 @@ interface DatasetLayoutProps {
   latestOnly: boolean;
 }
 
+const useStyles: any = makeStyles((theme: Theme) => createStyles({
+  search: {
+    [theme.breakpoints.up('sm')]: {
+      textAlign: 'center'
+    },
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'left'
+    },
+  },
+  filter: {
+    [theme.breakpoints.up('sm')]: {
+      textAlign: 'right'
+    },
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'left'
+    },
+  }
+}));
+
+
+
 export default function DatasetLayout({
   latestOnly = false,
 }: DatasetLayoutProps) {
   const query = useQueryString();
+  const classes = useStyles();
   const history = useHistory();
   const page = parseInt(query.get("page") || "1");
   const { appState, setPermanent, setSearched} = useContext(AppContext);
@@ -193,7 +216,7 @@ export default function DatasetLayout({
     <div>
       {datasetCount}
       <Grid container spacing={1}>
-        <Grid item sm={8} xs={12}>
+        <Grid item md={4} sm={8} xs={12}>
           {datasets.size > datasetsPerPage && (
             <Pagination
               count={totalPages}
@@ -202,15 +225,15 @@ export default function DatasetLayout({
             />
           )}
         </Grid>
-        <Grid item sm={8} xs={12}>
+        <Grid item md={3} sm={4} xs={12} className={classes.search}>
           <Input
             id="search-datasets"
             placeholder="Search Dataset"
             value={appState.searchFilter}
-            onChange={handleSearchChange} 
+            onChange={handleSearchChange}
           />
         </Grid>
-        <Grid item sm={2} xs={12}>
+        <Grid item md={3} sm={6} xs={12} className={classes.filter}>
           <Button
             variant="outlined"
             color="primary"
@@ -220,7 +243,7 @@ export default function DatasetLayout({
             Filter / Sort
           </Button>
         </Grid>
-        <Grid item sm={2} xs={12}>
+        <Grid item md={2} sm={2} xs={12}>
           <FormGroup row>
             <FormControlLabel
               control={
