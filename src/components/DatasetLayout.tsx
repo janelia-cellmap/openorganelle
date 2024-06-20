@@ -8,7 +8,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import Button from "@material-ui/core/Button";
 import FilterListIcon from "@material-ui/icons/FilterList";
-import Input from "@material-ui/core/Input";
+import { TextField } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 
@@ -226,12 +226,18 @@ export default function DatasetLayout({
           )}
         </Grid>
         <Grid item md={3} sm={4} xs={12} className={classes.search}>
-          <Input
-            id="search-datasets"
-            placeholder="Search Dataset"
-            value={appState.searchFilter}
-            onChange={handleSearchChange}
-          />
+        <TextField
+          //inputProps={{style: { textAlign: 'center' }}}
+          label="Search Dataset"
+          //placeholder="Search Dataset"
+          id="standard-basic-small"
+          style = {{marginTop:-10}}
+          defaultValue=""
+          size="small"
+          variant="standard"
+          value={appState.searchFilter}
+          onChange={handleSearchChange}
+        />
         </Grid>
         <Grid item md={3} sm={6} xs={12} className={classes.filter}>
           <Button
