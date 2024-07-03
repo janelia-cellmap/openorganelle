@@ -8,6 +8,9 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import Button from "@material-ui/core/Button";
 import FilterListIcon from "@material-ui/icons/FilterList";
+import { TextField } from "@material-ui/core";
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+
 
 import { AppContext } from "../context/AppContext";
 import { fetchDatasets } from "../api/datasets";
@@ -21,13 +24,35 @@ interface DatasetLayoutProps {
   latestOnly: boolean;
 }
 
+const useStyles: any = makeStyles((theme: Theme) => createStyles({
+  search: {
+    [theme.breakpoints.up('sm')]: {
+      textAlign: 'center'
+    },
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'left'
+    },
+  },
+  filter: {
+    [theme.breakpoints.up('sm')]: {
+      textAlign: 'right'
+    },
+    [theme.breakpoints.down('xs')]: {
+      textAlign: 'left'
+    },
+  }
+}));
+
+
+
 export default function DatasetLayout({
   latestOnly = false,
 }: DatasetLayoutProps) {
   const query = useQueryString();
+  const classes = useStyles();
   const history = useHistory();
   const page = parseInt(query.get("page") || "1");
-  const { appState, setPermanent } = useContext(AppContext);
+  const { appState, setPermanent, setSearched} = useContext(AppContext);
 
   const { datasetGrid: compact } = appState;
   const datasetsPerPage = compact ? 12 : 10;
@@ -92,12 +117,27 @@ export default function DatasetLayout({
     return true;
   });
 
-  const totalPages = Math.ceil(datasetsFiltered.length / datasetsPerPage);
   // sort by number of volumes; this will break when the metadata changes to putting volumes in an array
 
-  const datasetsSorted = datasetsFiltered.sort(
+  const datasetsSearched = [...datasetsFiltered].filter(
+    ([key, dataset_info]) => {
+      return (
+        dataset_info
+        .description
+        .toLowerCase()
+        .includes(appState.searchFilter!.toLowerCase()) ||
+        key
+        .toLowerCase()
+        .includes(appState.searchFilter!.toLowerCase())
+      );
+    }
+  );
+
+  const datasetsSorted = datasetsSearched.sort(
     sortFunctions[appState.sortBy].func
   );
+
+  const totalPages = datasetsSorted.length==0 ? 1 : Math.ceil(datasetsSorted.length / datasetsPerPage);
 
   const displayedDatasets = datasetsSorted
     .slice(rangeStart, rangeEnd)
@@ -118,6 +158,10 @@ export default function DatasetLayout({
 
   const handleCompactChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPermanent({ datasetGrid: event.target.checked });
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<{value: unknown}>) => {
+    setSearched({searchFilter: event.target.value as string});
   };
 
   if (datasets.size < 1) {
@@ -160,14 +204,19 @@ export default function DatasetLayout({
     );
   }
 
+  const datasetCount = datasetsSorted.length >= 1 ? <Typography variant="h5">
+                                        Datasets {rangeStart + 1} to{" "}
+                                      {Math.min(rangeEnd, datasetsSorted.length)} of {datasets.size}
+                                      </Typography> :
+                                      <Typography variant="h5">
+                                        No datasets found
+                                      </Typography>
+
   return (
     <div>
-      <Typography variant="h5">
-        Datasets {rangeStart + 1} to{" "}
-        {Math.min(rangeEnd, datasetsFiltered.length)} of {datasets.size}
-      </Typography>
+      {datasetCount}
       <Grid container spacing={1}>
-        <Grid item sm={8} xs={12}>
+        <Grid item md={4} sm={8} xs={12}>
           {datasets.size > datasetsPerPage && (
             <Pagination
               count={totalPages}
@@ -176,7 +225,21 @@ export default function DatasetLayout({
             />
           )}
         </Grid>
-        <Grid item sm={2} xs={12}>
+        <Grid item md={3} sm={4} xs={12} className={classes.search}>
+        <TextField
+          //inputProps={{style: { textAlign: 'center' }}}
+          label="Search datasets"
+          //placeholder="Search Dataset"
+          id="standard-basic-small"
+          style = {{marginTop:-10}}
+          defaultValue=""
+          size="small"
+          variant="standard"
+          value={appState.searchFilter}
+          onChange={handleSearchChange}
+        />
+        </Grid>
+        <Grid item md={3} sm={6} xs={12} className={classes.filter}>
           <Button
             variant="outlined"
             color="primary"
@@ -186,7 +249,7 @@ export default function DatasetLayout({
             Filter / Sort
           </Button>
         </Grid>
-        <Grid item sm={2} xs={12}>
+        <Grid item md={2} sm={2} xs={12}>
           <FormGroup row>
             <FormControlLabel
               control={

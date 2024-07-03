@@ -11,6 +11,7 @@ export interface ContextProps {
   showFilters: boolean,
   sortBy: string,
   datasetFilter: Array<DatasetTag> | undefined,
+  searchFilter: string | null,
   [key: string]: any
 }
 
@@ -18,6 +19,7 @@ interface AppContext {
   appState: ContextProps
   setAppState: (appState: ContextProps) => null | void
   setPermanent: (action: any) => null | void
+  setSearched: (action: any) => null | void
 }
 
 const contextDefault: ContextProps = {
@@ -27,7 +29,8 @@ const contextDefault: ContextProps = {
   datasetGrid: true,
   datasetFilter: [],
   showFilters: false,
-  sortBy: 'size'
+  sortBy: 'size',
+  searchFilter: ""
 }
 
 const allowedPermanent = ['datasetGrid'];
@@ -40,6 +43,7 @@ const AppContext = React.createContext<AppContext>({
   appState: combinedState,
   setAppState: () => null,
   setPermanent: () => null,
+  setSearched: () => null,
 });
 
 const AppProvider = (props: any) => {
@@ -60,8 +64,24 @@ const AppProvider = (props: any) => {
     setAppState({ ...appState, ...action });
   }
 
+  const setSearched = (action : any) => {
+    const searchedByNameState = Object.keys(appState)
+      .filter(key => allowedPermanent.includes(key))
+        .reduce((obj, key) => {
+          return {
+            ...obj,
+            [key]: appState[key]
+          }
+        }, {});
+
+    const updatedState = { ...searchedByNameState, ...action};
+    localStorage.setItem("appState", JSON.stringify(updatedState));
+    setAppState({ ...appState, ...action });
+  }
+
+
   return (
-    <AppContext.Provider value={{appState, setAppState, setPermanent}}>
+    <AppContext.Provider value={{appState, setAppState, setPermanent, setSearched}}>
       {children}
     </AppContext.Provider>
   );

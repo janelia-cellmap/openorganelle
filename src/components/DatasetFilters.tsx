@@ -19,8 +19,8 @@ import { useQuery } from "react-query";
 import { DatasetTag, OSet } from "../types/tags";
 
 export default function DatasetFilters() {
-  const { appState, setPermanent, setAppState } = useContext(AppContext);
-
+  const { appState, setPermanent, setAppState} = useContext(AppContext);
+ 
   const { isLoading, data, error } = useQuery('datasets', async () => fetchDatasets());
 
   if (isLoading) {

@@ -26,6 +26,7 @@
     "@types/url-parse": "^1.4.3",
     "@types/valid-url": "^1.0.3",
     "date-fns": "^2.29.3",
+    "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
     "grey-matter": "^0.0.0",
     "node-fetch": "^2.6.1",
@@ -51,6 +52,7 @@
     "remark-gfm": "^3.0.1",
     "remark-html": "^15.0.1",
     "serverless-s3-sync": "^3.2.0",
+    "sls": "^0.1.0",
     "valid-url": "^1.0.9",
     "zod": "^3.21.4"
   },
@@ -59,7 +61,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "npm run build && sls client deploy"
+    "deploy": "npm run build && sls client deploy",
+    "lint": "eslint . --ext .ts"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -83,15 +86,15 @@
     "@types/react-router-dom": "^5.1.5",
     "@types/react-swipeable-views": "^0.13.1",
     "@types/react-swipeable-views-utils": "^0.13.4",
-    "@typescript-eslint/eslint-plugin": "^5.40.0",
-    "@typescript-eslint/parser": "^5.40.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
     "buffer": "^6.0.3",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-flowtype": "^3.13.0",
     "eslint-plugin-react": "^7.21.0",
     "jest-canvas-mock": "^2.3.1",
-    "prettier": "1.19.1",
+    "prettier": "^1.19.1",
     "react-json-view": "^1.21.3",
     "serverless-deployment-bucket": "^1.5.1",
     "serverless-finch": "^4.0.0",

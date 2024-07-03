@@ -6,8 +6,8 @@ export function s3URItoURL(uri: string) : string {
     if (uri_split[0] !== 's3') {throw Error(`The input ${uri} is not an s3 URI`);
     }
     else{
-        let bucket = uri_split[1].split('/')[0];
-        let bucketURL = bucketNameToURL(bucket);
+        const bucket = uri_split[1].split('/')[0];
+        const bucketURL = bucketNameToURL(bucket);
         return `${bucketURL}/${uri_split[1].slice(1 + bucket.length, uri_split[1].length)}`;
     }
 }
