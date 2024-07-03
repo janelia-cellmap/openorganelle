@@ -228,7 +228,7 @@ export default function DatasetLayout({
         <Grid item md={3} sm={4} xs={12} className={classes.search}>
         <TextField
           //inputProps={{style: { textAlign: 'center' }}}
-          label="Search Datasets"
+          label="Search datasets"
           //placeholder="Search Dataset"
           id="standard-basic-small"
           style = {{marginTop:-10}}
