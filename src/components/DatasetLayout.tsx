@@ -52,7 +52,7 @@ export default function DatasetLayout({
   const classes = useStyles();
   const history = useHistory();
   const page = parseInt(query.get("page") || "1");
-  const { appState, setPermanent, setSearched} = useContext(AppContext);
+  const { appState, setPermanent} = useContext(AppContext);
 
   const { datasetGrid: compact } = appState;
   const datasetsPerPage = compact ? 12 : 10;
@@ -161,7 +161,7 @@ export default function DatasetLayout({
   };
 
   const handleSearchChange = (event: React.ChangeEvent<{value: unknown}>) => {
-    setSearched({searchFilter: event.target.value as string});
+    setPermanent({searchFilter: event.target.value as string});
   };
 
   if (datasets.size < 1) {
