@@ -1,7 +1,8 @@
 import { Octokit } from "@octokit/rest";
 import matter from 'gray-matter';
 import {remark} from 'remark'
-import remarkEmbedder from '@remark-embedder/core'
+import remarkEmbedder from '@remark-embedder/core';
+import remarkGfm from 'remark-gfm';
 import html from 'remark-html'
 export interface NewsPostProps{
     title: string
@@ -80,6 +81,7 @@ export async function getPosts({owner, repo, postsPath, publishedOnly}: PostApi)
       }
       else {
       post.content = String(await remark()
+        .use(remarkGfm)
         .use(remarkEmbedder, {
           transformers: [YoutubeVideoTransformer]
         }).use(html, {sanitize: false})

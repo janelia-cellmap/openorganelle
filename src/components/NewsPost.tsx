@@ -11,6 +11,7 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import "./NewsPost.css";
 
 import { usePosts } from "../context/PostsContext";
 import { postSlug } from "../utils/newsposts";
@@ -76,13 +77,15 @@ export default function NewsPost() {
       <Typography variant="subtitle1">
         {Intl.DateTimeFormat("en", { dateStyle: "long" }).format(date)}
       </Typography>
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw]}
-        components={{ img: MyImage }}
-      >
-        {content}
-      </ReactMarkdown>
+      <div className="markdown">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw]}
+          components={{ img: MyImage }}
+        >
+          {content}
+        </ReactMarkdown>
+      </div>
       <Typography variant="subtitle2">
         Written by {authors.join(", ")}
       </Typography>
