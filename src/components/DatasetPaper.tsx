@@ -70,7 +70,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const [viewChecked, setViewChecked] = useState(0)
  
   if (datasetsLoader.isLoading || viewsLoader.isLoading) {
-    return <>Loading metadatata....</>
+    return <>Loading metadata....</>
   }
 
   else if (datasetsLoader.error || viewsLoader.error) {
