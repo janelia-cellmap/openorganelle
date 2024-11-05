@@ -18,9 +18,9 @@ import { fetchDatasets } from "../api/datasets";
 import { useQuery } from "react-query";
 import { DatasetTag, OSet } from "../types/tags";
 
-export default function DatasetFilters() {
+export default function DatasetFilters({onFilterChange}: {onFilterChange?: () => void}) {
   const { appState, setPermanent, setAppState} = useContext(AppContext);
- 
+
   const { isLoading, data, error } = useQuery('datasets', async () => fetchDatasets());
 
   if (isLoading) {
@@ -39,6 +39,9 @@ export default function DatasetFilters() {
 
   const handleFilterChange = (event: React.ChangeEvent<{}>, value: DatasetTag[] | undefined) => {
     setAppState({...appState, datasetFilter: value});
+    if  (onFilterChange) {
+      onFilterChange();
+    }
   };
 
   const options = Object.keys(sortFunctions).map(option => (

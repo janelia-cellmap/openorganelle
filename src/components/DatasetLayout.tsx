@@ -70,6 +70,8 @@ export default function DatasetLayout({
   const rangeStart = (page - 1) * datasetsPerPage;
   const rangeEnd = rangeStart + datasetsPerPage;
 
+
+
   function setCurrentPage(page: number) {
     query.set("page", page.toString());
     history.push({
@@ -162,6 +164,7 @@ export default function DatasetLayout({
 
   const handleSearchChange = (event: React.ChangeEvent<{value: unknown}>) => {
     setPermanent({searchFilter: event.target.value as string});
+    setCurrentPage(1);
   };
 
   if (datasets.size < 1) {
@@ -266,7 +269,7 @@ export default function DatasetLayout({
         </Grid>
         {appState.showFilters ? (
           <Grid item xs={12}>
-            <DatasetFilters />
+            <DatasetFilters  onFilterChange={() => setCurrentPage(1)}/>
           </Grid>
         ) : (
           ""
