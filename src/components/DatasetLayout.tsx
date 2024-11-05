@@ -207,13 +207,22 @@ export default function DatasetLayout({
     );
   }
 
-  const datasetCount = datasetsSorted.length >= 1 ? <Typography variant="h5">
-                                        Datasets {rangeStart + 1} to{" "}
-                                      {Math.min(rangeEnd, datasetsSorted.length)} of {datasets.size}
-                                      </Typography> :
-                                      <Typography variant="h5">
-                                        No datasets found
-                                      </Typography>
+  const datsetsTotal = datasetsSorted.length !== datasets.size ? (
+    <span>{datasetsSorted.length} <span style={{fontSize: "0.7em", color:"#999"}}>({datasets.size} total when unfiltered)</span></span>
+  ) : (
+    <span>{datasets.size}</span>
+  );
+
+  const datasetCount = datasetsSorted.length >= 1 ? (
+    <Typography variant="h5">
+      Datasets {rangeStart + 1} to{" "}
+    {Math.min(rangeEnd, datasetsSorted.length)} of {datsetsTotal}
+    </Typography>
+  ) : (
+    <Typography variant="h5">
+      No datasets found
+    </Typography>
+  );
 
   return (
     <div>
