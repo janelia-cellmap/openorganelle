@@ -118,6 +118,7 @@ export type DatasetQueryResult = {
   images: ImageQueryResult[]
   stage: Stage
   publications: PublicationQueryResult[]
+  segmentation_challenge: boolean
 }
 
 export type ViewQueryResult = {

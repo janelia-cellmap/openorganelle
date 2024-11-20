@@ -31,6 +31,7 @@ type TagCategories = "Software Availability" |
   "Sample: Treatment" |
   "Acquisition institution" |
   "Lateral voxel size" |
-  "Axial voxel size"
+  "Axial voxel size" |
+  "Other"
 
 export type DatasetTag = Tag<TagCategories>

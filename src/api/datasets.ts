@@ -21,9 +21,10 @@ contentTypeDescriptions.set('prediction', { label: "Prediction Layers", descript
 contentTypeDescriptions.set('analysis', { label: "Analysis Layers", description: "Results of applying various analysis routines on raw data, predictions, or segmentations." });
 
 type makeTagsProps = {
-  acquisition: ImageAcquisition
+  acquisition: ImageAcquisition,
   institutions: string[],
-  sample: Sample
+  sample: Sample,
+  challenge: boolean,
   softwareAvailability: "open" | "partially open" | "closed"
 }
 
@@ -31,6 +32,7 @@ const resolutionTagThreshold = 6;
 export function makeTags({acquisition,
                           institutions,
                           sample,
+                          challenge,
                           softwareAvailability}: makeTagsProps): OSet<DatasetTag> {
   const tags: OSet<DatasetTag> = new OSet();
   let latvox = undefined;
@@ -64,9 +66,12 @@ export function makeTags({acquisition,
     for (const val of sample.treatment) {
       tags.add({value: val, category: 'Sample: Treatment'})
     }
+  }  
+  if (challenge == true) {
+    tags.add({value: 'CellMap segmentation challenge', category: 'Other'})
   }
-  
   tags.add({value: softwareAvailability, category: 'Software Availability'});
+
   return tags
 }
 
@@ -88,6 +93,7 @@ async function queryDatasets(){
             thumbnail_url,
             created_at,
             stage,
+            segmentation_challenge,
             sample:sample(
               name,
               description,
@@ -168,6 +174,7 @@ export async function fetchDatasets() {
       return [d.name, {...d, tags: makeTags({acquisition: d.imageAcquisition,
                                              institutions: [d.imageAcquisition.institution],
                                              sample: d.sample,
+                                             challenge: d.segmentationChallenge,
                                              softwareAvailability: "open"})}]
     }))
     return dsets

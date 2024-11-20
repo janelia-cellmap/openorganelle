@@ -19,6 +19,7 @@ export interface Database {
           sample_id: number | null
           stage: Database["public"]["Enums"]["stage"]
           thumbnail_url: string
+          segmentation_challenge: boolean
         }
         Insert: {
           acquisition_id: number
@@ -29,6 +30,7 @@ export interface Database {
           sample_id?: number | null
           stage?: Database["public"]["Enums"]["stage"]
           thumbnail_url: string
+          segmentation_challenge: boolean
         }
         Update: {
           acquisition_id?: number
@@ -39,6 +41,7 @@ export interface Database {
           sample_id?: number | null
           stage?: Database["public"]["Enums"]["stage"]
           thumbnail_url?: string
+          segmentation_challenge: boolean
         }
         Relationships: [
           {
