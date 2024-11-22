@@ -120,15 +120,18 @@ export default function DatasetLayout({
   });
 
   // sort by number of volumes; this will break when the metadata changes to putting volumes in an array
-
   const datasetsSearched = [...datasetsFiltered].filter(
     ([key, dataset_info]) => {
+      let dsTags : string;
+      // check for segmentationChallenge tag
+      if (dataset_info.segmentationChallenge) {
+        dsTags = [key, dataset_info.description, 'segmentation Challenge'].join()
+      } 
+      else {
+        dsTags = [key, dataset_info.description].join()
+      }
       return (
-        dataset_info
-        .description
-        .toLowerCase()
-        .includes(appState.searchFilter!.toLowerCase()) ||
-        key
+        dsTags
         .toLowerCase()
         .includes(appState.searchFilter!.toLowerCase())
       );
