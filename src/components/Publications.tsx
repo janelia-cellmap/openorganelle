@@ -119,7 +119,7 @@ export default function Publications() {
             Richard J, Weinberg, Harald F. Hess.{" "}
           </i>
           <b>Enhanced FIB-SEM systems for large-volume 3D imaging.</b> eLife
-          (2017){" "}
+          (2017).{" "}
           <a href="https://doi.org/10.7554/eLife.25916">10.7554/eLife.25916</a>
         </p>
         <p>
@@ -135,7 +135,7 @@ export default function Publications() {
             Transforming FIB-SEM Systems for Large-Volume Connectomics and Cell
             Biology.
           </b>{" "}
-          Volume Microscopy. Neuromethods, vol 155 (2020){" "}
+          Volume Microscopy. Neuromethods, vol 155 (2020).{" "}
           <a href="https://doi.org/10.1007/978-1-0716-0691-9_12">
             10.1007/978-1-0716-0691-9_12
           </a>
@@ -150,7 +150,7 @@ export default function Publications() {
             Three-dimensional FIB-SEM reconstruction of microtubule-organelle
             interaction in whole primary mouse beta cells.
           </b>{" "}
-          bioRxiv (2020){" "}
+          bioRxiv (2020).{" "}
           <a href="https://doi.org/10.1101/2020.10.07.329268">
             10.1101/2020.10.07.329268
           </a>
@@ -226,6 +226,114 @@ export default function Publications() {
           </b>{" "}
           eLife (2020).{" "}
           <a href="https://doi.org/10.7554/eLife.57443">10.7554/eLife.57443</a>
+        </p>
+        <p>
+         <i>
+          Aaran Vijayakumaran, Christopher Godbehere, Analle Abuammar, Sophia Y. Breusegem, Leah R. Hurst, Nobuhiro Morone, Jaime Llodra, Melis T. Dalbay, Niaj M. Tanvir, K. MacLellan-Gibson, Chris O’Callaghan, Esben Lorentzen, CellMap Project Team, FIB-SEM Technology, Andrew J. Murray, Kedar Narayan, Vito Mennella.
+         </i>{" "}
+         <b>
+          3D nanoscale architecture of the respiratory epithelium reveals motile cilia-rootlets-mitochondria axis of communication.
+         </b>{" "}
+         bioRxiv 2024.09.08.611854.{" "}
+         <a href="https://doi.org/10.1101/2024.09.08.611854">
+          https://doi.org/10.1101/2024.09.08.611854
+         </a>
+        </p>
+        <p>
+         <i>
+          Yiming Wu, Chloe Whiteus, C. Shan Xu, Kenneth J. Hayworth, Richard J. Weinberg, Harald F. Hess, Pietro De Camilli.
+         </i>{" "}
+         <b>
+          Contacts between the endoplasmic reticulum and other membranes in neurons.
+         </b>{" "}
+         Proceedings of the National Academy of Sciences 114, E4859–E4867 (2017).{" "}
+         <a href="https://doi.org/10.1073/pnas.1701078114">
+          https://doi.org/10.1073/pnas.1701078114
+         </a>
+        </p>
+        <p>
+         <i>
+          Aubrey V. Weigel, Chi-Lun Chang, Gleb Shtengel, C. Shan Xu, David P. Hoffman, Melanie Freeman, Nirmala Iyer, Jesse Aaron, Satya Khuon, John Bogovic, Wei Qiu, Harald F. Hess, Jennifer Lippincott-Schwartz.
+         </i>{" "}
+         <b>
+          ER-to-Golgi protein delivery through an interwoven, tubular network extending from ER.
+         </b>{" "}
+         Cell 184, 2412–2429.e16 (2021).{" "}
+         <a href="https://doi.org/10.1016/j.cell.2021.03.035">
+          https://doi.org/10.1016/j.cell.2021.03.035
+         </a>
+        </p>
+        <p>
+         <i>
+          Andrew T. Ritter, Gleb Shtengel, C. Shan Xu, Aubrey V. Weigel, David P. Hoffman, Melanie Freeman, Nirmala Iyer, Natalia Alivodej, David Ackerman, Igor Voskoboinik, Joseph Trapani, Harald F. Hess, Ira Mellman.
+         </i>{" "}
+         <b>
+          ESCRT-mediated membrane repair protects tumor-derived cells against T cell attack.
+         </b>{" "}
+         Science 376, 377–382 (2022).{" "}
+         <a href="https://doi.org/10.1126/science.abl3855">
+          https://doi.org/10.1126/science.abl3855
+         </a>
+        </p>
+        <p>
+         <i>
+          Ryan Conrad, Kedar Narayan.
+         </i>{" "}
+         <b>
+          Instance segmentation of mitochondria in electron microscopy images with a generalist deep learning model trained on a diverse dataset.
+         </b>{" "}
+         Cell Systems 14, 58–71 (2023).{" "}
+         <a href="https://doi.org/10.1016/j.cels.2022.12.006">
+          https://doi.org/10.1016/j.cels.2022.12.006
+         </a>
+        </p>
+        <p>
+         <i>
+          Navaneetha Krishnan Bharathan, William Giang, Jesse S. Aaron, Satya Khuon, Teng-Leong Chew, Stephan Preibisch, Eric T. Trautman, Larissa Heinrich, John Bogovic, Davis Bennett, David Ackerman, Woohyun Park, Alyson Petruncio, Aubrey V. Weigel, Stephan Saalfeld, COSEM Project Team, A. Wayne Vogl, Sara N. Stahley, Andrew P. Kowalczyk.
+         </i>{" "}
+         <b>
+          Architecture and dynamics of a desmosome–endoplasmic reticulum complex.
+         </b>{" "}
+         Nature Cell Biology 25, 823–835 (2023).{" "}
+         <a href="https://doi.org/10.1038/s41556-023-01154-4">
+          https://doi.org/10.1038/s41556-023-01154-4
+         </a>
+        </p>
+        <p>
+         <i>
+          Andreas Müller, Deborah Schmidt, J. Paul Albrecht, Lukas Rieckert, Martin Otto, Lorena E. Galicia Garcia, Gunnar Fabig, Michele Solimena, Martin Weigert.
+         </i>{" "}
+         <b>
+          Modular segmentation, spatial analysis and visualization of volume electron microscopy datasets.
+         </b>{" "}
+         Nature Protocols (2024).{" "}
+         <a href="https://doi.org/10.1038/s41596-024-00957-5">
+          https://doi.org/10.1038/s41596-024-00957-5
+         </a>
+        </p>
+        <p>
+         <i>
+          Annie Handler, Qiyu Zhang, Song Pang, Tri M. Nguyen, Michael Iskols, Michael Nolan-Tamariz, Stuart Cattel, Rebecca Plumb, Brianna Sanchez, Karyl Ashjian, Aria Shotland, Bartianna Brown, Madiha Kabeer, Josef Turecek, Genelle Rankin, Wangchu Xiang, Elisa C. Pavarino, Nusrat Africawala, Celine Santiago, Wei-Chung Allen Lee, C. Shan Xu, David D. Ginty.
+         </i>{" "}
+         <b>
+          Three-dimensional reconstructions of mechanosensory end organs suggest a unifying mechanism underlying dynamic, light touch.
+         </b>{" "}
+         bioRxiv 2023.03.17.533188.{" "}
+         <a href="https://doi.org/10.1101/2023.03.17.533188">
+          https://doi.org/10.1101/2023.03.17.533188
+         </a>
+        </p>
+        <p>
+         <i>
+          Peng-Peng Zhu, Hui-Fang Hung, Natalia Batchenkova, Jonathon Nixon-Abell, James Henderson, Pengli Zheng, Benoit Renvoisé, Song Pang, C. Shan Xu, Stephan Saalfeld, Jan Funke, Yuxiang Xie, Fabian Svara, Harald F. Hess, Craig Blackstone.
+         </i>{" "}
+         <b>
+          Transverse endoplasmic reticulum expansion in hereditary spastic paraplegia corticospinal axons.
+         </b>{" "}
+         Human Molecular Genetics 31, 2779–2795 (2022).{" "}
+         <a href="https://doi.org/10.1093/hmg/ddac072">
+          https://doi.org/10.1093/hmg/ddac072
+         </a>
         </p>
         <p>
           <b>
