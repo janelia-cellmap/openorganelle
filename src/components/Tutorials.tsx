@@ -112,7 +112,7 @@ export default function Tutorials() {
               On the <Link to="/organelles">Organelles</Link> page is a catalog
               of all of the organelles that have been segmented. Included here
               is a description of the organelles as well as Neuroglancer links
-              to examples of these organelles in four different datasets.
+              to examples of these organelles in several different datasets.
             </Typography>
 
             <Typography variant="h5" gutterBottom>
@@ -130,10 +130,7 @@ export default function Tutorials() {
             </Typography>
             <Typography paragraph>
               On the <Link to="/publications">Publications</Link> page you’ll
-              find publications associated with these datasets as well as a list
-              of “views” that are referenced in these publications. More
-              information about pre-made data views can be found in
-              Visualization.
+              find publications associated with these datasets.
             </Typography>
           </Paper>
           <p className="anchor" id="visualization" />
@@ -152,9 +149,7 @@ export default function Tutorials() {
               <li>
                 Pre-made “views”: These views are pre-determined regions of
                 interest. Some are referenced in related publications, others
-                are just interesting and of note! For a catalog of views that
-                are directly related to published material please visit the
-                “Publications” page.
+                are just interesting and of note. 
               </li>
               <li>
                 “Layers”: the FIB-SEM volumes, available segmentations, and
@@ -362,10 +357,10 @@ export default function Tutorials() {
               found under &quot;Contributions&quot; on the individual Dataset
               page. If the segmentations are part of a publication that will
               also be listed on the individual Dataset page. We are eager to
-              host other&apos;s segmentations here as well! For inquiries about
+              host other&apos;s segmentations here as well. For inquiries about
               contributing to this platform please contact:{" "}
-              <a href="mailto:cosemdata@janelia.hhmi.org">
-                cosemdata@janelia.hhmi.org
+              <a href="mailto:cellmapadmin@janelia.hhmi.org">
+                cellmapadmin@janelia.hhmi.org
               </a>
               .
             </Typography>
@@ -375,10 +370,10 @@ export default function Tutorials() {
             </Typography>
             <Typography paragraph>
               If you are interested in having your dataset hosted on
-              OpenOrganelle we would love to hear from you! For inquiries about
+              OpenOrganelle we would love to hear from you. For inquiries about
               contributing to this platform please contact:{" "}
-              <a href="mailto:cosemdata@janelia.hhmi.org">
-                cosemdata@janelia.hhmi.org
+              <a href="mailto:cellmapadmin@janelia.hhmi.org">
+                cellmapadmin@janelia.hhmi.org
               </a>
             </Typography>
 
@@ -673,8 +668,8 @@ export default function Tutorials() {
             <Typography paragraph>
               For more help or options accessing or downloading data please
               reach out to{" "}
-              <a href="mailto:cosemdata@janelia.hhmi.org">
-                cosemdata@janelia.hhmi.org
+              <a href="mailto:cellmapadmin@janelia.hhmi.org">
+                cellmapadmin@janelia.hhmi.org
               </a>
             </Typography>
           </Paper>
@@ -828,10 +823,10 @@ export default function Tutorials() {
                 Heinrich et al.,2021
               </a>{" "}
               or reach out to us at{" "}
-              <a href="mailto:cosemdata@janelia.hhmi.org">
-                cosemdata@janelia.hhmi.org
+              <a href="mailto:cellmapadmin@janelia.hhmi.org">
+                cellmapadmin@janelia.hhmi.org
               </a>{" "}
-              we are happy to provide tutorials and protocols!
+              we are happy to provide tutorials and protocols.
             </Typography>
           </Paper>
 
@@ -844,7 +839,7 @@ export default function Tutorials() {
               How do I cite data used on OpenOrganelle?
             </Typography>
             <Typography paragraph>
-              We invite you to share and use this data broadly! The data is
+              We invite you to share and use this data broadly. The data is
               licensed under{" "}
               <a href="https://creativecommons.org/licenses/by/4.0/legalcode">
                 CC BY 4.0
@@ -883,8 +878,8 @@ export default function Tutorials() {
 
             <Typography paragraph>
               For inquiries about contributing to this platform please contact:{" "}
-              <a href="mailto:cosemdata@janelia.hhmi.org">
-                cosemdata@janelia.hhmi.org
+              <a href="mailto:cellmapadmin@janelia.hhmi.org">
+                cellmapadmin@janelia.hhmi.org
               </a>
             </Typography>
 
