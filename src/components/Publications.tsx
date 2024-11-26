@@ -225,7 +225,7 @@ export default function Publications() {
             A connectome and analysis of the adult Drosophila central brain.
           </b>{" "}
           eLife (2020).{" "}
-          <a href="https://doi.org/10.7554/eLife.57443">10.7554/eLife.57443</a>
+          <a href="https://doi.org/10.7554/eLife.57443">https://doi.org/10.7554/eLife.57443</a>
         </p>
         <p>
           <b>
