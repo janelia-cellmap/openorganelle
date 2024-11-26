@@ -35,7 +35,7 @@ export default function Publications() {
           </b>{" "}
           Nature. Published online (2021).{" "}
           <a href="https://doi.org/10.1038/s41586-021-03992-4">
-            10.1038/s41586-021-03992-4
+            https://doi.org/10.1038/s41586-021-03992-4
           </a>
           . [
           <a href="https://www.biorxiv.org/content/10.1101/2020.11.13.382457v1">
@@ -57,7 +57,7 @@ export default function Publications() {
           </b>{" "}
           Nature. Published online (2021).{" "}
           <a href="https://doi.org/10.1038/s41586-021-03977-3">
-            10.1038/s41586-021-03977-3
+            https://doi.org/10.1038/s41586-021-03977-3
           </a>
           . [<a href="https://doi.org/10.1101/2020.11.14.382143">preprint</a>] [
           <a href="https://github.com/janelia-cosem/heinrich-2021a">code</a>] [
@@ -80,7 +80,7 @@ export default function Publications() {
           </b>{" "}
           bioRxiv (2020){" "}
           <a href="https://www.biorxiv.org/content/10.1101/2020.11.13.382457v1">
-            10.1101/2020.11.13.382457
+            https://doi.org/10.1101/2020.11.13.382457
           </a>
           .
         </p>
@@ -99,7 +99,7 @@ export default function Publications() {
           bioRxiv (2020){" "}
           <a href="https://doi.org/10.1101/2020.11.14.382143">
             {" "}
-            10.1101/2020.11.14.382143
+            https://doi.org/10.1101/2020.11.14.382143
           </a>{" "}
           [<a href="https://github.com/janelia-cosem/heinrich-2021a">code</a>] [
           <a href="https://open.quiltdata.com/b/janelia-cosem-publications/tree/heinrich-2021a/">
@@ -137,7 +137,7 @@ export default function Publications() {
           </b>{" "}
           Volume Microscopy. Neuromethods, vol 155 (2020){" "}
           <a href="https://doi.org/10.1007/978-1-0716-0691-9_12">
-            10.1007/978-1-0716-0691-9_12
+            https://doi.org/10.1007/978-1-0716-0691-9_12
           </a>
         </p>
         <p>
@@ -152,7 +152,7 @@ export default function Publications() {
           </b>{" "}
           bioRxiv (2020){" "}
           <a href="https://doi.org/10.1101/2020.10.07.329268">
-            10.1101/2020.10.07.329268
+            https://doi.org/10.1101/2020.10.07.329268
           </a>
         </p>
         <p>
@@ -170,7 +170,7 @@ export default function Publications() {
           </b>{" "}
           Science (2020).{" "}
           <a href="https://science.sciencemag.org/content/367/6475/eaaz5357">
-            10.1126/science.aaz5357
+            https://doi.org/10.1126/science.aaz5357
           </a>
         </p>
         <p>
@@ -188,7 +188,7 @@ export default function Publications() {
           </b>{" "}
           Cell Reports (2018).{" "}
           <a href="http://www.sciencedirect.com/science/article/pii/S2211124718310428?via%3Dihub">
-            10.1016/j.celrep.2018.06.100
+            https://doi.org/10.1016/j.celrep.2018.06.100
           </a>
         </p>
         <p>
@@ -197,7 +197,7 @@ export default function Publications() {
           Image Computing and Computer Assisted Intervention – MICCAI 2020
           (2020).{" "}
           <a href="https://doi.org/10.1007/978-3-030-59722-1_10">
-            10.1007/978-3-030-59722-1_10
+            https://doi.org/10.1007/978-3-030-59722-1_10
           </a>
         </p>
         <p>
@@ -212,7 +212,7 @@ export default function Publications() {
           Medical Image Computing and Computer Assisted Intervention – MICCAI
           2018 (2018).{" "}
           <a href="https://doi.org/10.1007/978-3-030-00934-2_36">
-            10.1007/978-3-030-00934-2_36
+            https://doi.org/10.1007/978-3-030-00934-2_36
           </a>
         </p>
         <p>
