@@ -99,7 +99,7 @@ export default function Tutorials() {
               all the available FIB-SEM datasets and accompanying segmentations.
               Clicking on a dataset will direct you to that individual dataset’s
               page where you can see more detailed information about image
-              acquisition, data location, links for viewing in FIJI. On the
+              acquisition, data location, and links for viewing in FIJI. On the
               individual dataset page you can also select layers to view in
               Neuroglancer to browse the data online. More about the layer
               selection can be found on the FAQ page under Visualization.
@@ -109,20 +109,14 @@ export default function Tutorials() {
               What&apos;s on the Organelles page?
             </Typography>
             <Typography paragraph>
-              On the <Link to="/organelles">Organelles</Link> page is a catalog
-              of all of the organelles that have been segmented. Included here
-              is a description of the organelles as well as Neuroglancer links
-              to examples of these organelles in several different datasets.
+              On the <Link to="/organelles">Organelles</Link> page, you'll find a catalog of segmented organelles, each of which can be visualized using <b>Neuroglancer</b>. This page provides links to interactive views of these organelles in several different datasets, allowing you to explore them in 3D.
             </Typography>
 
             <Typography variant="h5" gutterBottom>
               What is the Measurements page?
             </Typography>
             <Typography paragraph>
-              On the <Link to="/measurements">Measurements</Link> page you can
-              browse the analyses results of organelle segmentations such as
-              surface area, volume, or contact sites between two organelles for
-              select datasets.
+              On the <Link to="/measurements">Measurements</Link> page, you can explore analysis results for organelle segmentations, including measurements like surface area, volume, and contact sites between organelles. These measurements are available for select organelles across <b>four datasets</b>, allowing you to filter and analyze specific results for each dataset.
             </Typography>
 
             <Typography variant="h5" gutterBottom>
@@ -130,7 +124,7 @@ export default function Tutorials() {
             </Typography>
             <Typography paragraph>
               On the <Link to="/publications">Publications</Link> page you’ll
-              find publications associated with these datasets.
+              find a list of publications associated with the datasets hosted on OpenOrganelle.
             </Typography>
           </Paper>
           <p className="anchor" id="visualization" />
@@ -388,11 +382,9 @@ export default function Tutorials() {
               <a href="https://github.com/janelia-cosem/schemas/blob/master/cloud/janelia-cosem/README.md">
                 page
               </a>
-              . OpenOrganelle provides access to raw EM datasets, organelle
+              . OpenOrganelle provides access to EM datasets, organelle
               predictions, refined segmentations, analyses, and correlative
-              light microscopy. For an extensive list of available prediction,
-              segmentation, and analysis volumes, please visit the{" "}
-              <Link to="/organelles">Organelles</Link> page.
+              light microscopy. 
             </Typography>
             <Typography variant="h5" gutterBottom>
               What is the difference between segmentations and predictions?
@@ -421,29 +413,22 @@ export default function Tutorials() {
                GitHub repo
               </a>.
             </Typography>
-
             <Typography variant="h5" gutterBottom>
               What are the Analysis Layers?
             </Typography>
             <Typography paragraph>
               For some datasets there are additional options to view
               &quot;Analysis Layers&quot;. For instance, contact sites between
-              two organelles can be viewed. A definition of these analyses can
-              be found on the{" "}
-              <HashLink to="/organelles#analysis">Organelles</HashLink> page.
+              two organelles can be viewed. 
             </Typography>
-
+          
             <Typography variant="h5" gutterBottom>
               How were organelles defined?
             </Typography>
             <Typography paragraph>
-              On the Organelles page is a catalog of all of the organelles that
-              have been segmented. Included here is a description of the
-              organelles as well as Neuroglancer links to examples of these
-              organelles in four different datasets. For an extensive list of
-              available prediction, segmentation, and analysis volumes, please
-              visit the <Link to="/organelles">Organelles</Link> page.
+              On the <Link to="/organelles">Organelles</Link> page, you'll find a catalog of many segmented organelles, along with <strong>Neuroglancer</strong> links to interactive examples from several different datasets. These organelles                were defined through manual segmentation, as outlined in the protocol <a href="https://dx.doi.org/10.17504/protocols.io.bp2l61rb5vqe/v3" target="_blank" rel="noopener noreferrer">Using Amira to manually segment organelles in                  vEM for machine learning V.3</a>, which details the process used for segmentation in volumetric electron microscopy (vEM) and its application to machine learning.
             </Typography>
+
           </Paper>
           <p className="anchor" id="data_access" />
           <Paper className={classes.section}>
@@ -652,15 +637,7 @@ export default function Tutorials() {
               then you can download data from s3 using the globus client. 
             </Typography>
             <Typography variant="h5" gutterBottom>
-              How do I access the analysis database?
-            </Typography>
-            <Typography paragraph>
-              The code used to process predictions and perform analysis can be
-              found in our{" "}
-              <a href="https://github.com/janelia-cosem/hot-knife/tree/cosem-analysis">
-                GitHub repository
-              </a>
-              .
+                          .
             </Typography>
             <Typography variant="h5" gutterBottom>
               Who can I contact about downloading data?
