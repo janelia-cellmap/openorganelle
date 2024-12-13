@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { HashLink } from "react-router-hash-link";
+// import { HashLink } from "react-router-hash-link";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
@@ -109,7 +109,7 @@ export default function Tutorials() {
               What&apos;s on the Organelles page?
             </Typography>
             <Typography paragraph>
-              On the <Link to="/organelles">Organelles</Link> page, you'll find a catalog of segmented organelles, each of which can be visualized using <b>Neuroglancer</b>. This page provides links to interactive views of these organelles in several different datasets, allowing you to explore them in 3D.
+              On the <Link to="/organelles">Organelles</Link> page, you&apos;ll find a catalog of segmented organelles, each of which can be visualized using <b>Neuroglancer</b>. This page provides links to interactive views of these organelles in several different datasets, allowing you to explore them in 3D.
             </Typography>
 
             <Typography variant="h5" gutterBottom>
@@ -426,7 +426,7 @@ export default function Tutorials() {
               How were organelles defined?
             </Typography>
             <Typography paragraph>
-              On the <Link to="/organelles">Organelles</Link> page, you'll find a catalog of many segmented organelles, along with <strong>Neuroglancer</strong> links to interactive examples from several different datasets. These organelles                were defined through manual segmentation, as outlined in the protocol <a href="https://dx.doi.org/10.17504/protocols.io.bp2l61rb5vqe/v3" target="_blank" rel="noopener noreferrer">Using Amira to manually segment organelles in                  vEM for machine learning V.3</a>, which details the process used for segmentation in volumetric electron microscopy (vEM) and its application to machine learning.
+              On the <Link to="/organelles">Organelles</Link> page, you&apos;ll find a catalog of many segmented organelles, along with <strong>Neuroglancer</strong> links to interactive examples from several different datasets. These organelles                were defined through manual segmentation, as outlined in the protocol <a href="https://dx.doi.org/10.17504/protocols.io.bp2l61rb5vqe/v3" target="_blank" rel="noopener noreferrer">Using Amira to manually segment organelles in                  vEM for machine learning V.3</a>, which details the process used for segmentation in volumetric electron microscopy (vEM) and its application to machine learning.
             </Typography>
 
           </Paper>
@@ -635,9 +635,6 @@ export default function Tutorials() {
               If your institution is connected to <a href="https://www.globus.org">Globus</a>
               {" "}network and has access to the <a href="https://www.globus.org/connectors/amazon-s3">globus s3 connector</a>,
               then you can download data from s3 using the globus client. 
-            </Typography>
-            <Typography variant="h5" gutterBottom>
-                          .
             </Typography>
             <Typography variant="h5" gutterBottom>
               Who can I contact about downloading data?
