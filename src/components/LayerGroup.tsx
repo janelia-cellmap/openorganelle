@@ -34,23 +34,43 @@ export default function ImageCheckboxCollection({
     setExpanded(!expanded);
   };
 
-  const checkBoxList = images?.map((image: Image) => {
-    return (
+  let checkBoxList : Array<object> = [];
+  if (images.every((image : Image) => image.contentType === 'annotation')){
+    checkBoxList.push(
       <FormControlLabel
         control={
           <Checkbox
-            checked={checkState.has(image.name)}
+            checked={checkState.has(images[0].name)}
             onChange={handleImageChange}
             color="primary"
-            name={image.name}
+            name={images[0].name}
             size="small"
           />
         }
-        label={image.description}
-        key={`${image.name}`}
+        label={"Ground truth"}
+        key={`${images[0].name}`}
       />
-    );
-  });
+    )
+  }
+  else {
+    checkBoxList = images?.map((image: Image) => {
+      return (
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={checkState.has(image.name)}
+              onChange={handleImageChange}
+              color="primary"
+              name={image.name}
+              size="small"
+            />
+          }
+          label={image.description}
+          key={`${image.name}`}
+        />
+      );
+    });
+  }
 
   return (
     <Accordion key={contentType} expanded={expanded} onChange={handleExpand}>
