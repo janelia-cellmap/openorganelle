@@ -12,6 +12,7 @@ interface ImageCheckboxCollectionProps {
   images: Image[]
   checkState: Set<string>
   handleImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  handleImageStackChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   contentType: string,
   contentTypeInfo: ContentTypeMetadata,
   accordionExpanded: boolean
@@ -24,6 +25,7 @@ export default function ImageCheckboxCollection({
   images,
   checkState,
   handleImageChange,
+  handleImageStackChange,
   contentType,
   contentTypeInfo,
   accordionExpanded,
@@ -41,14 +43,14 @@ export default function ImageCheckboxCollection({
         control={
           <Checkbox
             checked={checkState.has(images[0].name)}
-            onChange={handleImageChange}
+            onChange={handleImageStackChange}
             color="primary"
-            name={images[0].name}
+            name={contentType}
             size="small"
           />
         }
         label={"Ground truth"}
-        key={`${images[0].name}`}
+        key={contentType}//{`${images[0].name}`}
       />
     )
   }

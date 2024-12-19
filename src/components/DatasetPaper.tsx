@@ -144,6 +144,25 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
     }
     setImageChecked(newImageChecked)
     }
+  
+  const handleImageStackChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newImageChecked = new Set([...imageChecked])
+    const groupImagesNames = new Set(dataset.images.filter( image => image.contentType === event.target.name).map(v => v.name)) 
+    if (event.target.checked) {
+      for (const imageName of groupImagesNames) {
+        newImageChecked.add(imageName)
+      }
+    }
+    else {
+      // prevent all image checkboxes from being deselected
+      if (newImageChecked.size > 1) {
+        for (const imageName of groupImagesNames) {
+          newImageChecked.delete(imageName)
+        }
+      }
+    }
+    setImageChecked(newImageChecked)
+    }
 
   const handleViewChange = (index: number, views: View[]) => () => {
     const newImageState = views[index].images.reduce((previous, current) =>
@@ -219,6 +238,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
                 dataset={dataset}
                 checkState={imageChecked}
                 handleImageChange={handleImageChange}
+                handleImageStackChange={handleImageStackChange}
                 handleFilterChange={handleFilterChange}
                 filter={layerFilter}
               />
