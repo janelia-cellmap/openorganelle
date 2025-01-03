@@ -11,7 +11,6 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 interface ImageCheckboxCollectionProps {
   images: Image[]
   checkState: Set<string>
-  handleImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   handleImageStackChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   contentType: string,
   contentTypeInfo: ContentTypeMetadata,
@@ -24,7 +23,6 @@ interface ImageCheckboxCollectionProps {
 export default function ImageCheckboxCollection({
   images,
   checkState,
-  handleImageChange,
   handleImageStackChange,
   contentType,
   contentTypeInfo,
@@ -36,43 +34,40 @@ export default function ImageCheckboxCollection({
     setExpanded(!expanded);
   };
 
+  // combine images into image stacks
+  const imageStacks = images.reduce((result: Record<string, Image[]> , image: Image) => {
+    const image_stack: string = image.imageStack;
+    (result[image_stack] = result[image_stack] || []).push(image);
+    return result;
+  }, {});
+
   let checkBoxList : Array<object> = [];
-  if (images.every((image : Image) => image.contentType === 'annotation')){
-    checkBoxList.push(
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={checkState.has(images[0].name)}
-            onChange={handleImageStackChange}
-            color="primary"
-            name={contentType}
-            size="small"
-          />
-        }
-        label={"Ground truth"}
-        key={contentType}//{`${images[0].name}`}
-      />
-    )
+
+  // map a function over the dictionary
+  function objectMap( dict : Record<string, Image[]>, mappedFunction : (dict: Record<string, Image[]>, key: string) => object) : object[] {
+    return Object.values(Object.keys(dict).reduce(function(result : Record<string, object>, key : string) {
+      result[key] = mappedFunction(dict, key)
+      return result
+    }, {}))
   }
-  else {
-    checkBoxList = images?.map((image: Image) => {
+
+  checkBoxList = objectMap(imageStacks, (imageStacks: Record<string, Image[]>, stackName : string) => {
       return (
         <FormControlLabel
           control={
             <Checkbox
-              checked={checkState.has(image.name)}
-              onChange={handleImageChange}
+              checked={checkState.has(imageStacks[stackName][0].name)}
+              onChange={handleImageStackChange}
               color="primary"
-              name={image.name}
+              name={stackName}
               size="small"
             />
           }
-          label={image.description}
-          key={`${image.name}`}
+          label={imageStacks[stackName][0].description}
+          key={`${stackName}`}
         />
       );
-    });
-  }
+    })
 
   return (
     <Accordion key={contentType} expanded={expanded} onChange={handleExpand}>
