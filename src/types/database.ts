@@ -84,6 +84,7 @@ export type ImageQueryResult = {
   dataset_name: string
   institution: string
   stage: Stage
+  image_stack: string
   meshes: {
     name: string
     description: string
