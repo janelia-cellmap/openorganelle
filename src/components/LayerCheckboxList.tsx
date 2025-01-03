@@ -32,7 +32,7 @@ const useStyles: any = makeStyles(() =>
 interface LayerCheckboxListProps {
   dataset: Dataset;
   checkState: Set<string>;
-  handleImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleImageStackChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   filter: string | undefined;
 }
@@ -40,7 +40,7 @@ interface LayerCheckboxListProps {
 interface FilteredLayerListProps {
   dataset: Dataset;
   checkState: Set<string>;
-  handleImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleImageStackChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   filter: string | undefined;
 }
 
@@ -49,7 +49,7 @@ interface LayerFilterProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-function FilteredLayersList({ dataset, checkState, handleImageChange, filter}: FilteredLayerListProps) {
+function FilteredLayersList({ dataset, checkState, handleImageStackChange, filter}: FilteredLayerListProps) {
   const classes = useStyles();
   const imagesInit: Image[] = []
   const [images, setImages] = useState(imagesInit);
@@ -86,7 +86,7 @@ function FilteredLayersList({ dataset, checkState, handleImageChange, filter}: F
               key={ct}
               images={images}
               checkState={checkState}
-              handleImageChange={handleImageChange}
+              handleImageStackChange={handleImageStackChange}
               contentType={ct}
               contentTypeInfo={contentTypeInfo}
               accordionExpanded={expanded}/>;
@@ -123,7 +123,7 @@ function LayerFilter({ value, onChange } : LayerFilterProps) {
 export default function LayerCheckboxList({
   dataset,
   checkState,
-  handleImageChange,
+  handleImageStackChange,
   handleFilterChange,
   filter,
 }: LayerCheckboxListProps) {
@@ -135,7 +135,7 @@ export default function LayerCheckboxList({
       <FilteredLayersList
         dataset={dataset}
         checkState={checkState}
-        handleImageChange={handleImageChange}
+        handleImageStackChange={handleImageStackChange}
         filter={filter}
       />
     </>

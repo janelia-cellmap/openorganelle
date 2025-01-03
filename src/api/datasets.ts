@@ -131,6 +131,7 @@ async function queryDatasets(){
                 institution,
                 created_at,
                 stage,
+                image_stack,
                 meshes:mesh(
                     name,
                     description,

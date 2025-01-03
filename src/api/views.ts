@@ -30,6 +30,7 @@ export async function fetchViews() {
         content_type,
         institution,
         created_at,
+        image_stack,
         meshes:mesh(
             name,
             description,

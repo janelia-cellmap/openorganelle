@@ -128,6 +128,7 @@ export interface Database {
           source: Json | null
           stage: Database["public"]["Enums"]["stage"]
           url: string
+          image_stack: string
         }
         Insert: {
           content_type: Database["public"]["Enums"]["content_type"]
@@ -148,6 +149,7 @@ export interface Database {
           source?: Json | null
           stage?: Database["public"]["Enums"]["stage"]
           url: string
+          image_stack: string
         }
         Update: {
           content_type?: Database["public"]["Enums"]["content_type"]
@@ -168,6 +170,7 @@ export interface Database {
           source?: Json | null
           stage?: Database["public"]["Enums"]["stage"]
           url?: string
+          image_stack?: string
         }
         Relationships: [
           {

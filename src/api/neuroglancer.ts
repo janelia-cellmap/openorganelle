@@ -191,7 +191,8 @@ export function makeNeuroglancerUrl({position,
                                       images,
                                       outputDimensions,
                                       host} : viewToNeuroglancerUrlProps) {
-    const layers = images.map(im => {
+    
+    const layers = images.reverse().map(im => {
         const layerType = (im.sampleType === 'scalar') ? 'image' : 'segmentation';
         return makeLayer(im, layerType, outputDimensions);
       });
