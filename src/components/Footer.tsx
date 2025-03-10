@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
-import TwitterIcon from '@material-ui/icons/Twitter';
 
 import cellmapLogo from "./cellmapLogoDarkText.png";
 import fibsemLogo from "../fibsem_logo.png";
