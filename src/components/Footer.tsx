@@ -61,11 +61,8 @@ export default function Footer() {
       <Grid container spacing={2}>
         <Grid item md={3}>
           <p>Contact us</p>
-          <a href="https://twitter.com/OpenOrganelle" className={classes.mailLink}>
-            <TwitterIcon style={{marginRight: "1rem"}}/> @OpenOrganelle
-          </a>
-          <a href="mailto:cosemdata@janelia.hhmi.org" className={classes.mailLink}>
-            <MailOutlineIcon style={{marginRight: "1rem"}}/> cosemdata@janelia.hhmi.org
+          <a href="mailto:cellmapadmin@janelia.hhmi.org" className={classes.mailLink}>
+            <MailOutlineIcon style={{marginRight: "1rem"}}/> cellmapadmin@janelia.hhmi.org
           </a>
         </Grid>
         <Grid item md={6} className={classes.footerMiddle}>
