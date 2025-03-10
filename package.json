@@ -1,6 +1,6 @@
 {
   "name": "data-portal",
-  "version": "0.7.6",
+  "version": "0.8.0",
   "private": true,
   "dependencies": {
     "@babel/preset-typescript": "^7.21.5",
