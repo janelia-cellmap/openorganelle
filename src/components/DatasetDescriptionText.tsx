@@ -130,11 +130,11 @@ export function DatasetAcquisition({
         <Typography variant="h6" className={classes.title}>
           FIB-SEM parameters
         </Typography>
-        <p><strong>Imaging duration (days)</strong> : {params.durationDays ? params.durationDays : "Unknown"}</p>
-        <p><strong>Bias (Volts)</strong>: {params.biasV ? params.biasV : "Unknown"}</p>
-        <p><strong>Scan rate (MHz)</strong>: {params.scanHz ? params.scanHz : "Unknown"}</p>
-        <p><strong>Current (nA)</strong>: {params.currentNA ? params.currentNA : "Unknown"}</p>
-        <p><strong>Primary energy (eV)</strong>: {params.landingEnergyEV ? params.landingEnergyEV : "Unknown"}</p>
+        <p><strong>Imaging duration (days)</strong> : {params.durationDays ?? "Unknown"}</p>
+        <p><strong>Bias (Volts)</strong>: {params.biasV ?? "Unknown"}</p>
+        <p><strong>Scan rate (MHz)</strong>: {params.scanHz ?? "Unknown"}</p>
+        <p><strong>Current (nA)</strong>: {params.currentNA ?? "Unknown"}</p>
+        <p><strong>Primary energy (eV)</strong>: {params.landingEnergyEV ?? "Unknown"}</p>
       </>
     }
   }
