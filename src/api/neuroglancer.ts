@@ -192,13 +192,19 @@ export function makeNeuroglancerUrl({position,
                                       outputDimensions,
                                       host} : viewToNeuroglancerUrlProps) {
     
-    const layers = images.reverse().map(im => {
+    const layers = images.map(im => {
         const layerType = (im.sampleType === 'scalar') ? 'image' : 'segmentation';
         return makeLayer(im, layerType, outputDimensions);
       });
 
+    
+    // image layer should appear before segmentations in a ng view
+    const sorted_layers = (layers as SegmentationLayer[] | ImageLayer[]).sort(a => {
+        return a.type === "image" ? -1 : 1;
+    });
+
     return `${host}${makeNeuroglancerViewerState(
-        layers as SegmentationLayer[] | ImageLayer[],
+        sorted_layers as SegmentationLayer[] | ImageLayer[],
         position ?? undefined,
         scale ?? undefined,
         orientation ?? undefined,
