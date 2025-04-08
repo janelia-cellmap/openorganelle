@@ -3,6 +3,7 @@ import AssignmentIcon from "@material-ui/icons/Assignment";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 import Snackbar from "@material-ui/core/Snackbar";
 import FolderOpen from "@material-ui/icons/FolderOpen";
+import SwapHorizOutlinedIcon from '@material-ui/icons/SwapHorizOutlined';
 import Typography from "@material-ui/core/Typography";
 import Tooltip from "@material-ui/core/Tooltip";
 import fijiIcon from "./fiji_icon.png";
@@ -27,6 +28,7 @@ const useStyles: any = makeStyles((theme: Theme) =>
 interface ClipBoardLinkProps {
   bucketBrowseLink: string;
   s3URL: string;
+  globusUrl : string;
 }
 
 const DataFaqLink = (props:any , ref:any) => {
@@ -41,7 +43,8 @@ const LinkBehavior = React.forwardRef<any, Omit<RouterLinkProps, "to">>(
 
 export default function ClipboardLink({
   bucketBrowseLink,
-  s3URL
+  s3URL,
+  globusUrl
 }: ClipBoardLinkProps) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
@@ -83,6 +86,22 @@ export default function ClipboardLink({
           Browse the files
         </Button>
       </Tooltip>
+
+      <Tooltip title="Browse raw data on globus" aria-label="globus link">
+        <Button
+          variant="contained"
+          color="primary"
+          href={globusUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          fullWidth
+          startIcon={<SwapHorizOutlinedIcon />}
+          style={{ marginBottom: "1rem" }}
+        >
+          Globus Transfer
+        </Button>
+      </Tooltip>
+
       <Tooltip
         title="Copy data URI to clipboard"
         aria-label="copy data URI to clipboard 1"

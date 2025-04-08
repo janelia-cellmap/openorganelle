@@ -6,6 +6,17 @@ export function makeQuiltURL(bucket: string, prefix: string): string {
   return `https://open.quiltdata.com/b/${bucket}/tree/${prefix}/`
 }
 
+export function makeGlobusURL(globusCollection: string, prefix: string): string {
+  const baseUrl = "https://app.globus.org/file-manager";
+  const twoPane = true;
+  const params = new URLSearchParams({
+      origin_id: globusCollection,
+      origin_path: `/${prefix}/`,  
+      two_pane: twoPane.toString()
+  });
+
+  return `${baseUrl}?${params.toString()}`;
+}
 // Check if the browser has webgl2 enabled. This is required for using neuroglancer.
 export const checkWebGL2 = (): boolean => {
     return !(document.createElement('canvas').getContext('webgl2') === null);
