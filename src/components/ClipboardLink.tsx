@@ -87,7 +87,7 @@ export default function ClipboardLink({
         </Button>
       </Tooltip>
 
-      <Tooltip title="Browse raw data on globus" aria-label="globus link">
+      <Tooltip title="Browse data on globus" aria-label="globus link">
         <Button
           variant="contained"
           color="primary"
