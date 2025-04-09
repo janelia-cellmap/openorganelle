@@ -111,7 +111,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   const s3URL = `s3://${bucket}/${prefix}/`;
 
   const collection_id = '4422e452-f97e-4cdd-ad88-7cecf14aa258'
-  const globusUrl = makeGlobusURL(collection_id, `${prefix}/${prefix}.zarr`)
+  const globusUrl = makeGlobusURL(collection_id, `${prefix}`)
   // this is a hack / symptom of abstraction leakage
   // we display just 1 fiji URL, but potentially *multiple* contiainer roots (in case we have n5 and zarr data).
   // until we add multiple fiji URLs (ideally, one per image), we have to pick either n5 or zarr as the suffix for the 
