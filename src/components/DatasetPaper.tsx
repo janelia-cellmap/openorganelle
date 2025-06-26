@@ -24,6 +24,8 @@ import { fetchDatasets } from "../api/datasets";
 import { useQuery } from "react-query";
 import {fetchViews} from "../api/views"
 
+import {convert, Unit} from "convert";
+
 type DatasetPaperProps = {
   datasetKey: string;
 };
@@ -87,6 +89,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
   }
 
   const dataset = datasetsLoader.data.get(datasetKey)!;
+  const unitNm = convert(1, dataset.imageAcquisition.gridDimensionsUnit as Unit).to('nm')
   const views = viewsLoader.data.filter(v => (v.datasetName === datasetKey && v.description !== '')) 
   if (views.length == 0) {
     // insert default view
@@ -96,7 +99,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
       thumbnailUrl: null,
       createdAt: new Date().toDateString(),
       datasetName: dataset.name,
-      position: dataset.imageAcquisition.gridDimensions.map(arrShape => arrShape / 2),
+      position: dataset.imageAcquisition.gridDimensions.map(arrShape => unitNm*arrShape / 2),
       scale: null,
       orientation: null,
       taxa: [],
