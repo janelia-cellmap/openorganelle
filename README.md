@@ -43,6 +43,17 @@ Additionally, the bucket must be configured for cross-origin requests (CORS), e.
 
 ```
 
+# Setup
+
+## Environment Variables
+
+Copy the `.env.example` file to `.env`:
+```
+cp .env.example .env
+```
+
+The `.env` file requires a Neo4j authentication token. Contact the team to obtain the value for `REACT_APP_NEO4J_AUTH_TOKEN`.
+
 # Deployment
 
 To deploy to dev run the deploy command without any additional arguments

@@ -82,7 +82,7 @@ export async function getPosts({owner, repo, postsPath, publishedOnly}: PostApi)
       else {
       post.content = String(await remark()
         .use(remarkGfm)
-        .use(remarkEmbedder, {
+        .use(remarkEmbedder as any, {
           transformers: [YoutubeVideoTransformer]
         }).use(html, {sanitize: false})
         .process(post.content));
