@@ -6,12 +6,14 @@ export interface queryResponse {
 }
 
 export function fetchAnalysisResults(cypher: string) {
+  const authToken = process.env.REACT_APP_NEO4J_AUTH_TOKEN;
+
   const options = {
     method: "POST",
     headers: {
       accept: "application/json",
       "Content-Type": "application/json",
-      Authorization: `Basic bmVvNGo6QWlFc2h0ZUMwUzNNIQ==`
+      Authorization: `Basic ${authToken}`
     },
     body: JSON.stringify({ statements: [{ statement: cypher }] })
   };
