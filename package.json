@@ -52,7 +52,7 @@
     "remark": "^14.0.2",
     "remark-gfm": "^3.0.1",
     "remark-html": "^15.0.1",
-    "serverless-s3-sync": "^3.2.0",
+    "serverless-s3-sync": "^3.5.1",
     "sls": "^0.1.0",
     "valid-url": "^1.0.9",
     "zod": "^3.21.4"
@@ -101,7 +101,7 @@
     "serverless-finch": "^4.0.0",
     "serverless-plugin-package-json": "^0.1.0",
     "source-map-loader": "^0.2.4",
-    "supabase": "^1.136.3",
+    "supabase": "^2.72.9",
     "ts-loader": "^6.2.2",
     "typescript": "4.9"
   }
