@@ -3,6 +3,7 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import { Document, Page } from "react-pdf";
+import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
 export default function TermsOfUse() {
   const [page, setPage] = useState(1);
@@ -36,7 +37,7 @@ export default function TermsOfUse() {
           file="/openorganelle_terms_of_use.pdf"
           onLoadSuccess={onDocumentLoadSuccess}
         >
-          <Page pageNumber={page} width={1000} />
+          <Page pageNumber={page} width={1000} renderAnnotationLayer={true} />
         </Document>
       </Paper>
     </>
