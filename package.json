@@ -19,7 +19,6 @@
     "@testing-library/user-event": "^7.2.1",
     "@types/react": "^16.9.49",
     "@types/react-dom": "^16.9.8",
-    "@types/react-html-parser": "^2.0.1",
     "@types/react-pdf": "^5.0.1",
     "@types/react-router-hash-link": "^2.4.0",
     "@types/react-table": "^7.0.29",
@@ -39,7 +38,6 @@
     "react-dom": "^17.0.2",
     "react-force-graph-3d": "^1.21.0",
     "react-helmet": "^6.1.0",
-    "react-html-parser": "^2.0.2",
     "react-markdown": "^8.0.3",
     "react-pdf": "^5.2.0",
     "react-query": "^3.39.2",
@@ -53,7 +51,6 @@
     "remark-gfm": "^3.0.1",
     "remark-html": "^15.0.1",
     "serverless-s3-sync": "^3.2.0",
-    "sls": "^0.1.0",
     "valid-url": "^1.0.9",
     "zod": "^3.21.4"
   },
