@@ -99,7 +99,7 @@ export default function DatasetPaper({ datasetKey }: DatasetPaperProps) {
       thumbnailUrl: null,
       createdAt: new Date().toDateString(),
       datasetName: dataset.name,
-      position: dataset.imageAcquisition.gridDimensions.map(arrShape => unitNm*arrShape / 2),
+      position: ['x', 'y', 'z'].map(axis => unitNm * dataset.imageAcquisition.gridDimensions[dataset.imageAcquisition.gridAxes.indexOf(axis)] / 2),
       scale: null,
       orientation: null,
       taxa: [],
