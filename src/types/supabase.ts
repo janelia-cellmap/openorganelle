@@ -616,7 +616,7 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
-      array_container_format: "n5" | "zarr" | "precomputed"
+      array_container_format: "n5" | "zarr" | "precomputed" | "zarr3"
       content_type:
         | "lm"
         | "prediction"
@@ -628,6 +628,7 @@ export interface Database {
       imagery_format:
         | "n5"
         | "zarr"
+        | "zarr3"
         | "neuroglancer_precomputed"
         | "neuroglancer_multilod_draco"
         | "neuroglancer_legacy_mesh"
