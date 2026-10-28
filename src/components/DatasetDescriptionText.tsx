@@ -170,10 +170,12 @@ export function DatasetAcquisition({
             DOI
           </strong>:{" "}
           <PublicationList publications={pubDOI} doi={true} />
-          <strong>
-            Publications
-          </strong>:{" "}
-          <PublicationList publications={pubPapers} doi={false} />
+          {pubPapers.length > 0 && <>
+            <strong>
+              Publications
+            </strong>:{" "}
+            <PublicationList publications={pubPapers} doi={false} />
+          </>}
           <p>
             <strong>Dataset location</strong>: {storageLocation}
           </p>
