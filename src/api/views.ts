@@ -44,7 +44,7 @@ export async function fetchViews() {
             ids
             )
     ),
-      dataset!inner(name)`).returns<ViewQueryResult>()
+      dataset!inner(name)`).returns<ViewQueryResult[]>()
     if (error === null) {
       const camelized = camelize(data) as Camelized<typeof data>
       return camelized

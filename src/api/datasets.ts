@@ -157,7 +157,7 @@ async function queryDatasets(){
             .in('images.stage', stageFilter)
             .in('images.meshes.stage', stageFilter)
             .in('publications.stage', stageFilter)
-            .returns<DatasetQueryResult>()
+            .returns<DatasetQueryResult[]>()
               
             if (error === null) {
               return data
